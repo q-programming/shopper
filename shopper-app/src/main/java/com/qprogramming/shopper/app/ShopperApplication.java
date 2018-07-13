@@ -1,12 +1,12 @@
-package com.qprogramming.shopper.shopper.api;
+package com.qprogramming.shopper.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ShopperApiApplication {
+public class ShopperApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ShopperApiApplication.class, args);
+		SpringApplication.run(ShopperApplication.class, args);
 	}
 }
