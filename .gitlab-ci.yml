@@ -9,6 +9,6 @@ build_application:
   script:
     - mvn clean compile
 test_application:
-  stage: test
+  stage: test_application
   script:
     - mvn surfire:test
