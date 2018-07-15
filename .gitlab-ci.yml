@@ -1,0 +1,9 @@
+image: rowanto/docker-java8-mvn-nodejs-npm
+stages:
+  - build_application
+
+# This stage builds your application
+build_application:
+  stage: build_application
+  script:
+    - mvn clean package
