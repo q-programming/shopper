@@ -7,7 +7,7 @@ stages:
 build_application:
   stage: build_application
   script:
-    - mvn clean compile
+    - mvn clean install -DskipTests=false
 test_application:
   stage: test_application
   script:
