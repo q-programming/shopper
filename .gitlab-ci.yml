@@ -1,4 +1,4 @@
-image: rowanto/docker-java8-mvn-nodejs-npm
+image: jimador/docker-jdk-8-maven-node
 stages:
   - build_application
 
