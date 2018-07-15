@@ -1,9 +1,14 @@
-image: jimador/docker-jdk-8-maven-node
+image: khobar/docker-jdk-8-maven-node-ng
 stages:
   - build_application
+  - test_application
 
 # This stage builds your application
 build_application:
   stage: build_application
   script:
-    - mvn clean package
+    - mvn clean compile
+test_application:
+  stage: test
+  script:
+    - mvn surfire:test
