@@ -1,20 +1,10 @@
 image: khobar/docker-jdk-8-maven-node-ng
 stages:
-  - build_application
-  - test_application
+  - build_and_test_application:
 cache:
   paths:
     - /root/.m2/repository/
-# This stage builds your application
-build_application:
+build_and_test_application:
   stage: build_application
   script:
-    - mvn clean install -DskipTests=false
-  artifacts:
-    untracked: true    
-test_application:
-  stage: test_application
-  dependencies: 
-    - build_application
-  script:
-    - mvn surefire:test
+    - mvn clean install
