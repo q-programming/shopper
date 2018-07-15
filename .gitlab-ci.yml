@@ -11,4 +11,4 @@ build_application:
 test_application:
   stage: test_application
   script:
-    - mvn surfire:test
+    - mvn surefire:test
