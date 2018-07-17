@@ -14,7 +14,7 @@ build_application:
     paths:
       - shopper-app/target/*.war
   script:
-    - mvn clean install -DskipTests=false
+    - mvn clean install -DskipTests=true
   artifacts:
     untracked: true    
 test_application:
