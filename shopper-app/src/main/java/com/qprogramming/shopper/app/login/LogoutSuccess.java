@@ -16,12 +16,17 @@ import java.util.Map;
 @Component
 public class LogoutSuccess implements LogoutSuccessHandler {
 
+
+    private ObjectMapper objectMapper;
+
     @Autowired
-    ObjectMapper objectMapper;
+    public LogoutSuccess(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public void onLogoutSuccess(HttpServletRequest httpServletRequest, HttpServletResponse response, Authentication authentication)
-            throws IOException, ServletException {
+            throws IOException {
         Map<String, String> result = new HashMap<>();
         result.put("result", "success");
         response.setContentType("application/json");

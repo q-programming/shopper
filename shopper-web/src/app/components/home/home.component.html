@@ -2,6 +2,11 @@
     home works!
 </p>
 <p>Welcome from backend api :{{welcome}}</p>
+<div>As you are admin here is a list of all registered users:
+    <ul>
+        <li *ngFor="let user of users">{{user.name}} {{user.surname}}</li>
+    </ul>
+</div>
 <p>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et lacinia risus, nec semper lacus. Phasellus
     accumsan posuere ullamcorper. Sed porta molestie nisl at elementum. Sed vehicula tortor ornare lacus commodo, varius

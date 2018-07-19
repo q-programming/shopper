@@ -82,7 +82,7 @@ public class TokenService {
         response.getWriter().write(jwtResponse);
     }
 
-    String generateToken(String email) {
+    private String generateToken(String email) {
         return Jwts.builder()
                 .setIssuer(APP_NAME)
                 .setSubject(email)
@@ -117,7 +117,7 @@ public class TokenService {
         return null;
     }
 
-    String generateToken(Map<String, Object> claims) {
+    private String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate())

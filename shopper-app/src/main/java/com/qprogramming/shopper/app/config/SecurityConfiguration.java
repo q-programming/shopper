@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -102,30 +101,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().formLogin()
                     .loginPage("/api/login")
                     .successHandler(authenticationSuccessHandler).failureHandler(authenticationFailureHandler)
-//                .and().authorizeRequests().antMatchers("/api").authenticated()
                 .and().logout()
                     .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
                     .logoutSuccessHandler(logoutSuccess).deleteCookies(TOKEN_COOKIE);
-
-//        http.csrf()
-//                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//                .and().exceptionHandling()
-//                .authenticationEntryPoint(restAuthenticationEntryPoint)
-//                .and().authorizeRequests()
-//                .antMatchers("/", "/login**", "/error**")
-//                .permitAll()
-//                .and().addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
-//                .authorizeRequests()
-//                .anyRequest().authenticated()
-//                .and().addFilterBefore(ssoFilters(), BasicAuthenticationFilter.class)
-//                .authorizeRequests().anyRequest().authenticated()
-//                .and().formLogin().loginPage("/api/login")
-//                .successHandler(authenticationSuccessHandler)
-//                .failureHandler(authenticationFailureHandler)
-//                .and().logout()
-//                .invalidateHttpSession(true)
-//                .deleteCookies(TOKEN_COOKIE, USER_COOKIE, XSRF_TOKEN, JSESSIONID)
-//                .logoutSuccessUrl("/#/login");
         //@formatter:on
     }
 
@@ -142,18 +120,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return registration;
     }
 
-//    @Bean
-//    @ConfigurationProperties("facebook")
-//    public ClientResources facebookResource() {
-//        return new ClientResources();
-//    }
-
-//    @Bean
-//    @ConfigurationProperties("google")
-//    public ClientResources googleResource() {
-//        return new ClientResources();
-//    }
-
     private Filter ssoFilters() {
         CompositeFilter filter = new CompositeFilter();
         List<Filter> filters = new ArrayList<>();
@@ -162,17 +128,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         filter.setFilters(filters);
         return filter;
     }
-
-//    private Filter ssoFilters(ClientResources client, String path) {
-//        OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
-//                path);
-//        OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
-//        filter.setRestTemplate(template);
-//        filter.setTokenServices(new UserInfoTokenServices(
-//                client.getResource().getUserInfoUri(), client.getClient().getClientId()));
-//        filter.setAuthenticationSuccessHandler(oAuthLoginSuccessHandler);
-//        return filter;
-//    }
 
     private Filter ssoFilters(AuthorizationCodeResourceDetails codeResourceDetails, ResourceServerProperties resourceServerProperties, String path) {
         OAuth2ClientAuthenticationProcessingFilter oAuthFilter = new OAuth2ClientAuthenticationProcessingFilter(path);
@@ -207,23 +162,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @ConfigurationProperties("google.resource")
     public ResourceServerProperties googleResource() {
         return new ResourceServerProperties();
-    }
-
-    class ClientResources {
-
-        @NestedConfigurationProperty
-        private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
-
-        @NestedConfigurationProperty
-        private ResourceServerProperties resource = new ResourceServerProperties();
-
-        public AuthorizationCodeResourceDetails getClient() {
-            return client;
-        }
-
-        public ResourceServerProperties getResource() {
-            return resource;
-        }
     }
 }
 

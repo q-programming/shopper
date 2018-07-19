@@ -22,15 +22,18 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
 
-    @Autowired
-    TokenService tokenService;
-
+    private TokenService tokenService;
 
     @Value("${jwt.expires_in}")
     private int EXPIRES_IN;
 
     @Value("${jwt.cookie}")
     private String TOKEN_COOKIE;
+
+    @Autowired
+    public AuthenticationController(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
 
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)
     public ResponseEntity<?> refreshAuthenticationToken(HttpServletRequest request, HttpServletResponse response) {

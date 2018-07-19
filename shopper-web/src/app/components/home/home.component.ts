@@ -31,9 +31,8 @@ export class HomeComponent implements OnInit {
 
     getUsers() {
         if (this.admin) {
-            console.log("Hello admin")
             this.api.get("/api/account/all").toPromise().then(res => {
-                this.users = res;
+                this.users = res as User[];
             })
         }
     }

@@ -5,7 +5,7 @@ import 'rxjs/Rx';
 import 'rxjs/add/observable/throw';
 import {serialize} from "../utils/serialize";
 
-
+//TODO needs to be rewriten to properly cast objects
 export enum RequestMethod {
     Get = 'GET',
     Head = 'HEAD',
@@ -53,6 +53,7 @@ export class ApiService {
         return this.request(path, body, RequestMethod.Delete);
     }
 
+    //TODO add map to be optional ?
     private request(path: string, body: any, method = RequestMethod.Post, custemHeaders?: HttpHeaders): Observable<any> {
         const req = new HttpRequest(method, path, body, {
             headers: custemHeaders || this.headers,

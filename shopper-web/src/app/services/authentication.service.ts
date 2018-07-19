@@ -12,13 +12,6 @@ export class AuthenticationService {
     constructor(private apiService: ApiService) {
     }
 
-    // logout() {
-    //     this.http.post('logout', {}).finally(() => {
-    //         localStorage.removeItem('currentUser');
-    //         this.router.navigateByUrl('/login');
-    //     }).subscribe();
-    // }
-
     initUser() {
         const promise = this.apiService.get(environment.refresh_token_url).toPromise()
             .then(res => {
@@ -47,7 +40,7 @@ export class AuthenticationService {
 
     isAdmin(): boolean {
         if (this.currentUser) {
-            return _.find(this.currentUser.authorities, (o) => o.authority == Role.ROLE_ADMIN)
+            return !!_.find(this.currentUser.authorities, (o) => o.authority == Role.ROLE_ADMIN)
         }
         return false;
     }

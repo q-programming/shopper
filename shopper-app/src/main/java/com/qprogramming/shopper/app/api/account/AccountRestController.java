@@ -1,4 +1,4 @@
-package com.qprogramming.shopper.app.api;
+package com.qprogramming.shopper.app.api.account;
 
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;

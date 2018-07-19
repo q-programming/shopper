@@ -28,14 +28,14 @@ import java.util.stream.Collectors;
  */
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
-    public static final String ROOT_MATCHER = "/";
-    public static final String FAVICON_MATCHER = "/favicon.ico";
-    public static final String HTML_MATCHER = "/**/*.html";
-    public static final String CSS_MATCHER = "/**/*.css";
-    public static final String JS_MATCHER = "/**/*.js";
-    public static final String IMG_MATCHER = "/images/*";
-    public static final String LOGIN_MATCHER = "/auth/login";
-    public static final String LOGOUT_MATCHER = "/auth/logout";
+    private static final String ROOT_MATCHER = "/";
+    private static final String FAVICON_MATCHER = "/favicon.ico";
+    private static final String HTML_MATCHER = "/**/*.html";
+    private static final String CSS_MATCHER = "/**/*.css";
+    private static final String JS_MATCHER = "/**/*.js";
+    private static final String IMG_MATCHER = "/images/*";
+    private static final String LOGIN_MATCHER = "/auth/login";
+    private static final String LOGOUT_MATCHER = "/auth/logout";
 
     private List<String> pathsToSkip = Arrays.asList(
             ROOT_MATCHER,
@@ -55,28 +55,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         this.accountService = accountService;
         this.tokenService = tokenService;
     }
-//
-//    @Override
-//    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-//            String authToken = tokenService.getToken(request);
-//            if (authToken != null) {
-//                // get username from token
-//                String username = tokenService.getUsernameFromToken(authToken);
-//                if (username != null) {
-//                    Account account = accountService.findByUsername(username);
-//                    if (account != null) {
-//                        TokenBasedAuthentication authentication = new TokenBasedAuthentication(account);
-//                        authentication.setToken(authToken);
-//                        SecurityContextHolder.getContext().setAuthentication(authentication);
-//                        chain.doFilter(request, response);
-//                        return;
-//                    }
-//                }
-//            }
-//            SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
-//        }
-//        chain.doFilter(request, response);
-//    }
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
