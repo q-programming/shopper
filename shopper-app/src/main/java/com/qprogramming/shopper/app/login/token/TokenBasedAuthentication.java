@@ -40,4 +40,11 @@ public class TokenBasedAuthentication extends AbstractAuthenticationToken {
         return principal;
     }
 
+    @Override
+    public String toString() {
+        return "TokenBasedAuthentication{" +
+                "principal=" + principal +
+                ", token='" + token + '\'' +
+                '}';
+    }
 }

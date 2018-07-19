@@ -1,17 +1,13 @@
-<div class="container">
-    <ul class="nav nav-pills">
-        <li><a routerLinkActive="active" routerLink="/home">Home</a></li>
-        <li><a routerLinkActive="active" routerLink="/login">Login</a></li>
-        <li><a (click)="logout()">Logout</a></li>
-    </ul>
-</div>
-<div class="container">
-    <alert></alert>
-    <spinner
-            [backgroundColor]="'#2c5aa0'"
-            [spinner]="spinkit.skThreeBounce"
-            [debounceDelay]="200"
-    >
-    </spinner>
-    <router-outlet></router-outlet>
-</div>
+<app-header></app-header>
+<alert></alert>
+<main>
+    <div class="container">
+        <spinner
+                [backgroundColor]="'#2c5aa0'"
+                [spinner]="spinkit.skThreeBounce"
+                [debounceDelay]="200"
+        >
+        </spinner>
+        <router-outlet></router-outlet>
+    </div>
+</main>

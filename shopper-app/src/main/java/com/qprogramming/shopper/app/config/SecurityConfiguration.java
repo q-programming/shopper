@@ -2,10 +2,7 @@ package com.qprogramming.shopper.app.config;
 
 import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.filters.TokenAuthenticationFilter;
-import com.qprogramming.shopper.app.login.AuthenticationFailureHandler;
-import com.qprogramming.shopper.app.login.AuthenticationSuccessHandler;
-import com.qprogramming.shopper.app.login.OAuthLoginSuccessHandler;
-import com.qprogramming.shopper.app.login.RestAuthenticationEntryPoint;
+import com.qprogramming.shopper.app.login.*;
 import com.qprogramming.shopper.app.login.token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,6 +20,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -33,6 +31,7 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.CompositeFilter;
 
 import javax.servlet.Filter;
@@ -71,7 +70,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
     @Autowired
     private AuthenticationFailureHandler authenticationFailureHandler;
-
+    @Autowired
+    private LogoutSuccess logoutSuccess;
 
     @Bean
     public TokenAuthenticationFilter jwtAuthenticationTokenFilter() throws Exception {
@@ -87,26 +87,45 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //@formatter:off
-        http.csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .and().exceptionHandling()
-                .authenticationEntryPoint(restAuthenticationEntryPoint)
-                .and().authorizeRequests()
-                .antMatchers("/", "/login**", "/error**")
-                .permitAll()
-                .and().addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
-                .authorizeRequests()
-                .anyRequest().authenticated()
-                .and().addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class)
-                .authorizeRequests().anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler)
+        http.csrf().ignoringAntMatchers("/api/login", "/api/signup")
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
+                .and().addFilterBefore(jwtAuthenticationTokenFilter(),BasicAuthenticationFilter.class)
+                    .authorizeRequests()
+                    .anyRequest()
+                    .authenticated()
+                .and().addFilterBefore(ssoFilters(), BasicAuthenticationFilter.class)
+                    .authorizeRequests()
+                    .anyRequest()
+                    .authenticated()
+                .and().formLogin()
+                    .loginPage("/api/login")
+                    .successHandler(authenticationSuccessHandler).failureHandler(authenticationFailureHandler)
+//                .and().authorizeRequests().antMatchers("/api").authenticated()
                 .and().logout()
-                .invalidateHttpSession(true)
-                .deleteCookies(TOKEN_COOKIE, USER_COOKIE, XSRF_TOKEN, JSESSIONID)
-                .logoutSuccessUrl("/#/login");
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
+                    .logoutSuccessHandler(logoutSuccess).deleteCookies(TOKEN_COOKIE);
+
+//        http.csrf()
+//                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                .and().exceptionHandling()
+//                .authenticationEntryPoint(restAuthenticationEntryPoint)
+//                .and().authorizeRequests()
+//                .antMatchers("/", "/login**", "/error**")
+//                .permitAll()
+//                .and().addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
+//                .authorizeRequests()
+//                .anyRequest().authenticated()
+//                .and().addFilterBefore(ssoFilters(), BasicAuthenticationFilter.class)
+//                .authorizeRequests().anyRequest().authenticated()
+//                .and().formLogin().loginPage("/api/login")
+//                .successHandler(authenticationSuccessHandler)
+//                .failureHandler(authenticationFailureHandler)
+//                .and().logout()
+//                .invalidateHttpSession(true)
+//                .deleteCookies(TOKEN_COOKIE, USER_COOKIE, XSRF_TOKEN, JSESSIONID)
+//                .logoutSuccessUrl("/#/login");
         //@formatter:on
     }
 
@@ -135,16 +154,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //        return new ClientResources();
 //    }
 
-    private Filter ssoFilter() {
+    private Filter ssoFilters() {
         CompositeFilter filter = new CompositeFilter();
         List<Filter> filters = new ArrayList<>();
-        filters.add(ssoFilter(facebook(), facebookResource(), "/login/facebook"));
-        filters.add(ssoFilter(google(), googleResource(), "/login/google"));
+        filters.add(ssoFilters(facebook(), facebookResource(), "/api/login/facebook"));
+        filters.add(ssoFilters(google(), googleResource(), "/api/login/google"));
         filter.setFilters(filters);
         return filter;
     }
 
-//    private Filter ssoFilter(ClientResources client, String path) {
+//    private Filter ssoFilters(ClientResources client, String path) {
 //        OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
 //                path);
 //        OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
@@ -155,13 +174,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //        return filter;
 //    }
 
-    private Filter ssoFilter(AuthorizationCodeResourceDetails codeResourceDetails, ResourceServerProperties resourceServerProperties, String path) {
+    private Filter ssoFilters(AuthorizationCodeResourceDetails codeResourceDetails, ResourceServerProperties resourceServerProperties, String path) {
         OAuth2ClientAuthenticationProcessingFilter oAuthFilter = new OAuth2ClientAuthenticationProcessingFilter(path);
         OAuth2RestTemplate auth2RestTemplate = new OAuth2RestTemplate(codeResourceDetails, oauth2ClientContext);
         oAuthFilter.setRestTemplate(auth2RestTemplate);
         UserInfoTokenServices tokenServices = new UserInfoTokenServices(resourceServerProperties.getUserInfoUri(), codeResourceDetails.getClientId());
         tokenServices.setRestTemplate(auth2RestTemplate);
         oAuthFilter.setTokenServices(tokenServices);
+        oAuthFilter.setAuthenticationSuccessHandler(oAuthLoginSuccessHandler);
         return oAuthFilter;
     }
 

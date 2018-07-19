@@ -1,20 +1,21 @@
 package com.qprogramming.shopper.app.account;
 
 
+import com.qprogramming.shopper.app.account.authority.Authority;
+import com.qprogramming.shopper.app.account.authority.AuthorityService;
+import com.qprogramming.shopper.app.account.authority.Role;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,11 +23,13 @@ public class AccountService implements UserDetailsService {
 
     private PropertyService propertyService;
     private AccountRepository accountRepository;
+    private AuthorityService authorityService;
 
     @Autowired
-    public AccountService(PropertyService propertyService, AccountRepository accountRepository) {
+    public AccountService(PropertyService propertyService, AccountRepository accountRepository, AuthorityService authorityService) {
         this.propertyService = propertyService;
         this.accountRepository = accountRepository;
+        this.authorityService = authorityService;
     }
 
     public void signin(Account account) {
@@ -34,11 +37,7 @@ public class AccountService implements UserDetailsService {
     }
 
     private Authentication authenticate(Account account) {
-        return new UsernamePasswordAuthenticationToken(account, null, Collections.singleton(createAuthority(account)));
-    }
-
-    private GrantedAuthority createAuthority(Account account) {
-        return new SimpleGrantedAuthority(account.getRole().toString());
+        return new UsernamePasswordAuthenticationToken(account, null, account.getAuthorities());
     }
 
     public Account findById(String id) {
@@ -46,11 +45,14 @@ public class AccountService implements UserDetailsService {
     }
 
     public Account createOAuthAcount(Account account) {
+        List<Authority> auths = new ArrayList<>();
+        Authority role = authorityService.findByRole(Role.ROLE_USER);
+        auths.add(role);
         if (accountRepository.findAll().size() == 0) {
-            account.setRole(Roles.ROLE_ADMIN);
-        } else {
-            account.setRole(Roles.ROLE_USER);
+            Authority admin = authorityService.findByRole(Role.ROLE_ADMIN);
+            auths.add(admin);
         }
+        account.setAuthorities(auths);
         if (StringUtils.isEmpty(account.getLanguage())) {
             setDefaultLocale(account);
         }
@@ -75,7 +77,7 @@ public class AccountService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public Account loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findOneByEmail(username);
         if (account == null) {
             account = accountRepository.findOneByUsername(username);
@@ -83,12 +85,14 @@ public class AccountService implements UserDetailsService {
                 throw new UsernameNotFoundException("user not found");
             }
         }
-        account.setAuthority(account.getRole());
         return account;
-
     }
 
     public Account findByUsername(String username) {
         return accountRepository.findOneByUsername(username);
+    }
+
+    public List<Account> findAll() {
+        return accountRepository.findAll();
     }
 }

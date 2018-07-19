@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
+import {APP_INITIALIZER, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {MDBBootstrapModule} from 'angular-bootstrap-md';
 import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
@@ -13,6 +13,13 @@ import {AuthInterceptor} from "./guards/auth.interceptor";
 import {AlertComponent} from './directives/alert.component';
 import {AlertService} from "./services/alert.service";
 import {AuthGuard} from "./guards/auth.guard";
+import {ApiService} from "./services/api.service";
+import { HeaderComponent } from './components/header/header.component';
+import { AccountMenuComponent } from './components/header/account-menu/account-menu.component';
+
+export function initUserFactory(authService: AuthenticationService) {
+    return () => authService.initUser();
+}
 
 
 @NgModule({
@@ -20,7 +27,9 @@ import {AuthGuard} from "./guards/auth.guard";
         AppComponent,
         LoginComponent,
         HomeComponent,
-        AlertComponent
+        AlertComponent,
+        HeaderComponent,
+        AccountMenuComponent
     ],
     imports: [
         BrowserModule,
@@ -34,11 +43,18 @@ import {AuthGuard} from "./guards/auth.guard";
     providers: [
         AuthGuard,
         AuthenticationService,
+        ApiService,
         AlertService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,
             multi: true
+        },
+        {
+            'provide': APP_INITIALIZER,
+            'useFactory': initUserFactory,
+            'deps': [AuthenticationService],
+            'multi': true
         }
     ],
     bootstrap: [AppComponent]

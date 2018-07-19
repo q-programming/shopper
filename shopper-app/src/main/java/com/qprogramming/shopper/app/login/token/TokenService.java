@@ -2,6 +2,7 @@ package com.qprogramming.shopper.app.login.token;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qprogramming.shopper.app.account.Account;
+import com.qprogramming.shopper.app.account.AccountService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Based on
@@ -41,12 +44,14 @@ public class TokenService {
     private String AUTH_COOKIE;
 
     private ObjectMapper objectMapper;
+    private AccountService accountService;
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
     @Autowired
-    public TokenService(ObjectMapper objectMapper) {
+    public TokenService(ObjectMapper objectMapper, AccountService accountService) {
         this.objectMapper = objectMapper;
+        this.accountService = accountService;
     }
 
     public String getUsernameFromToken(String token) {
@@ -61,7 +66,7 @@ public class TokenService {
     }
 
     public void createTokenCookies(HttpServletResponse response, Account account) throws IOException {
-        String tokenValue = generateToken(account.getUsername());
+        String tokenValue = generateToken(account.getEmail());
         Cookie authCookie = new Cookie(TOKEN_COOKIE, (tokenValue));
         authCookie.setPath("/");
         authCookie.setHttpOnly(true);
@@ -77,10 +82,10 @@ public class TokenService {
         response.getWriter().write(jwtResponse);
     }
 
-    String generateToken(String username) {
+    String generateToken(String email) {
         return Jwts.builder()
                 .setIssuer(APP_NAME)
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(generateCurrentDate())
                 .setExpiration(generateExpirationDate())
                 .signWith(SIGNATURE_ALGORITHM, SECRET)
@@ -110,6 +115,14 @@ public class TokenService {
             return authHeader.substring(7);
         }
         return null;
+    }
+
+    String generateToken(Map<String, Object> claims) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(generateExpirationDate())
+                .signWith(SIGNATURE_ALGORITHM, SECRET)
+                .compact();
     }
 
     /**
@@ -142,6 +155,29 @@ public class TokenService {
 
     private Date generateExpirationDate() {
         return new Date(getCurrentTimeMillis() + this.EXPIRES_IN * 1000);
+    }
+
+    public Boolean canTokenBeRefreshed(String token) {
+        try {
+            final Date expirationDate = getClaimsFromToken(token).getExpiration();
+            String username = getUsernameFromToken(token);
+            UserDetails userDetails = accountService.loadUserByUsername(username);
+            return expirationDate.compareTo(generateCurrentDate()) > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String refreshToken(String token) {
+        String refreshedToken;
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            claims.setIssuedAt(generateCurrentDate());
+            refreshedToken = generateToken(claims);
+        } catch (Exception e) {
+            refreshedToken = null;
+        }
+        return refreshedToken;
     }
 
 }
