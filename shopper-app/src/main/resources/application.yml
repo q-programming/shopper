@@ -1,0 +1,73 @@
+application:
+  name: Shopper
+security:
+#  user:
+#    password: password
+  oauth2:
+      client:
+        client-id: shopper
+        client-secret: 205a973f43d75da1524f133d14456ba1
+        scope: read,write
+        auto-approve-scopes: '.*'
+      resource:
+        userInfoUri: "*"
+
+logging:
+  level:
+    org.springframework.security: ERROR
+spring:
+  mail:
+    host: localhost
+    port: 25
+    protocol: smtp
+    from: shopper@q-programming.pl
+  datasource:
+    url: jdbc:h2:././db/h2databaseFile;AUTO_SERVER=TRUE
+    username: sa
+    password:
+#    url: jdbc:postgresql://localhost:5432/gifts
+#    username: giftshub
+#    password: h9fj67kmZ9FyU75ndwZU
+  mvc:
+    favicon:
+      enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+  social:
+    facebook:
+      app-id: 1750703375258695
+      app-secret: fb3c3e7ed3b5ffa7db0586c659198424
+facebook:
+  client:
+    clientId: 1750703375258695
+    clientSecret: fb3c3e7ed3b5ffa7db0586c659198424
+    accessTokenUri: https://graph.facebook.com/oauth/access_token
+    userAuthorizationUri: https://www.facebook.com/dialog/oauth
+    tokenName: oauth_token
+    authenticationScheme: query
+    clientAuthenticationScheme: form
+  resource:
+    userInfoUri: https://graph.facebook.com/me
+google:
+  client:
+    clientId: 940247594127-qqsrtbils54hjkf7h0u30sijdov4va1k.apps.googleusercontent.com
+    clientSecret: Tyh5U1mMob6d_q4Ie2jCIKYn
+    accessTokenUri: https://www.googleapis.com/oauth2/v4/token
+    userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
+    clientAuthenticationScheme: form
+    scope:
+      - openid
+      - email
+      - profile
+  resource:
+    userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
+    preferTokenInfo: true
+jwt:
+  header: Authorization
+  expires_in: 604800 # week
+  secret: f3d5b3b563588950d76197756b73a022822c347bd7da934fb171cf6458e94b3e
+  cookie: AUTH-TOKEN
+  xsrf: XSRF-TOKEN
+  jsessionid: JSESSIONID
+  user_cookie: c_user
