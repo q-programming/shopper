@@ -18,7 +18,7 @@ export class AuthenticationService {
                 if (res.access_token !== null) {
                     return this.getMyInfo().toPromise()
                         .then(user => {
-                            this.currentUser = user;
+                            this.currentUser = user as User;
                         });
                 }
             })

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from "../../services/api.service";
 import {User} from "../../model/User";
 import {AuthenticationService} from "../../services/authentication.service";
+import {environment} from "../../../environments/environment";
 
 @Component({
     selector: 'app-home',
@@ -24,14 +25,14 @@ export class HomeComponent implements OnInit {
     }
 
     getWelcomeMessage() {
-        this.api.get("/api/resource").toPromise().then(value => {
+        this.api.get(environment.resource_url).toPromise().then(value => {
             this.welcome = value.content;
         })
     }
 
     getUsers() {
         if (this.admin) {
-            this.api.get("/api/account/all").toPromise().then(res => {
+            this.api.get(environment.all_users_url).toPromise().then(res => {
                 this.users = res as User[];
             })
         }

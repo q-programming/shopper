@@ -56,7 +56,7 @@
                                 <argument>build</argument>
                                 <argument>--prod</argument>
                                 <argument>--no-progress</argument>
-                                <!--<argument>&#45;&#45;base-href=/${app.final.name}/</argument>-->
+                                <argument>--base-href=/${app.final.name}/</argument>
                             </arguments>
                         </configuration>
                         <goals>

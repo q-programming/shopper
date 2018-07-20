@@ -4,7 +4,7 @@
 <p>Welcome from backend api :{{welcome}}</p>
 <div>As you are admin here is a list of all registered users:
     <ul>
-        <li *ngFor="let user of users">{{user.name}} {{user.surname}}</li>
+        <li *ngFor="let user of users">{{user.name}} {{user.surname}} ({{user.email}})</li>
     </ul>
 </div>
 <p>

@@ -4,6 +4,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 import 'rxjs/add/observable/throw';
 import {serialize} from "../utils/serialize";
+import {environment} from "../../environments/environment";
 
 //TODO needs to be rewriten to properly cast objects
 export enum RequestMethod {
@@ -28,15 +29,14 @@ export class ApiService {
     }
 
     get(path: string, args?: any): Observable<any> {
+        path = environment.context + path;
         const options = {
             headers: this.headers,
             withCredentials: true
         };
-
         if (args) {
             options['params'] = serialize(args);
         }
-
         return this.http.get(path, options)
             .catch(this.checkError.bind(this));
     }
@@ -55,6 +55,7 @@ export class ApiService {
 
     //TODO add map to be optional ?
     private request(path: string, body: any, method = RequestMethod.Post, custemHeaders?: HttpHeaders): Observable<any> {
+        path = environment.context + path;
         const req = new HttpRequest(method, path, body, {
             headers: custemHeaders || this.headers,
             withCredentials: true
