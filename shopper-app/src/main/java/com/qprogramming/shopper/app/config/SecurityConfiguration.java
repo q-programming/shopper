@@ -1,6 +1,8 @@
 package com.qprogramming.shopper.app.config;
 
+import com.qprogramming.shopper.app.account.AccountPasswordEncoder;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.filters.BasicRestAuthenticationFilter;
 import com.qprogramming.shopper.app.filters.TokenAuthenticationFilter;
 import com.qprogramming.shopper.app.login.*;
 import com.qprogramming.shopper.app.login.token.TokenService;
@@ -20,8 +22,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
@@ -60,6 +60,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private AccountService accountService;
     @Autowired
+    private AccountPasswordEncoder accountPasswordEncoder;
+    @Autowired
     private TokenService tokenService;
 
     //Handlers
@@ -77,39 +79,48 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new TokenAuthenticationFilter(accountService, tokenService);
     }
 
+    @Bean
+    public BasicRestAuthenticationFilter basicAuthenticationFilter() {
+        return new BasicRestAuthenticationFilter(accountService);
+    }
+
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(accountService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(accountService).passwordEncoder(accountPasswordEncoder);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //@formatter:off
-        http.csrf().ignoringAntMatchers("/api/login", "/api/signup")
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
-                .and().addFilterBefore(jwtAuthenticationTokenFilter(),BasicAuthenticationFilter.class)
+        http.csrf().ignoringAntMatchers("/login")
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and().sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().exceptionHandling()
+                    .authenticationEntryPoint(restAuthenticationEntryPoint)
+                //token based auth
+                .and().addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
                     .authorizeRequests()
                     .anyRequest()
                     .authenticated()
+                //social auth
                 .and().addFilterBefore(ssoFilters(), BasicAuthenticationFilter.class)
                     .authorizeRequests()
                     .anyRequest()
                     .authenticated()
+                //basic auth rest auth
+                .and()
+                    .addFilterBefore(basicAuthenticationFilter(),BasicAuthenticationFilter.class)
+                    .authorizeRequests()
+                //login redirect
                 .and().formLogin()
-                    .loginPage("/api/login")
+                    .loginPage("/login")
                     .successHandler(authenticationSuccessHandler).failureHandler(authenticationFailureHandler)
                 .and().logout()
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                     .logoutSuccessHandler(logoutSuccess).deleteCookies(TOKEN_COOKIE);
         //@formatter:on
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -123,8 +134,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private Filter ssoFilters() {
         CompositeFilter filter = new CompositeFilter();
         List<Filter> filters = new ArrayList<>();
-        filters.add(ssoFilters(facebook(), facebookResource(), "/api/login/facebook"));
-        filters.add(ssoFilters(google(), googleResource(), "/api/login/google"));
+        filters.add(ssoFilters(facebook(), facebookResource(), "/login/facebook"));
+        filters.add(ssoFilters(google(), googleResource(), "/login/google"));
         filter.setFilters(filters);
         return filter;
     }

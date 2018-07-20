@@ -28,26 +28,6 @@ import java.util.stream.Collectors;
  */
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String ROOT_MATCHER = "/";
-    private static final String FAVICON_MATCHER = "/favicon.ico";
-    private static final String HTML_MATCHER = "/**/*.html";
-    private static final String CSS_MATCHER = "/**/*.css";
-    private static final String JS_MATCHER = "/**/*.js";
-    private static final String IMG_MATCHER = "/images/*";
-    private static final String LOGIN_MATCHER = "/auth/login";
-    private static final String LOGOUT_MATCHER = "/auth/logout";
-
-    private List<String> pathsToSkip = Arrays.asList(
-            ROOT_MATCHER,
-            HTML_MATCHER,
-            FAVICON_MATCHER,
-            CSS_MATCHER,
-            JS_MATCHER,
-            IMG_MATCHER,
-            LOGIN_MATCHER,
-            LOGOUT_MATCHER
-    );
-
     private AccountService accountService;
     private TokenService tokenService;
 
@@ -58,10 +38,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-
-
         String authToken = tokenService.getToken(request);
-        if (authToken != null && !skipPathRequest(request, pathsToSkip)) {
+        if (authToken != null && !URLMatcher.skipPathRequest(request)) {
             // get username from token
             try {
                 String username = tokenService.getUsernameFromToken(authToken);
@@ -77,7 +55,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         } else {
             SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
         }
-
         chain.doFilter(request, response);
     }
 

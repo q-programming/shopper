@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from "../../services/api.service";
-import {User} from "../../model/User";
+import {Account} from "../../model/Account";
 import {AuthenticationService} from "../../services/authentication.service";
 import {environment} from "../../../environments/environment";
 
@@ -13,7 +13,7 @@ export class HomeComponent implements OnInit {
 
     welcome: String;
     admin: boolean;
-    users: User[];
+    users: Account[];
 
     constructor(private api: ApiService, private authSrv: AuthenticationService) {
     }
@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
     getUsers() {
         if (this.admin) {
             this.api.get(environment.all_users_url).toPromise().then(res => {
-                this.users = res as User[];
+                this.users = res as Account[];
             })
         }
     }

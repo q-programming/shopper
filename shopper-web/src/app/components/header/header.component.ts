@@ -15,7 +15,7 @@ export class HeaderComponent implements OnInit {
     }
 
     loggedIn() {
-        return !!this.authSrv.currentUser;
+        return !!this.authSrv.currentAccount;
     }
 
 }

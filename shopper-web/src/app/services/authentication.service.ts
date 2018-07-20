@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "./api.service";
 import {environment} from "../../environments/environment";
-import {Role, User} from "../model/User";
+import {Account, Role} from "../model/Account";
 import * as _ from 'lodash';
 
 @Injectable()
 export class AuthenticationService {
 
-    currentUser: User;
+    currentAccount: Account;
 
     constructor(private apiService: ApiService) {
     }
@@ -17,8 +17,8 @@ export class AuthenticationService {
             .then(res => {
                 if (res.access_token !== null) {
                     return this.getMyInfo().toPromise()
-                        .then(user => {
-                            this.currentUser = user as User;
+                        .then(resp => {
+                            this.currentAccount = resp as Account;
                         });
                 }
             })
@@ -29,18 +29,18 @@ export class AuthenticationService {
     logout() {
         return this.apiService.post(environment.logout_url, {})
             .map(() => {
-                this.currentUser = null;
+                this.currentAccount = null;
             });
     }
 
 
     getMyInfo() {
-        return this.apiService.get(environment.whoami_url).map(user => this.currentUser = user);
+        return this.apiService.get(environment.whoami_url).map(account => this.currentAccount = account);
     }
 
     isAdmin(): boolean {
-        if (this.currentUser) {
-            return !!_.find(this.currentUser.authorities, (o) => o.authority == Role.ROLE_ADMIN)
+        if (this.currentAccount) {
+            return !!_.find(this.currentAccount.authorities, (o) => o.authority == Role.ROLE_ADMIN)
         }
         return false;
     }

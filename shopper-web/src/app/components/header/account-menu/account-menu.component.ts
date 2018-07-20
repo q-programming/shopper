@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {AuthenticationService} from "../../../services/authentication.service";
-import {User} from "../../../model/User";
+import {Account} from "../../../model/Account";
 
 @Component({
     selector: 'app-account-menu',
@@ -10,7 +10,7 @@ import {User} from "../../../model/User";
 })
 export class AccountMenuComponent implements OnInit {
 
-    user: User;
+    user: Account;
 
     constructor(
         private router: Router,
@@ -19,7 +19,7 @@ export class AccountMenuComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.user = this.authSrv.currentUser;
+        this.user = this.authSrv.currentAccount;
     }
 
     logout() {

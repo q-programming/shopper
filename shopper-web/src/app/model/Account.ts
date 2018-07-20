@@ -1,4 +1,4 @@
-export class User {
+export class Account {
     name: String;
     surname: String;
     email: String;

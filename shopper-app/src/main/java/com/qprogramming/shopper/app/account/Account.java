@@ -2,10 +2,8 @@ package com.qprogramming.shopper.app.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qprogramming.shopper.app.account.authority.Authority;
-import com.qprogramming.shopper.app.account.authority.Role;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -26,7 +24,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Column(unique = true)
     private String email;
 
-    @JsonIgnore
+    @Column
     private String password;
 
     @Column
@@ -50,7 +48,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     private Date created;
 
     @Transient
-    private String tokenValue;
+    private String apikey;
 
 
     public String getId() {
@@ -69,10 +67,12 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.email = email;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
 
+    @JsonIgnore
     public void setPassword(String password) {
         this.password = password;
     }
@@ -104,7 +104,6 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     public String getUsername() {
         return username;
     }
-
 
     public void setUsername(String username) {
         this.username = username;
