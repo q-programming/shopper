@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Created by Jakub Romaniszyn on 20.07.2018.
+ */
 @Service
 public class AccountService implements UserDetailsService {
 

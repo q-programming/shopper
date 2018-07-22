@@ -3,6 +3,9 @@ package com.qprogramming.shopper.app.account.authority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Created by Jakub Romaniszyn on 20.07.2018.
+ */
 @Service
 public class AuthorityService {
 

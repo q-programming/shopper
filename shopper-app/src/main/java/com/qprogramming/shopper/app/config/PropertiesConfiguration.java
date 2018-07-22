@@ -11,9 +11,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 
 /**
- * Created by Remote on 19.03.2017.
+ * Created by Jakub Romaniszyn on 19.03.2017.
  */
-
 @Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class PropertiesConfiguration {

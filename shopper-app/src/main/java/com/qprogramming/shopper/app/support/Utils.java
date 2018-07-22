@@ -12,6 +12,9 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import java.util.Comparator;
 import java.util.Locale;
 
+/**
+ * Created by Jakub Romaniszyn  on 17/0702018
+ */
 public class Utils {
     public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername);
 

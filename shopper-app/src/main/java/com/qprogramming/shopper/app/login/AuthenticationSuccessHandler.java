@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * Created by Jakub Romaniszyn on 19.07.2018.
+ *
  * Based on
  * https://github.com/bfwg/springboot-jwt-starter
  */

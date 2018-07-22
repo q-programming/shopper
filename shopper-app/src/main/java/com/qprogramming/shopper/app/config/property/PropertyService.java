@@ -14,6 +14,9 @@ import java.util.Map;
 import static com.qprogramming.shopper.app.settings.Settings.APP_DEFAULT_LANG;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
+/**
+ * Created by Khobar on 19.03.2017.
+ */
 @Service
 public class PropertyService {
 

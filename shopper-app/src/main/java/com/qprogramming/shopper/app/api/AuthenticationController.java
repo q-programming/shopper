@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Created by Jakub Romaniszyn on 20.07.2018.
+ *
  * Based on
  * https://github.com/bfwg/springboot-jwt-starter
  */

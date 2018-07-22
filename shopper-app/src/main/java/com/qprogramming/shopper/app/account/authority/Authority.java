@@ -5,6 +5,9 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 
+/**
+ * Created by Jakub Romaniszyn on 20.07.2018.
+ */
 @Entity
 public class Authority implements GrantedAuthority {
 

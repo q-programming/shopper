@@ -4,6 +4,8 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
+ * Created by Jakub Romaniszyn on 19.07.2018.
+ *
  * Based on
  * https://github.com/bfwg/springboot-jwt-starter
  */

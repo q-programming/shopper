@@ -3,7 +3,9 @@ package com.qprogramming.shopper.app.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
-
+/**
+ * Created by Jakub Romaniszyn on 19.07.2018.
+ */
 @Configuration
 public class RequestLoggingFilterConfig {
 

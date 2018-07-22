@@ -12,7 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * Created by Jakub Romaniszyn on 19.07.2018.
+ *
+ * Based on
+ * https://github.com/bfwg/springboot-jwt-starter
+ */
 @Component
 public class LogoutSuccess implements LogoutSuccessHandler {
 

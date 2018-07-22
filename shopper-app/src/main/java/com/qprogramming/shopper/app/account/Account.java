@@ -15,6 +15,10 @@ import java.util.List;
 
 import static com.qprogramming.shopper.app.support.Utils.ACCOUNT_COMPARATOR;
 
+
+/**
+ * Created by Jakub Romaniszyn on 20.07.2018.
+ */
 @Entity
 public class Account implements Serializable, UserDetails, Comparable<Account> {
 

@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Created by Jakub Romaniszyn on 20.07.2018.
+ */
 @RestController
 @RequestMapping("/api")
 public class ApiRestController {

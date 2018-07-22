@@ -18,6 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+/**
+ * Created by Jakub Romaniszyn on 20.07.2018.
+ */
 public class BasicRestAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BasicRestAuthenticationFilter.class);

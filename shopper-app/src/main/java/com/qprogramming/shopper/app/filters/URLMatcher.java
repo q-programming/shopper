@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Created by Jakub Romaniszyn on 19.07.2018.
+ */
 public class URLMatcher {
     private static final String ROOT_MATCHER = "/";
     private static final String FAVICON_MATCHER = "/favicon.ico";

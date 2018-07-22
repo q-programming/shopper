@@ -37,6 +37,9 @@ import javax.servlet.Filter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by Jakub Romaniszyn on 19.07.2018.
+ */
 @Configuration
 @EnableOAuth2Client
 @EnableGlobalMethodSecurity(prePostEnabled = true)

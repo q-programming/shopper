@@ -4,6 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+/**
+ * Created by Khobar on 19.03.2017.
+ */
 @Entity
 public class Property {
 

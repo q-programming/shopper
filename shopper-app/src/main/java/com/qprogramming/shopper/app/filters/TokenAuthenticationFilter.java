@@ -6,7 +6,6 @@ import com.qprogramming.shopper.app.login.AnonAuthentication;
 import com.qprogramming.shopper.app.login.token.TokenBasedAuthentication;
 import com.qprogramming.shopper.app.login.token.TokenService;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -18,11 +17,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Created by Jakub Romaniszyn on 19.07.2018.
+ *
  * Based on
  * https://github.com/bfwg/springboot-jwt-starter
  */
@@ -59,7 +59,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
 
-    private boolean skipPathRequest(HttpServletRequest request, List<String> pathsToSkip ) {
+    private boolean skipPathRequest(HttpServletRequest request, List<String> pathsToSkip) {
         Assert.notNull(pathsToSkip, "path cannot be null.");
         List<RequestMatcher> m = pathsToSkip.stream().map(AntPathRequestMatcher::new).collect(Collectors.toList());
         OrRequestMatcher matchers = new OrRequestMatcher(m);

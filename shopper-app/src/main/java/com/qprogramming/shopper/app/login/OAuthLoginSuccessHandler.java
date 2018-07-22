@@ -4,7 +4,6 @@ import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.login.token.TokenService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ import java.net.MalformedURLException;
 import java.util.Map;
 
 /**
- * Created by Jakub Romaniszyn on 17.07.2018.
+ * Created by Jakub Romaniszyn on 19.07.2018.
  */
 @Service
 public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
