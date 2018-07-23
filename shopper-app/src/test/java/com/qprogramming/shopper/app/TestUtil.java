@@ -33,6 +33,7 @@ public class TestUtil {
     public static final String USER_RANDOM_ID = "USER-RANDOM-ID";
     public static final String ADMIN_USERNAME = "username_admin";
     public static final String ADMIN_RANDOM_ID = "ADMIN-USER-RANDOM-ID";
+    public static final String PASSWORD = "password";
 
     public static byte[] convertObjectToJsonBytes(Object object)
             throws IOException {
@@ -61,7 +62,7 @@ public class TestUtil {
 
     public static Account createAdminAccount() {
         Account account = createAccount("name", "surname");
-        account.setAuthorities(Collections.singletonList(createAdmin()));
+        account.setAuthorities(Collections.singletonList(createAdminAuthority()));
         account.setUsername(ADMIN_USERNAME);
         account.setEmail(ADMIN_EMAIL);
         account.setId(ADMIN_RANDOM_ID);
@@ -71,24 +72,24 @@ public class TestUtil {
 
     public static Account createAccount(String name, String surname) {
         Account account = new Account();
-        account.setPassword("password");
+        account.setPassword(PASSWORD);
         account.setName(name);
         account.setSurname(surname);
         account.setLanguage("en");
         account.setUsername(USERNAME);
         account.setEmail(EMAIL);
         account.setId(USER_RANDOM_ID);
-        account.setAuthorities(Collections.singletonList(createUser()));
+        account.setAuthorities(Collections.singletonList(createUserAuthority()));
         return account;
     }
 
-    private static Authority createUser() {
+    public static Authority createUserAuthority() {
         Authority authority = new Authority();
         authority.setName(Role.ROLE_USER);
         return authority;
     }
 
-    private static Authority createAdmin() {
+    public static Authority createAdminAuthority() {
         Authority authority = new Authority();
         authority.setName(Role.ROLE_ADMIN);
         return authority;

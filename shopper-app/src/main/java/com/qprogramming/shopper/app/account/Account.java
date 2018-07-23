@@ -2,16 +2,14 @@ package com.qprogramming.shopper.app.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qprogramming.shopper.app.account.authority.Authority;
+import com.qprogramming.shopper.app.account.authority.Role;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.qprogramming.shopper.app.support.Utils.ACCOUNT_COMPARATOR;
 
@@ -47,7 +45,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @JoinTable(name = "user_authority",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
-    private List<Authority> authorities;
+    private List<Authority> authorities = new ArrayList<>();
     @Column
     private Date created;
 
@@ -139,16 +137,16 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.authorities = authorities;
     }
 
+    @JsonIgnore
+    public boolean getIsUser() {
+        return this.authorities.stream().map(Authority::getName).anyMatch(role -> Arrays.asList(Role.ROLE_ADMIN, Role.ROLE_USER).contains(role));
+    }
 
-//    @JsonIgnore
-//    public boolean getIsUser() {
-//        return getIsAdmin() || getAuthorities().stream().map(o -> ((GrantedAuthority) o).getAuthority()).contains(Role.ROLE_USER);
-//    }
-//
-//    @JsonIgnore
-//    public boolean getIsAdmin() {
-//        return Role.ROLE_ADMIN.equals(role);
-//    }
+
+    @JsonIgnore
+    public boolean getIsAdmin() {
+        return this.authorities.stream().map(Authority::getName).anyMatch(Role.ROLE_ADMIN::equals);
+    }
 
     @Override
     public int compareTo(Account o) {
@@ -201,5 +199,9 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         result = 31 * result + surname.hashCode();
         result = 31 * result + (created != null ? created.hashCode() : 0);
         return result;
+    }
+
+    public String getFullname() {
+        return getName() + " " + getSurname();
     }
 }

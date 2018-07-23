@@ -23,8 +23,8 @@ import java.util.StringTokenizer;
 public class BasicRestAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BasicRestAuthenticationFilter.class);
-    private static final String AUTHORIZATION = "Authorization";
-    private static final String AUTHENTICATION_SCHEME = "Basic";
+    public static final String AUTHORIZATION = "Authorization";
+    public static final String AUTHENTICATION_SCHEME = "Basic";
     private AccountService accountService;
 
 

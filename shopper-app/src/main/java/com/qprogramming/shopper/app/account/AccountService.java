@@ -17,6 +17,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -129,5 +133,36 @@ public class AccountService implements UserDetailsService {
 
     public boolean matches(String raw, String encoded) {
         return accountPasswordEncoder.matches(raw, encoded);
+    }
+
+    /**
+     * Just save passed account
+     *
+     * @param account account to be saved
+     * @return updated account
+     */
+    public Account update(Account account) {
+        return accountRepository.save(account);
+    }
+
+    /**
+     * !Visible for testing
+     *
+     * @param url - url from which bytes will be transfered
+     * @return byte array of image
+     */
+    protected byte[] downloadFromUrl(URL url) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (InputStream stream = url.openStream()) {
+            byte[] chunk = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = stream.read(chunk)) > 0) {
+                outputStream.write(chunk, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            LOG.error("Failed to download from URL ");
+            return null;
+        }
+        return outputStream.toByteArray();
     }
 }
