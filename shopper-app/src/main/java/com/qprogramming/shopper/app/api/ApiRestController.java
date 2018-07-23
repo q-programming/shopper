@@ -1,8 +1,6 @@
 package com.qprogramming.shopper.app.api;
 
-import com.qprogramming.shopper.app.account.Account;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +16,6 @@ import java.util.UUID;
 public class ApiRestController {
 
 
-
     @RequestMapping("/resource")
     @PreAuthorize("hasRole('ROLE_USER')")
     public Map<String, Object> home() {
@@ -28,10 +25,5 @@ public class ApiRestController {
         return model;
     }
 
-    @RequestMapping("/whoami")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public Account user() {
-        return (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
 
 }

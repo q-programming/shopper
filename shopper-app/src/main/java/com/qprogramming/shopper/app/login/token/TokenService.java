@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.login.token;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.support.TimeProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -47,13 +48,15 @@ public class TokenService {
 
     private ObjectMapper objectMapper;
     private AccountService accountService;
+    private TimeProvider timeProvider;
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
     @Autowired
-    public TokenService(ObjectMapper objectMapper, AccountService accountService) {
+    public TokenService(ObjectMapper objectMapper, AccountService accountService, TimeProvider timeProvider) {
         this.objectMapper = objectMapper;
         this.accountService = accountService;
+        this.timeProvider = timeProvider;
     }
 
     public String getUsernameFromToken(String token) {
@@ -65,6 +68,17 @@ public class TokenService {
             username = null;
         }
         return username;
+    }
+
+    public Date getIssuedAtDateFromToken(String token) {
+        Date issueAt;
+        try {
+            final Claims claims = this.getClaimsFromToken(token);
+            issueAt = claims.getIssuedAt();
+        } catch (Exception e) {
+            issueAt = null;
+        }
+        return issueAt;
     }
 
     public void createTokenCookies(HttpServletResponse response, Account account) throws IOException {
@@ -84,7 +98,7 @@ public class TokenService {
         response.getWriter().write(jwtResponse);
     }
 
-    private String generateToken(String email) {
+    public String generateToken(String email) {
         return Jwts.builder()
                 .setIssuer(APP_NAME)
                 .setSubject(email)
@@ -148,7 +162,7 @@ public class TokenService {
 
 
     private long getCurrentTimeMillis() {
-        return new DateTime().getMillis();
+        return timeProvider.getCurrentTimeMillis();
     }
 
     private Date generateCurrentDate() {

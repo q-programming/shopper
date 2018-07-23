@@ -1,5 +1,7 @@
 package com.qprogramming.shopper.app.filters;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Jakub Romaniszyn on 19.07.2018.
  */
-public class URLMatcher {
+public class AuthUtils {
     private static final String ROOT_MATCHER = "/";
     private static final String FAVICON_MATCHER = "/favicon.ico";
     private static final String HTML_MATCHER = "/**/*.html";
@@ -42,5 +44,16 @@ public class URLMatcher {
         List<RequestMatcher> m = PATHS_TO_SKIP.stream().map(AntPathRequestMatcher::new).collect(Collectors.toList());
         OrRequestMatcher matchers = new OrRequestMatcher(m);
         return matchers.matches(request);
+    }
+
+    /**
+     * By default if user is not authenticated or is using {@link com.qprogramming.shopper.app.login.AnonAuthentication}
+     * authentication is null or it's princiapl is
+     *
+     * @return true if user correctly previously authenticated in filter chain
+     */
+    public static boolean isAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.getPrincipal() != null;
     }
 }

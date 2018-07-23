@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by Jakub Romaniszyn on 19.07.2018.
- *
+ * <p>
  * Based on
  * https://github.com/bfwg/springboot-jwt-starter
  */
@@ -38,31 +38,25 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String authToken = tokenService.getToken(request);
-        if (authToken != null && !URLMatcher.skipPathRequest(request)) {
-            // get username from token
-            try {
-                String username = tokenService.getUsernameFromToken(authToken);
-                // get user
-                Account userDetails = accountService.loadUserByUsername(username);
-                // create authentication
-                TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
-                authentication.setToken(authToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (Exception e) {
+        if (!AuthUtils.isAuthenticated()) {
+            String authToken = tokenService.getToken(request);
+            if (authToken != null && !AuthUtils.skipPathRequest(request)) {
+                // get username from token
+                try {
+                    String username = tokenService.getUsernameFromToken(authToken);
+                    // get user
+                    Account userDetails = accountService.loadUserByUsername(username);
+                    // create authentication
+                    TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
+                    authentication.setToken(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } catch (Exception e) {
+                    SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
+                }
+            } else {
                 SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
             }
-        } else {
-            SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
         }
         chain.doFilter(request, response);
-    }
-
-
-    private boolean skipPathRequest(HttpServletRequest request, List<String> pathsToSkip) {
-        Assert.notNull(pathsToSkip, "path cannot be null.");
-        List<RequestMatcher> m = pathsToSkip.stream().map(AntPathRequestMatcher::new).collect(Collectors.toList());
-        OrRequestMatcher matchers = new OrRequestMatcher(m);
-        return matchers.matches(request);
     }
 }

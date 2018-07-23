@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created by Jakub Romaniszyn on 20.07.2018.
- *
+ * <p>
  * Based on
  * https://github.com/bfwg/springboot-jwt-starter
  */
@@ -59,18 +59,4 @@ public class AuthenticationController {
             return ResponseEntity.accepted().body(userTokenState);
         }
     }
-
-//    @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
-//    @PreAuthorize("hasRole('USER')")
-//    public ResponseEntity<?> changePassword(@RequestBody PasswordChanger passwordChanger) {
-//        userDetailsService.changePassword(passwordChanger.oldPassword, passwordChanger.newPassword);
-//        Map<String, String> result = new HashMap<>();
-//        result.put( "result", "success" );
-//        return ResponseEntity.accepted().body(result);
-//    }
-//    static class PasswordChanger {
-//        public String oldPassword;
-//        public String newPassword;
-//    }
-
 }
