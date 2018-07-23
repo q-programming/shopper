@@ -1,0 +1,13 @@
+<ul class="navbar-nav ml-auto nav-flex-icons">
+    <li class="nav-item dropdown justify-content-end" dropdown>
+        <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
+            {{user.name}} {{user.surname}}<span class="caret"></span></a>
+        <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
+            <a class="dropdown-item waves-light" mdbWavesEffect href="#">Action</a>
+            <a class="dropdown-item waves-light" mdbWavesEffect href="#">Another action</a>
+            <a class="dropdown-item waves-light" mdbWavesEffect href="#">Something else here</a>
+            <div class="divider dropdown-divider"></div>
+            <a class="center" (click)="logout()">Sign out</a>
+        </div>
+    </li>
+</ul>

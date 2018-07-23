@@ -1,0 +1,71 @@
+application:
+  name: Shopper
+security:
+#  user:
+#    password: password
+  oauth2:
+      client:
+        client-id: shopper
+        client-secret: secret
+        scope: read,write
+        auto-approve-scopes: '.*'
+      resource:
+        userInfoUri: "*"
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web.filter.CommonsRequestLoggingFilter: INFO
+spring:
+  mail:
+    host: localhost
+    port: 25
+    protocol: smtp
+    from: shopper@q-programming.pl
+  datasource:
+    url: jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  mvc:
+    favicon:
+      enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  social:
+    facebook:
+      app-id: id
+      app-secret: secret
+facebook:
+  client:
+    clientId: id
+    clientSecret: secret
+    accessTokenUri: https://graph.facebook.com/oauth/access_token
+    userAuthorizationUri: https://www.facebook.com/dialog/oauth
+    tokenName: oauth_token
+    authenticationScheme: query
+    clientAuthenticationScheme: form
+  resource:
+    userInfoUri: https://graph.facebook.com/me
+google:
+  client:
+    clientId: id
+    clientSecret: secret
+    accessTokenUri: https://www.googleapis.com/oauth2/v4/token
+    userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
+    clientAuthenticationScheme: form
+    scope:
+      - openid
+      - email
+      - profile
+  resource:
+    userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
+    preferTokenInfo: true
+jwt:
+  header: Authorization
+  expires_in: 604800 # week
+  secret: secret
+  cookie: AUTH-TOKEN
+  xsrf: XSRF-TOKEN
+  jsessionid: JSESSIONID
+  user_cookie: c_user

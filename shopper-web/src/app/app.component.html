@@ -1,13 +1,13 @@
-<div style="text-align:center">
-    <h1>
-        Welcome to {{title}}!
-    </h1>
-    <img src="assets/logo_b.png">
-</div>
-<div class="row justify-content-center">
-    <div class="col">
-        <button class="btn activity-btn clickable">
-            Some button test
-        </button>
+<app-header></app-header>
+<alert></alert>
+<main>
+    <div class="container">
+        <spinner
+                [backgroundColor]="'#2c5aa0'"
+                [spinner]="spinkit.skThreeBounce"
+                [debounceDelay]="200"
+        >
+        </spinner>
+        <router-outlet></router-outlet>
     </div>
-</div>
+</main>
