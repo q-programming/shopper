@@ -4,12 +4,15 @@ package com.qprogramming.shopper.app.account;
 import com.qprogramming.shopper.app.account.authority.Authority;
 import com.qprogramming.shopper.app.account.authority.AuthorityService;
 import com.qprogramming.shopper.app.account.authority.Role;
+import com.qprogramming.shopper.app.account.avatar.Avatar;
+import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,10 +20,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,13 +43,15 @@ public class AccountService implements UserDetailsService {
     private static final Logger LOG = LoggerFactory.getLogger(AccountService.class);
     private PropertyService propertyService;
     private AccountRepository accountRepository;
+    private AvatarRepository avatarRepository;
     private AuthorityService authorityService;
     private AccountPasswordEncoder accountPasswordEncoder;
 
     @Autowired
-    public AccountService(PropertyService propertyService, AccountRepository accountRepository, AuthorityService authorityService, AccountPasswordEncoder accountPasswordEncoder) {
+    public AccountService(PropertyService propertyService, AccountRepository accountRepository, AvatarRepository avatarRepository, AuthorityService authorityService, AccountPasswordEncoder accountPasswordEncoder) {
         this.propertyService = propertyService;
         this.accountRepository = accountRepository;
+        this.avatarRepository = avatarRepository;
         this.authorityService = authorityService;
         this.accountPasswordEncoder = accountPasswordEncoder;
     }
@@ -164,5 +172,73 @@ public class AccountService implements UserDetailsService {
             return null;
         }
         return outputStream.toByteArray();
+    }
+    //User avatar handling
+
+    public Avatar getAccountAvatar(Account account) {
+        return avatarRepository.findOneById(account.getId());
+    }
+
+    /**
+     * Update user avatar with passed bytes.
+     * In case of avatar was not there, it will be created out of passed bytes
+     * As LOB object is updated , this function must be called within transaction
+     *
+     * @param account updated account
+     * @param bytes   image bytes
+     */
+    public void updateAvatar(Account account, byte[] bytes) {
+        Avatar avatar = avatarRepository.findOneById(account.getId());
+        if (avatar == null) {
+            createAvatar(account, bytes);
+        } else {
+            setAvatarTypeAndBytes(bytes, avatar);
+            avatarRepository.save(avatar);
+        }
+    }
+
+    /**
+     * Creates new avatar from given URL
+     * As LOB object is updated , this function must be called within transaction
+     *
+     * @param account account for which avatar is created
+     * @param url     url from which avatar image will be fetched
+     * @return new {@link Avatar}
+     * @throws MalformedURLException
+     */
+    public Avatar createAvatar(Account account, String url) throws MalformedURLException {
+        byte[] bytes = downloadFromUrl(new URL(url));
+        return createAvatar(account, bytes);
+    }
+
+
+    /**
+     * Creates avatar from bytes
+     * As LOB object is updated , this function must be called within transaction
+     *
+     * @param account Account for which avatar is created
+     * @param bytes   bytes containing avatar
+     * @return new {@link Avatar}
+     * @throws IOException
+     */
+    public Avatar createAvatar(Account account, byte[] bytes) {
+        Avatar avatar = new Avatar();
+        avatar.setId(account.getId());
+        setAvatarTypeAndBytes(bytes, avatar);
+        return avatarRepository.save(avatar);
+    }
+
+    private void setAvatarTypeAndBytes(byte[] bytes, Avatar avatar) {
+        avatar.setImage(bytes);
+        String type = "";
+        try {
+            type = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes));
+        } catch (IOException e) {
+            LOG.error("Failed to determine type from bytes, presuming jpg");
+        }
+        if (StringUtils.isEmpty(type)) {
+            type = MediaType.IMAGE_JPEG_VALUE;
+        }
+        avatar.setType(type);
     }
 }

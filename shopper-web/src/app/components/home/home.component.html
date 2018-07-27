@@ -2,9 +2,9 @@
     home works!
 </p>
 <p>Welcome from backend api :{{welcome}}</p>
-<div>As you are admin here is a list of all registered users:
+<div *ngIf="admin">As you are admin here is a list of all registered users:
     <ul>
-        <li *ngFor="let user of users">{{user.name}} {{user.surname}} ({{user.email}})</li>
+        <li *ngFor="let user of users"><img class="avatar small" [src]="user.avatar">{{user.name}} {{user.surname}} ({{user.email}})</li>
     </ul>
 </div>
 <p>

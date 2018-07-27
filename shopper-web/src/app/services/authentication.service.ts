@@ -3,13 +3,15 @@ import {ApiService} from "./api.service";
 import {environment} from "../../environments/environment";
 import {Account, Role} from "../model/Account";
 import * as _ from 'lodash';
+import {AvatarService} from "./avatar.service";
+import {Cookie} from 'ng2-cookies/ng2-cookies';
 
 @Injectable()
 export class AuthenticationService {
 
     currentAccount: Account;
 
-    constructor(private apiService: ApiService) {
+    constructor(private apiService: ApiService, private avatarSrv: AvatarService) {
     }
 
     initUser() {
@@ -19,6 +21,7 @@ export class AuthenticationService {
                     return this.getMyInfo().toPromise()
                         .then(resp => {
                             this.currentAccount = resp as Account;
+                            this.avatarSrv.getUserAvatar(this.currentAccount);
                         });
                 }
             })
@@ -30,6 +33,8 @@ export class AuthenticationService {
         return this.apiService.post(environment.logout_url, {})
             .map(() => {
                 this.currentAccount = null;
+                Cookie.delete('AUTH-TOKEN','/');
+                Cookie.delete('AUTH-TOKEN','/shopper');
             });
     }
 

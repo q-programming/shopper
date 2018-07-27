@@ -3,6 +3,7 @@ import {ApiService} from "../../services/api.service";
 import {Account} from "../../model/Account";
 import {AuthenticationService} from "../../services/authentication.service";
 import {environment} from "../../../environments/environment";
+import {AccountService} from "../../services/account.service";
 
 @Component({
     selector: 'app-home',
@@ -15,7 +16,7 @@ export class HomeComponent implements OnInit {
     admin: boolean;
     users: Account[];
 
-    constructor(private api: ApiService, private authSrv: AuthenticationService) {
+    constructor(private api: ApiService, private authSrv: AuthenticationService, private accountSrv: AccountService) {
     }
 
     ngOnInit() {
@@ -32,9 +33,7 @@ export class HomeComponent implements OnInit {
 
     getUsers() {
         if (this.admin) {
-            this.api.get(environment.all_users_url).toPromise().then(res => {
-                this.users = res as Account[];
-            })
+            this.accountSrv.getAllUsers().then(users => this.users = users);
         }
     }
 

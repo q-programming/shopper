@@ -41,6 +41,23 @@ export class ApiService {
             .catch(this.checkError.bind(this));
     }
 
+    getObject<R>(path: string, args?: any): Observable<any> {
+        path = environment.context + path;
+        const options = {
+            headers: this.headers,
+            withCredentials: true
+        };
+        if (args) {
+            options['params'] = serialize(args);
+        }
+        return this.http.get<R>(path, options).catch(this.checkError.bind(this));
+    }
+
+    postObject<R>(path: string, body: any, customHeaders?: HttpHeaders): Observable<any> {
+        return this.requestObject<R>(path, body, RequestMethod.Post, customHeaders);
+    }
+
+
     post(path: string, body: any, customHeaders?: HttpHeaders): Observable<any> {
         return this.request(path, body, RequestMethod.Post, customHeaders);
     }
@@ -53,7 +70,18 @@ export class ApiService {
         return this.request(path, body, RequestMethod.Delete);
     }
 
-    //TODO add map to be optional ?
+    private requestObject<R>(path: string, body: any, method = RequestMethod.Post, custemHeaders?: HttpHeaders): Observable<any> {
+        path = environment.context + path;
+        const req = new HttpRequest(method, path, body, {
+            headers: custemHeaders || this.headers,
+            withCredentials: true
+        });
+
+        return this.http.request<R>(req)
+            .map((response: HttpResponse<R>) => response.body)
+            .catch(error => this.checkError(error));
+    }
+
     private request(path: string, body: any, method = RequestMethod.Post, custemHeaders?: HttpHeaders): Observable<any> {
         path = environment.context + path;
         const req = new HttpRequest(method, path, body, {

@@ -1,13 +1,21 @@
 <ul class="navbar-nav ml-auto nav-flex-icons">
-    <li class="nav-item dropdown justify-content-end" dropdown>
+    <li class="nav-item">
+        <a class="nav-link waves-effect waves-light">1
+            <i class="fa fa-envelope"></i>
+        </a>
+    </li>
+    <li class="nav-item img-fluid avatar dropdown justify-content-end" dropdown>
         <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
-            {{user.name}} {{user.surname}}<span class="caret"></span></a>
+            {{user.name}} {{user.surname}}
+            <img *ngIf="user.avatar && user.avatar !== 'NAN'" [src]="user.avatar" class="avatar nav-avatar"/>
+            <img *ngIf="!user.avatar || user.avatar === 'NAN'" src='assets/images/avatar-placeholder.png'
+                 class="avatar nav-avatar"/>
+            <span class="caret"></span></a>
         <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
-            <a class="dropdown-item waves-light" mdbWavesEffect href="#">Action</a>
-            <a class="dropdown-item waves-light" mdbWavesEffect href="#">Another action</a>
-            <a class="dropdown-item waves-light" mdbWavesEffect href="#">Something else here</a>
+            <a class="dropdown-item waves-light" mdbWavesEffect href="#" routerLink="settings"><i
+                    class="fa fw fa-cog mr-1"></i>Settings</a>
             <div class="divider dropdown-divider"></div>
-            <a class="center" (click)="logout()">Sign out</a>
+            <a class="center" (click)="logout()"><i class="fa fw fa-sign-out mr-1"></i>Sign out</a>
         </div>
     </li>
 </ul>

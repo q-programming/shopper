@@ -3,6 +3,8 @@ package com.qprogramming.shopper.app.account;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.authority.AuthorityService;
 import com.qprogramming.shopper.app.account.authority.Role;
+import com.qprogramming.shopper.app.account.avatar.Avatar;
+import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
 import com.qprogramming.shopper.app.config.MockSecurityContext;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import org.apache.commons.io.IOUtils;
@@ -31,9 +33,8 @@ import static org.mockito.Mockito.*;
 
 public class AccountServiceTest {
 
-    public static final String PASSWORD = "Password";
-    public static final String STATIC_IMAGES_LOGO_WHITE_PNG = "static/images/logo-white.png";
-    public static final String STATIC_AVATAR_PLACEHOLDER = "static/images/avatar-placeholder.png";
+    public static final String STATIC_IMAGES_LOGO_WHITE_PNG = "static/assets/images/logo_white.png";
+    public static final String STATIC_AVATAR_PLACEHOLDER = "static/assets/images/avatar-placeholder.png";
     @Mock
     private MockSecurityContext securityMock;
     @Mock
@@ -44,8 +45,8 @@ public class AccountServiceTest {
     private AccountPasswordEncoder passwordEncoderMock;
     @Mock
     private AuthorityService authorityServiceMock;
-    //    @Mock
-//    private AvatarRepository avatarRepositoryMock;
+    @Mock
+    private AvatarRepository avatarRepositoryMock;
     @Mock
     private PropertyService propertyServiceMock;
     @Mock
@@ -61,7 +62,7 @@ public class AccountServiceTest {
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         SecurityContextHolder.setContext(securityMock);
-        accountService = new AccountService(propertyServiceMock, accountRepositoryMock, authorityServiceMock, passwordEncoderMock) {
+        accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock) {
             @Override
             protected byte[] downloadFromUrl(URL url) {
                 ClassLoader loader = getClass().getClassLoader();
@@ -129,48 +130,48 @@ public class AccountServiceTest {
         verify(securityMock, times(1)).setAuthentication(any(UsernamePasswordAuthenticationToken.class));
     }
 
-//    @Test
-//    public void getAccountAvatar() throws Exception {
-//        when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(new Avatar());
-//        Avatar accountAvatar = accountService.getAccountAvatar(testAccount);
-//        assertNotNull(accountAvatar);
-//    }
-//
-//    @Test
-//    public void createAvatar() throws Exception {
-//        ClassLoader loader = this.getClass().getClassLoader();
-//        try (InputStream avatarFile = loader.getResourceAsStream(STATIC_IMAGES_LOGO_WHITE_PNG)) {
-//            accountService.updateAvatar(testAccount, IOUtils.toByteArray(avatarFile));
-//            verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
-//        }
-//    }
-//
-//    @Test
-//    public void createAvatarUknownType() throws Exception {
-//        ClassLoader loader = this.getClass().getClassLoader();
-//        accountService.updateAvatar(testAccount, STATIC_IMAGES_LOGO_WHITE_PNG.getBytes());
-//        verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
-//    }
+    @Test
+    public void getAccountAvatar() throws Exception {
+        when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(new Avatar());
+        Avatar accountAvatar = accountService.getAccountAvatar(testAccount);
+        assertThat(accountAvatar).isNotNull();
+    }
+
+    @Test
+    public void createAvatar() throws Exception {
+        ClassLoader loader = this.getClass().getClassLoader();
+        try (InputStream avatarFile = loader.getResourceAsStream(STATIC_IMAGES_LOGO_WHITE_PNG)) {
+            accountService.updateAvatar(testAccount, IOUtils.toByteArray(avatarFile));
+            verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
+        }
+    }
+
+    @Test
+    public void createAvatarUknownType() throws Exception {
+        ClassLoader loader = this.getClass().getClassLoader();
+        accountService.updateAvatar(testAccount, STATIC_IMAGES_LOGO_WHITE_PNG.getBytes());
+        verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
+    }
 
 
-//    @Test
-//    public void updateAvatar() throws Exception {
-//        ClassLoader loader = this.getClass().getClassLoader();
-//        try (InputStream avatarFile = loader.getResourceAsStream(STATIC_IMAGES_LOGO_WHITE_PNG)) {
-//            when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(new Avatar());
-//            accountService.updateAvatar(testAccount, IOUtils.toByteArray(avatarFile));
-//            verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
-//        }
-//    }
-//
-//    @Test(expected = IOException.class)
-//    public void createAvatarFromUrlError() throws Exception {
-//        accountService.createAvatar(testAccount, STATIC_IMAGES_LOGO_WHITE_PNG);
-//    }
-//
-//    @Test
-//    public void createAvatarFromUrl() throws Exception {
-//        accountService.createAvatar(testAccount, "http://google.com");
-//        verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
-//    }
+    @Test
+    public void updateAvatar() throws Exception {
+        ClassLoader loader = this.getClass().getClassLoader();
+        try (InputStream avatarFile = loader.getResourceAsStream(STATIC_IMAGES_LOGO_WHITE_PNG)) {
+            when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(new Avatar());
+            accountService.updateAvatar(testAccount, IOUtils.toByteArray(avatarFile));
+            verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void createAvatarFromUrlError() throws Exception {
+        accountService.createAvatar(testAccount, STATIC_IMAGES_LOGO_WHITE_PNG);
+    }
+
+    @Test
+    public void createAvatarFromUrl() throws Exception {
+        accountService.createAvatar(testAccount, "http://google.com");
+        verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
+    }
 }

@@ -14,8 +14,13 @@ import {AlertComponent} from './directives/alert.component';
 import {AlertService} from "./services/alert.service";
 import {AuthGuard} from "./guards/auth.guard";
 import {ApiService} from "./services/api.service";
-import { HeaderComponent } from './components/header/header.component';
-import { AccountMenuComponent } from './components/header/account-menu/account-menu.component';
+import {HeaderComponent} from './components/header/header.component';
+import {AccountMenuComponent} from './components/header/account-menu/account-menu.component';
+import {LoggerModule, NgxLoggerLevel} from 'ngx-logger';
+import {AvatarService} from "./services/avatar.service";
+import {AccountService} from "./services/account.service";
+import {SettingsComponent} from './components/settings/settings.component';
+
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -29,21 +34,27 @@ export function initUserFactory(authService: AuthenticationService) {
         HomeComponent,
         AlertComponent,
         HeaderComponent,
-        AccountMenuComponent
+        AccountMenuComponent,
+        SettingsComponent,
     ],
     imports: [
         BrowserModule,
         MDBBootstrapModule.forRoot(),
         NgHttpLoaderModule,
         HttpClientModule,
-        routing
-
+        routing,
+        LoggerModule.forRoot({
+            level: NgxLoggerLevel.DEBUG,
+            serverLogLevel: NgxLoggerLevel.ERROR
+        })
     ],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [
         AuthGuard,
         AuthenticationService,
         ApiService,
+        AccountService,
+        AvatarService,
         AlertService,
         {
             provide: HTTP_INTERCEPTORS,

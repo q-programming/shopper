@@ -11,7 +11,6 @@ security:
         auto-approve-scopes: '.*'
       resource:
         userInfoUri: "*"
-
 logging:
   level:
     org.springframework.security: DEBUG
@@ -23,7 +22,7 @@ spring:
     protocol: smtp
     from: shopper@q-programming.pl
   datasource:
-    url: jdbc:h2:S:/q-programming/shopper/db/h2databaseFile;AUTO_SERVER=TRUE
+    url: jdbc:h2:./db/h2databaseFile;AUTO_SERVER=TRUE
     username: sa
     password:
 #    url: jdbc:postgresql://localhost:5432/gifts

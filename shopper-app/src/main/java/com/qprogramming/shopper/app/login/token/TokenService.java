@@ -84,11 +84,11 @@ public class TokenService {
     public void createTokenCookies(HttpServletResponse response, Account account) throws IOException {
         String tokenValue = generateToken(account.getEmail());
         Cookie authCookie = new Cookie(TOKEN_COOKIE, (tokenValue));
-        authCookie.setPath("/");
+        authCookie.setPath("/shopper");
         authCookie.setHttpOnly(true);
         authCookie.setMaxAge(EXPIRES_IN);
         Cookie userCookie = new Cookie(USER_COOKIE, (account.getId()));
-        userCookie.setPath("/");
+        userCookie.setPath("/shopper");
         userCookie.setMaxAge(EXPIRES_IN);
         response.addCookie(authCookie);
         response.addCookie(userCookie);

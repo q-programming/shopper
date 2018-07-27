@@ -87,7 +87,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         setLocale(account, locale);
         account = accountService.createOAuthAcount(account);
         byte[] userProfileImage = facebook.userOperations().getUserProfileImage();
-//        accountService.createAvatar(account, userProfileImage); TODO avatar
+        accountService.createAvatar(account, userProfileImage);
         LOG.debug("Facebook account has been created with id:{} and username{}", account.getId(), account.getUsername());
         return account;
     }
@@ -107,7 +107,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         String locale = details.get(LOCALE);
         setLocale(account, locale);
         account = accountService.createOAuthAcount(account);
-//        accountService.createAvatar(account, details.get(G.PICTURE)); //TODO Avatar
+        accountService.createAvatar(account, details.get(G.PICTURE));
         LOG.debug("Google+ account has been created with id:{} and username{}", account.getId(), account.getUsername());
         return account;
     }
