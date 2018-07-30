@@ -1,17 +1,17 @@
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {Injectable} from "@angular/core";
 import {AuthenticationService} from "../services/authentication.service";
+import {NGXLogger} from "ngx-logger";
 
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
-    constructor(private router: Router, private authSrv: AuthenticationService) {
+    constructor(private router: Router, private authSrv: AuthenticationService, private logger: NGXLogger) {
     }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        console.log("Account:");
-        console.log(this.authSrv.currentAccount);
+        this.logger.debug(this.authSrv.currentAccount);
         if (this.authSrv.currentAccount) {
             // logged in so return true
             return true;

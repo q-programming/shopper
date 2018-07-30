@@ -4,7 +4,6 @@ import {environment} from "../../environments/environment";
 import {Account, Role} from "../model/Account";
 import * as _ from 'lodash';
 import {AvatarService} from "./avatar.service";
-import {Cookie} from 'ng2-cookies/ng2-cookies';
 
 @Injectable()
 export class AuthenticationService {
@@ -33,8 +32,6 @@ export class AuthenticationService {
         return this.apiService.post(environment.logout_url, {})
             .map(() => {
                 this.currentAccount = null;
-                Cookie.delete('AUTH-TOKEN','/');
-                Cookie.delete('AUTH-TOKEN','/shopper');
             });
     }
 

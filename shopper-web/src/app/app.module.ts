@@ -2,7 +2,6 @@ import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {MDBBootstrapModule} from 'angular-bootstrap-md';
-import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
 
 import {routing} from "./app.routing";
 import {AppComponent} from './app.component';
@@ -20,6 +19,8 @@ import {LoggerModule, NgxLoggerLevel} from 'ngx-logger';
 import {AvatarService} from "./services/avatar.service";
 import {AccountService} from "./services/account.service";
 import {SettingsComponent} from './components/settings/settings.component';
+import {NgHttpLoaderModule} from "ng-http-loader";
+import {ImageCropperModule} from "ngx-img-cropper";
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -35,7 +36,7 @@ export function initUserFactory(authService: AuthenticationService) {
         AlertComponent,
         HeaderComponent,
         AccountMenuComponent,
-        SettingsComponent,
+        SettingsComponent
     ],
     imports: [
         BrowserModule,
@@ -46,7 +47,9 @@ export function initUserFactory(authService: AuthenticationService) {
         LoggerModule.forRoot({
             level: NgxLoggerLevel.DEBUG,
             serverLogLevel: NgxLoggerLevel.ERROR
-        })
+        }),
+        ImageCropperModule
+
     ],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [
@@ -68,6 +71,7 @@ export function initUserFactory(authService: AuthenticationService) {
             'multi': true
         }
     ],
+    exports: [ImageCropperModule],
     bootstrap: [AppComponent]
 })
 export class AppModule {

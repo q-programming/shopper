@@ -1,13 +1,14 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {AuthenticationService} from "../../services/authentication.service";
 import {Account} from "../../model/Account";
-import {CropperSettings, ImageCropperComponent} from 'ng2-img-cropper';
 import {ApiService} from "../../services/api.service";
 import {environment} from "../../../environments/environment";
 import {NGXLogger} from "ngx-logger";
 import {AlertService} from "../../services/alert.service";
 import {ModalDirective} from "angular-bootstrap-md";
 import {getBase64Image} from "../../utils/utils";
+import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
+import {AvatarService} from "../../services/avatar.service";
 
 
 @Component({
@@ -25,7 +26,7 @@ export class SettingsComponent implements OnInit {
     @ViewChild('avatarUploadModal')
     avatarUploadModal: ModalDirective;
 
-    constructor(private authSrv: AuthenticationService, private api: ApiService, private logger: NGXLogger, private alertSrv: AlertService) {
+    constructor(private authSrv: AuthenticationService, private api: ApiService, private logger: NGXLogger, private alertSrv: AlertService, private avatarSrv: AvatarService) {
         this.cropperSettings = new CropperSettings();
         this.cropperSettings.width = 100;
         this.cropperSettings.height = 100;
@@ -60,14 +61,7 @@ export class SettingsComponent implements OnInit {
     }
 
     uploadNewAvatar() {
-        // const uploadData = {
-        //     image:  Utils.getBase64Image(this.avatarData.image)
-        // };
-        //TODO avatar service
-        this.api.post(`${environment.account_url}/${environment.avatar_upload_url}`, getBase64Image(this.avatarData.image)).subscribe(() => {
-            this.alertSrv.success("New Avatar has been uploaded");
-            this.avatarUploadModal.hide();
-            this.logger.debug('Uploaded file')
-        });
+        this.avatarSrv.updateAvatar(getBase64Image(this.avatarData.image), this.account);
+        this.avatarUploadModal.hide();
     }
 }

@@ -4,7 +4,7 @@
             <h4><i class="fa fa-user-circle-o mr-1"></i> Avatar</h4>
         </div>
         <div class="row justify-content-md-center">
-            <div class="col-6">
+            <div class="col-6 text-center">
                 <img [src]="account.avatar" class="img-fluid">
             </div>
         </div>
@@ -13,10 +13,6 @@
                 <button class="btn btn-white waves-light" (click)="avatarUploadModal.show()" mdbWavesEffect>Upload
                     Avatar
                 </button>
-                <button class="btn btn-white waves-light" (click)="testPost()" mdbWavesEffect>
-                    Test
-                </button>
-
             </div>
         </div>
     </div>
@@ -39,10 +35,6 @@
                     <input id="custom-input" type="file" (change)="fileChangeListener($event)">
                 </div>
                 <img-cropper #cropper [image]="avatarData" [settings]="cropperSettings"></img-cropper>
-                <!--<span class="result rounded" *ngIf="avatarData.image">-->
-                <!--<img [src]="avatarData.image" [width]="cropperSettings.croppedWidth"-->
-                <!--[height]="cropperSettings.croppedHeight">-->
-                <!--</span>-->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary waves-light" aria-label="Close"

@@ -30,4 +30,11 @@ export class AvatarService {
             account.avatar = image;
         }
     }
+
+    updateAvatar(base64Image: String, account: Account) {
+        return this.api.post(`${environment.account_url}/${environment.avatar_upload_url}`, base64Image).subscribe(() => {
+            localStorage.removeItem("avatar:" + account.id);
+            this.getUserAvatar(account);
+        })
+    }
 }
