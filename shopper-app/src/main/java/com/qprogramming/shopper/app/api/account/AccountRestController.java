@@ -50,7 +50,7 @@ public class AccountRestController {
     }
 
     @Transactional
-    @RequestMapping(value = "/avatarUpload", method = RequestMethod.POST)
+    @RequestMapping(value = "/avatar-upload", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> uploadNewAvatar(@RequestBody String avatarStream) {
         Account account = Utils.getCurrentAccount();
@@ -63,10 +63,12 @@ public class AccountRestController {
     }
 
     @Transactional
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    @RequestMapping(value = "/settings/language", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<?> test(@RequestBody Account account) {
-        System.out.println("I'm here");
+    public ResponseEntity<?> changeLanguage(@RequestBody String lang) {
+        Account currentAccount = Utils.getCurrentAccount();
+        currentAccount.setLanguage(lang);
+        accountService.update(currentAccount);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

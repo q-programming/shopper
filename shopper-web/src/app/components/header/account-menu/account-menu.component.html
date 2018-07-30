@@ -13,9 +13,10 @@
             <span class="caret"></span></a>
         <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
             <a class="dropdown-item waves-light" mdbWavesEffect href="#" routerLink="settings"><i
-                    class="fa fw fa-cog mr-1"></i>Settings</a>
+                    class="fa fw fa-cog mr-1"></i>{{'app.menu.settings'|translate}}</a>
             <div class="divider dropdown-divider"></div>
-            <a class="center" (click)="logout()"><i class="fa fw fa-sign-out mr-1"></i>Sign out</a>
+            <a class="center" (click)="logout()"><i
+                    class="fa fw fa-sign-out mr-1"></i>{{'app.menu.logout'|translate}}</a>
         </div>
     </li>
 </ul>

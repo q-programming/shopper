@@ -1,0 +1,15 @@
+{
+  "app.general.avatar": "Awatar",
+  "app.general.close": "Zamknij",
+  "app.general.saveChanges": "Zapisz zmiany",
+  "app.general.test": "Test_PL",
+  "app.general.choosefile" : "Wybierz plik",
+  "app.home.admin": "Ponieważ jesteś administratorem , poniżej lista wszystkich użytkowników:",
+  "app.menu.logout": "Wyloguj się",
+  "app.menu.settings": "Ustawienia",
+  "app.settings.avatar": "Zmień awatar",
+  "app.settings.avatar.change": "Dodaj nowy awatar",
+  "app.settings.avatar.success": "Zmieniono awatar",
+  "app.settings.language":"Język",
+  "app.settings.language.success": "Zmieniono język wyświetlania"
+}

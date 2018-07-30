@@ -1,19 +1,30 @@
-<div class="row justify-content-md-center">
+<div class="row justify-content-center">
     <div class="col-6">
-        <div class="row justify-content-md-start mt-5">
-            <h4><i class="fa fa-user-circle-o mr-1"></i> Avatar</h4>
+        <!--AVATAR-->
+        <div class="row justify-content-start mt-5">
+            <h4><i class="fa fa-user-circle-o mr-1"></i> {{'app.general.avatar'|translate}}</h4>
         </div>
-        <div class="row justify-content-md-center">
+        <div class="row justify-content-center">
             <div class="col-6 text-center">
                 <img [src]="account.avatar" class="img-fluid">
             </div>
         </div>
-        <div class="row justify-content-md-center">
+        <div class="row justify-content-center">
             <div class="col-6 text-center">
-                <button class="btn btn-white waves-light" (click)="avatarUploadModal.show()" mdbWavesEffect>Upload
-                    Avatar
+                <button class="btn btn-white waves-light" (click)="avatarUploadModal.show()" mdbWavesEffect>
+                    {{'app.settings.avatar'|translate}}
                 </button>
             </div>
+        </div>
+        <!--LANGUAGE-->
+        <div class="row justify-content-start mt-5">
+            <h4><i class="fa fa-globe mr-1"></i> {{'app.settings.language'|translate}}</h4>
+        </div>
+        <div class="row justify-content-center">
+            <ng-select [(ngModel)]="account.language" [clearable]="false"
+                       (change)="changeLanguage()">
+                <ng-option *ngFor="let lang of languages" [value]="lang.id">{{lang.name}}</ng-option>
+            </ng-select>
         </div>
     </div>
 </div>
@@ -27,21 +38,24 @@
                 <button type="button" class="close pull-right" aria-label="Close" (click)="avatarUploadModal.hide()">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h4 class="modal-title w-100" id="myModalLabel">Upload new avatar</h4>
+                <h4 class="modal-title w-100" id="myModalLabel"> {{'app.settings.avatar.change'|translate}}</h4>
             </div>
             <div class="modal-body">
                 <div class="file-upload">
-                    <span class="text">upload</span>
-                    <input id="custom-input" type="file" (change)="fileChangeListener($event)">
+                    <button class="btn btn-primary" (click)="fileInput.click()">
+                        <i class="fa fa-upload mr-1"></i>{{'app.general.choosefile' |translate}}
+                    </button>
+                    <input #fileInput type="file" (change)="fileChangeListener($event)" style="display:none;">
                 </div>
+                <div><span>{{fileInput.value}}</span></div>
                 <img-cropper #cropper [image]="avatarData" [settings]="cropperSettings"></img-cropper>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary waves-light" aria-label="Close"
-                        (click)="avatarUploadModal.hide()" mdbWavesEffect>Close
+                <button type="button" class="btn btn-white waves-light" aria-label="Close"
+                        (click)="avatarUploadModal.hide()" mdbWavesEffect>{{'app.general.close'|translate}}
                 </button>
-                <button type="button" class="btn btn-primary relative waves-light" mdbWavesEffect
-                        (click)="uploadNewAvatar()">Save changes
+                <button type="button" class="btn btn-success relative waves-light" mdbWavesEffect
+                        (click)="uploadNewAvatar()">{{'app.general.saveChanges'|translate}}
                 </button>
             </div>
         </div>

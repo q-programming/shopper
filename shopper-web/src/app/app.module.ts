@@ -1,6 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
-import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import {MDBBootstrapModule} from 'angular-bootstrap-md';
 
 import {routing} from "./app.routing";
@@ -21,6 +21,10 @@ import {AccountService} from "./services/account.service";
 import {SettingsComponent} from './components/settings/settings.component';
 import {NgHttpLoaderModule} from "ng-http-loader";
 import {ImageCropperModule} from "ngx-img-cropper";
+import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
+import {TranslateHttpLoader} from "@ngx-translate/http-loader";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {FormsModule} from "@angular/forms";
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -48,7 +52,16 @@ export function initUserFactory(authService: AuthenticationService) {
             level: NgxLoggerLevel.DEBUG,
             serverLogLevel: NgxLoggerLevel.ERROR
         }),
-        ImageCropperModule
+        ImageCropperModule,
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: (createTranslateLoader),
+                deps: [HttpClient]
+            }
+        }),
+        NgSelectModule,
+        FormsModule
 
     ],
     schemas: [NO_ERRORS_SCHEMA],
@@ -75,4 +88,8 @@ export function initUserFactory(authService: AuthenticationService) {
     bootstrap: [AppComponent]
 })
 export class AppModule {
+}
+
+export function createTranslateLoader(http: HttpClient) {
+    return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }

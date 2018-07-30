@@ -4,13 +4,14 @@ import {environment} from "../../environments/environment";
 import {Account, Role} from "../model/Account";
 import * as _ from 'lodash';
 import {AvatarService} from "./avatar.service";
+import {TranslateService} from "@ngx-translate/core";
 
 @Injectable()
 export class AuthenticationService {
 
     currentAccount: Account;
 
-    constructor(private apiService: ApiService, private avatarSrv: AvatarService) {
+    constructor(private apiService: ApiService, private avatarSrv: AvatarService, private translate: TranslateService) {
     }
 
     initUser() {
@@ -21,6 +22,8 @@ export class AuthenticationService {
                         .then(resp => {
                             this.currentAccount = resp as Account;
                             this.avatarSrv.getUserAvatar(this.currentAccount);
+                            this.translate.setDefaultLang('en');
+                            this.translate.use(this.currentAccount.language);
                         });
                 }
             })

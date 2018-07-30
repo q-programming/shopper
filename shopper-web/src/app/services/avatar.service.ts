@@ -14,7 +14,7 @@ export class AvatarService {
         let image = localStorage.getItem("avatar:" + account.id);
         if (!image) {
             this.logger.debug(`Getting avatar from DB for user ${account.id}`);
-            let res = this.api.getObject(environment.account_url + `/${account.id}/avatar`).subscribe(result => {
+            let res = this.api.getObject(environment.account_url + `/${account.id}${environment.avatar_url}`).subscribe(result => {
                 if (result) {
                     const dataType = "data:" + result.type + ";base64,";
                     image = dataType + result.image;
@@ -32,7 +32,7 @@ export class AvatarService {
     }
 
     updateAvatar(base64Image: String, account: Account) {
-        return this.api.post(`${environment.account_url}/${environment.avatar_upload_url}`, base64Image).subscribe(() => {
+        return this.api.post(`${environment.account_url}${environment.avatar_upload_url}`, base64Image).subscribe(() => {
             localStorage.removeItem("avatar:" + account.id);
             this.getUserAvatar(account);
         })

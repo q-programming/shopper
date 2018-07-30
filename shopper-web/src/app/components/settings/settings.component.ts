@@ -3,12 +3,14 @@ import {AuthenticationService} from "../../services/authentication.service";
 import {Account} from "../../model/Account";
 import {ApiService} from "../../services/api.service";
 import {environment} from "../../../environments/environment";
+import {languages} from "../../../assets/i18n/languages";
 import {NGXLogger} from "ngx-logger";
 import {AlertService} from "../../services/alert.service";
 import {ModalDirective} from "angular-bootstrap-md";
 import {getBase64Image} from "../../utils/utils";
 import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
 import {AvatarService} from "../../services/avatar.service";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -25,8 +27,10 @@ export class SettingsComponent implements OnInit {
     cropper: ImageCropperComponent;
     @ViewChild('avatarUploadModal')
     avatarUploadModal: ModalDirective;
+    languages: any = languages;
 
-    constructor(private authSrv: AuthenticationService, private api: ApiService, private logger: NGXLogger, private alertSrv: AlertService, private avatarSrv: AvatarService) {
+    constructor(
+        private authSrv: AuthenticationService, private api: ApiService, private logger: NGXLogger, private alertSrv: AlertService, private avatarSrv: AvatarService, private translate: TranslateService) {
         this.cropperSettings = new CropperSettings();
         this.cropperSettings.width = 100;
         this.cropperSettings.height = 100;
@@ -63,5 +67,14 @@ export class SettingsComponent implements OnInit {
     uploadNewAvatar() {
         this.avatarSrv.updateAvatar(getBase64Image(this.avatarData.image), this.account);
         this.avatarUploadModal.hide();
+        this.translate.get('app.settings.avatar.success').subscribe(value => this.alertSrv.success(value))
     }
+
+    changeLanguage() {
+        this.api.post(`${environment.account_url}${environment.language_url}`, this.account.language).subscribe(() => {
+            this.translate.use(this.account.language);
+            this.translate.get('app.settings.language.success').subscribe(value => this.alertSrv.success(value))
+        })
+    }
+
 }

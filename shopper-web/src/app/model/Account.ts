@@ -1,9 +1,9 @@
 export class Account {
-    id: String;
-    name: String;
-    surname: String;
-    email: String;
-    language: String;
+    id: string;
+    name: string;
+    surname: string;
+    email: string;
+    language: string;
     role: Role;
     authorities: Authority[];
     avatar: any;
