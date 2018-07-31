@@ -1,4 +1,18 @@
-<div *ngIf="message"
-     [ngClass]="{ 'alert': message, 'alert-success': message.type === 'success', 'alert-danger': message.type === 'error' }">
-    {{message.text}} <i class="fa fa-times clickable pull-right" (click)="dismiss()"></i>
+<div id="message-container" [@alertsAnimation]="messages.length">
+    <div *ngFor="let message of messages;let i = index"
+         [ngClass]="{
+            'message': message,
+            'message-success': message.type === MessageType.SUCCESS,
+            'message-error': message.type === MessageType.ERROR,
+            'message-info ': message.type === MessageType.INFO,
+            'message-warning ': message.type === MessageType.WARNING}" [ngSwitch]="message.type">
+        <div class="message-text">
+            <i *ngSwitchCase="MessageType.SUCCESS" class="fa fa-check mr-2"></i>
+            <i *ngSwitchCase="MessageType.ERROR" class="fa fa-times mr-2"></i>
+            <i *ngSwitchCase="MessageType.INFO" class="fa fa-info mr-2"></i>
+            <i *ngSwitchCase="MessageType.WARNING" class="fa fa-warning mr-2"></i>
+            {{message.text}}
+            <i class="fa fa-times clickable pull-right ml-5" (click)="dismiss(i)"></i>
+        </div>
+    </div>
 </div>

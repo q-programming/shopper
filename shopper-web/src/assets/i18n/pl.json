@@ -1,4 +1,5 @@
 {
+  "app.login.error": "Wystąpił bład podczas próby zalogowania się. Proszę skontaktować się z administratorem",
   "app.general.avatar": "Awatar",
   "app.general.close": "Zamknij",
   "app.general.saveChanges": "Zapisz zmiany",
@@ -11,5 +12,7 @@
   "app.settings.avatar.change": "Dodaj nowy awatar",
   "app.settings.avatar.success": "Zmieniono awatar",
   "app.settings.language":"Język",
-  "app.settings.language.success": "Zmieniono język wyświetlania"
+  "app.settings.language.success": "Zmieniono język wyświetlania",
+  "app.api.error.unauthorized" :"Brak wymagających uprawnień do wykonania akcji",
+  "app.api.error.general" :"Wystąpił bład podczas wykonywania akcji. Proszę skontaktować się z administratorem"
 }

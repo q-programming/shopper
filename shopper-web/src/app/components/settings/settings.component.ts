@@ -60,20 +60,24 @@ export class SettingsComponent implements OnInit {
         myReader.readAsDataURL(file);
     }
 
-    testPost() {
-        this.api.post(`${environment.account_url}/test`, this.account).subscribe(() => this.logger.info("works"))
+    testMessages() {
+        this.alertSrv.successMessage("Success");
+        this.alertSrv.errorMessage("Error");
+        this.alertSrv.warningMessage("Warning");
+        this.alertSrv.infoMessage("Info");
     }
 
     uploadNewAvatar() {
         this.avatarSrv.updateAvatar(getBase64Image(this.avatarData.image), this.account);
         this.avatarUploadModal.hide();
-        this.translate.get('app.settings.avatar.success').subscribe(value => this.alertSrv.success(value))
+        this.alertSrv.success('app.settings.avatar.success');
     }
 
     changeLanguage() {
         this.api.post(`${environment.account_url}${environment.language_url}`, this.account.language).subscribe(() => {
-            this.translate.use(this.account.language);
-            this.translate.get('app.settings.language.success').subscribe(value => this.alertSrv.success(value))
+            this.translate.use(this.account.language).subscribe(() => {
+                this.alertSrv.success('app.settings.language.success');
+            });
         })
     }
 

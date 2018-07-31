@@ -5,13 +5,15 @@ import {Account, Role} from "../model/Account";
 import * as _ from 'lodash';
 import {AvatarService} from "./avatar.service";
 import {TranslateService} from "@ngx-translate/core";
+import {AlertService} from "./alert.service";
+import {NGXLogger} from "ngx-logger";
 
 @Injectable()
 export class AuthenticationService {
 
     currentAccount: Account;
 
-    constructor(private apiService: ApiService, private avatarSrv: AvatarService, private translate: TranslateService) {
+    constructor(private apiService: ApiService, private avatarSrv: AvatarService, private translate: TranslateService, private alertSrv: AlertService, private logger: NGXLogger) {
     }
 
     initUser() {
@@ -27,7 +29,11 @@ export class AuthenticationService {
                         });
                 }
             })
-            .catch(() => null);
+            .catch((err) => {
+                this.alertSrv.error('app.login.error');
+                this.logger.error(err);
+                return null
+            });
         return promise;
     }
 

@@ -1,44 +1,78 @@
 import {Injectable} from '@angular/core';
-import {NavigationStart, Router} from '@angular/router';
-import {Observable} from 'rxjs';
-import {Subject} from 'rxjs/Subject';
+import {Message, MessageType} from "../model/Message";
+import {Observable} from "rxjs/Observable";
+import {TranslateService} from "@ngx-translate/core";
 
 @Injectable()
 export class AlertService {
 
-    private subject = new Subject<any>();
-    private keepAfterNavigationChange = false;
+    private messages: Message[] = [];
+    private normal_timeout: number = 4000; //4 seconds
+    private error_timeout: number = 6000; //6 seconds
 
-    constructor(private router: Router) {
-        // clear alert message on route change
-        router.events.subscribe(event => {
-            if (event instanceof NavigationStart) {
-                if (this.keepAfterNavigationChange) {
-                    // only keep for a single location change
-                    this.keepAfterNavigationChange = false;
-                } else {
-                    // clear alert
-                    this.subject.next();
-                }
-            }
+    constructor(private translate: TranslateService) {
+    }
+
+
+    getMessages(): Message[] {
+        return this.messages;
+    }
+
+    successMessage(message: string, timeout: number = this.normal_timeout) {
+        this.addMessage(message, MessageType.SUCCESS, timeout);
+    }
+
+    errorMessage(message: string, timeout: number = this.error_timeout) {
+        this.addMessage(message, MessageType.ERROR, timeout);
+    }
+
+    warningMessage(message: string, timeout: number = this.normal_timeout) {
+        this.addMessage(message, MessageType.WARNING, timeout);
+    }
+
+    infoMessage(message: string, timeout: number = this.normal_timeout) {
+        this.addMessage(message, MessageType.INFO, timeout);
+    }
+
+
+    success(key: string, timeout: number = this.normal_timeout) {
+        this.translate.get(key).subscribe(txt => {
+            this.addMessage(txt, MessageType.SUCCESS, timeout);
+        })
+    }
+
+
+    error(key: string, timeout: number = this.error_timeout) {
+        this.translate.get(key).subscribe(txt => {
+            this.addMessage(txt, MessageType.ERROR, timeout);
+        })
+    }
+
+    warning(key: string, timeout: number = this.normal_timeout) {
+        this.translate.get(key).subscribe(txt => {
+            this.addMessage(txt, MessageType.ERROR, timeout);
+        })
+
+    }
+
+    info(key: string, timeout: number = this.error_timeout) {
+        this.translate.get(key).subscribe(txt => {
+            this.addMessage(txt, MessageType.ERROR, timeout);
+        })
+    }
+
+    private addMessage(message: string, type: MessageType, timeout: number) {
+        let idx = this.messages.push(new Message(message, type));
+        Observable.timer(timeout).subscribe(() => {
+            this.dissmiss(idx - 1)
         });
     }
 
-    success(message: string, keepAfterNavigationChange = false) {
-        this.keepAfterNavigationChange = keepAfterNavigationChange;
-        this.subject.next({type: 'success', text: message});
-    }
-
-    error(message: string, keepAfterNavigationChange = false) {
-        this.keepAfterNavigationChange = keepAfterNavigationChange;
-        this.subject.next({type: 'error', text: message});
-    }
-
-    getMessage(): Observable<any> {
-        return this.subject.asObservable();
-    }
-
-    dissmiss() {
-        this.subject.next();
+    dissmiss(i) {
+        if (i < this.messages.length) {
+            this.messages.splice(i, 1);
+        } else {
+            this.messages.splice(this.messages.length - 1);
+        }
     }
 }

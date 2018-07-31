@@ -25,6 +25,7 @@ import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule} from "@angular/forms";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -44,6 +45,7 @@ export function initUserFactory(authService: AuthenticationService) {
     ],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         MDBBootstrapModule.forRoot(),
         NgHttpLoaderModule,
         HttpClientModule,

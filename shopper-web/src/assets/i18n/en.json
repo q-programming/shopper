@@ -1,4 +1,5 @@
 {
+  "app.login.error": "There was technical error while trying to login. Please contact administrator",
   "app.general.avatar": "Avatar",
   "app.general.close": "Close",
   "app.general.saveChanges": "Save changes",
@@ -11,5 +12,7 @@
   "app.settings.avatar.change": "Upload new avatar",
   "app.settings.avatar.success": "Avatar sucessfully changed",
   "app.settings.language": "Language",
-  "app.settings.language.success": "Display language has been changed"
+  "app.settings.language.success": "Display language has been changed",
+  "app.api.error.unauthorized" :"You are not authorised to execute that action",
+  "app.api.error.general" :"There was internal error while executing action. Please contact administrator"
 }

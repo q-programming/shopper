@@ -5,8 +5,8 @@ import 'rxjs/Rx';
 import 'rxjs/add/observable/throw';
 import {serialize} from "../utils/serialize";
 import {environment} from "../../environments/environment";
+import {AlertService} from "./alert.service";
 
-//TODO needs to be rewriten to properly cast objects
 export enum RequestMethod {
     Get = 'GET',
     Head = 'HEAD',
@@ -25,7 +25,7 @@ export class ApiService {
         'Content-Type': 'application/json'
     });
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private alertSrv: AlertService) {
     }
 
     get(path: string, args?: any): Observable<any> {
@@ -98,8 +98,10 @@ export class ApiService {
     // Display error if logged in, otherwise redirect to IDP
     private checkError(error: any): any {
         if (error && error.status === 401) {
+            this.alertSrv.error('app.api.error.unauthorized');
             // this.redirectIfUnauth(error);
         } else {
+            this.alertSrv.error('app.api.error.general');
             // this.displayError(error);
         }
         throw error;
