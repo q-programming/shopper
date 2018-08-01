@@ -1,0 +1,29 @@
+{
+  "/shopper/api": {
+    "target": "http://localhost:8080/shopper/api",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/shopper/api": ""
+    }
+  },
+  "/shopper/login": {
+    "target": "http://localhost:8080/shopper/login",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/shopper/login": ""
+    }
+  },
+  "/shopper/logout": {
+    "target": "http://localhost:8080/shopper/logout",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/shopper/logout": ""
+    }
+  }
+}
