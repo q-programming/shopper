@@ -8,6 +8,7 @@
   "app.home.admin": "Ponieważ jesteś administratorem , poniżej lista wszystkich użytkowników:",
   "app.menu.logout": "Wyloguj się",
   "app.menu.settings": "Ustawienia",
+  "app.menu.messages": "Wiadomośći ({{count}})",
   "app.settings.avatar": "Zmień awatar",
   "app.settings.avatar.change": "Dodaj nowy awatar",
   "app.settings.avatar.success": "Zmieniono awatar",

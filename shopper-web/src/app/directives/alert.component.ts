@@ -30,7 +30,7 @@ import {Message, MessageType} from "../model/Message";
     ]
 })
 export class AlertComponent implements OnInit {
-    messages: Message[] = [];
+    messages: Message[];
     MessageType = MessageType;
 
     constructor(private alertService: AlertService) {
@@ -40,7 +40,7 @@ export class AlertComponent implements OnInit {
         this.messages = this.alertService.getMessages();
     }
 
-    dismiss(i) {
-        this.alertService.dissmiss(i);
+    dismiss(message: Message) {
+        this.alertService.dissmis(message);
     }
 }

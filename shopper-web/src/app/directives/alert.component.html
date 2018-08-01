@@ -1,5 +1,5 @@
 <div id="message-container" [@alertsAnimation]="messages.length">
-    <div *ngFor="let message of messages;let i = index"
+    <div *ngFor="let message of messages "
          [ngClass]="{
             'message': message,
             'message-success': message.type === MessageType.SUCCESS,
@@ -12,7 +12,7 @@
             <i *ngSwitchCase="MessageType.INFO" class="fa fa-info mr-2"></i>
             <i *ngSwitchCase="MessageType.WARNING" class="fa fa-warning mr-2"></i>
             {{message.text}}
-            <i class="fa fa-times clickable pull-right ml-5" (click)="dismiss(i)"></i>
+            <i class="fa fa-times clickable pull-right ml-5" (click)="dismiss(message)"></i>
         </div>
     </div>
 </div>

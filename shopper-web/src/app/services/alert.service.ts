@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Message, MessageType} from "../model/Message";
 import {Observable} from "rxjs/Observable";
 import {TranslateService} from "@ngx-translate/core";
+import * as _ from 'lodash';
 
 @Injectable()
 export class AlertService {
@@ -61,18 +62,17 @@ export class AlertService {
         })
     }
 
-    private addMessage(message: string, type: MessageType, timeout: number) {
-        let idx = this.messages.push(new Message(message, type));
+    private addMessage(text: string, type: MessageType, timeout: number) {
+        let message = new Message(text, type);
+        this.messages.push(message);
         Observable.timer(timeout).subscribe(() => {
-            this.dissmiss(idx - 1)
+            this.dissmis(message)
         });
     }
 
-    dissmiss(i) {
-        if (i < this.messages.length) {
-            this.messages.splice(i, 1);
-        } else {
-            this.messages.splice(this.messages.length - 1);
-        }
+    dissmis(message: Message) {
+        _.remove(this.messages, (m) => {
+            return m.id === message.id
+        });
     }
 }
