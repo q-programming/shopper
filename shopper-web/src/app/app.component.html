@@ -1,14 +1,79 @@
-<app-header></app-header>
+<ng-http-loader [entryComponent]="loader" [debounceDelay]="100" [minDuration]="500"></ng-http-loader>
 <alert></alert>
-<main id="top-section">
-    <div class="container">
-        <spinner
-                [backgroundColor]="'#2c5aa0'"
-                [spinner]="spinkit.skThreeBounce"
-                [debounceDelay]="200"
-        >
-        </spinner>
-        <router-outlet></router-outlet>
+<!--TOOLBAR-->
+<mat-toolbar color="primary" class="fixed-top">
+    <button mat-button routerLink="/" class="mat-toolbar-button">
+        <img src="assets/images/logo_white.png" height="30" class="d-inline-block align-top" alt="">
+        Shopper
+    </button>
+    <span class="fill-remaining-space"></span>
+    <!--MOBILE BUTTON MENU-->
+    <div fxShow="true" fxHide.gt-sm="true" *ngIf="loggedIn()">
+        <button mat-icon-button (click)="sidenav.toggle()">
+            <mat-icon>menu</mat-icon>
+        </button>
     </div>
-    <app-back-to-top></app-back-to-top>
-</main>
+    <!--DESKTOP MENU-->
+    <div fxShow="true" fxHide.lt-md="true" *ngIf="loggedIn()">
+        <button mat-button class="mat-toolbar-button">
+            <mat-icon class="ml-2">list_alt</mat-icon>
+        </button>
+        <button mat-button class="mat-toolbar-button" routerLink="/">
+            {{message_count.count}}
+            <mat-icon class="ml-2">message</mat-icon>
+        </button>
+        <button mat-button class="mat-toolbar-button" (click)="sidenav.toggle()">
+            <img [src]="account.avatar" class="avatar nav-avatar"/>
+            <mat-icon>more_vert</mat-icon>
+        </button>
+    </div>
+</mat-toolbar>
+<!--SIDE POPUP MENU-->
+<mat-sidenav-container fxFlexFill class="side-navigation">
+    <mat-sidenav color="primary" #sidenav fxLayout="column" mode="over" position="end" hasBackdrop="false">
+        <div fxLayout="column">
+            <img [src]="account.avatar" class="avatar large"/>
+            <span class="mt-4">{{account.name}} {{account.surname}}</span>
+        </div>
+        <mat-divider class="mt-2"></mat-divider>
+        <div fxLayout="column">
+            <button mat-button routerLink="/">
+                <mat-icon class="mr-2">list_alt</mat-icon>
+                {{'app.menu.lists'| translate}}
+            </button>
+            <div *ngFor="let i of lists">
+                <button mat-button>
+                    <mat-icon>arrow_right</mat-icon>
+                    List {{i}}
+                </button>
+            </div>
+            <button mat-button>
+                <mat-icon class="mr-2">more_horiz</mat-icon>
+            </button>
+        </div>
+        <mat-divider class="mt-2"></mat-divider>
+        <div fxLayout="column">
+            <button mat-button routerLink="/messages">
+                <mat-icon class="mr-2">message</mat-icon>
+                {{'app.menu.messages'|translate:message_count}}
+            </button>
+            <button mat-button routerLink="/settings">
+                <mat-icon class="mr-2">settings</mat-icon>
+                {{'app.menu.settings'|translate}}
+            </button>
+            <button mat-button (click)="logout();">
+                <mat-icon class="mr-2">exit_to_app</mat-icon>
+                {{'app.menu.logout'|translate}}
+            </button>
+        </div>
+    </mat-sidenav>
+    <mat-sidenav-content fxFlexFill>
+        <main class="container" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%"
+              fxLayoutAlign="center">
+            <div fxFlex="80%">
+                <!--CONTENT-->
+                <router-outlet></router-outlet>
+            </div>
+        </main>
+    </mat-sidenav-content>
+</mat-sidenav-container>

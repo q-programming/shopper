@@ -21,11 +21,8 @@
               "src/favicon.ico"
             ],
             "styles": [
-              "node_modules/font-awesome/scss/font-awesome.scss",
-              "node_modules/angular-bootstrap-md/scss/bootstrap/bootstrap.scss",
-              "node_modules/angular-bootstrap-md/scss/mdb-free.scss",
-              "node_modules/@ng-select/ng-select/themes/material.theme.css",
-              "src/styles.scss",
+              "src/styles.css",
+              "node_modules/font-awesome/css/font-awesome.css"
             ],
             "scripts": [
               "node_modules/chart.js/dist/Chart.js",
@@ -84,7 +81,7 @@
               "node_modules/font-awesome/scss/font-awesome.scss",
               "node_modules/angular-bootstrap-md/scss/bootstrap/bootstrap.scss",
               "node_modules/angular-bootstrap-md/scss/mdb-free.scss",
-              "src/styles.scss"
+              "src/styles.css"
             ],
             "assets": [
               "src/assets",
@@ -142,7 +139,7 @@
       "inlineTemplate": false,
       "spec": false,
       "prefix": "app",
-      "styleext": "scss"
+      "styleext": "css"
     },
     "@schematics/angular:directive": {
       "spec": false,
