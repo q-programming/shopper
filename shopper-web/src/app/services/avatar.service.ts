@@ -21,7 +21,8 @@ export class AvatarService {
                     localStorage.setItem("avatar:" + account.id, image);
                     account.avatar = image;
                 } else {
-                    localStorage.setItem("avatar:" + account.id, 'assets/images/avatar-placeholder.png');
+                    account.avatar = 'assets/images/avatar-placeholder.png';
+                    localStorage.setItem("avatar:" + account.id, account.avatar);
                 }
             });
             this.logger.info(res);

@@ -1,7 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
-import {MDBBootstrapModule} from 'angular-bootstrap-md';
 
 import {routing} from "./app.routing";
 import {AppComponent} from './app.component';
@@ -13,19 +12,20 @@ import {AlertComponent} from './directives/alert.component';
 import {AlertService} from "./services/alert.service";
 import {AuthGuard} from "./guards/auth.guard";
 import {ApiService} from "./services/api.service";
-import {HeaderComponent} from './components/header/header.component';
-import {AccountMenuComponent} from './components/header/account-menu/account-menu.component';
 import {LoggerModule, NgxLoggerLevel} from 'ngx-logger';
 import {AvatarService} from "./services/avatar.service";
 import {AccountService} from "./services/account.service";
-import {SettingsComponent} from './components/settings/settings.component';
-import {NgHttpLoaderModule} from "ng-http-loader";
+import {AvatarUploadComponent, SettingsComponent} from './components/settings/settings.component';
 import {ImageCropperModule} from "ngx-img-cropper";
 import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
-import {NgSelectModule} from "@ng-select/ng-select";
-import {FormsModule} from "@angular/forms";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {AppMaterialModules} from "./material.module";
+import {FlexLayoutModule} from "@angular/flex-layout";
+import {LayoutModule} from '@angular/cdk/layout';
+import {MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule} from '@angular/material';
+import {NgHttpLoaderModule} from "ng-http-loader";
+import { LoaderComponent } from './components/loader/loader.component';
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -39,17 +39,22 @@ export function initUserFactory(authService: AuthenticationService) {
         LoginComponent,
         HomeComponent,
         AlertComponent,
-        HeaderComponent,
-        AccountMenuComponent,
-        SettingsComponent
+        SettingsComponent,
+        AvatarUploadComponent,
+        LoaderComponent
+    ],
+    entryComponents: [
+        AvatarUploadComponent,
+        LoaderComponent
     ],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
-        MDBBootstrapModule.forRoot(),
-        NgHttpLoaderModule,
         HttpClientModule,
         routing,
+        AppMaterialModules,
+        NgHttpLoaderModule,
+        FlexLayoutModule,
         LoggerModule.forRoot({
             level: NgxLoggerLevel.DEBUG,
             serverLogLevel: NgxLoggerLevel.ERROR
@@ -62,9 +67,12 @@ export function initUserFactory(authService: AuthenticationService) {
                 deps: [HttpClient]
             }
         }),
-        NgSelectModule,
-        FormsModule
-
+        LayoutModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatSidenavModule,
+        MatIconModule,
+        MatListModule
     ],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [

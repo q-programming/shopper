@@ -1,10 +1,14 @@
 <p>
     home works!
 </p>
+<p>
+    <button mat-raised-button>Basic</button>
+</p>
 <p>Welcome from backend api :{{welcome}}</p>
 <div *ngIf="admin">{{"app.home.admin" | translate }}
     <ul>
-        <li *ngFor="let user of users"><img class="avatar small" [src]="user.avatar">{{user.name}} {{user.surname}}
+        <li *ngFor="let user of users">
+            <img class="avatar small" [src]="user.avatar">{{user.name}} {{user.surname}}
             ({{user.email}})
         </li>
     </ul>

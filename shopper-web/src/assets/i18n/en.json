@@ -9,6 +9,7 @@
   "app.menu.logout": "Logout",
   "app.menu.settings": "Settings",
   "app.menu.messages": "Messages({{count}})",
+  "app.menu.lists": "My lists",
   "app.settings.avatar": "Change avatar",
   "app.settings.avatar.change": "Upload new avatar",
   "app.settings.avatar.success": "Avatar sucessfully changed",
