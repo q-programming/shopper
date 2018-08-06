@@ -13,9 +13,9 @@ import {LoaderComponent} from "./components/loader/loader.component";
 })
 export class AppComponent implements OnInit {
 
-    private account: Account;
-    private message_count = {count: ""};
-    private lists = [1, 2, 3, 4];
+    account: Account;
+    message_count = {count: ""};
+    lists = [1, 2, 3, 4];
     public loader = LoaderComponent;
     @ViewChild("sidenav")
     private sidenav: MatSidenav;
