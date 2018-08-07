@@ -14,7 +14,7 @@ import java.io.IOException;
 
 /**
  * Created by Jakub Romaniszyn on 19.07.2018.
- *
+ * <p>
  * Based on
  * https://github.com/bfwg/springboot-jwt-starter
  */
@@ -33,7 +33,7 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         clearAuthenticationAttributes(request);
-        Account user = (Account) authentication.getPrincipal();
-        tokenService.createTokenCookies(response, user);
+        Account account = (Account) authentication.getPrincipal();
+        tokenService.createTokenCookies(response, account);
     }
 }
