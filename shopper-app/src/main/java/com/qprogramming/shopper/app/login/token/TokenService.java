@@ -7,7 +7,6 @@ import com.qprogramming.shopper.app.support.TimeProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ import java.util.Map;
 
 /**
  * Created by Jakub Romaniszyn on 19.07.2018.
- *
+ * <p>
  * Based on
  * https://github.com/bfwg/springboot-jwt-starter
  */
@@ -83,6 +82,19 @@ public class TokenService {
 
     public void createTokenCookies(HttpServletResponse response, Account account) throws IOException {
         String tokenValue = generateToken(account.getEmail());
+        generateCookies(response, account, tokenValue);
+        UserTokenState userTokenState = new UserTokenState(tokenValue, EXPIRES_IN);
+        String jwtResponse = objectMapper.writeValueAsString(userTokenState);
+        response.setContentType("application/json");
+        response.getWriter().write(jwtResponse);
+    }
+
+    public void createTokenRESTCookies(HttpServletResponse response, Account account)  {
+        String tokenValue = generateToken(account.getEmail());
+        generateCookies(response, account, tokenValue);
+    }
+
+    private void generateCookies(HttpServletResponse response, Account account, String tokenValue) {
         Cookie authCookie = new Cookie(TOKEN_COOKIE, (tokenValue));
         authCookie.setPath("/shopper");
         authCookie.setHttpOnly(true);
@@ -92,11 +104,8 @@ public class TokenService {
         userCookie.setMaxAge(EXPIRES_IN);
         response.addCookie(authCookie);
         response.addCookie(userCookie);
-        UserTokenState userTokenState = new UserTokenState(tokenValue, EXPIRES_IN);
-        String jwtResponse = objectMapper.writeValueAsString(userTokenState);
-        response.setContentType("application/json");
-        response.getWriter().write(jwtResponse);
     }
+
 
     public String generateToken(String email) {
         return Jwts.builder()

@@ -12,7 +12,7 @@ public class UserTokenState {
 
     public UserTokenState() {
         this.access_token = null;
-        this.expires_in = null;
+        this.expires_in = -1L;
     }
 
     public UserTokenState(String access_token, long expires_in) {
