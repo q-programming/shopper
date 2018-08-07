@@ -30,7 +30,8 @@
 </mat-toolbar>
 <!--SIDE POPUP MENU-->
 <mat-sidenav-container fxFlexFill class="side-navigation">
-    <mat-sidenav color="primary" #sidenav fxLayout="column" mode="over" position="end" hasBackdrop="false">
+    <mat-sidenav color="primary" #sidenav fxLayout="column" mode="over" position="end" hasBackdrop="false"
+                 *ngIf="loggedIn()">
         <div fxLayout="column">
             <img [src]="account.avatar" class="avatar large"/>
             <span class="mt-4">{{account.name}} {{account.surname}}</span>

@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.filters;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.login.AnonAuthentication;
+import com.qprogramming.shopper.app.login.token.TokenService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +27,12 @@ public class BasicRestAuthenticationFilter extends OncePerRequestFilter {
     public static final String AUTHORIZATION = "Authorization";
     public static final String AUTHENTICATION_SCHEME = "Basic";
     private AccountService accountService;
+    private TokenService tokenService;
 
 
-    public BasicRestAuthenticationFilter(AccountService accountService) {
+    public BasicRestAuthenticationFilter(AccountService accountService, TokenService tokenService) {
         this.accountService = accountService;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -43,7 +46,7 @@ public class BasicRestAuthenticationFilter extends OncePerRequestFilter {
                 final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");
                 final String user = tokenizer.nextToken();
                 final String password = tokenizer.nextToken();
-                verifyAndLogin(user, password);
+                verifyAndLogin(user, password, response);
             } else {
                 SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
             }
@@ -51,12 +54,14 @@ public class BasicRestAuthenticationFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    private void verifyAndLogin(String user, String password) {
+    private void verifyAndLogin(String user, String password, HttpServletResponse response) {
         Account account = accountService.loadUserByUsername(user);
         if (!accountService.matches(password, account.getPassword())) {
             SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
         } else {
             accountService.signin(account);
+            tokenService.createTokenRESTCookies(response, account);
+            LOG.debug("Authorization successful using base auth via rest. New token returned");
         }
     }
 }

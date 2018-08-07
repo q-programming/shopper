@@ -24,7 +24,6 @@ export class AuthenticationService {
                         .then(resp => {
                             this.currentAccount = resp as Account;
                             this.avatarSrv.getUserAvatar(this.currentAccount);
-                            this.translate.setDefaultLang('en');
                             this.translate.use(this.currentAccount.language);
                         });
                 }

@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
 
     constructor(private http: HttpClient, private router: Router, private authSrv: AuthenticationService) {
         router.events.subscribe(() => {
-            if (this.sidenav.opened) {
+            if (this.sidenav && this.sidenav.opened) {
                 this.sidenav.close();
             }
         })

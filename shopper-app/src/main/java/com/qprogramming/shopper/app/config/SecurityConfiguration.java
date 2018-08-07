@@ -84,8 +84,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public BasicRestAuthenticationFilter basicAuthenticationFilter() {
-        return new BasicRestAuthenticationFilter(accountService);
+    public BasicRestAuthenticationFilter basicRestAuthenticationFilter() {
+        return new BasicRestAuthenticationFilter(accountService, tokenService);
     }
 
 
@@ -115,7 +115,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .authenticated()
                 //basic auth rest auth
                 .and()
-                    .addFilterBefore(basicAuthenticationFilter(),BasicAuthenticationFilter.class)
+                    .addFilterBefore(basicRestAuthenticationFilter(),BasicAuthenticationFilter.class)
                     .authorizeRequests()
                 //login redirect
                 .and().formLogin()

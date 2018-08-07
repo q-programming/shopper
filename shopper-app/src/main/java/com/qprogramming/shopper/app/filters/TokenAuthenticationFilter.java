@@ -5,11 +5,9 @@ import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.login.AnonAuthentication;
 import com.qprogramming.shopper.app.login.token.TokenBasedAuthentication;
 import com.qprogramming.shopper.app.login.token.TokenService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -17,8 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Jakub Romaniszyn on 19.07.2018.
@@ -27,7 +23,7 @@ import java.util.stream.Collectors;
  * https://github.com/bfwg/springboot-jwt-starter
  */
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
-
+    private static final Logger LOG = LoggerFactory.getLogger(TokenAuthenticationFilter.class);
     private AccountService accountService;
     private TokenService tokenService;
 

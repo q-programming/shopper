@@ -1,0 +1,145 @@
+{
+	"info": {
+		"_postman_id": "5145c65e-ddd8-4e5a-a4fc-94e2334a0d74",
+		"name": "shopper",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"_postman_id": "870c6238-7302-4cbf-b48e-b9a33a606c2b",
+			"name": "refresh",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "059d0808-d856-4545-8c3d-d970fb2fed29",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "6305dcd9-5c2c-4187-ae54-7c5f7d2f45b0",
+						"type": "text/javascript",
+						"exec": [
+							"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+							"console.log(cookieValue);",
+							"pm.environment.set('XSRF-TOKEN', cookieValue);",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "kubarom@gmail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/shopper/api/refresh",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"shopper",
+						"api",
+						"refresh"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"_postman_id": "1de63736-d8c2-465d-a216-0863dbec17b6",
+			"name": "change language",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "00062186-8804-4390-85a4-b8b8d87ff23e",
+						"type": "text/javascript",
+						"exec": [
+							"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+							"console.log(cookieValue);",
+							"pm.environment.set('XSRF-TOKEN', cookieValue);"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "kubarom@gmail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-XSRF-TOKEN",
+						"value": "{{XSRF-TOKEN}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "en"
+				},
+				"url": {
+					"raw": "{{url}}/shopper/api/account/settings/language",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"shopper",
+						"api",
+						"account",
+						"settings",
+						"language"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

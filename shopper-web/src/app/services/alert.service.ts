@@ -12,6 +12,7 @@ export class AlertService {
     private error_timeout: number = 6000; //6 seconds
 
     constructor(private translate: TranslateService) {
+        this.translate.setDefaultLang('en');
     }
 
 
