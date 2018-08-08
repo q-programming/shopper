@@ -1,10 +1,8 @@
 package com.qprogramming.shopper.app.api;
 
-import com.qprogramming.shopper.app.RestControllerTestBase;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.login.token.TokenService;
-import com.qprogramming.shopper.app.support.DummyHttpResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,30 +10,33 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.Base64Utils;
+import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.http.Cookie;
 import java.io.PrintWriter;
-import java.util.Set;
 
 import static com.qprogramming.shopper.app.filters.BasicRestAuthenticationFilter.AUTHENTICATION_SCHEME;
 import static com.qprogramming.shopper.app.filters.BasicRestAuthenticationFilter.AUTHORIZATION;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class AuthenticationControllerTest extends RestControllerTestBase {
+public class AuthenticationControllerTest {
 
-    private Account testAccount;
+
+    @Autowired
+    protected WebApplicationContext context;
+    protected MockMvc mvc;
 
     @Mock
     private PrintWriter writerMock;
@@ -44,9 +45,11 @@ public class AuthenticationControllerTest extends RestControllerTestBase {
     private TokenService tokenService;
 
     @Before
-    @Override
     public void setup() {
-        super.setup();
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
         MockitoAnnotations.initMocks(this);
 
     }

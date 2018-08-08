@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.authority.Authority;
 import com.qprogramming.shopper.app.account.authority.Role;
+import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.springframework.http.MediaType;
@@ -93,6 +94,14 @@ public class TestUtil {
         Authority authority = new Authority();
         authority.setName(Role.ROLE_ADMIN);
         return authority;
+    }
+
+    public static ShoppingList createShoppingList(String name, long id, Account testAccount) {
+        ShoppingList list = new ShoppingList();
+        list.setName(name);
+        list.setId(id);
+        list.setOwnerId(testAccount.getId());
+        return list;
     }
 
 }

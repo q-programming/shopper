@@ -2,6 +2,7 @@ package com.qprogramming.shopper.app.support;
 
 
 import com.qprogramming.shopper.app.account.Account;
+import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -17,6 +18,7 @@ import java.util.Locale;
  */
 public class Utils {
     public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername);
+    public static final Comparator<ShoppingList> SHOPPING_LIST_COMPARATOR = Comparator.comparing(ShoppingList::getName).thenComparing(ShoppingList::getId);
 
     public static Account getCurrentAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
