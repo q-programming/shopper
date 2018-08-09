@@ -2,7 +2,9 @@ package com.qprogramming.shopper.app.shoppinglist;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.qprogramming.shopper.app.support.Utils.SHOPPING_LIST_COMPARATOR;
 
@@ -13,8 +15,8 @@ import static com.qprogramming.shopper.app.support.Utils.SHOPPING_LIST_COMPARATO
 public class ShoppingList implements Serializable, Comparable<ShoppingList> {
 
     @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_seq_gen")
+    @SequenceGenerator(name = "list_seq_gen", sequenceName = "list_id_seq", allocationSize = 1)
     private Long id;
 
     @Column
@@ -24,7 +26,13 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
     private String ownerId;
 
     @Column
+    private String ownerName;
+
+    @Column
     private boolean archived;
+
+    @ElementCollection
+    private Set<String> shared = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -50,12 +58,28 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
         this.ownerId = ownerId;
     }
 
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
     public boolean isArchived() {
         return archived;
     }
 
     public void setArchived(boolean archived) {
         this.archived = archived;
+    }
+
+    public Set<String> getShared() {
+        return shared;
+    }
+
+    public void setShared(Set<String> shared) {
+        this.shared = shared;
     }
 
     @Override

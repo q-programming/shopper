@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -102,12 +103,13 @@ public class AccountServiceTest {
 
     @Test
     public void generateIDFails2Times() throws Exception {
-        Account account1 = TestUtil.createAccount();
-        Account account2 = TestUtil.createAccount();
+        Optional<Account> account1 = Optional.of(TestUtil.createAccount());
+        Optional<Account> account2 = Optional.of(TestUtil.createAccount());
+
         when(accountRepositoryMock.findOneById(anyString()))
                 .thenReturn(account1)
                 .thenReturn(account2)
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
         accountService.generateID();
         verify(accountRepositoryMock, times(3)).findOneById(anyString());
     }

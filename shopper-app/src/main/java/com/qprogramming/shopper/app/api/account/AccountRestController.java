@@ -2,6 +2,7 @@ package com.qprogramming.shopper.app.api.account;
 
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,11 +58,13 @@ public class AccountRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/{id}/avatar", method = RequestMethod.GET)
     public ResponseEntity<?> userAvatar(@PathVariable(value = "id") String id) {
-        Account account = accountService.findById(id);
-        if (account == null) {
+        try {
+            Account account = accountService.findById(id);
+            return ResponseEntity.ok(accountService.getAccountAvatar(account));
+        } catch (AccountNotFoundException e) {
+            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(accountService.getAccountAvatar(account));
     }
 
     /**
