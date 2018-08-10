@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import sun.security.provider.SHA;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +23,10 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,6 +42,8 @@ public class ShoppingListRestControllerAccountTest extends MockedAccountTestBase
     private static final String API_LIST_URL = "/api/list/";
     private static final String SHARE = "/share";
     private static final String STOP_SHARING = "/stop-sharing";
+    private static final String ARCHIVE = "/archive";
+    private static final String DELETE = "/delete";
     private static final String MINE = "mine";
     private static final String USER = "user/";
 
@@ -234,7 +237,7 @@ public class ShoppingListRestControllerAccountTest extends MockedAccountTestBase
     }
 
     @Test
-    public void sharingOperationWithoutPermission() throws Exception {
+    public void listOperationsWithoutPermission() throws Exception {
         ShoppingList list = createList(NAME, 1L);
         Account account = TestUtil.createAccount(JOHN, DOE);
         account.setId(TestUtil.ADMIN_RANDOM_ID);
@@ -246,6 +249,84 @@ public class ShoppingListRestControllerAccountTest extends MockedAccountTestBase
         this.mvc.perform(post(API_LIST_URL + 1L + STOP_SHARING).contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.ADMIN_RANDOM_ID))
                 .andExpect(status().is4xxClientError());
+        this.mvc.perform(post(API_LIST_URL + 1L + DELETE).contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.ADMIN_RANDOM_ID))
+                .andExpect(status().is4xxClientError());
+        this.mvc.perform(post(API_LIST_URL + 1L + ARCHIVE).contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.ADMIN_RANDOM_ID))
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    public void archiveListNotFound() throws Exception {
+        this.mvc.perform(post(API_LIST_URL + 1L + ARCHIVE).contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.ADMIN_RANDOM_ID))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteListNotFound() throws Exception {
+        this.mvc.perform(post(API_LIST_URL + 1L + DELETE).contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.ADMIN_RANDOM_ID))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void archiveList() throws Exception {
+        ShoppingList list1 = createList(NAME, 1L);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list1));
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + 1 + ARCHIVE))
+                .andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.isArchived()).isTrue();
+    }
+
+    @Test
+    public void deleteList() throws Exception {
+        ShoppingList list1 = createList(NAME, 1L);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list1));
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        this.mvc.perform(post(API_LIST_URL + 1 + DELETE))
+                .andExpect(status().is2xxSuccessful());
+        verify(listRepositoryMock, times(1)).delete(list1);
+    }
+
+    @Test
+    public void archiveSharedList() throws Exception {
+        ShoppingList list = createList(NAME, 1L);
+        Account account = TestUtil.createAccount(JOHN, DOE);
+        account.setId(TestUtil.ADMIN_RANDOM_ID);
+        list.setOwnerId(account.getId());
+        list.getShared().add(testAccount.getId());
+        when(listRepositoryMock.findById(list.getId())).thenReturn(Optional.of(list));
+        when(accountServiceMock.findById(account.getId())).thenReturn(account);
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + list.getId() + ARCHIVE).contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(account.getId()))
+                .andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getShared().contains(account.getId())).isFalse();
+        assertThat(result.isArchived()).isFalse();
+    }
+
+    @Test
+    public void deleteSharedList() throws Exception {
+        ShoppingList list = createList(NAME, 1L);
+        Account account = TestUtil.createAccount(JOHN, DOE);
+        account.setId(TestUtil.ADMIN_RANDOM_ID);
+        list.setOwnerId(account.getId());
+        list.getShared().add(testAccount.getId());
+        when(listRepositoryMock.findById(list.getId())).thenReturn(Optional.of(list));
+        when(accountServiceMock.findById(account.getId())).thenReturn(account);
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        this.mvc.perform(post(API_LIST_URL + list.getId() + DELETE).contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(account.getId()))
+                .andExpect(status().is2xxSuccessful()).andReturn();
+        verify(listRepositoryMock, times(1)).save(list);
     }
 
 

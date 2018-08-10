@@ -44,7 +44,7 @@ public class ShoppingListServiceAccountTest extends MockedAccountTestBase {
         Set<ShoppingList> expected = Stream.of(list1, list2).collect(Collectors.toSet());
         when(listRepository.findAllByOwnerIdOrSharedIn(anyString(), anySet())).thenReturn(expected);
         when(accountServiceMock.findById(testAccount.getId())).thenReturn(testAccount);
-        Set<ShoppingList> result = listService.findAllByCurrentUser();
+        Set<ShoppingList> result = listService.findAllByCurrentUser(false);
         assertThat(result.containsAll(expected)).isTrue();
     }
 
@@ -54,7 +54,7 @@ public class ShoppingListServiceAccountTest extends MockedAccountTestBase {
         Set<ShoppingList> expected = Stream.of(list1).collect(Collectors.toSet());
         when(listRepository.findAllByOwnerIdOrSharedIn(anyString(), anySet())).thenReturn(expected);
         when(accountServiceMock.findById(testAccount.getId())).thenReturn(testAccount);
-        Set<ShoppingList> result = listService.findAllByAccountID(testAccount.getId());
+        Set<ShoppingList> result = listService.findAllByAccountID(testAccount.getId(),false);
         assertThat(result.containsAll(expected)).isTrue();
     }
 
@@ -65,7 +65,7 @@ public class ShoppingListServiceAccountTest extends MockedAccountTestBase {
         list2.setOwnerId(NAME);
         when(listRepository.findAllByOwnerId(testAccount.getId())).thenReturn(Arrays.asList(list1, list2));
         when(accountServiceMock.findById(testAccount.getId())).thenReturn(testAccount);
-        Set<ShoppingList> result = listService.findAllByAccountID(testAccount.getId());
+        Set<ShoppingList> result = listService.findAllByAccountID(testAccount.getId(),false);
         assertThat(result.contains(list2)).isFalse();
     }
 

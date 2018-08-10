@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by Jakub Romaniszyn on 2018-08-08
@@ -30,13 +31,14 @@ public class ShoppingListService {
         this.accountService = accountService;
     }
 
-    public Set<ShoppingList> findAllByCurrentUser() throws AccountNotFoundException {
-        return findAllByAccountID(Utils.getCurrentAccountId());
+    public Set<ShoppingList> findAllByCurrentUser(boolean archived) throws AccountNotFoundException {
+        return findAllByAccountID(Utils.getCurrentAccountId(), archived);
     }
 
-    public Set<ShoppingList> findAllByAccountID(String accountId) throws AccountNotFoundException {
+    public Set<ShoppingList> findAllByAccountID(String accountId, boolean archived) throws AccountNotFoundException {
         Account account = this.accountService.findById(accountId);
-        return this.listRepository.findAllByOwnerIdOrSharedIn(account.getId(), Collections.singleton(account.getId()));
+        Set<ShoppingList> list = this.listRepository.findAllByOwnerIdOrSharedIn(account.getId(), Collections.singleton(account.getId()));
+        return list.stream().filter(shoppingList -> shoppingList.isArchived() == archived).collect(Collectors.toSet());
     }
 
     public boolean canView(ShoppingList list) {
@@ -82,5 +84,26 @@ public class ShoppingListService {
     public ShoppingList stopSharingList(ShoppingList list, String accountID) {
         list.getShared().remove(accountID);
         return listRepository.save(list);
+    }
+
+    public ShoppingList toggleArchiveList(String id) throws ShoppingAccessException, ShoppingNotFoundException {
+        ShoppingList list = this.findByID(id);
+        String currentAccountId = Utils.getCurrentAccountId();
+        if (list.getOwnerId().equals(currentAccountId)) {
+            list.setArchived(!list.isArchived());
+            return this.listRepository.save(list);
+        } else {
+            return stopSharingList(list, currentAccountId);
+        }
+    }
+
+    public void deleteList(String id) throws ShoppingAccessException, ShoppingNotFoundException {
+        String currentAccountId = Utils.getCurrentAccountId();
+        ShoppingList list = this.findByID(id);
+        if (list.getOwnerId().equals(currentAccountId)) {
+            this.listRepository.delete(list);
+        } else {
+            stopSharingList(list, currentAccountId);
+        }
     }
 }

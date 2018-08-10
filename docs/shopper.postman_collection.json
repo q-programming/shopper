@@ -6,11 +6,11 @@
 	},
 	"item": [
 		{
-			"_postman_id": "1caf9310-7722-424b-a376-aceff3c901a3",
+			"_postman_id": "538faf40-f084-48d1-a22a-26a73d3c7fc7",
 			"name": "list",
 			"item": [
 				{
-					"_postman_id": "401fc2d7-afd0-49df-8467-60049f2af452",
+					"_postman_id": "f90ba99e-28a3-476a-9c3b-e78880345eda",
 					"name": "add list",
 					"event": [
 						{
@@ -65,7 +65,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "second list"
+							"raw": "delete me"
 						},
 						"url": {
 							"raw": "{{url}}/shopper/api/list/add",
@@ -83,7 +83,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "1a123912-da79-497f-adfe-f803b9be0161",
+					"_postman_id": "6ff67cf1-7c18-4345-a444-9d0f50d3bf39",
 					"name": "get all current user lists",
 					"event": [
 						{
@@ -154,15 +154,458 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"_postman_id": "04ddcba6-2aee-4342-b65c-96def936174f",
+					"name": "get all for use with ID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4dd537a2-411d-4074-acd7-e6f9bbf0e76f",
+								"type": "text/javascript",
+								"exec": [
+									"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+									"pm.environment.set('XSRF-TOKEN', cookieValue);"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "kubarom@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "{{XSRF-TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "new list"
+						},
+						"url": {
+							"raw": "{{url}}/shopper/api/list/user/b8ebc0f5-746a-4b51-9733-d854a1812ec1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shopper",
+								"api",
+								"list",
+								"user",
+								"b8ebc0f5-746a-4b51-9733-d854a1812ec1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "33bfc694-5a99-403f-9e68-ba37879c76f7",
+					"name": "getlist with id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4dd537a2-411d-4074-acd7-e6f9bbf0e76f",
+								"type": "text/javascript",
+								"exec": [
+									"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+									"pm.environment.set('XSRF-TOKEN', cookieValue);"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "kubarom@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "{{XSRF-TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "new list"
+						},
+						"url": {
+							"raw": "{{url}}/shopper/api/list/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shopper",
+								"api",
+								"list",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "af12df8d-f2b6-4ba3-a1af-b964453fa699",
+					"name": "share",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4dd537a2-411d-4074-acd7-e6f9bbf0e76f",
+								"type": "text/javascript",
+								"exec": [
+									"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+									"pm.environment.set('XSRF-TOKEN', cookieValue);"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "kubarom@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "{{XSRF-TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "b8ebc0f5-746a-4b51-9733-d854a1812ec1"
+						},
+						"url": {
+							"raw": "{{url}}/shopper/api/list/1/share",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shopper",
+								"api",
+								"list",
+								"1",
+								"share"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "e0e70684-cf2e-4201-b4d2-c3c94ea42394",
+					"name": "stop sharing",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4dd537a2-411d-4074-acd7-e6f9bbf0e76f",
+								"type": "text/javascript",
+								"exec": [
+									"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+									"pm.environment.set('XSRF-TOKEN', cookieValue);"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "kubarom@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "{{XSRF-TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "b8ebc0f5-746a-4b51-9733-d854a1812ec1"
+						},
+						"url": {
+							"raw": "{{url}}/shopper/api/list/1/stop-sharing",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shopper",
+								"api",
+								"list",
+								"1",
+								"stop-sharing"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "4b003bb3-a0e4-47bd-a8b9-c1b25f6aa680",
+					"name": "archive list",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4dd537a2-411d-4074-acd7-e6f9bbf0e76f",
+								"type": "text/javascript",
+								"exec": [
+									"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+									"pm.environment.set('XSRF-TOKEN', cookieValue);"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "kubarom@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "{{XSRF-TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "b8ebc0f5-746a-4b51-9733-d854a1812ec1"
+						},
+						"url": {
+							"raw": "{{url}}/shopper/api/list/1/archive",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shopper",
+								"api",
+								"list",
+								"1",
+								"archive"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "487b84fa-516c-4465-97e3-965301697f3a",
+					"name": "delete list",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4dd537a2-411d-4074-acd7-e6f9bbf0e76f",
+								"type": "text/javascript",
+								"exec": [
+									"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+									"pm.environment.set('XSRF-TOKEN', cookieValue);"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "kubarom@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-XSRF-TOKEN",
+								"value": "{{XSRF-TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "b8ebc0f5-746a-4b51-9733-d854a1812ec1"
+						},
+						"url": {
+							"raw": "{{url}}/shopper/api/list/3/delete",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shopper",
+								"api",
+								"list",
+								"3",
+								"delete"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
 		{
-			"_postman_id": "da0779dd-b94f-4bc9-95f2-425abed7d78a",
+			"_postman_id": "95be50fd-b0ff-445a-a205-1fc3a5bcf764",
 			"name": "account",
 			"item": [
 				{
-					"_postman_id": "b05e21b7-ea5f-42b6-9e3f-0ba52fa4e13b",
+					"_postman_id": "f6f0d725-2011-4b1d-b861-468a653c9a26",
 					"name": "change language",
 					"event": [
 						{
@@ -239,7 +682,7 @@
 			]
 		},
 		{
-			"_postman_id": "78093eaf-3af3-4859-8c3e-d3466bbf79af",
+			"_postman_id": "3064b69e-eae3-4753-bc31-1b077ecfd7fa",
 			"name": "refresh",
 			"event": [
 				{

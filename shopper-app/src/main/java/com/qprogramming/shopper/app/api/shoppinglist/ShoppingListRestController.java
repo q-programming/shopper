@@ -43,9 +43,9 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/mine", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<Set<ShoppingList>> getCurrentUserLists() {
+    public ResponseEntity<Set<ShoppingList>> getCurrentUserLists(@RequestParam(required = false) boolean archived) {
         try {
-            return ResponseEntity.ok(this.listService.findAllByCurrentUser());
+            return ResponseEntity.ok(this.listService.findAllByCurrentUser(archived));
         } catch (AccountNotFoundException e) {
             LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
             return ResponseEntity.notFound().build();
@@ -59,10 +59,10 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<Set<ShoppingList>> getUsersLists(@PathVariable String id) {
+    public ResponseEntity<Set<ShoppingList>> getUsersLists(@PathVariable String id, @RequestParam(required = false) boolean archived) {
         try {
             return ResponseEntity.ok(
-                    this.listService.findAllByAccountID(id)
+                    this.listService.findAllByAccountID(id, archived)
                             .stream()
                             .filter(listService::canView)
                             .collect(Collectors.toSet()));
@@ -148,6 +148,47 @@ public class ShoppingListRestController {
             ShoppingList list = this.listService.findByID(id);
             list = this.listService.stopSharingList(list, accountID);
             return ResponseEntity.ok(list);
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    /**
+     * Toggles archived property on list with id .If currently logged in user is not an owner , he/she will just remove himself from shares of that list
+     *
+     * @param id shopping lis id
+     * @return true if operation was success
+     */
+    @RequestMapping(value = "/{id}/archive", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<ShoppingList> archiveList(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(this.listService.toggleArchiveList(id));
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    /**
+     * Delete list with id . If currently logged in user is not an owner , he/she will just remove himself from shares of that list
+     *
+     * @param id shopping lis id
+     * @return true if operation was success
+     */
+    @RequestMapping(value = "/{id}/delete", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> deleteList(@PathVariable String id) {
+        try {
+            this.listService.deleteList(id);
+            return ResponseEntity.ok().build();
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
