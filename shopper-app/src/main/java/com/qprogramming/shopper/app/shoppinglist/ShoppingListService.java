@@ -53,7 +53,7 @@ public class ShoppingListService {
         list.setName(name);
         list.setOwnerId(currentAccount.getId());
         list.setOwnerName(currentAccount.getName());
-        return listRepository.save(list);
+        return this.save(list);
     }
 
     /**
@@ -78,12 +78,12 @@ public class ShoppingListService {
     public ShoppingList shareList(ShoppingList list, String accountID) throws AccountNotFoundException {
         Account account = accountService.findById(accountID);
         list.getShared().add(account.getId());
-        return listRepository.save(list);
+        return this.save(list);
     }
 
     public ShoppingList stopSharingList(ShoppingList list, String accountID) {
         list.getShared().remove(accountID);
-        return listRepository.save(list);
+        return this.save(list);
     }
 
     public ShoppingList toggleArchiveList(String id) throws ShoppingAccessException, ShoppingNotFoundException {
@@ -91,7 +91,7 @@ public class ShoppingListService {
         String currentAccountId = Utils.getCurrentAccountId();
         if (list.getOwnerId().equals(currentAccountId)) {
             list.setArchived(!list.isArchived());
-            return this.listRepository.save(list);
+            return this.save(list);
         } else {
             return stopSharingList(list, currentAccountId);
         }
@@ -105,5 +105,15 @@ public class ShoppingListService {
         } else {
             stopSharingList(list, currentAccountId);
         }
+    }
+
+    /**
+     * Saves passed list
+     *
+     * @param list list to be saved
+     * @return saved/updated list
+     */
+    public ShoppingList save(ShoppingList list) {
+        return this.listRepository.save(list);
     }
 }

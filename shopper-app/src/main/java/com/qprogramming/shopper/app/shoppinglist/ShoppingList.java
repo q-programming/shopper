@@ -1,5 +1,7 @@
 package com.qprogramming.shopper.app.shoppinglist;
 
+import com.qprogramming.shopper.app.items.ListItem;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -33,6 +35,9 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
 
     @ElementCollection
     private Set<String> shared = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ListItem> items = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -80,6 +85,14 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
 
     public void setShared(Set<String> shared) {
         this.shared = shared;
+    }
+
+    public Set<ListItem> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<ListItem> items) {
+        this.items = items;
     }
 
     @Override

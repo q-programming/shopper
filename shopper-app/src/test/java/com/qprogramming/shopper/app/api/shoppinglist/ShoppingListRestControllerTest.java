@@ -5,6 +5,10 @@ import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.exceptions.BadProductNameException;
+import com.qprogramming.shopper.app.exceptions.ProductNotFoundException;
+import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.items.ListItemService;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
@@ -34,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by Jakub Romaniszyn on 2018-08-08
  */
-public class ShoppingListRestControllerAccountTest extends MockedAccountTestBase {
+public class ShoppingListRestControllerTest extends MockedAccountTestBase {
 
     private static final String NAME = "name";
     private static final String JOHN = "John";
@@ -46,11 +50,14 @@ public class ShoppingListRestControllerAccountTest extends MockedAccountTestBase
     private static final String DELETE = "/delete";
     private static final String MINE = "mine";
     private static final String USER = "user/";
+    private static final String ITEM_ADD = "/item-add";
 
     @Mock
     private ShoppingListRepository listRepositoryMock;
     @Mock
     private AccountService accountServiceMock;
+    @Mock
+    private ListItemService listItemServiceMock;
 
     private ShoppingListService listService;
     private ShoppingListRestController controller;
@@ -60,7 +67,7 @@ public class ShoppingListRestControllerAccountTest extends MockedAccountTestBase
     public void setup() {
         super.setup();
         listService = new ShoppingListService(listRepositoryMock, accountServiceMock);
-        controller = new ShoppingListRestController(listService);
+        controller = new ShoppingListRestController(listService, listItemServiceMock);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
     }
@@ -327,6 +334,68 @@ public class ShoppingListRestControllerAccountTest extends MockedAccountTestBase
                 .content(account.getId()))
                 .andExpect(status().is2xxSuccessful()).andReturn();
         verify(listRepositoryMock, times(1)).save(list);
+    }
+
+    @Test
+    public void addItemTest() throws Exception, BadProductNameException {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        ShoppingList list = createList(NAME, 1L);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listItemServiceMock.createListItem(any(ListItem.class))).then(returnsFirstArg());
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + list.getId() + ITEM_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(listItem))).andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getItems().size() == 1).isTrue();
+        assertThat(result.getItems().contains(listItem)).isTrue();
+    }
+
+    @Test
+    public void addItemBadProductName() throws Exception, BadProductNameException {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        ShoppingList list = createList(NAME, 1L);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listItemServiceMock.createListItem(any(ListItem.class))).thenThrow(new BadProductNameException());
+        this.mvc.perform(post(API_LIST_URL + list.getId() + ITEM_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addItemProductNotFound() throws Exception, BadProductNameException {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        ShoppingList list = createList(NAME, 1L);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listItemServiceMock.createListItem(any(ListItem.class))).thenThrow(new ProductNotFoundException());
+        this.mvc.perform(post(API_LIST_URL + list.getId() + ITEM_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void addItemListNotFound() throws Exception, BadProductNameException {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.empty());
+        this.mvc.perform(post(API_LIST_URL + 1 + ITEM_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void addItemListNoPermission() throws Exception {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        ShoppingList list1 = createList(NAME, 1L);
+        list1.setOwnerId(NAME);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list1));
+        this.mvc.perform(post(API_LIST_URL + 1 + ITEM_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                .andExpect(status().isForbidden());
     }
 
 

@@ -13,7 +13,7 @@ security:
         userInfoUri: "*"
 logging:
   level:
-    org.springframework.security: DEBUG
+    org.springframework.security: ERROR
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
 spring:
   mail:

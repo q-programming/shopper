@@ -1,20 +1,17 @@
 package com.qprogramming.shopper.app.account;
 
+import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.authority.AuthorityService;
 import com.qprogramming.shopper.app.account.authority.Role;
 import com.qprogramming.shopper.app.account.avatar.Avatar;
 import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
-import com.qprogramming.shopper.app.config.MockSecurityContext;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,14 +29,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-public class AccountServiceTest {
+public class AccountServiceTest extends MockedAccountTestBase {
 
     public static final String STATIC_IMAGES_LOGO_WHITE_PNG = "static/assets/images/logo_white.png";
     public static final String STATIC_AVATAR_PLACEHOLDER = "static/assets/images/avatar-placeholder.png";
-    @Mock
-    private MockSecurityContext securityMock;
-    @Mock
-    private Authentication authMock;
     @Mock
     private AccountRepository accountRepositoryMock;
     @Mock
@@ -53,16 +46,17 @@ public class AccountServiceTest {
     @Mock
     private HttpServletResponse responseMock;
 
-    private Account testAccount;
     private AccountService accountService;
+
+
+    @Before
+    @Override
+    public void setup() {
+        super.setup();
+    }
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        testAccount = TestUtil.createAccount();
-        when(securityMock.getAuthentication()).thenReturn(authMock);
-        when(authMock.getPrincipal()).thenReturn(testAccount);
-        SecurityContextHolder.setContext(securityMock);
         accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock) {
             @Override
             protected byte[] downloadFromUrl(URL url) {

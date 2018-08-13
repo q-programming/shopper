@@ -3,6 +3,8 @@ package com.qprogramming.shopper.app;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.authority.Authority;
 import com.qprogramming.shopper.app.account.authority.Role;
+import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
@@ -102,6 +104,20 @@ public class TestUtil {
         list.setId(id);
         list.setOwnerId(testAccount.getId());
         return list;
+    }
+
+    public static ListItem createListItem(String name) {
+        ListItem listItem = new ListItem();
+        listItem.setQuantity(1);
+        listItem.setUnit("kg");
+        listItem.setProduct(createProduct(name));
+        return listItem;
+    }
+
+    public static Product createProduct(String name) {
+        Product product = new Product();
+        product.setName(name);
+        return product;
     }
 
 }

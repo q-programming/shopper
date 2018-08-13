@@ -1,23 +1,27 @@
 package com.qprogramming.shopper.app.api.shoppinglist;
 
-import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
-import com.qprogramming.shopper.app.exceptions.ShoppingAccessException;
-import com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException;
+import com.qprogramming.shopper.app.exceptions.*;
+import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.items.ListItemService;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.support.Utils;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.qprogramming.shopper.app.exceptions.AccountNotFoundException.ACCOUNT_WITH_ID_WAS_NOT_FOUND;
+import static com.qprogramming.shopper.app.exceptions.BadProductNameException.BAD_PRODUCT_NAME;
+import static com.qprogramming.shopper.app.exceptions.ProductNotFoundException.PRODUCT_NOT_FOUND;
 import static com.qprogramming.shopper.app.exceptions.ShoppingAccessException.ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID;
 import static com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException.SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND;
 
@@ -30,10 +34,12 @@ public class ShoppingListRestController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ShoppingListRestController.class);
     private ShoppingListService listService;
+    private ListItemService listItemService;
 
     @Autowired
-    public ShoppingListRestController(ShoppingListService listService) {
+    public ShoppingListRestController(ShoppingListService listService, ListItemService listItemService) {
         this.listService = listService;
+        this.listItemService = listItemService;
     }
 
     /**
@@ -43,6 +49,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/mine", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
     public ResponseEntity<Set<ShoppingList>> getCurrentUserLists(@RequestParam(required = false) boolean archived) {
         try {
             return ResponseEntity.ok(this.listService.findAllByCurrentUser(archived));
@@ -97,6 +104,7 @@ public class ShoppingListRestController {
     public ResponseEntity<ShoppingList> getList(@PathVariable String id) {
         try {
             ShoppingList list = listService.findByID(id);
+            Hibernate.initialize(list.getItems());
             return ResponseEntity.ok(list);
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
@@ -198,5 +206,33 @@ public class ShoppingListRestController {
         }
     }
 
-
+    /**
+     * Add list item to list with id .
+     *
+     * @param id shopping lis id
+     * @return updated shopping list if operation was successful
+     */
+    @RequestMapping(value = "/{id}/item-add", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
+    public ResponseEntity<ShoppingList> addItem(@PathVariable String id, @RequestBody ListItem item) {
+        try {
+            ShoppingList list = listService.findByID(id);
+            ListItem listItem = this.listItemService.createListItem(item);
+            list.getItems().add(listItem);
+            return ResponseEntity.ok(listService.save(list));
+        } catch (ProductNotFoundException e) {
+            LOG.error(PRODUCT_NOT_FOUND, item.getProduct().getId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (BadProductNameException e) {
+            LOG.error(BAD_PRODUCT_NAME);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 }
