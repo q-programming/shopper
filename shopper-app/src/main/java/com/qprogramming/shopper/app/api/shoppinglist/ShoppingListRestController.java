@@ -245,11 +245,10 @@ public class ShoppingListRestController {
     @RequestMapping(value = "/{id}/item-update", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
-    public ResponseEntity<ShoppingList> updateItem(@PathVariable String id, @RequestBody ListItem item) {
+    public ResponseEntity<ListItem> updateItem(@PathVariable String id, @RequestBody ListItem item) {
         try {
-            ShoppingList list = _listService.findByID(id);
-            _listItemService.update(item);
-            return ResponseEntity.ok(_listService.save(list));
+            _listService.findByID(id);
+            return ResponseEntity.ok(_listItemService.update(item));
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -299,12 +298,11 @@ public class ShoppingListRestController {
     @RequestMapping(value = "/{id}/item-toggle", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
-    public ResponseEntity<ShoppingList> toggleItem(@PathVariable String id, @RequestBody ListItem item) {
+    public ResponseEntity<ListItem> toggleItem(@PathVariable String id, @RequestBody ListItem item) {
         try {
             ShoppingList list = _listService.findByID(id);//just verify that list exists and user has access
             item = _listItemService.findById(item.getId());
-            _listItemService.toggleItem(item);
-            return ResponseEntity.ok(_listService.save(list));
+            return ResponseEntity.ok(_listItemService.toggleItem(item));
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
