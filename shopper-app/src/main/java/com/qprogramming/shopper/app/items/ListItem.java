@@ -94,16 +94,13 @@ public class ListItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ListItem listItem = (ListItem) o;
-        return quantity == listItem.quantity &&
-                done == listItem.done &&
-                Objects.equals(id, listItem.id) &&
+        return Objects.equals(id, listItem.id) &&
                 Objects.equals(product, listItem.product) &&
-                Objects.equals(description, listItem.description) &&
                 Objects.equals(unit, listItem.unit);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, product, description, quantity, unit, done);
+        return Objects.hash(id, product, unit);
     }
 }

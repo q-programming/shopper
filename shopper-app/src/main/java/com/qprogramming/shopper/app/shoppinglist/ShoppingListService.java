@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
 @Service
 public class ShoppingListService {
 
-    private ShoppingListRepository listRepository;
-    private AccountService accountService;
+    private ShoppingListRepository _listRepository;
+    private AccountService _accountService;
 
     @Autowired
     public ShoppingListService(ShoppingListRepository listRepository, AccountService accountService) {
-        this.listRepository = listRepository;
-        this.accountService = accountService;
+        this._listRepository = listRepository;
+        this._accountService = accountService;
     }
 
     public Set<ShoppingList> findAllByCurrentUser(boolean archived) throws AccountNotFoundException {
@@ -36,8 +36,8 @@ public class ShoppingListService {
     }
 
     public Set<ShoppingList> findAllByAccountID(String accountId, boolean archived) throws AccountNotFoundException {
-        Account account = this.accountService.findById(accountId);
-        Set<ShoppingList> list = this.listRepository.findAllByOwnerIdOrSharedIn(account.getId(), Collections.singleton(account.getId()));
+        Account account = this._accountService.findById(accountId);
+        Set<ShoppingList> list = this._listRepository.findAllByOwnerIdOrSharedIn(account.getId(), Collections.singleton(account.getId()));
         return list.stream().filter(shoppingList -> shoppingList.isArchived() == archived).collect(Collectors.toSet());
     }
 
@@ -64,7 +64,7 @@ public class ShoppingListService {
      * @throws ShoppingAccessException if currently logged in user don't have access to list
      */
     public ShoppingList findByID(String id) throws ShoppingAccessException, ShoppingNotFoundException {
-        Optional<ShoppingList> listOptional = listRepository.findById(Long.valueOf(id));
+        Optional<ShoppingList> listOptional = _listRepository.findById(Long.valueOf(id));
         if (listOptional.isPresent()) {
             ShoppingList shoppingList = listOptional.get();
             if (!canView(shoppingList)) {
@@ -75,8 +75,9 @@ public class ShoppingListService {
         throw new ShoppingNotFoundException();
     }
 
+
     public ShoppingList shareList(ShoppingList list, String accountID) throws AccountNotFoundException {
-        Account account = accountService.findById(accountID);
+        Account account = _accountService.findById(accountID);
         list.getShared().add(account.getId());
         return this.save(list);
     }
@@ -101,7 +102,7 @@ public class ShoppingListService {
         String currentAccountId = Utils.getCurrentAccountId();
         ShoppingList list = this.findByID(id);
         if (list.getOwnerId().equals(currentAccountId)) {
-            this.listRepository.delete(list);
+            this._listRepository.delete(list);
         } else {
             stopSharingList(list, currentAccountId);
         }
@@ -114,6 +115,6 @@ public class ShoppingListService {
      * @return saved/updated list
      */
     public ShoppingList save(ShoppingList list) {
-        return this.listRepository.save(list);
+        return this._listRepository.save(list);
     }
 }

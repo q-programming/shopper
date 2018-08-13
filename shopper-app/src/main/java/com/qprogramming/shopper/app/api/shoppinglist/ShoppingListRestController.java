@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.qprogramming.shopper.app.exceptions.AccountNotFoundException.ACCOUNT_WITH_ID_WAS_NOT_FOUND;
 import static com.qprogramming.shopper.app.exceptions.BadProductNameException.BAD_PRODUCT_NAME;
+import static com.qprogramming.shopper.app.exceptions.ItemNotFoundException.ITEM_NOT_FOUND;
 import static com.qprogramming.shopper.app.exceptions.ProductNotFoundException.PRODUCT_NOT_FOUND;
 import static com.qprogramming.shopper.app.exceptions.ShoppingAccessException.ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID;
 import static com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException.SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND;
@@ -33,13 +34,13 @@ import static com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException.
 public class ShoppingListRestController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ShoppingListRestController.class);
-    private ShoppingListService listService;
-    private ListItemService listItemService;
+    private ShoppingListService _listService;
+    private ListItemService _listItemService;
 
     @Autowired
     public ShoppingListRestController(ShoppingListService listService, ListItemService listItemService) {
-        this.listService = listService;
-        this.listItemService = listItemService;
+        this._listService = listService;
+        this._listItemService = listItemService;
     }
 
     /**
@@ -52,7 +53,7 @@ public class ShoppingListRestController {
     @Transactional
     public ResponseEntity<Set<ShoppingList>> getCurrentUserLists(@RequestParam(required = false) boolean archived) {
         try {
-            return ResponseEntity.ok(this.listService.findAllByCurrentUser(archived));
+            return ResponseEntity.ok(_listService.findAllByCurrentUser(archived));
         } catch (AccountNotFoundException e) {
             LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
             return ResponseEntity.notFound().build();
@@ -69,9 +70,9 @@ public class ShoppingListRestController {
     public ResponseEntity<Set<ShoppingList>> getUsersLists(@PathVariable String id, @RequestParam(required = false) boolean archived) {
         try {
             return ResponseEntity.ok(
-                    this.listService.findAllByAccountID(id, archived)
+                    _listService.findAllByAccountID(id, archived)
                             .stream()
-                            .filter(listService::canView)
+                            .filter(_listService::canView)
                             .collect(Collectors.toSet()));
         } catch (AccountNotFoundException e) {
             LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, id);
@@ -89,7 +90,7 @@ public class ShoppingListRestController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ShoppingList> addNewList(@RequestBody String name) {
-        return ResponseEntity.ok(this.listService.addList(name));
+        return ResponseEntity.ok(_listService.addList(name));
     }
 
     /**
@@ -103,7 +104,7 @@ public class ShoppingListRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ShoppingList> getList(@PathVariable String id) {
         try {
-            ShoppingList list = listService.findByID(id);
+            ShoppingList list = _listService.findByID(id);
             Hibernate.initialize(list.getItems());
             return ResponseEntity.ok(list);
         } catch (ShoppingAccessException e) {
@@ -127,8 +128,8 @@ public class ShoppingListRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ShoppingList> shareList(@RequestBody String accountID, @PathVariable String id) {
         try {
-            ShoppingList list = this.listService.findByID(id);
-            list = this.listService.shareList(list, accountID);
+            ShoppingList list = _listService.findByID(id);
+            list = _listService.shareList(list, accountID);
             return ResponseEntity.ok(list);
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
@@ -153,8 +154,8 @@ public class ShoppingListRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ShoppingList> stopSharingList(@RequestBody String accountID, @PathVariable String id) {
         try {
-            ShoppingList list = this.listService.findByID(id);
-            list = this.listService.stopSharingList(list, accountID);
+            ShoppingList list = _listService.findByID(id);
+            list = _listService.stopSharingList(list, accountID);
             return ResponseEntity.ok(list);
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
@@ -175,7 +176,7 @@ public class ShoppingListRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ShoppingList> archiveList(@PathVariable String id) {
         try {
-            return ResponseEntity.ok(this.listService.toggleArchiveList(id));
+            return ResponseEntity.ok(_listService.toggleArchiveList(id));
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -195,7 +196,7 @@ public class ShoppingListRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> deleteList(@PathVariable String id) {
         try {
-            this.listService.deleteList(id);
+            _listService.deleteList(id);
             return ResponseEntity.ok().build();
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
@@ -217,10 +218,9 @@ public class ShoppingListRestController {
     @Transactional
     public ResponseEntity<ShoppingList> addItem(@PathVariable String id, @RequestBody ListItem item) {
         try {
-            ShoppingList list = listService.findByID(id);
-            ListItem listItem = this.listItemService.createListItem(item);
-            list.getItems().add(listItem);
-            return ResponseEntity.ok(listService.save(list));
+            ShoppingList list = _listService.findByID(id);
+            _listItemService.addItemToList(list, item);
+            return ResponseEntity.ok(_listService.save(list));
         } catch (ProductNotFoundException e) {
             LOG.error(PRODUCT_NOT_FOUND, item.getProduct().getId());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -232,6 +232,87 @@ public class ShoppingListRestController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
             LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    /**
+     * Add list item to list with id .
+     *
+     * @param id shopping lis id
+     * @return updated shopping list if operation was successful
+     */
+    @RequestMapping(value = "/{id}/item-update", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
+    public ResponseEntity<ShoppingList> updateItem(@PathVariable String id, @RequestBody ListItem item) {
+        try {
+            ShoppingList list = _listService.findByID(id);
+            _listItemService.update(item);
+            return ResponseEntity.ok(_listService.save(list));
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ItemNotFoundException e) {
+            LOG.error(ITEM_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    /**
+     * delete list item from list with id .
+     *
+     * @param id shopping lis id
+     * @return updated shopping list if operation was successful
+     */
+    @RequestMapping(value = "/{id}/item-delete", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
+    public ResponseEntity<ShoppingList> deleteItem(@PathVariable String id, @RequestBody ListItem item) {
+        try {
+            ShoppingList list = _listService.findByID(id);
+            item = _listItemService.findById(item.getId());
+            list.getItems().remove(item);
+            _listItemService.deleteListItem(item);
+            return ResponseEntity.ok(_listService.save(list));
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ItemNotFoundException e) {
+            LOG.error(ITEM_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    /**
+     * delete list item from list with id .
+     *
+     * @param id shopping lis id
+     * @return updated shopping list if operation was successful
+     */
+    @RequestMapping(value = "/{id}/item-toggle", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
+    public ResponseEntity<ShoppingList> toggleItem(@PathVariable String id, @RequestBody ListItem item) {
+        try {
+            ShoppingList list = _listService.findByID(id);//just verify that list exists and user has access
+            item = _listItemService.findById(item.getId());
+            _listItemService.toggleItem(item);
+            return ResponseEntity.ok(_listService.save(list));
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ItemNotFoundException e) {
+            LOG.error(ITEM_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
