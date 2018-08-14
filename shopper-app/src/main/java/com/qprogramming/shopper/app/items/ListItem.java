@@ -1,5 +1,6 @@
 package com.qprogramming.shopper.app.items;
 
+import com.qprogramming.shopper.app.items.category.Category;
 import com.qprogramming.shopper.app.items.product.Product;
 
 import javax.persistence.*;
@@ -22,12 +23,17 @@ public class ListItem {
     @Column(length = 1000)
     private String description;
 
-    @Column
-    private int quantity;
+    @Column(precision = 2, scale = 2)
+    private float quantity;
 
     @Column
     private String unit;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "name")
+    private Category category;
+
+    @Column
     private boolean done;
 
 
@@ -55,11 +61,11 @@ public class ListItem {
         this.description = description;
     }
 
-    public int getQuantity() {
+    public float getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(float quantity) {
         this.quantity = quantity;
     }
 
@@ -79,13 +85,22 @@ public class ListItem {
         this.done = done;
     }
 
+    public Category getCategory() {
+        return category == null ? Category.OTHER : category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
         return "ListItem{" +
                 "id=" + id +
                 ", product=" + product +
                 ", quantity=" + quantity +
-                ", done=" + done +
+                ", unit='" + unit + '\'' +
+                ", category=" + category +
                 '}';
     }
 

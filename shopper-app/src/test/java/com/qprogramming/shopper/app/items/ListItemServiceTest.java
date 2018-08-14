@@ -42,7 +42,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
         ListItem item = TestUtil.createListItem(NAME);
         when(productRepositoryMock.save(any(Product.class))).then(returnsFirstArg());
         ListItem listItem = listItemService.createListItem(item);
-        verify(productRepositoryMock, times(1)).save(item.getProduct());
+        verify(productRepositoryMock, times(2)).save(item.getProduct());
         verify(listItemRepositoryMock, times(1)).save(item);
     }
 

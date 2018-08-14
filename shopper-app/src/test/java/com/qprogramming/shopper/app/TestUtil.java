@@ -6,6 +6,7 @@ import com.qprogramming.shopper.app.account.authority.Role;
 import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.springframework.http.MediaType;
@@ -41,21 +42,25 @@ public class TestUtil {
     public static byte[] convertObjectToJsonBytes(Object object)
             throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.writeValueAsBytes(object);
     }
 
     public static <T> T convertJsonToObject(String json, Class<T> object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, object);
     }
 
     public static <T> List<T> convertJsonToList(String json, Class<List> listClass, Class<T> elementClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, TypeFactory.defaultInstance().constructCollectionType(listClass, elementClass));
     }
 
     public static <T, V> Map<T, V> convertJsonToTreeMap(String json, Class<T> keyClass, Class<V> valueClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, TypeFactory.defaultInstance().constructMapType(TreeMap.class, keyClass, valueClass));
     }
 

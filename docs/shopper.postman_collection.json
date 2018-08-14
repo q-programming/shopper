@@ -6,11 +6,307 @@
 	},
 	"item": [
 		{
-			"_postman_id": "538faf40-f084-48d1-a22a-26a73d3c7fc7",
 			"name": "list",
 			"item": [
 				{
-					"_postman_id": "f90ba99e-28a3-476a-9c3b-e78880345eda",
+					"name": "item",
+					"item": [
+						{
+							"name": "add item",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+										"type": "text/javascript",
+										"exec": [
+											"",
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "4dd537a2-411d-4074-acd7-e6f9bbf0e76f",
+										"type": "text/javascript",
+										"exec": [
+											"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+											"pm.environment.set('XSRF-TOKEN', cookieValue);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "kubarom@gmail.com",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "X-XSRF-TOKEN",
+										"value": "{{XSRF-TOKEN}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"product\": {\n\t\t\"name\": \"CARROT\"\n\t},\n\t\"description\": \"some description to delete\",\n\t\"quantity\": 1,\n\t\"unit\": \"kg\"\n\t\n}"
+								},
+								"url": {
+									"raw": "{{url}}/shopper/api/list/1/item-add",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopper",
+										"api",
+										"list",
+										"1",
+										"item-add"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete item",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+										"type": "text/javascript",
+										"exec": [
+											"",
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "4dd537a2-411d-4074-acd7-e6f9bbf0e76f",
+										"type": "text/javascript",
+										"exec": [
+											"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+											"pm.environment.set('XSRF-TOKEN', cookieValue);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "kubarom@gmail.com",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "X-XSRF-TOKEN",
+										"value": "{{XSRF-TOKEN}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"id\":10\n}"
+								},
+								"url": {
+									"raw": "{{url}}/shopper/api/list/1/item-delete",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopper",
+										"api",
+										"list",
+										"1",
+										"item-delete"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "toggle item",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+										"type": "text/javascript",
+										"exec": [
+											"",
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "4dd537a2-411d-4074-acd7-e6f9bbf0e76f",
+										"type": "text/javascript",
+										"exec": [
+											"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+											"pm.environment.set('XSRF-TOKEN', cookieValue);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "kubarom@gmail.com",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "X-XSRF-TOKEN",
+										"value": "{{XSRF-TOKEN}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"id\":8\n}"
+								},
+								"url": {
+									"raw": "{{url}}/shopper/api/list/1/item-toggle",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopper",
+										"api",
+										"list",
+										"1",
+										"item-toggle"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update item",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+										"type": "text/javascript",
+										"exec": [
+											"",
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "4dd537a2-411d-4074-acd7-e6f9bbf0e76f",
+										"type": "text/javascript",
+										"exec": [
+											"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+											"pm.environment.set('XSRF-TOKEN', cookieValue);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "kubarom@gmail.com",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "X-XSRF-TOKEN",
+										"value": "{{XSRF-TOKEN}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"id\": 3,\r\n\t\"product\": {\r\n\t\t\"id\": 3,\r\n\t\t\"name\": \"new product\"\r\n\t},\r\n\t\"description\": \"some new description\",\r\n\t\"quantity\": 2,\r\n\t\"unit\": \"l\",\r\n\t\"done\": false\r\n\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{url}}/shopper/api/list/1/item-update",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopper",
+										"api",
+										"list",
+										"1",
+										"item-update"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
 					"name": "add list",
 					"event": [
 						{
@@ -83,7 +379,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "6ff67cf1-7c18-4345-a444-9d0f50d3bf39",
 					"name": "get all current user lists",
 					"event": [
 						{
@@ -156,7 +451,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "04ddcba6-2aee-4342-b65c-96def936174f",
 					"name": "get all for use with ID",
 					"event": [
 						{
@@ -230,7 +524,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "33bfc694-5a99-403f-9e68-ba37879c76f7",
 					"name": "getlist with id",
 					"event": [
 						{
@@ -288,7 +581,7 @@
 							"raw": "new list"
 						},
 						"url": {
-							"raw": "{{url}}/shopper/api/list/2",
+							"raw": "{{url}}/shopper/api/list/1",
 							"host": [
 								"{{url}}"
 							],
@@ -296,14 +589,13 @@
 								"shopper",
 								"api",
 								"list",
-								"2"
+								"1"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"_postman_id": "af12df8d-f2b6-4ba3-a1af-b964453fa699",
 					"name": "share",
 					"event": [
 						{
@@ -377,7 +669,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "e0e70684-cf2e-4201-b4d2-c3c94ea42394",
 					"name": "stop sharing",
 					"event": [
 						{
@@ -451,7 +742,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "4b003bb3-a0e4-47bd-a8b9-c1b25f6aa680",
 					"name": "archive list",
 					"event": [
 						{
@@ -525,7 +815,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "487b84fa-516c-4465-97e3-965301697f3a",
 					"name": "delete list",
 					"event": [
 						{
@@ -601,11 +890,9 @@
 			]
 		},
 		{
-			"_postman_id": "95be50fd-b0ff-445a-a205-1fc3a5bcf764",
 			"name": "account",
 			"item": [
 				{
-					"_postman_id": "f6f0d725-2011-4b1d-b861-468a653c9a26",
 					"name": "change language",
 					"event": [
 						{
@@ -682,7 +969,6 @@
 			]
 		},
 		{
-			"_postman_id": "3064b69e-eae3-4753-bc31-1b077ecfd7fa",
 			"name": "refresh",
 			"event": [
 				{

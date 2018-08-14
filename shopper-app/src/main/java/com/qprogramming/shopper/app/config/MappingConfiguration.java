@@ -17,6 +17,7 @@ public class MappingConfiguration {
     @Bean
     public Jackson2ObjectMapperBuilder configureObjectMapper() {
         return new Jackson2ObjectMapperBuilder()
+                .failOnUnknownProperties(false)
                 .modulesToInstall(Hibernate5Module.class);
     }
 
