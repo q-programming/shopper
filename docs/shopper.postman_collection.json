@@ -139,7 +139,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"id\":10\n}"
+									"raw": "{\n\t\"id\":11\n}"
 								},
 								"url": {
 									"raw": "{{url}}/shopper/api/list/1/item-delete",
