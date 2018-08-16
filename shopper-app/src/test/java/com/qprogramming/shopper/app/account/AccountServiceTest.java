@@ -72,7 +72,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void createOAuthAdminAccount() throws Exception {
+    public void createOAuthAdminAccountTest() throws Exception {
         Account account = TestUtil.createAccount();
         account.setLanguage("");
         when(authorityServiceMock.findByRole(Role.ROLE_USER)).thenReturn(TestUtil.createUserAuthority());
@@ -85,7 +85,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void createOAuthLocalAccount() throws Exception {
+    public void createOAuthLocalAccountTest() throws Exception {
         Account account = TestUtil.createAccount();
         when(accountRepositoryMock.findAll()).thenReturn(Collections.singletonList(testAccount));
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
@@ -96,7 +96,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void generateIDFails2Times() throws Exception {
+    public void generateIDFails2TimesTest() throws Exception {
         Optional<Account> account1 = Optional.of(TestUtil.createAccount());
         Optional<Account> account2 = Optional.of(TestUtil.createAccount());
 
@@ -109,32 +109,32 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void loadUserByUsername() throws Exception {
+    public void loadUserByUsernameTest() throws Exception {
         when(accountRepositoryMock.findOneByUsername(testAccount.getUsername())).thenReturn(testAccount);
         Account userDetails = accountService.loadUserByUsername(testAccount.getUsername());
         assertEquals(userDetails, testAccount);
     }
 
     @Test(expected = UsernameNotFoundException.class)
-    public void loadUserByUsernameNotFound() throws Exception {
+    public void loadUserByUsernameNotFoundTest() throws Exception {
         accountService.loadUserByUsername(testAccount.getUsername());
     }
 
     @Test
-    public void signIn() throws Exception {
+    public void signInTest() throws Exception {
         accountService.signin(testAccount);
         verify(securityMock, times(1)).setAuthentication(any(UsernamePasswordAuthenticationToken.class));
     }
 
     @Test
-    public void getAccountAvatar() throws Exception {
+    public void getAccountAvatarTest() throws Exception {
         when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(new Avatar());
         Avatar accountAvatar = accountService.getAccountAvatar(testAccount);
         assertThat(accountAvatar).isNotNull();
     }
 
     @Test
-    public void createAvatar() throws Exception {
+    public void createAvatarTest() throws Exception {
         ClassLoader loader = this.getClass().getClassLoader();
         try (InputStream avatarFile = loader.getResourceAsStream(STATIC_IMAGES_LOGO_WHITE_PNG)) {
             accountService.updateAvatar(testAccount, IOUtils.toByteArray(avatarFile));
@@ -143,7 +143,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void createAvatarUknownType() throws Exception {
+    public void createAvatarUknownTypeTest() throws Exception {
         ClassLoader loader = this.getClass().getClassLoader();
         accountService.updateAvatar(testAccount, STATIC_IMAGES_LOGO_WHITE_PNG.getBytes());
         verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
@@ -151,7 +151,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
 
 
     @Test
-    public void updateAvatar() throws Exception {
+    public void updateAvatarTest() throws Exception {
         ClassLoader loader = this.getClass().getClassLoader();
         try (InputStream avatarFile = loader.getResourceAsStream(STATIC_IMAGES_LOGO_WHITE_PNG)) {
             when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(new Avatar());
@@ -161,12 +161,12 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test(expected = IOException.class)
-    public void createAvatarFromUrlError() throws Exception {
+    public void createAvatarFromUrlErrorTest() throws Exception {
         accountService.createAvatar(testAccount, STATIC_IMAGES_LOGO_WHITE_PNG);
     }
 
     @Test
-    public void createAvatarFromUrl() throws Exception {
+    public void createAvatarFromUrlTest() throws Exception {
         accountService.createAvatar(testAccount, "http://google.com");
         verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
     }

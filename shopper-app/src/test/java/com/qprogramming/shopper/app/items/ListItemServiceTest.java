@@ -38,7 +38,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void createListItem() throws ProductNotFoundException, BadProductNameException {
+    public void createListItemTest() throws ProductNotFoundException, BadProductNameException {
         ListItem item = TestUtil.createListItem(NAME);
         when(productRepositoryMock.save(any(Product.class))).then(returnsFirstArg());
         ListItem listItem = listItemService.createListItem(item);
@@ -47,21 +47,21 @@ public class ListItemServiceTest extends MockedAccountTestBase {
     }
 
     @Test(expected = BadProductNameException.class)
-    public void createListItemNoProduct() throws ProductNotFoundException, BadProductNameException {
+    public void createListItemNoProductTest() throws ProductNotFoundException, BadProductNameException {
         ListItem item = TestUtil.createListItem(NAME);
         item.setProduct(null);
         listItemService.createListItem(item);
     }
 
     @Test(expected = BadProductNameException.class)
-    public void createListItemBadProductName() throws ProductNotFoundException, BadProductNameException {
+    public void createListItemBadProductNameTest() throws ProductNotFoundException, BadProductNameException {
         ListItem item = TestUtil.createListItem(NAME);
         item.getProduct().setName(null);
         listItemService.createListItem(item);
     }
 
     @Test(expected = ProductNotFoundException.class)
-    public void createListItemProductNotFound() throws ProductNotFoundException, BadProductNameException {
+    public void createListItemProductNotFoundTest() throws ProductNotFoundException, BadProductNameException {
         ListItem item = TestUtil.createListItem(NAME);
         item.getProduct().setId(1L);
         when(productRepositoryMock.findById(1L)).thenReturn(Optional.empty());
@@ -69,7 +69,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void createListItemProductExists() throws ProductNotFoundException, BadProductNameException {
+    public void createListItemProductExistsTest() throws ProductNotFoundException, BadProductNameException {
         ListItem item = TestUtil.createListItem(NAME);
         item.getProduct().setId(1L);
         when(productRepositoryMock.findById(1L)).thenReturn(Optional.of(item.getProduct()));

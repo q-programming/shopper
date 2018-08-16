@@ -66,19 +66,19 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"product\": {\n\t\t\"name\": \"CARROT\"\n\t},\n\t\"description\": \"some description to delete\",\n\t\"quantity\": 1,\n\t\"unit\": \"kg\"\n\t\n}"
+									"raw": "{\n\t\"product\": {\n\t\t\"name\": \"Vodka\"\n\t},\n\t\"quantity\": 0.7,\n\t\"unit\": \"l\",\n\t\"category\": \"ALCOHOL\"\n}"
 								},
 								"url": {
-									"raw": "{{url}}/shopper/api/list/1/item-add",
+									"raw": "{{url}}/shopper/api/item/1/add",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"shopper",
 										"api",
-										"list",
+										"item",
 										"1",
-										"item-add"
+										"add"
 									]
 								}
 							},
@@ -142,16 +142,16 @@
 									"raw": "{\n\t\"id\":11\n}"
 								},
 								"url": {
-									"raw": "{{url}}/shopper/api/list/1/item-delete",
+									"raw": "{{url}}/shopper/api/item/1/delete",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"shopper",
 										"api",
-										"list",
+										"item",
 										"1",
-										"item-delete"
+										"delete"
 									]
 								}
 							},
@@ -212,19 +212,19 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"id\":8\n}"
+									"raw": "{\n\t\"id\":13\n}\n"
 								},
 								"url": {
-									"raw": "{{url}}/shopper/api/list/1/item-toggle",
+									"raw": "{{url}}/shopper/api/item/1/toggle",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"shopper",
 										"api",
-										"list",
+										"item",
 										"1",
-										"item-toggle"
+										"toggle"
 									]
 								}
 							},
@@ -285,19 +285,19 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n\t\"id\": 3,\r\n\t\"product\": {\r\n\t\t\"id\": 3,\r\n\t\t\"name\": \"new product\"\r\n\t},\r\n\t\"description\": \"some new description\",\r\n\t\"quantity\": 2,\r\n\t\"unit\": \"l\",\r\n\t\"done\": false\r\n\r\n}\r\n"
+									"raw": "{\n            \"id\": 13,\n            \"product\": {\n                \"id\": 7,\n                \"name\": \"Vodka\",\n                \"topCategory\": \"ALCOHOL\"\n            },\n            \"description\": \"some description\",\n            \"quantity\": 0.7,\n            \"unit\": \"l\",\n            \"category\": \"ALCOHOL\",\n            \"done\": false\n        }"
 								},
 								"url": {
-									"raw": "{{url}}/shopper/api/list/1/item-update",
+									"raw": "{{url}}/shopper/api/item/1/update",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"shopper",
 										"api",
-										"list",
+										"item",
 										"1",
-										"item-update"
+										"update"
 									]
 								}
 							},

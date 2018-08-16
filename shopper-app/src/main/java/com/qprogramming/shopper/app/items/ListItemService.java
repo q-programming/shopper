@@ -98,15 +98,15 @@ public class ListItemService {
         Category updatedCategory = item.getCategory();
         if (!listItem.getCategory().equals(updatedCategory)) {//there was category change, increase score for that category and this product
             Product product = listItem.getProduct();
-            updateCategoryScore(updatedCategory, product);
+            item.setProduct(updateCategoryScore(updatedCategory, product));
         }
         return saveItem(item);
     }
 
-    private void updateCategoryScore(Category updatedCategory, Product product) {
+    private Product updateCategoryScore(Category updatedCategory, Product product) {
         Integer categoryScore = product.getCategoryScore().getOrDefault(updatedCategory, 0);
         product.getCategoryScore().put(updatedCategory, ++categoryScore);
-        _productRepository.save(product);
+        return _productRepository.save(product);
     }
 
     public ListItem toggleItem(ListItem item) {

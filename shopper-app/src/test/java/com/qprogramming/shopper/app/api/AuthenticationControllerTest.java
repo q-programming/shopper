@@ -56,28 +56,28 @@ public class AuthenticationControllerTest {
 
     @Test
     @WithAnonymousUser
-    public void shouldGetUnauthorizedWithoutRole() throws Exception {
+    public void shouldGetUnauthorizedWithoutRoleTest() throws Exception {
         this.mvc.perform(get("/api/refresh"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithUserDetails(value = TestUtil.EMAIL, userDetailsServiceBeanName = "accountService")
-    public void getPersonsSuccessfullyWithUserRole() throws Exception {
+    public void getPersonsSuccessfullyWithUserRoleTest() throws Exception {
         this.mvc.perform(get("/api/account/whoami"))
                 .andExpect(status().is2xxSuccessful());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void getAllUserSuccessWithAdminRole() throws Exception {
+    public void getAllUserSuccessWithAdminRoleTest() throws Exception {
         this.mvc.perform(get("/api/account/all"))
                 .andExpect(status().is2xxSuccessful());
     }
 
     @Test
     @WithMockUser
-    public void getAllUserFailWithUserRole() throws Exception {
+    public void getAllUserFailWithUserRoleTest() throws Exception {
         this.mvc.perform(get("/api/account/all"))
                 .andExpect(status().is4xxClientError());
     }
@@ -95,7 +95,7 @@ public class AuthenticationControllerTest {
 //    }
 
     @Test
-    public void accessResourceUsingBasicAuth() throws Exception {
+    public void accessResourceUsingBasicAuthTest() throws Exception {
         byte[] encodedBytes = Base64Utils.encode((TestUtil.EMAIL + ":" + TestUtil.PASSWORD).getBytes());
         String authHeader = AUTHENTICATION_SCHEME + " " + new String(encodedBytes);
         this.mvc.perform(get("/api/resource")
@@ -104,7 +104,7 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    public void failToaccessResourceUsingBadBasicAuth() throws Exception {
+    public void failToaccessResourceUsingBadBasicAuthTest() throws Exception {
         byte[] encodedBytes = Base64Utils.encode((TestUtil.EMAIL + ":wrong" + TestUtil.PASSWORD).getBytes());
         String authHeader = AUTHENTICATION_SCHEME + " " + new String(encodedBytes);
         this.mvc.perform(get("/api/resource")

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Jakub Romaniszyn on 2018-08-08
  */
-public class ShoppingListServiceAccountTest extends MockedAccountTestBase {
+public class ShoppingListServiceTest extends MockedAccountTestBase {
     public static final String NAME = "name";
     @Mock
     private ShoppingListRepository listRepository;
@@ -38,7 +38,7 @@ public class ShoppingListServiceAccountTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void findAllByCurrentUser() throws AccountNotFoundException {
+    public void findAllByCurrentUserTest() throws AccountNotFoundException {
         ShoppingList list1 = createList(NAME, 1L);
         ShoppingList list2 = createList(NAME, 2L);
         Set<ShoppingList> expected = Stream.of(list1, list2).collect(Collectors.toSet());
@@ -49,7 +49,7 @@ public class ShoppingListServiceAccountTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void findAllByOwner() throws AccountNotFoundException {
+    public void findAllByOwnerTest() throws AccountNotFoundException {
         ShoppingList list1 = createList(NAME, 1L);
         Set<ShoppingList> expected = Stream.of(list1).collect(Collectors.toSet());
         when(listRepository.findAllByOwnerIdOrSharedIn(anyString(), anySet())).thenReturn(expected);
@@ -59,7 +59,7 @@ public class ShoppingListServiceAccountTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void findAllByOwnerThanCanBeViewed() throws AccountNotFoundException {
+    public void findAllByOwnerThanCanBeViewedTest() throws AccountNotFoundException {
         ShoppingList list1 = createList(NAME, 1L);
         ShoppingList list2 = createList(NAME, 1L);
         list2.setOwnerId(NAME);
