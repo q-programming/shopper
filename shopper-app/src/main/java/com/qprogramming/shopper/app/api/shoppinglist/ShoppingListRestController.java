@@ -100,7 +100,7 @@ public class ShoppingListRestController {
     public ResponseEntity<ShoppingList> getList(@PathVariable String id) {
         try {
             ShoppingList list = _listService.findByID(id);
-            Hibernate.initialize(list.getItems());
+            _listService.sortItems(list);
             return ResponseEntity.ok(list);
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);

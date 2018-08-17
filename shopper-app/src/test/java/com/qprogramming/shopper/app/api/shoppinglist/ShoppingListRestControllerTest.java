@@ -4,7 +4,10 @@ import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.items.category.Category;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
@@ -51,6 +54,8 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     private ShoppingListRepository listRepositoryMock;
     @Mock
     private AccountService accountServiceMock;
+    @Mock
+    private PropertyService propertyServiceMock;
 
     private ShoppingListService listService;
     private ShoppingListRestController controller;
@@ -59,7 +64,7 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     @Override
     public void setup() {
         super.setup();
-        listService = new ShoppingListService(listRepositoryMock, accountServiceMock);
+        listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock);
         controller = new ShoppingListRestController(listService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
@@ -328,6 +333,28 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
                 .andExpect(status().is2xxSuccessful()).andReturn();
         verify(listRepositoryMock, times(1)).save(list);
     }
+
+    @Test
+    public void getListSortedTest() throws Exception {
+        ShoppingList list1 = createList(NAME, 1L);
+        ListItem item1 = TestUtil.createListItem(NAME);
+        ListItem item2 = TestUtil.createListItem(NAME);
+        ListItem item3 = TestUtil.createListItem(NAME);
+        item1.setCategory(Category.OTHER);
+        item2.setCategory(Category.ALCOHOL);
+        item3.setCategory(Category.FRUIT_VEGETABLES);
+        list1.getItems().add(item1);
+        list1.getItems().add(item2);
+        list1.getItems().add(item3);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list1));
+        when(propertyServiceMock.getCategoriesOrdered()).thenCallRealMethod();
+        MvcResult mvcResult = this.mvc.perform(get(API_LIST_URL + 1))
+                .andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getItems().get(0)).isEqualTo(item2);
+    }
+
 
     private ShoppingList createList(String name, long id) {
         return TestUtil.createShoppingList(name, id, testAccount);

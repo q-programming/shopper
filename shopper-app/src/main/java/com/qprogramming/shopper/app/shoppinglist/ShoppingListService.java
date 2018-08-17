@@ -2,19 +2,20 @@ package com.qprogramming.shopper.app.shoppinglist;
 
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.ShoppingAccessException;
 import com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException;
+import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.items.category.Category;
 import com.qprogramming.shopper.app.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Jakub Romaniszyn on 2018-08-08
@@ -24,11 +25,14 @@ public class ShoppingListService {
 
     private ShoppingListRepository _listRepository;
     private AccountService _accountService;
+    private PropertyService _propertyService;
+
 
     @Autowired
-    public ShoppingListService(ShoppingListRepository listRepository, AccountService accountService) {
+    public ShoppingListService(ShoppingListRepository listRepository, AccountService accountService, PropertyService propertyService) {
         this._listRepository = listRepository;
         this._accountService = accountService;
+        _propertyService = propertyService;
     }
 
     public Set<ShoppingList> findAllByCurrentUser(boolean archived) throws AccountNotFoundException {
@@ -116,5 +120,12 @@ public class ShoppingListService {
      */
     public ShoppingList save(ShoppingList list) {
         return this._listRepository.save(list);
+    }
+
+    public void sortItems(ShoppingList list) {
+        Map<Category, Integer> categoriesOrdered = _propertyService.getCategoriesOrdered();
+        Comparator<ListItem> listComparator = Comparator
+                .nullsLast(Comparator.comparing((ListItem l) -> categoriesOrdered.get(l.getCategory())));
+        list.getItems().sort(listComparator);
     }
 }

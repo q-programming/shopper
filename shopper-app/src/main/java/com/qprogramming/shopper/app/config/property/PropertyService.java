@@ -1,5 +1,6 @@
 package com.qprogramming.shopper.app.config.property;
 
+import com.qprogramming.shopper.app.items.category.Category;
 import com.qprogramming.shopper.app.messages.MessagesService;
 import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -7,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.IntStream;
 
+import static com.qprogramming.shopper.app.settings.Settings.APP_CATEGORY_ORDER;
 import static com.qprogramming.shopper.app.settings.Settings.APP_DEFAULT_LANG;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
@@ -45,6 +47,21 @@ public class PropertyService {
             return DEFAULT_APP_LANGUAGE;
         }
         return lang;
+    }
+
+    public Map<Category, Integer> getCategoriesOrdered() {
+        String categories = getProperty(APP_CATEGORY_ORDER);
+        if (StringUtils.isBlank(categories)) {
+            return convertArrayToMap(Category.values());
+        }
+        return convertArrayToMap(Arrays.stream(categories.split(",")).map(Category::valueOf).toArray(Category[]::new));
+    }
+
+    private <T> Map<T, Integer> convertArrayToMap(T[] array) {
+        List<T> collection = Arrays.asList(array);
+        return IntStream.range(0, collection.size())
+                .boxed()
+                .collect(toMap(collection::get, i -> i));
     }
 
 

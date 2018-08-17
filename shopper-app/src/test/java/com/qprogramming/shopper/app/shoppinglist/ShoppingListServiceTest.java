@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.shoppinglist;
 import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +27,8 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     private ShoppingListRepository listRepository;
     @Mock
     private AccountService accountServiceMock;
+    @Mock
+    private PropertyService propertyServiceMock;
 
     private ShoppingListService listService;
 
@@ -34,7 +37,7 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     @Override
     public void setup() {
         super.setup();
-        listService = new ShoppingListService(listRepository, accountServiceMock);
+        listService = new ShoppingListService(listRepository, accountServiceMock, propertyServiceMock);
     }
 
     @Test
@@ -54,7 +57,7 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
         Set<ShoppingList> expected = Stream.of(list1).collect(Collectors.toSet());
         when(listRepository.findAllByOwnerIdOrSharedIn(anyString(), anySet())).thenReturn(expected);
         when(accountServiceMock.findById(testAccount.getId())).thenReturn(testAccount);
-        Set<ShoppingList> result = listService.findAllByAccountID(testAccount.getId(),false);
+        Set<ShoppingList> result = listService.findAllByAccountID(testAccount.getId(), false);
         assertThat(result.containsAll(expected)).isTrue();
     }
 
@@ -65,7 +68,7 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
         list2.setOwnerId(NAME);
         when(listRepository.findAllByOwnerId(testAccount.getId())).thenReturn(Arrays.asList(list1, list2));
         when(accountServiceMock.findById(testAccount.getId())).thenReturn(testAccount);
-        Set<ShoppingList> result = listService.findAllByAccountID(testAccount.getId(),false);
+        Set<ShoppingList> result = listService.findAllByAccountID(testAccount.getId(), false);
         assertThat(result.contains(list2)).isFalse();
     }
 

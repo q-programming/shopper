@@ -52,6 +52,7 @@ public class ItemRestController {
         try {
             ShoppingList list = _listService.findByID(id);
             _listItemService.addItemToList(list, item);
+            _listService.sortItems(list);
             return ResponseEntity.ok(_listService.save(list));
         } catch (ProductNotFoundException e) {
             LOG.error(PRODUCT_NOT_FOUND, item.getProduct().getId());
@@ -108,6 +109,7 @@ public class ItemRestController {
             item = _listItemService.findById(item.getId());
             list.getItems().remove(item);
             _listItemService.deleteListItem(item);
+            _listService.sortItems(list);
             return ResponseEntity.ok(_listService.save(list));
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
