@@ -51,6 +51,7 @@ main {
 }
 
 .mat-sidenav-content {
+    background: #2c5aa0;
     height: 100vh !important;
 }
 

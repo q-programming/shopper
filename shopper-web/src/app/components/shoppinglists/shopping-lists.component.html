@@ -1,0 +1,62 @@
+<div class="mt-5">
+    <mat-card fxLayout="row" fxLayout.xs="column" *ngFor="let list of lists;let i = index" class="list z-depth clickable">
+        <mat-card-title-group>
+            <mat-card-title>{{list.name}}</mat-card-title>
+            <mat-card-subtitle *ngIf="list.ownerId !== account.id">
+                <img class="avatar small" [src]="list.ownerAvatar">
+                {{list.ownerName}}
+            </mat-card-subtitle>
+
+        </mat-card-title-group>
+        <span class="fill-remaining-space"></span>
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+            </button>
+            <button *ngIf="!list.notOwner" mat-menu-item>
+                <mat-icon>share</mat-icon>
+                <span>Share</span>
+            </button>
+            <button mat-menu-item>
+                <mat-icon>archive</mat-icon>
+                <span>Archive</span>
+            </button>
+        </mat-menu>
+    </mat-card>
+</div>
+
+
+<!--<div>-->
+<!--<mat-toolbar color="primary">-->
+<!--<span>GameViewer</span>-->
+<!--<span class="fill-remaining-space"></span>-->
+<!--<button mat-icon-button [matMenuTriggerFor]="menu">-->
+<!--<mat-icon>more_vert</mat-icon>-->
+<!--</button>-->
+<!--<mat-menu #menu="matMenu">-->
+<!--<button mat-menu-item>-->
+<!--<mat-icon>fingerprint</mat-icon>-->
+<!--<span>Login</span>-->
+<!--</button>-->
+<!--<button mat-menu-item disabled>-->
+<!--<mat-icon>announcement</mat-icon>-->
+<!--<span>Issues</span>-->
+<!--</button>-->
+<!--<button mat-menu-item>-->
+<!--<mat-icon>notifications_off</mat-icon>-->
+<!--<span>Disable alerts</span>-->
+<!--</button>-->
+<!--</mat-menu>-->
+<!--</mat-toolbar>-->
+
+
+<!--<ul>-->
+<!--<li *ngFor="let list of lists;let i = index">-->
+<!--{{i+1}}. {{list.name}}-->
+<!--</li>-->
+<!--</ul>-->
+<!--</div>-->

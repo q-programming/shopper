@@ -25,7 +25,10 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {LayoutModule} from '@angular/cdk/layout';
 import {MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule} from '@angular/material';
 import {NgHttpLoaderModule} from "ng-http-loader";
-import { LoaderComponent } from './components/loader/loader.component';
+import {LoaderComponent} from './components/loader/loader.component';
+import {ListService} from "./services/list.service";
+import {ShoppingListsComponent} from "./components/shoppinglists/shopping-lists.component";
+import { ListComponent } from './components/list/list.component';
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -41,7 +44,9 @@ export function initUserFactory(authService: AuthenticationService) {
         AlertComponent,
         SettingsComponent,
         AvatarUploadComponent,
-        LoaderComponent
+        LoaderComponent,
+        ShoppingListsComponent,
+        ListComponent
     ],
     entryComponents: [
         AvatarUploadComponent,
@@ -82,6 +87,7 @@ export function initUserFactory(authService: AuthenticationService) {
         AccountService,
         AvatarService,
         AlertService,
+        ListService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,
