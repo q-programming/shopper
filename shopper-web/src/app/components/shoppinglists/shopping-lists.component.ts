@@ -4,6 +4,9 @@ import {ActivatedRoute} from "@angular/router";
 import {ShoppingList} from "../../model/ShoppingList";
 import {AuthenticationService} from "../../services/authentication.service";
 import {Account} from "../../model/Account";
+import {MatDialog, MatDialogConfig} from "@angular/material";
+import {NewShoppingListComponent} from "./new-shoppinglist.component";
+import {AlertService} from "../../services/alert.service";
 
 
 @Component({
@@ -16,16 +19,34 @@ export class ShoppingListsComponent implements OnInit {
     lists: ShoppingList[];
     account: Account;
 
-    constructor(private listSrv: ListService, private route: ActivatedRoute, private authSrv: AuthenticationService) {
+    constructor(private listSrv: ListService, private route: ActivatedRoute, private authSrv: AuthenticationService, public dialog: MatDialog, private alertSrv: AlertService) {
     }
 
     ngOnInit() {
         this.account = this.authSrv.currentAccount;
         this.route.params.subscribe(params => {
             this.userID = params['userid'];
-            this.listSrv.getUserList(this.userID, true).subscribe(lists => {
-                this.lists = lists;
-            })
+            this.loadUserLists();
+        });
+    }
+
+    private loadUserLists() {
+        this.listSrv.getUserList(this.userID, true).subscribe(lists => {
+            this.lists = lists;
+        })
+    }
+
+    openDialog() {
+        const dialogConfig = new MatDialogConfig();
+        dialogConfig.disableClose = true;
+        dialogConfig.autoFocus = true;
+        const dialogRef = this.dialog.open(NewShoppingListComponent, dialogConfig);
+        dialogRef.afterClosed().subscribe(listName => {
+            this.listSrv.createList(listName).subscribe(() => {
+                //TODO figure out why double alert ?
+                // this.alertSrv.success("app.shopping.create.success");
+                this.loadUserLists();
+            });
         });
     }
 }

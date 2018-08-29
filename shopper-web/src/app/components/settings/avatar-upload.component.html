@@ -9,6 +9,6 @@
     <img-cropper #cropper [image]="avatarData" [settings]="cropperSettings"></img-cropper>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-    <button mat-raised-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
     <button mat-raised-button color="primary" [mat-dialog-close]="true" cdkFocusInitial>{{'app.general.saveChanges'|translate}}</button>
 </mat-dialog-actions>

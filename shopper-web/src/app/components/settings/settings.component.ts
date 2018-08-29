@@ -121,7 +121,5 @@ export class AvatarUploadComponent implements OnInit {
         };
         myReader.readAsDataURL(file);
     }
-
-
 }
 

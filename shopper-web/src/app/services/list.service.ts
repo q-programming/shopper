@@ -41,6 +41,10 @@ export class ListService {
         return lists
     }
 
+    createList(listName: string): Observable<ShoppingList> {
+        return this.api.postObject<ShoppingList>(environment.list_url + environment.list_add_url, listName)
+    }
+
     private notOwner(list: ShoppingList): boolean {
         return list.ownerId !== this.currentAccount.id
     }

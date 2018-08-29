@@ -27,8 +27,11 @@ import {MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatL
 import {NgHttpLoaderModule} from "ng-http-loader";
 import {LoaderComponent} from './components/loader/loader.component';
 import {ListService} from "./services/list.service";
-import {ShoppingListsComponent} from "./components/shoppinglists/shopping-lists.component";
 import { ListComponent } from './components/list/list.component';
+import {FormBuilder} from "@angular/forms";
+import {NewShoppingListComponent} from "./components/shoppinglists/new-shoppinglist.component";
+import {ShoppingListsComponent} from "./components/shoppinglists/shopping-lists.component";
+import { FormsModule } from '@angular/forms';
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -46,13 +49,17 @@ export function initUserFactory(authService: AuthenticationService) {
         AvatarUploadComponent,
         LoaderComponent,
         ShoppingListsComponent,
-        ListComponent
+        ListComponent,
+        NewShoppingListComponent
     ],
     entryComponents: [
         AvatarUploadComponent,
+        ShoppingListsComponent,
+        NewShoppingListComponent,
         LoaderComponent
     ],
     imports: [
+        FormsModule,
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule,
@@ -88,6 +95,7 @@ export function initUserFactory(authService: AuthenticationService) {
         AvatarService,
         AlertService,
         ListService,
+        FormBuilder,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

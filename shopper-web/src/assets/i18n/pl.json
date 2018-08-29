@@ -5,6 +5,9 @@
   "app.general.edit": "Edytuj",
   "app.general.saveChanges": "Zapisz zmiany",
   "app.general.test": "Test_PL",
+  "app.general.name": "Nazwa",
+  "app.general.create": "Stwórz",
+  "app.general.cancel": "Anuluj",
   "app.general.choosefile": "Wybierz plik",
   "app.home.admin": "Ponieważ jesteś administratorem , poniżej lista wszystkich użytkowników:",
   "app.menu.logout": "Wyloguj się",
@@ -21,5 +24,8 @@
   "app.api.error.notfound": "Poszukiwany zasób nie został znaleziony",
   "app.shopping.list": "Listy zakupów",
   "app.shopping.share": "Podziel się listą",
-  "app.shopping.archive": "Archiwizuj listę"
+  "app.shopping.archive": "Archiwizuj listę",
+  "app.shopping.create": "Stwórz nową listę",
+  "app.shopping.create.success" : "Utworzono nową listę",
+  "app.shopping.create.fail" : "Wystąpił bład podczas tworzenia nowej listy"
 }
