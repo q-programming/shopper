@@ -23,8 +23,8 @@ export class ShoppingListsComponent implements OnInit {
         this.account = this.authSrv.currentAccount;
         this.route.params.subscribe(params => {
             this.userID = params['userid'];
-            this.listSrv.getUserList(this.userID).subscribe((list) => {
-                this.lists = list;
+            this.listSrv.getUserList(this.userID, true).subscribe(lists => {
+                this.lists = lists;
             })
         });
     }

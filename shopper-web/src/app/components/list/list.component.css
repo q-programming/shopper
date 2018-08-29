@@ -1,0 +1,13 @@
+.item {
+    padding: 10px 24px 0 24px;
+}
+
+.item.done {
+    background: #e8e8e8bf;
+    box-shadow: none;
+}
+
+.mat-card-title {
+    font-size: 20px;
+    margin-bottom: 5px;
+}

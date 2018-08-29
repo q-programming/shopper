@@ -1,0 +1,37 @@
+<h2 *ngIf="list" class="text-white">
+    <button mat-icon-button routerLink="/">
+        <mat-icon class="text-white">
+            arrow_back_ios
+        </mat-icon>
+    </button>
+    {{list.name}}
+</h2>
+<div>
+    <mat-card fxLayout="row" fxLayout.xs="column" *ngFor="let item of items" class="item clickable">
+        <mat-checkbox [checked]="item.done" color="primary"></mat-checkbox>
+        <mat-card-title-group class="ml-2">
+            <mat-card-title>{{item.product.name}}</mat-card-title>
+            <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
+        </mat-card-title-group>
+        <span class="fill-remaining-space"></span>
+        <mat-card-subtitle class="mt-2" fxShow.sm="false">{{item.quantity}} {{item.unit}}</mat-card-subtitle>
+        <button mat-icon-button>
+            <img [src]='"assets/images/categories/"+ item.category + ".png"' class="category" fxShow.sm="false">
+        </button>
+    </mat-card>
+    <!--DONE-->
+    <mat-card fxLayout="row" fxLayout.xs="column" *ngFor="let item of done" class="item clickable done">
+        <button mat-icon-button>
+            <mat-icon>check</mat-icon>
+        </button>
+        <mat-card-title-group class="ml-2">
+            <mat-card-title>{{item.product.name}}</mat-card-title>
+            <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
+        </mat-card-title-group>
+        <span class="fill-remaining-space"></span>
+        <mat-card-subtitle class="mt-2" fxShow.sm="false">{{item.quantity}} {{item.unit}}</mat-card-subtitle>
+        <button mat-icon-button>
+            <img [src]='"assets/images/categories/"+ item.category + ".png"' class="category" fxShow.sm="false">
+        </button>
+    </mat-card>
+</div>

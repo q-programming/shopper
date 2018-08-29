@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.api.shoppinglist;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.ShoppingAccessException;
 import com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException;
+import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.support.Utils;
@@ -45,9 +46,10 @@ public class ShoppingListRestController {
     @RequestMapping(value = "/mine", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
-    public ResponseEntity<Set<ShoppingList>> getCurrentUserLists(@RequestParam(required = false) boolean archived) {
+    public ResponseEntity<Set<ShoppingList>> getCurrentUserLists(@RequestParam(required = false) boolean archived, @RequestParam(required = false) boolean items) {
         try {
-            return ResponseEntity.ok(_listService.findAllByCurrentUser(archived));
+            Set<ShoppingList> lists = _listService.findAllByCurrentUser(archived);
+            return ResponseEntity.ok(getListWithDoneItems(lists, items));
         } catch (AccountNotFoundException e) {
             LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
             return ResponseEntity.notFound().build();
@@ -61,19 +63,27 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<Set<ShoppingList>> getUsersLists(@PathVariable String id, @RequestParam(required = false) boolean archived) {
+    public ResponseEntity<Set<ShoppingList>> getUsersLists(@PathVariable String id, @RequestParam(required = false) boolean archived, @RequestParam(required = false) boolean items) {
         try {
-            return ResponseEntity.ok(
-                    _listService.findAllByAccountID(id, archived)
-                            .stream()
-                            .filter(_listService::canView)
-                            .collect(Collectors.toSet()));
+            Set<ShoppingList> lists = _listService.findAllByAccountID(id, archived)
+                    .stream()
+                    .filter(_listService::canView)
+                    .collect(Collectors.toSet());
+            return ResponseEntity.ok(getListWithDoneItems(lists, items));
+
         } catch (AccountNotFoundException e) {
             LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.notFound().build();
         }
     }
 
+
+    private Set<ShoppingList> getListWithDoneItems(Set<ShoppingList> lists, boolean items) {
+        if (items) {
+            lists.parallelStream().forEach(shoppingList -> shoppingList.setDone(shoppingList.getItems().stream().filter(ListItem::isDone).count()));
+        }
+        return lists;
+    }
 
     /**
      * Adds new lists with name

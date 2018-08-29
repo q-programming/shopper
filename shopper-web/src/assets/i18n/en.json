@@ -3,6 +3,7 @@
   "app.general.avatar": "Avatar",
   "app.general.close": "Close",
   "app.general.saveChanges": "Save changes",
+  "app.general.edit": "Edit",
   "app.general.test": "Test",
   "app.general.choosefile": "Choose file",
   "app.home.admin": "As you are admin here is a list of all registered users:",
@@ -16,5 +17,9 @@
   "app.settings.language": "Language",
   "app.settings.language.success": "Display language has been changed",
   "app.api.error.unauthorized": "You are not authorised to execute that action",
-  "app.api.error.general": "There was internal error while executing action. Please contact administrator"
+  "app.api.error.general": "There was internal error while executing action. Please contact administrator",
+  "app.api.error.notfound": "Requested resources was not found",
+  "app.shopping.list": "Shopping lists",
+  "app.shopping.share": "Share list",
+  "app.shopping.archive": "Archive list"
 }

@@ -21,11 +21,15 @@ export class ListService {
     }
 
 
-    getUserList(userID: string): Observable<ShoppingList[]> {
+    getUserList(userID: string, items?: boolean): Observable<ShoppingList[]> {
         if (userID) {
-            return this.api.getObject<ShoppingList[]>(environment.list_url + `${environment.list_url}${userID}`).map(res => this.processList(res));
+            return this.api.getObject<ShoppingList[]>(environment.list_url + `${environment.user_url}${userID}`, {items: items}).map(res => this.processList(res));
         }
-        return this.api.getObject<ShoppingList[]>(environment.list_url + environment.mine_url).map(res => this.processList(res))
+        return this.api.getObject<ShoppingList[]>(environment.list_url + environment.mine_url, {items: items}).map(res => this.processList(res))
+    }
+
+    getListByID(listID: number): Observable<ShoppingList> {
+        return this.api.getObject<ShoppingList>(environment.list_url + `/${listID}`)
     }
 
     processList(lists: ShoppingList[]): ShoppingList[] {
