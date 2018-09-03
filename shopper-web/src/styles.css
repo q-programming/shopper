@@ -200,7 +200,7 @@ Messages
 }
 
 .message-success {
-    background-color: #06c951;
+    background-color: #43b05c;
 }
 
 .message-error {
@@ -240,7 +240,35 @@ Messages
 .fill-remaining-space {
     flex: 1 1 auto;
 }
-.category{
+
+.category {
     height: 25px;
     width: 25px;
+}
+
+.modal-header {
+    background: #2c5aa0;
+    color: white;
+    padding: 20px;
+}
+
+.shopper-modal > mat-dialog-container {
+    padding: 0 0 24px 0;
+}
+
+.shopper-modal > mat-dialog-content.mat-dialog-content {
+    margin: 0;
+}
+
+.mat-form-field-full-width {
+    width: 100%;
+}
+
+.modal-header > mat-icon {
+    float: left;
+    font-size: 30px;
+}
+.success-button{
+    background: #43b05c;
+    color: white;
 }

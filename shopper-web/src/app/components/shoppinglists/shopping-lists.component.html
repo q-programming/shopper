@@ -14,7 +14,7 @@
 <div>
     <mat-card fxLayout.xs="column" *ngFor="let list of lists" class="list z-depth clickable">
         <mat-card-header>
-            <mat-card-title>{{list.name}}</mat-card-title>
+            <mat-card-title [routerLink]="['list', list.id]">{{list.name}}</mat-card-title>
             <mat-card-subtitle *ngIf="list.ownerId !== account.id">
                 <img class="avatar small" [src]="list.ownerAvatar">
                 {{list.ownerName}}

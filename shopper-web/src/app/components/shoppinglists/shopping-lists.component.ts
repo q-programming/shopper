@@ -37,16 +37,20 @@ export class ShoppingListsComponent implements OnInit {
     }
 
     openDialog() {
-        const dialogConfig = new MatDialogConfig();
-        dialogConfig.disableClose = true;
-        dialogConfig.autoFocus = true;
+        const dialogConfig: MatDialogConfig = {
+            disableClose: true,
+            autoFocus: true,
+            width: '500px',
+            panelClass: 'shopper-modal'
+        };
         const dialogRef = this.dialog.open(NewShoppingListComponent, dialogConfig);
         dialogRef.afterClosed().subscribe(listName => {
-            this.listSrv.createList(listName).subscribe(() => {
-                //TODO figure out why double alert ?
-                // this.alertSrv.success("app.shopping.create.success");
-                this.loadUserLists();
-            });
+            if (listName) {
+                this.listSrv.createList(listName).subscribe(() => {
+                    this.alertSrv.success("app.shopping.create.success");
+                    this.loadUserLists();
+                });
+            }
         });
     }
 }

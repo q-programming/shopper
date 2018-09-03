@@ -1,17 +1,25 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MatDialogRef} from '@angular/material';
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
     templateUrl: './new-shoppinglist.component.html'
 })
-export class NewShoppingListComponent {
+export class NewShoppingListComponent implements OnInit {
 
-    listName: string;
+    form: FormGroup;
 
-    constructor(private dialogRef: MatDialogRef<NewShoppingListComponent>) {
+    constructor(private dialogRef: MatDialogRef<NewShoppingListComponent>,
+                private formBuilder: FormBuilder) {
     }
 
     createList() {
-        this.dialogRef.close(this.listName);
+        this.dialogRef.close(this.form.value.listName);
+    }
+
+    ngOnInit() {
+        this.form = this.formBuilder.group({
+            listName:['', Validators.required]
+        })
     }
 }

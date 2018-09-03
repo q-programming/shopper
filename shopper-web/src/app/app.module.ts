@@ -28,7 +28,7 @@ import {NgHttpLoaderModule} from "ng-http-loader";
 import {LoaderComponent} from './components/loader/loader.component';
 import {ListService} from "./services/list.service";
 import { ListComponent } from './components/list/list.component';
-import {FormBuilder} from "@angular/forms";
+import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NewShoppingListComponent} from "./components/shoppinglists/new-shoppinglist.component";
 import {ShoppingListsComponent} from "./components/shoppinglists/shopping-lists.component";
 import { FormsModule } from '@angular/forms';
@@ -60,6 +60,7 @@ export function initUserFactory(authService: AuthenticationService) {
     ],
     imports: [
         FormsModule,
+        ReactiveFormsModule,
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule,

@@ -8,6 +8,9 @@ import {AvatarService} from "./avatar.service";
 import {AuthenticationService} from "./authentication.service";
 import {Account} from "../model/Account";
 import * as _ from 'lodash';
+import {MatDialog, MatDialogConfig} from "@angular/material";
+import {NewShoppingListComponent} from "../components/shoppinglists/new-shoppinglist.component";
+import {AlertService} from "./alert.service";
 
 @Injectable({
     providedIn: 'root'
@@ -16,7 +19,7 @@ export class ListService {
 
     currentAccount: Account;
 
-    constructor(private logger: NGXLogger, private api: ApiService, private avatarSrv: AvatarService, private authSrv: AuthenticationService) {
+    constructor(private logger: NGXLogger, private api: ApiService, private avatarSrv: AvatarService, private authSrv: AuthenticationService, private dialog: MatDialog, private alertSrv: AlertService) {
         this.currentAccount = this.authSrv.currentAccount
     }
 
@@ -48,5 +51,4 @@ export class ListService {
     private notOwner(list: ShoppingList): boolean {
         return list.ownerId !== this.currentAccount.id
     }
-
 }
