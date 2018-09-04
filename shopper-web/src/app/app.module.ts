@@ -27,11 +27,12 @@ import {MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatL
 import {NgHttpLoaderModule} from "ng-http-loader";
 import {LoaderComponent} from './components/loader/loader.component';
 import {ListService} from "./services/list.service";
-import { ListComponent } from './components/list/list.component';
+import {ListComponent} from './components/list/list.component';
 import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
-import {NewShoppingListComponent} from "./components/shoppinglists/new-shoppinglist.component";
+import {NewShoppingListComponent} from "./components/dialogs/new-list/new-shoppinglist.component";
 import {ShoppingListsComponent} from "./components/shoppinglists/shopping-lists.component";
-import { FormsModule } from '@angular/forms';
+import {FormsModule} from '@angular/forms';
+import {ConfirmDialogComponent} from './components/dialogs/confirm/confirm-dialog.component';
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -50,12 +51,14 @@ export function initUserFactory(authService: AuthenticationService) {
         LoaderComponent,
         ShoppingListsComponent,
         ListComponent,
-        NewShoppingListComponent
+        NewShoppingListComponent,
+        ConfirmDialogComponent
     ],
     entryComponents: [
         AvatarUploadComponent,
         ShoppingListsComponent,
         NewShoppingListComponent,
+        ConfirmDialogComponent,
         LoaderComponent
     ],
     imports: [

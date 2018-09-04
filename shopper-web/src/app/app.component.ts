@@ -5,6 +5,9 @@ import {AuthenticationService} from "./services/authentication.service";
 import {Account} from "./model/Account";
 import {MatSidenav} from "@angular/material";
 import {LoaderComponent} from "./components/loader/loader.component";
+import {ListService} from "./services/list.service";
+import {ShoppingList} from "./model/ShoppingList";
+import {AlertService} from "./services/alert.service";
 
 @Component({
     selector: 'app-root',
@@ -15,12 +18,12 @@ export class AppComponent implements OnInit {
 
     account: Account;
     message_count = {count: ""};
-    lists = [1, 2, 3, 4];
+    lists: ShoppingList[];
     public loader = LoaderComponent;
     @ViewChild("sidenav")
     private sidenav: MatSidenav;
 
-    constructor(private http: HttpClient, private router: Router, private authSrv: AuthenticationService) {
+    constructor(private http: HttpClient, private router: Router, private authSrv: AuthenticationService, private listSrv: ListService, private alertSrv: AlertService) {
         router.events.subscribe(() => {
             if (this.sidenav && this.sidenav.opened) {
                 this.sidenav.close();
@@ -31,6 +34,7 @@ export class AppComponent implements OnInit {
     ngOnInit() {
         this.account = this.authSrv.currentAccount;
         this.message_count.count = "" + 1;
+        this.listSrv.getUserList().subscribe(lists => this.lists = lists.splice(0, 4));
     }
 
     loggedIn() {
@@ -41,6 +45,18 @@ export class AppComponent implements OnInit {
         this.authSrv.logout().subscribe(() => {
             this.router.navigate(['/login']);
         });
+    }
+
+    openNewListDialog() {
+        this.listSrv.openNewListDialog().subscribe(res => {
+                if (res) {
+                    this.router.navigate(['/list', res.id]);
+                    this.alertSrv.success("app.shopping.create.success");
+                } else {
+                    this.alertSrv.error("app.shopping.create.fail");
+                }
+            }
+        );
     }
 }
 

@@ -1,0 +1,22 @@
+<h2 mat-dialog-title class="modal-header">
+    <mat-icon class="text-white mr-2">add_circle_outline</mat-icon>
+    {{'app.shopping.create'|translate}}
+    <button mat-icon-button mat-dialog-close class="pull-right">
+        <mat-icon>close</mat-icon>
+    </button>
+</h2>
+<form [formGroup]="form">
+    <mat-dialog-content class="mat-typography text-center ml-0 mr-0">
+        <mat-form-field class="mat-form-field-full-width">
+            <input id="listName" matInput cdkFocusRegionstart placeholder="{{'app.general.name'|translate}}"
+                   formControlName="listName" required (keydown.enter)="createList()">
+            <mat-error *ngIf="form.value.listName.invalid"></mat-error>
+        </mat-form-field>
+    </mat-dialog-content>
+</form>
+<mat-dialog-actions align="end" class="pr-2 pl-2">
+    <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
+    <button mat-raised-button class="success-button" (click)="createList()" [disabled]="form.invalid">
+        {{'app.general.create'|translate}}
+    </button>
+</mat-dialog-actions>

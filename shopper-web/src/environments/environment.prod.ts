@@ -15,5 +15,4 @@ export const environment = {
     list_url: '/api/list',
     user_url: '/user/',
     mine_url: '/mine',
-    list_add_url: '/add'
 };

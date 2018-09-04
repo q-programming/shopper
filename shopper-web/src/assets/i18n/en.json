@@ -4,6 +4,7 @@
   "app.general.close": "Close",
   "app.general.saveChanges": "Save changes",
   "app.general.edit": "Edit",
+  "app.general.delete": "Delete",
   "app.general.test": "Test",
   "app.general.name": "Name",
   "app.general.create": "Create",
@@ -23,10 +24,20 @@
   "app.api.error.general": "There was internal error while executing action. Please contact administrator",
   "app.api.error.notfound": "Requested resources was not found",
   "app.shopping.list": "Shopping lists",
+  "app.shopping.all": "Show all shopping lists",
   "app.shopping.share": "Share list",
-  "app.shopping.archive": "Archive list",
   "app.shopping.create": "Create new list",
-  "app.shopping.create.success" : "New list was created",
-  "app.shopping.create.fail" : "There was error while creating new list"
-
+  "app.shopping.create.success": "New list was created",
+  "app.shopping.create.fail": "There was error while creating new list",
+  "app.shopping.archive": "Archive list",
+  "app.shopping.unarchive": "Unarchive list",
+  "app.shopping.archived": "Archived",
+  "app.shopping.archive.success": "List was archived",
+  "app.shopping.archive.fail": "There was error while archiving list",
+  "app.shopping.unarchive.success": "List was unarchived",
+  "app.shopping.unarchive.fail": "There was error while trying to unarchive list",
+  "app.shopping.delete.confirm": "Confirm deletion of list",
+  "app.shopping.delete.confirm.msg": "Are you sure you want to delete this list? This operation cannot be undone",
+  "app.shopping.delete.success": "Successfully deleted list",
+  "app.shopping.delete.fail": "There was error while trying to delete list"
 }

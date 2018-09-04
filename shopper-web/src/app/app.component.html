@@ -15,10 +15,15 @@
     </div>
     <!--DESKTOP MENU-->
     <div fxShow="true" fxHide.lt-md="true" *ngIf="loggedIn()">
-        <button mat-button class="mat-toolbar-button">
+        <button mat-button class="mat-toolbar-button" routerLink="/" matTooltip="{{'app.shopping.all' | translate}}">
             <mat-icon class="ml-2">list_alt</mat-icon>
         </button>
-        <button mat-button class="mat-toolbar-button" routerLink="/">
+        <button mat-button class="mat-toolbar-button" [routerLink]="['/']" [queryParams]="{archived:true}"
+                matTooltip="{{'app.shopping.archived' | translate}} {{'app.shopping.list' | translate}} ">
+            <mat-icon class="ml-2">archived</mat-icon>
+        </button>
+
+        <button mat-button class="mat-toolbar-button" routerLink="/" >
             {{message_count.count}}
             <mat-icon class="ml-2">message</mat-icon>
         </button>
@@ -38,18 +43,26 @@
         </div>
         <mat-divider class="mt-2"></mat-divider>
         <div fxLayout="column">
+            <button mat-button (click)="openNewListDialog()">
+                <mat-icon class="text-white mr-2">add_circle_outline</mat-icon>
+                {{'app.shopping.create'|translate}}
+            </button>
             <button mat-button routerLink="/">
                 <mat-icon class="mr-2">list_alt</mat-icon>
                 {{'app.menu.lists'| translate}}
             </button>
-            <div *ngFor="let i of lists">
-                <button mat-button>
+            <div *ngFor="let list of lists">
+                <button mat-button [routerLink]="['list', list.id]">
                     <mat-icon>arrow_right</mat-icon>
-                    List {{i}}
+                    {{list.name}}
                 </button>
             </div>
-            <button mat-button>
+            <button mat-button routerLink="/">
                 <mat-icon class="mr-2">more_horiz</mat-icon>
+            </button>
+            <button mat-button [routerLink]="['/']" [queryParams]="{archived:true}">
+                <mat-icon class="mr-2">archive</mat-icon>
+                {{'app.shopping.archived' | translate}}
             </button>
         </div>
         <mat-divider class="mt-2"></mat-divider>

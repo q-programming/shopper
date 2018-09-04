@@ -250,6 +250,10 @@ Messages
     background: #2c5aa0;
     color: white;
     padding: 20px;
+    margin-top: 0;
+}
+.modal-header.warn {
+    background: #f44336;
 }
 
 .shopper-modal > mat-dialog-container {

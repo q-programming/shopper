@@ -9,8 +9,7 @@ import {AuthenticationService} from "./authentication.service";
 import {Account} from "../model/Account";
 import * as _ from 'lodash';
 import {MatDialog, MatDialogConfig} from "@angular/material";
-import {NewShoppingListComponent} from "../components/shoppinglists/new-shoppinglist.component";
-import {AlertService} from "./alert.service";
+import {NewShoppingListComponent} from "../components/dialogs/new-list/new-shoppinglist.component";
 
 @Injectable({
     providedIn: 'root'
@@ -19,16 +18,26 @@ export class ListService {
 
     currentAccount: Account;
 
-    constructor(private logger: NGXLogger, private api: ApiService, private avatarSrv: AvatarService, private authSrv: AuthenticationService, private dialog: MatDialog, private alertSrv: AlertService) {
+    constructor(private logger: NGXLogger,
+                private api: ApiService,
+                private avatarSrv: AvatarService,
+                private authSrv: AuthenticationService,
+                private dialog: MatDialog) {
         this.currentAccount = this.authSrv.currentAccount
     }
 
 
-    getUserList(userID: string, items?: boolean): Observable<ShoppingList[]> {
+    getUserList(userID?: string, items?: boolean, archived?: boolean): Observable<ShoppingList[]> {
         if (userID) {
-            return this.api.getObject<ShoppingList[]>(environment.list_url + `${environment.user_url}${userID}`, {items: items}).map(res => this.processList(res));
+            return this.api.getObject<ShoppingList[]>(environment.list_url + `${environment.user_url}${userID}`, {
+                archived: archived,
+                items: items
+            }).map(res => this.processList(res));
         }
-        return this.api.getObject<ShoppingList[]>(environment.list_url + environment.mine_url, {items: items}).map(res => this.processList(res))
+        return this.api.getObject<ShoppingList[]>(environment.list_url + environment.mine_url, {
+            archived: archived,
+            items: items
+        }).map(res => this.processList(res))
     }
 
     getListByID(listID: number): Observable<ShoppingList> {
@@ -45,10 +54,43 @@ export class ListService {
     }
 
     createList(listName: string): Observable<ShoppingList> {
-        return this.api.postObject<ShoppingList>(environment.list_url + environment.list_add_url, listName)
+        return this.api.postObject<ShoppingList>(environment.list_url + '/add', listName)
     }
 
     private notOwner(list: ShoppingList): boolean {
         return list.ownerId !== this.currentAccount.id
+    }
+
+    openNewListDialog(): Observable<ShoppingList> {
+        const dialogConfig: MatDialogConfig = {
+            disableClose: true,
+            autoFocus: true,
+            width: '500px',
+            panelClass: 'shopper-modal'
+        };
+        return new Observable((observable) => {
+            let dialogRef = this.dialog.open(NewShoppingListComponent, dialogConfig);
+            dialogRef.afterClosed().subscribe(listName => {
+                if (listName) {
+                    this.api.postObject<ShoppingList>(environment.list_url + '/add', listName).subscribe(newlist => {
+                        if (newlist) {
+                            observable.next(newlist);
+                            observable.complete()
+                        }
+                    });
+                } else {
+                    observable.next(undefined);
+                    observable.complete();
+                }
+            });
+        });
+    }
+
+    archive(list: ShoppingList): Observable<ShoppingList> {
+        return this.api.post(environment.list_url + `/${list.id}/archive`, null)
+    }
+
+    delete(list: ShoppingList): Observable<any> {
+        return this.api.post(environment.list_url + `/${list.id}/delete`, null)
     }
 }
