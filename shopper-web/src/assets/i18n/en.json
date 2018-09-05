@@ -39,5 +39,7 @@
   "app.shopping.delete.confirm": "Confirm deletion of list",
   "app.shopping.delete.confirm.msg": "Are you sure you want to delete this list? This operation cannot be undone",
   "app.shopping.delete.success": "Successfully deleted list",
-  "app.shopping.delete.fail": "There was error while trying to delete list"
+  "app.shopping.delete.fail": "There was error while trying to delete list",
+  "app.item.add": "Add new item",
+  "app.item.add.quick": "Quickly add new item"
 }

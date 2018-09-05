@@ -33,6 +33,7 @@ import {NewShoppingListComponent} from "./components/dialogs/new-list/new-shoppi
 import {ShoppingListsComponent} from "./components/shoppinglists/shopping-lists.component";
 import {FormsModule} from '@angular/forms';
 import {ConfirmDialogComponent} from './components/dialogs/confirm/confirm-dialog.component';
+import {ItemService} from "./services/item.service";
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -99,6 +100,7 @@ export function initUserFactory(authService: AuthenticationService) {
         AvatarService,
         AlertService,
         ListService,
+        ItemService,
         FormBuilder,
         {
             provide: HTTP_INTERCEPTORS,

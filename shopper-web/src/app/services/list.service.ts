@@ -29,12 +29,12 @@ export class ListService {
 
     getUserList(userID?: string, items?: boolean, archived?: boolean): Observable<ShoppingList[]> {
         if (userID) {
-            return this.api.getObject<ShoppingList[]>(environment.list_url + `${environment.user_url}${userID}`, {
+            return this.api.getObject<ShoppingList[]>(environment.list_url + `/user/${userID}`, {
                 archived: archived,
                 items: items
             }).map(res => this.processList(res));
         }
-        return this.api.getObject<ShoppingList[]>(environment.list_url + environment.mine_url, {
+        return this.api.getObject<ShoppingList[]>(environment.list_url + '/mine', {
             archived: archived,
             items: items
         }).map(res => this.processList(res))
@@ -51,10 +51,6 @@ export class ListService {
             list.ownerAvatar = this.avatarSrv.getUserAvatarById(list.ownerId)
         });
         return lists
-    }
-
-    createList(listName: string): Observable<ShoppingList> {
-        return this.api.postObject<ShoppingList>(environment.list_url + '/add', listName)
     }
 
     private notOwner(list: ShoppingList): boolean {

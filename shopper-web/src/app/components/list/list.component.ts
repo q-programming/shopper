@@ -4,6 +4,7 @@ import {ActivatedRoute} from "@angular/router";
 import {ShoppingList} from "../../model/ShoppingList";
 import {ListItem} from "../../model/ListItem";
 import * as _ from 'lodash';
+import {ItemService} from "../../services/item.service";
 
 @Component({
     selector: 'app-list',
@@ -18,7 +19,9 @@ export class ListComponent implements OnInit {
     items: ListItem[];
     done: ListItem[];
 
-    constructor(private listSrv: ListService, private route: ActivatedRoute) {
+    constructor(private listSrv: ListService,
+                private itemSrv: ItemService,
+                private route: ActivatedRoute) {
     }
 
     ngOnInit() {
@@ -31,8 +34,21 @@ export class ListComponent implements OnInit {
     private loadItems() {
         this.listSrv.getListByID(this.listID).subscribe(list => {
             this.list = list;
-            this.done = _.filter(list.items, item => item.done);
-            this.items = _.difference(list.items, this.done)
+            this.sortDoneNotDone();
         });
+    }
+
+    private sortDoneNotDone() {
+        this.done = _.filter(this.list.items, item => item.done);
+        this.items = _.difference(this.list.items, this.done)
+    }
+
+    toggleItem(item: ListItem) {
+        this.itemSrv.toggleItem(this.listID, item).subscribe((result) => {
+            if (result) {
+                _.find(this.list.items, i => i.id === result.id).done = result.done;
+                this.sortDoneNotDone();
+            }
+        })
     }
 }
