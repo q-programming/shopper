@@ -9,7 +9,7 @@ import {AuthenticationService} from "./authentication.service";
 import {Account} from "../model/Account";
 import * as _ from 'lodash';
 import {MatDialog, MatDialogConfig} from "@angular/material";
-import {NewShoppingListComponent} from "../components/dialogs/new-list/new-shoppinglist.component";
+import {NewShoppingListDialogComponent} from "../components/dialogs/new-list/new-shopping-list-dialog.component";
 
 @Injectable({
     providedIn: 'root'
@@ -65,7 +65,7 @@ export class ListService {
             panelClass: 'shopper-modal'
         };
         return new Observable((observable) => {
-            let dialogRef = this.dialog.open(NewShoppingListComponent, dialogConfig);
+            let dialogRef = this.dialog.open(NewShoppingListDialogComponent, dialogConfig);
             dialogRef.afterClosed().subscribe(listName => {
                 if (listName) {
                     this.api.postObject<ShoppingList>(environment.list_url + '/add', listName).subscribe(newlist => {

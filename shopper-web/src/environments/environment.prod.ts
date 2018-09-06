@@ -13,6 +13,6 @@ export const environment = {
     account_url: '/api/account',
     avatar_url: '/avatar',
     list_url: '/api/list',
-    item_url:'/api/item'
-
+    item_url: '/api/item',
+    product_url: '/api/product'
 };

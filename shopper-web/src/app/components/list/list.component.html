@@ -11,7 +11,7 @@
         <input matInput placeholder="{{'app.item.add.quick' | translate}}">
     </mat-form-field>
     <span class="fill-remaining-space"></span>
-    <button mat-icon-button class="mt-3">
+    <button mat-icon-button class="mt-3" (click)="openNewProductDialog()">
         <mat-icon class="new-item-button">add_circle_outline</mat-icon>
     </button>
 </mat-card>

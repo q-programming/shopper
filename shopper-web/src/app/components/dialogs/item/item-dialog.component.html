@@ -1,0 +1,69 @@
+<h2 mat-dialog-title class="modal-header">
+    <mat-icon class="text-white mr-2">add</mat-icon>
+    {{'app.item.add'|translate}}
+    <button mat-icon-button mat-dialog-close class="pull-right">
+        <mat-icon>close</mat-icon>
+    </button>
+</h2>
+<form [formGroup]="form">
+    <mat-dialog-content class="mat-typography text-center ml-0 mr-0">
+        <div fxLayout="row" fxLayoutAlign="center">
+            <mat-form-field class="" fxFlex="70">
+                <img [src]='"assets/images/spacer.png"' class="mr-2" matPrefix>
+                <input id="product" matInput placeholder="{{'app.item.product'|translate}}"
+                       cdkFocusRegionstart formControlName="product" required [matAutocomplete]="productsAuto">
+                <!--<mat-error *ngIf="form.value.listName.invalid"></mat-error>-->
+                <mat-autocomplete #productsAuto="matAutocomplete" [autoActiveFirstOption]
+                                  [displayWith]="productDisplay">
+                    <mat-option *ngFor="let product of products" [value]="product">
+                        {{product.name}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center">
+            <mat-form-field class="" fxFlex="70">
+                <img *ngIf="item.category" [src]='"assets/images/categories/"+ item.category + ".png"'
+                     class="category mr-2"
+                     matPrefix>
+                <img *ngIf="!item.category" [src]='"assets/images/spacer.png"' class="category mr-2"
+                     matPrefix>
+                <mat-select required formControlName="category" placeholder="{{'app.item.category'|translate}}"
+                            #singleSelect>
+                    <ngx-mat-select-search formControlName="categoryFilterCtrl"
+                                           [placeholderLabel]="'app.item.category.search' | translate"
+                                           [noEntriesFoundLabel]="'app.item.category.search.notfound'|translate">
+                    </ngx-mat-select-search>
+                    <mat-option *ngFor="let cat of filteredCategories | async" [value]="cat.category">
+                    <span matSuffix>
+                        <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category">
+                    </span>
+                        {{cat.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="40px">
+            <mat-form-field fxFlex="20">
+                <input id="quantity" type="number"  matInput placeholder="{{'app.item.quantity'|translate}}"
+                       formControlName="quantity">
+            </mat-form-field>
+            <mat-form-field fxFlex="20">
+                <input id="unit" matInput placeholder="{{'app.item.unit'|translate}}"
+                       formControlName="unit">
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center">
+            <mat-form-field fxFlex="80">
+                <textarea matInput placeholder="{{'app.item.description'|translate}}"
+                          formControlName="description"></textarea>
+            </mat-form-field>
+        </div>
+    </mat-dialog-content>
+</form>
+<mat-dialog-actions align="end" class="pr-2 pl-2">
+    <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
+    <button mat-raised-button class="success-button" (click)="addItem()" [disabled]="form.invalid">
+        {{'app.general.add'|translate}}
+    </button>
+</mat-dialog-actions>

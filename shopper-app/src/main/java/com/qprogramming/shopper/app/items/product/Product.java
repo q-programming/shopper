@@ -23,7 +23,6 @@ public class Product {
     @Column
     private String name;
 
-    //TODO top category
     @ElementCollection(fetch = FetchType.LAZY)
     @MapKeyEnumerated(EnumType.STRING)
     @Column(name = "score")

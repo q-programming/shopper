@@ -3,13 +3,13 @@ import {MatDialogRef} from '@angular/material';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @Component({
-    templateUrl: './new-shoppinglist.component.html'
+    templateUrl: './new-shopping-list-dialog.component.html'
 })
-export class NewShoppingListComponent implements OnInit {
+export class NewShoppingListDialogComponent implements OnInit {
 
     form: FormGroup;
 
-    constructor(private dialogRef: MatDialogRef<NewShoppingListComponent>,
+    constructor(private dialogRef: MatDialogRef<NewShoppingListDialogComponent>,
                 private formBuilder: FormBuilder) {
     }
 

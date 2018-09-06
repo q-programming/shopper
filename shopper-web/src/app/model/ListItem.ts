@@ -1,4 +1,5 @@
 import {Product} from "./Product";
+import {Category} from "./Category";
 
 export class ListItem {
     id: number;
@@ -6,7 +7,7 @@ export class ListItem {
     description: string;
     quantity: number;
     unit: string;
-    category: string;
+    category: Category;
     done: boolean;
 }
 

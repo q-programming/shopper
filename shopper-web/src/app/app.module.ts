@@ -25,15 +25,17 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {LayoutModule} from '@angular/cdk/layout';
 import {MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule} from '@angular/material';
 import {NgHttpLoaderModule} from "ng-http-loader";
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {LoaderComponent} from './components/loader/loader.component';
 import {ListService} from "./services/list.service";
 import {ListComponent} from './components/list/list.component';
 import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
-import {NewShoppingListComponent} from "./components/dialogs/new-list/new-shoppinglist.component";
+import {NewShoppingListDialogComponent} from "./components/dialogs/new-list/new-shopping-list-dialog.component";
 import {ShoppingListsComponent} from "./components/shoppinglists/shopping-lists.component";
 import {FormsModule} from '@angular/forms';
 import {ConfirmDialogComponent} from './components/dialogs/confirm/confirm-dialog.component';
 import {ItemService} from "./services/item.service";
+import {ItemDialogComponent} from "./components/dialogs/item/item-dialog.component";
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -52,14 +54,16 @@ export function initUserFactory(authService: AuthenticationService) {
         LoaderComponent,
         ShoppingListsComponent,
         ListComponent,
-        NewShoppingListComponent,
-        ConfirmDialogComponent
+        NewShoppingListDialogComponent,
+        ConfirmDialogComponent,
+        ItemDialogComponent
     ],
     entryComponents: [
         AvatarUploadComponent,
         ShoppingListsComponent,
-        NewShoppingListComponent,
+        NewShoppingListDialogComponent,
         ConfirmDialogComponent,
+        ItemDialogComponent,
         LoaderComponent
     ],
     imports: [
@@ -85,6 +89,7 @@ export function initUserFactory(authService: AuthenticationService) {
             }
         }),
         LayoutModule,
+        NgxMatSelectSearchModule,
         MatToolbarModule,
         MatButtonModule,
         MatSidenavModule,

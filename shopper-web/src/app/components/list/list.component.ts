@@ -5,6 +5,7 @@ import {ShoppingList} from "../../model/ShoppingList";
 import {ListItem} from "../../model/ListItem";
 import * as _ from 'lodash';
 import {ItemService} from "../../services/item.service";
+import {AlertService} from "../../services/alert.service";
 
 @Component({
     selector: 'app-list',
@@ -21,7 +22,8 @@ export class ListComponent implements OnInit {
 
     constructor(private listSrv: ListService,
                 private itemSrv: ItemService,
-                private route: ActivatedRoute) {
+                private route: ActivatedRoute,
+                private alertSrv: AlertService) {
     }
 
     ngOnInit() {
@@ -48,6 +50,14 @@ export class ListComponent implements OnInit {
             if (result) {
                 _.find(this.list.items, i => i.id === result.id).done = result.done;
                 this.sortDoneNotDone();
+            }
+        })
+    }
+
+    openNewProductDialog() {
+        this.itemSrv.openNewItemDialog().subscribe(result => {
+            if (result) {
+                this.alertSrv.success("app.shopping.create.success");
             }
         })
     }
