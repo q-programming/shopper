@@ -18,6 +18,7 @@ import {CategoryOption} from "../../../model/CategoryOption";
 })
 export class ItemDialogComponent implements OnInit {
 
+    update: boolean;
     item: ListItem;
     form: FormGroup;
     products: Product[] = [];
@@ -28,7 +29,7 @@ export class ItemDialogComponent implements OnInit {
                 private formBuilder: FormBuilder,
                 private api: ApiService,
                 private translate: TranslateService,
-                @Inject(MAT_DIALOG_DATA) public data: ListItem) {
+                @Inject(MAT_DIALOG_DATA) public data: any) {
         //load categories
         //TODO extract to component?
         this.categories = Object.values(Category).map(value => {
@@ -37,7 +38,8 @@ export class ItemDialogComponent implements OnInit {
                 name: this.translate.instant(value.toString())
             }
         });
-        this.item = data ? data : new ListItem();
+        this.item = data.item ? data.item : new ListItem();
+        this.update = data.update;
         this.form = this.formBuilder.group({
             product: [this.item.product, Validators.required],
             category: [this.item.category, Validators.required],

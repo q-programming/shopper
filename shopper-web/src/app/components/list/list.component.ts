@@ -54,10 +54,14 @@ export class ListComponent implements OnInit {
         })
     }
 
-    openNewProductDialog() {
-        this.itemSrv.openNewItemDialog().subscribe(result => {
-            if (result) {
-                this.alertSrv.success("app.shopping.create.success");
+    openNewItemDialog() {
+        this.itemSrv.openNewItemDialog(this.listID).subscribe(list => {
+            if (list) {
+                this.list = list;
+                this.sortDoneNotDone();
+                this.alertSrv.success("app.item.add.success");
+            } else {
+                this.alertSrv.success("app.item.add.error");
             }
         })
     }

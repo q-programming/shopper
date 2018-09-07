@@ -46,6 +46,9 @@ public class Product {
     }
 
     public Map<Category, Integer> getCategoryScore() {
+        if (categoryScore.isEmpty()) {
+            categoryScore = new HashMap<>();
+        }
         return categoryScore;
     }
 

@@ -74,10 +74,11 @@ export class ListService {
                             observable.complete()
                         }
                     });
-                } else {
-                    observable.next(undefined);
-                    observable.complete();
                 }
+            }, error => {
+                this.logger.error(error);
+                observable.next(undefined);
+                observable.complete();
             });
         });
     }

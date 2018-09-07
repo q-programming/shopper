@@ -48,6 +48,7 @@ export class AppComponent implements OnInit {
     }
 
     openNewListDialog() {
+        this.sidenav.close();
         this.listSrv.openNewListDialog().subscribe(res => {
                 if (res) {
                     this.router.navigate(['/list', res.id]);

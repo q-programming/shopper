@@ -6,6 +6,7 @@ import {Message, MessageType} from "../model/Message";
 @Component({
     selector: 'alert',
     templateUrl: './alert.component.html',
+    styleUrls: ['./alert.component.css'],
     animations: [
         trigger('alertsAnimation', [
             transition('* => *', [

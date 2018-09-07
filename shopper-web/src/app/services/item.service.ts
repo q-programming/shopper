@@ -7,8 +7,8 @@ import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ListItem} from "../model/ListItem";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
-import {Product} from "../model/Product";
 import {ItemDialogComponent} from "../components/dialogs/item/item-dialog.component";
+import {ShoppingList} from "../model/ShoppingList";
 
 @Injectable({
     providedIn: 'root'
@@ -28,32 +28,29 @@ export class ItemService {
         return this.api.postObject<ListItem>(environment.item_url + `/${listID}/toggle`, item)
     }
 
-    searchProduct(term: string) {
-        return this.api.getObject<Product>(environment.product_url, {term: term})
-    }
-
-    openNewItemDialog(): Observable<ListItem> {
+    openNewItemDialog(listID: number): Observable<ShoppingList> {
         const dialogConfig: MatDialogConfig = {
             disableClose: true,
             autoFocus: true,
             width: '500px',
-            panelClass: 'shopper-modal'
+            panelClass: 'shopper-modal',
+            data: {
+                update: false
+            }
         };
         return new Observable((observable) => {
             let dialogRef = this.dialog.open(ItemDialogComponent, dialogConfig);
             dialogRef.afterClosed().subscribe(item => {
-                //TODO handl actual object
-                // if (listName) {
-                //     this.api.postObject<ShoppingList>(environment.list_url + '/add', listName).subscribe(newlist => {
-                //         if (newlist) {
-                //             observable.next(newlist);
-                //             observable.complete()
-                //         }
-                //     });
-                // } else {
+                this.api.postObject<ShoppingList>(environment.item_url + `/${listID}/add`, item).subscribe(list => {
+                    if (list) {
+                        observable.next(list);
+                        observable.complete();
+                    }
+                }, error => {
+                    this.logger.error(error);
                     observable.next(undefined);
                     observable.complete();
-                // }
+                });
             });
         });
     }
