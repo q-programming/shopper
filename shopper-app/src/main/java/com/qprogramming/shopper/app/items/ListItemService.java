@@ -54,11 +54,15 @@ public class ListItemService {
         Optional<ListItem> itemOptional = list.getItems().stream().filter(sameProduct(item.getProduct())).findFirst();
         if (itemOptional.isPresent()) {
             listItem = itemOptional.get();
-            listItem.setQuantity(listItem.getQuantity() + item.getQuantity());
+            listItem.setQuantity(atLeastOneQuantity(listItem) + atLeastOneQuantity(item));
         } else {
             listItem = createListItem(item);
             list.getItems().add(listItem);
         }
+    }
+
+    private float atLeastOneQuantity(ListItem item) {
+        return item.getQuantity() == 0 ? 1 : item.getQuantity();
     }
 
     public void deleteListItem(ListItem item) {

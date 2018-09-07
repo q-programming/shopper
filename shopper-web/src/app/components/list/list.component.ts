@@ -6,6 +6,9 @@ import {ListItem} from "../../model/ListItem";
 import * as _ from 'lodash';
 import {ItemService} from "../../services/item.service";
 import {AlertService} from "../../services/alert.service";
+import {Category} from "../../model/Category";
+import {CategoryOption} from "../../model/CategoryOption";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
     selector: 'app-list',
@@ -19,11 +22,20 @@ export class ListComponent implements OnInit {
     list: ShoppingList;
     items: ListItem[];
     done: ListItem[];
+    categories: CategoryOption[];
 
     constructor(private listSrv: ListService,
                 private itemSrv: ItemService,
                 private route: ActivatedRoute,
-                private alertSrv: AlertService) {
+                private alertSrv: AlertService,
+                private translate: TranslateService) {
+
+        this.categories = Object.values(Category).map(value => {
+            return {
+                category: value,
+                name: this.translate.instant(value.toString())
+            }
+        });
     }
 
     ngOnInit() {
@@ -49,6 +61,7 @@ export class ListComponent implements OnInit {
         this.itemSrv.toggleItem(this.listID, item).subscribe((result) => {
             if (result) {
                 _.find(this.list.items, i => i.id === result.id).done = result.done;
+                result.done ? this.list.done++ : this.list.done--;
                 this.sortDoneNotDone();
             }
         })
@@ -61,7 +74,17 @@ export class ListComponent implements OnInit {
                 this.sortDoneNotDone();
                 this.alertSrv.success("app.item.add.success");
             } else {
-                this.alertSrv.success("app.item.add.error");
+                this.alertSrv.error("app.item.add.error");
+            }
+        })
+    }
+
+    updateCategory(item: ListItem, newCategory: Category) {
+        item.category = newCategory;
+        this.itemSrv.updateItem(this.listID, item).subscribe(item => {
+            if (item) {
+                this.alertSrv.success("app.item.category.updated");
+                this.loadItems()
             }
         })
     }

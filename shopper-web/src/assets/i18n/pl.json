@@ -49,6 +49,7 @@
   "app.item.category": "Kategoria",
   "app.item.category.search": "Szukaj kategorii",
   "app.item.category.search.notfound": "Kategoria nie znaleziona",
+  "app.item.category.updated": "Kategoria zaktualizowana",
   "app.item.quantity": "Ilość",
   "app.item.unit": "Jednostka",
   "app.item.description": "Opis",

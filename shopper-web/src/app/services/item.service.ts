@@ -28,6 +28,10 @@ export class ItemService {
         return this.api.postObject<ListItem>(environment.item_url + `/${listID}/toggle`, item)
     }
 
+    updateItem(listID: number, item: ListItem): Observable<ListItem> {
+        return this.api.postObject<ListItem>(environment.item_url + `/${listID}/update`, item)
+    }
+
     openNewItemDialog(listID: number): Observable<ShoppingList> {
         const dialogConfig: MatDialogConfig = {
             disableClose: true,
