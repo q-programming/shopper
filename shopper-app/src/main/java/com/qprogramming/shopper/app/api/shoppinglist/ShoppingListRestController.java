@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static com.qprogramming.shopper.app.exceptions.AccountNotFoundException.ACCOUNT_WITH_ID_WAS_NOT_FOUND;
@@ -68,7 +69,7 @@ public class ShoppingListRestController {
             Set<ShoppingList> lists = _listService.findAllByAccountID(id, archived)
                     .stream()
                     .filter(_listService::canView)
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toCollection(TreeSet::new));
             return ResponseEntity.ok(getListWithDoneItems(lists, items));
 
         } catch (AccountNotFoundException e) {
@@ -80,7 +81,7 @@ public class ShoppingListRestController {
 
     private Set<ShoppingList> getListWithDoneItems(Set<ShoppingList> lists, boolean items) {
         if (items) {
-            lists.parallelStream().forEach(shoppingList -> shoppingList.setDone(shoppingList.getItems().stream().filter(ListItem::isDone).count()));
+            lists.forEach(shoppingList -> shoppingList.setDone(shoppingList.getItems().stream().filter(ListItem::isDone).count()));
         }
         return lists;
     }
@@ -109,6 +110,7 @@ public class ShoppingListRestController {
     public ResponseEntity<ShoppingList> getList(@PathVariable String id) {
         try {
             ShoppingList list = _listService.findByID(id);
+            _listService.visitList(list);
             _listService.sortItems(list);
             return ResponseEntity.ok(list);
         } catch (ShoppingAccessException e) {

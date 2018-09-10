@@ -37,6 +37,9 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ListItem> items = new ArrayList<>();
 
+    @Column
+    private Date lastVisited;
+
     private Long done;
 
     public Long getId() {
@@ -101,6 +104,14 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
 
     public void setDone(Long done) {
         this.done = done;
+    }
+
+    public Date getLastVisited() {
+        return lastVisited;
+    }
+
+    public void setLastVisited(Date lastVisited) {
+        this.lastVisited = lastVisited;
     }
 
     @Override

@@ -18,7 +18,9 @@ import java.util.Locale;
  */
 public class Utils {
     public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername);
-    public static final Comparator<ShoppingList> SHOPPING_LIST_COMPARATOR = Comparator.comparing(ShoppingList::getName).thenComparing(ShoppingList::getId);
+    public static final Comparator<ShoppingList> SHOPPING_LIST_COMPARATOR = Comparator.comparing(ShoppingList::getLastVisited).reversed()
+            .thenComparing(ShoppingList::getName)
+            .thenComparing(ShoppingList::getId);
 
     public static Account getCurrentAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -111,6 +111,7 @@ public class TestUtil {
         list.setName(name);
         list.setId(id);
         list.setOwnerId(testAccount.getId());
+        list.setLastVisited(new Date());
         return list;
     }
 

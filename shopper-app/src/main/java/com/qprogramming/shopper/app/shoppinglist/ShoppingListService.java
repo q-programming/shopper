@@ -42,7 +42,7 @@ public class ShoppingListService {
     public Set<ShoppingList> findAllByAccountID(String accountId, boolean archived) throws AccountNotFoundException {
         Account account = this._accountService.findById(accountId);
         Set<ShoppingList> list = this._listRepository.findAllByOwnerIdOrSharedIn(account.getId(), Collections.singleton(account.getId()));
-        return list.stream().filter(shoppingList -> shoppingList.isArchived() == archived).collect(Collectors.toSet());
+        return list.stream().filter(shoppingList -> shoppingList.isArchived() == archived).collect(Collectors.toCollection(TreeSet::new));
     }
 
     public boolean canView(ShoppingList list) {
@@ -57,6 +57,7 @@ public class ShoppingListService {
         list.setName(name);
         list.setOwnerId(currentAccount.getId());
         list.setOwnerName(currentAccount.getName());
+        list.setLastVisited(new Date());
         return this.save(list);
     }
 
@@ -127,5 +128,10 @@ public class ShoppingListService {
         Comparator<ListItem> listComparator = Comparator
                 .nullsLast(Comparator.comparing((ListItem l) -> categoriesOrdered.get(l.getCategory())));
         list.getItems().sort(listComparator);
+    }
+
+    public void visitList(ShoppingList list) {
+        list.setLastVisited(new Date());
+        save(list);
     }
 }
