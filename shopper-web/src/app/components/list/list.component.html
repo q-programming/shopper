@@ -20,10 +20,20 @@
     <mat-card fxLayout="row" *ngFor="let item of items" class="item clickable">
         <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"></mat-checkbox>
         <mat-card-title-group class="ml-2">
-            <mat-card-title>{{item.product.name}}</mat-card-title>
+            <mat-card-title>{{item.product.name}}
+            </mat-card-title>
             <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
         </mat-card-title-group>
         <span class="fill-remaining-space"></span>
+        <!--CARD MENU-->
+        <span class="card-menu">
+                    <button mat-icon-button (click)="openEditItemDialog(item)">
+                        <mat-icon class="card-menu">edit</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="confirmDeletion(item)">
+                        <mat-icon class="card-menu">delete</mat-icon>
+                </button>
+        </span>
         <mat-card-subtitle class="mt-2" fxShow.xs="false"><span *ngIf="item.quantity !== 0">{{item.quantity}}</span>
             {{item.unit}}
         </mat-card-subtitle>
@@ -31,7 +41,7 @@
             <img [src]='"assets/images/categories/"+ item.category + ".png"' class="category" fxShow.xs="false">
         </button>
         <mat-menu #menu="matMenu">
-            <button *ngFor="let cat of categories"  mat-menu-item (click)="updateCategory(item,cat.category)">
+            <button *ngFor="let cat of categories" mat-menu-item (click)="updateCategory(item,cat.category)">
                 <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category">
                 {{cat.name}}
             </button>

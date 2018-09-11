@@ -9,6 +9,8 @@ import {AlertService} from "../../services/alert.service";
 import {Category} from "../../model/Category";
 import {CategoryOption} from "../../model/CategoryOption";
 import {TranslateService} from "@ngx-translate/core";
+import {ConfirmDialog, ConfirmDialogComponent} from "../dialogs/confirm/confirm-dialog.component";
+import {MatDialog, MatDialogConfig} from "@angular/material";
 
 @Component({
     selector: 'app-list',
@@ -27,7 +29,8 @@ export class ListComponent implements OnInit {
                 private itemSrv: ItemService,
                 private route: ActivatedRoute,
                 private alertSrv: AlertService,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                private dialog: MatDialog) {
     }
 
     ngOnInit() {
@@ -67,6 +70,18 @@ export class ListComponent implements OnInit {
         })
     }
 
+    openEditItemDialog(item: ListItem) {
+        this.itemSrv.openEditItemDialog(this.listID, Object.assign({}, item)).subscribe(list => {
+            if (list) {
+                this.list = list;
+                this.sortDoneNotDone();
+                this.alertSrv.success("app.item.update.success");
+            } else {
+                this.alertSrv.error("app.item.update.fail");
+            }
+        })
+    }
+
     /**
      * Update category of passed item
      * @param item item for which category will be updated
@@ -74,13 +89,41 @@ export class ListComponent implements OnInit {
      */
     updateCategory(item: ListItem, newCategory: Category) {
         item.category = newCategory;
-        this.itemSrv.updateItem(this.listID, item).subscribe(item => {
-            if (item) {
+        this.itemSrv.updateItem(this.listID, item).subscribe(list => {
+            if (list) {
                 this.alertSrv.success("app.item.category.updated");
-                this.loadItems()
+                this.list = list;
+                this.sortDoneNotDone();
+            }
+        }, () => {
+            this.alertSrv.success("app.item.category.fail");
+        })
+    }
+
+    confirmDeletion(item: ListItem) {
+        const data: ConfirmDialog = {
+            title_key: 'app.item.delete.confirm',
+            message_key: 'app.item.delete.confirm.msg',
+            action_key: 'app.general.delete',
+            action_class: 'warn'
+        };
+        const dialogConfig: MatDialogConfig = {
+            disableClose: true,
+            panelClass: 'shopper-modal',
+            data: data
+        };
+        let dialogRef = this.dialog.open(ConfirmDialogComponent, dialogConfig);
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.itemSrv.deleteItem(this.listID, item).subscribe((list) => {
+                    this.alertSrv.success("app.item.delete.success");
+                    this.list = list;
+                    this.sortDoneNotDone();
+                });
             }
         })
     }
+
 
     private loadCategoriesWithLocalName() {
         Object.values(Category).map(value => {

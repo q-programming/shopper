@@ -36,6 +36,7 @@ import {FormsModule} from '@angular/forms';
 import {ConfirmDialogComponent} from './components/dialogs/confirm/confirm-dialog.component';
 import {ItemService} from "./services/item.service";
 import {ItemDialogComponent} from "./components/dialogs/item/item-dialog.component";
+import { HighlightDirective } from './directives/highlight.directive';
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -56,7 +57,8 @@ export function initUserFactory(authService: AuthenticationService) {
         ListComponent,
         NewShoppingListDialogComponent,
         ConfirmDialogComponent,
-        ItemDialogComponent
+        ItemDialogComponent,
+        HighlightDirective
     ],
     entryComponents: [
         AvatarUploadComponent,

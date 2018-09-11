@@ -8,6 +8,7 @@ import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.items.ListItemRepository;
 import com.qprogramming.shopper.app.items.ListItemService;
 import com.qprogramming.shopper.app.items.category.Category;
+import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.items.product.ProductRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListRepository;
@@ -18,6 +19,8 @@ import org.mockito.Mock;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,7 +87,8 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
         assertThat(result.getItems().size() == 1).isTrue();
-        assertThat(result.getItems().contains(listItem)).isTrue();
+        verify(listItemRepositoryMock, times(1)).save(any(ListItem.class));
+        verify(listRepositoryMock, times(1)).save(any(ShoppingList.class));
     }
 
     @Test
@@ -173,21 +177,46 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         dbItem.setCategory(Category.OTHER);
         dbItem.setId(1L);
         ShoppingList list = createList(NAME, 1L);
+        list.setItems(Collections.singletonList(dbItem));
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(listItemRepositoryMock.findById(1L)).thenReturn(Optional.of(dbItem));
         when(productRepositoryMock.findById(1L)).thenReturn(Optional.of(dbItem.getProduct()));
         when(productRepositoryMock.save(any())).then(returnsFirstArg());
         when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
-
+        when(listRepositoryMock.save(any())).then(returnsFirstArg());
         MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_UPDATE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(listItem))).andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        ListItem result = TestUtil.convertJsonToObject(contentAsString, ListItem.class);
-        assertThat(result.getCategory()).isEqualTo(Category.ALCOHOL);
-        assertThat(result.getProduct().getTopCategory()).isEqualTo(Category.ALCOHOL);
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
         verify(productRepositoryMock, times(1)).save(dbItem.getProduct());
+        verify(listRepositoryMock, times(1)).save(any(ShoppingList.class));
     }
+
+    @Test
+    public void updateItemProductChangedTest() throws Exception {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        listItem.setProduct(TestUtil.createProduct("New Product"));
+        ListItem dbItem = TestUtil.createListItem(NAME);
+        dbItem.setId(1L);
+        dbItem.setCategory(Category.ALCOHOL);
+        listItem.setId(1L);
+        listItem.setCategory(Category.ALCOHOL);
+        ShoppingList list = createList(NAME, 1L);
+        list.getItems().add(dbItem);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listItemRepositoryMock.findById(1L)).thenReturn(Optional.of(dbItem));
+        when(productRepositoryMock.findById(1L)).thenReturn(Optional.of(dbItem.getProduct()));
+        when(productRepositoryMock.save(any())).then(returnsFirstArg());
+        when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
+        this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(listItem))).andExpect(status().is2xxSuccessful());
+        verify(productRepositoryMock, times(2)).save(any(Product.class));
+        verify(listItemRepositoryMock, times(1)).delete(any(ListItem.class));
+        verify(listRepositoryMock, times(1)).save(any(ShoppingList.class));
+    }
+
 
     @Test
     public void itemOperationsItemNotFoundTest() throws Exception {

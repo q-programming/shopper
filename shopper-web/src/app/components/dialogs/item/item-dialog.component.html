@@ -1,6 +1,6 @@
 <h2 mat-dialog-title class="modal-header">
-    <mat-icon class="text-white mr-2">add</mat-icon>
-    {{'app.item.add'|translate}}
+    <mat-icon class="text-white mr-2">{{update?'edit':'add'}}</mat-icon>
+    {{(update?'app.item.update':'app.item.add')|translate}}
     <button mat-icon-button mat-dialog-close class="pull-right">
         <mat-icon>close</mat-icon>
     </button>
@@ -15,8 +15,8 @@
                 <!--<mat-error *ngIf="form.value.listName.invalid"></mat-error>-->
                 <mat-autocomplete #productsAuto="matAutocomplete" [autoActiveFirstOption]
                                   [displayWith]="productDisplay">
-                    <mat-option *ngFor="let product of products" [value]="product">
-                        {{product.name}}
+                    <mat-option *ngFor="let product of products" [value]="product"
+                                [innerHTML]="product.name | highlight: productTerm">
                     </mat-option>
                 </mat-autocomplete>
             </mat-form-field>
@@ -35,17 +35,17 @@
                                            [noEntriesFoundLabel]="'app.item.category.search.notfound'|translate">
                     </ngx-mat-select-search>
                     <mat-option *ngFor="let cat of filteredCategories | async" [value]="cat.category">
-                    <span matSuffix>
-                        <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category">
-                    </span>
-                        {{cat.name}}
+                        <span matSuffix>
+                            <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category">
+                        </span>
+                        <span [innerHTML]="cat.name | highlight: categoryTerm"></span>
                     </mat-option>
                 </mat-select>
             </mat-form-field>
         </div>
         <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="40px">
             <mat-form-field fxFlex="20">
-                <input id="quantity" type="number"  matInput placeholder="{{'app.item.quantity'|translate}}"
+                <input id="quantity" type="number" matInput placeholder="{{'app.item.quantity'|translate}}"
                        formControlName="quantity">
             </mat-form-field>
             <mat-form-field fxFlex="20">
@@ -64,6 +64,6 @@
 <mat-dialog-actions align="end" class="pr-2 pl-2">
     <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
     <button mat-raised-button class="success-button" (click)="addItem()" [disabled]="form.invalid">
-        {{'app.general.add'|translate}}
+        {{(update?'app.general.edit':'app.general.add') |translate}}
     </button>
 </mat-dialog-actions>

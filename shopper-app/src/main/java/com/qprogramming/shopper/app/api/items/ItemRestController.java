@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.api.items;
 import com.qprogramming.shopper.app.exceptions.*;
 import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.items.ListItemService;
+import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.support.Utils;
@@ -78,10 +79,20 @@ public class ItemRestController {
     @RequestMapping(value = "/{id}/update", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
-    public ResponseEntity<ListItem> updateItem(@PathVariable String id, @RequestBody ListItem item) {
+    public ResponseEntity<ShoppingList> updateItem(@PathVariable String id, @RequestBody ListItem item) {
         try {
-            _listService.findByID(id);
-            return ResponseEntity.ok(_listItemService.update(item));
+            ShoppingList list = _listService.findByID(id);
+            ListItem updatedItem = _listItemService.findById(item.getId());
+            Product updatedProduct = item.getProduct();
+            if (!updatedProduct.equals(updatedItem.getProduct())) {//there was product change, delete product and create new
+                _listItemService.replaceProduct(updatedProduct, updatedItem, list);
+                list.getItems().remove(updatedItem);
+                _listItemService.deleteListItem(updatedItem);
+            } else {
+                _listItemService.update(item);
+            }
+            _listService.sortItems(list);
+            return ResponseEntity.ok(_listService.save(list));
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -91,6 +102,12 @@ public class ItemRestController {
         } catch (ItemNotFoundException e) {
             LOG.error(ITEM_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ProductNotFoundException e) {
+            LOG.error(PRODUCT_NOT_FOUND, item.getProduct().getId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (BadProductNameException e) {
+            LOG.error(BAD_PRODUCT_NAME);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 

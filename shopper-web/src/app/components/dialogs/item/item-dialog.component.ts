@@ -24,6 +24,8 @@ export class ItemDialogComponent implements OnInit {
     products: Product[] = [];
     categories: CategoryOption[];
     filteredCategories: Observable<CategoryOption[]>;
+    productTerm: String = '';
+    categoryTerm: String = '';
 
     constructor(private dialogRef: MatDialogRef<ItemDialogComponent>,
                 private formBuilder: FormBuilder,
@@ -31,7 +33,6 @@ export class ItemDialogComponent implements OnInit {
                 private translate: TranslateService,
                 @Inject(MAT_DIALOG_DATA) public data: any) {
         //load categories
-        //TODO extract to component?
         this.categories = Object.values(Category).map(value => {
             return {
                 category: value,
@@ -59,7 +60,10 @@ export class ItemDialogComponent implements OnInit {
         this.filteredCategories = this.form.controls.categoryFilterCtrl.valueChanges
             .pipe(
                 startWith(''),
-                map(value => this._filter(value)));
+                map(value => {
+                    this.categoryTerm = value;
+                    return this._filter(value);
+                }));
         this.form.controls.category.valueChanges.subscribe(value => this.item.category = value);
         this.form.controls.unit.valueChanges.subscribe(value => this.item.unit = value);
         this.form.controls.quantity.valueChanges.subscribe(value => this.item.quantity = value);
@@ -67,7 +71,9 @@ export class ItemDialogComponent implements OnInit {
     }
 
     private handleProductValueChange(value) {
-        if (typeof value === 'string' || value instanceof String) {
+        if (typeof value === 'string') {
+            this.productTerm = value;
+            this.item.product = {name: value};
             this.api.getObject<Product>(environment.product_url + '/find', {term: value})
                 .subscribe(response => {
                     if (response && response.length > 0) {

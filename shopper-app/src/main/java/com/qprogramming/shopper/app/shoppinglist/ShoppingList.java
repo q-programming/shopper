@@ -91,6 +91,9 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
     }
 
     public List<ListItem> getItems() {
+        if (items == null) {
+            items = new ArrayList<>();
+        }
         return items;
     }
 

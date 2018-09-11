@@ -37,16 +37,27 @@ public class ListItemService {
         return item.orElseThrow(ItemNotFoundException::new);
     }
 
+    /**
+     * Creates new list item
+     *
+     * @param item item DTO to be added
+     * @return newly created list item
+     * @throws ProductNotFoundException if product was not found in database ( when ID was passed )
+     * @throws BadProductNameException  if product was not passed at all , or it's name was empty
+     */
     public ListItem createListItem(ListItem item) throws ProductNotFoundException, BadProductNameException {
         Product product = getProductOrCreate(item.getProduct());
-        Category itemCategory = item.getCategory();
+        updateProductCategoryFromItem(item, product, item.getCategory());
+        item.setProduct(product);
+        return saveItem(item);
+    }
+
+    private void updateProductCategoryFromItem(ListItem item, Product product, Category itemCategory) {
         if (itemCategory == null) {
             item.setCategory(product.getTopCategory());
         } else {
             updateCategoryScore(itemCategory, item.getProduct());
         }
-        item.setProduct(product);
-        return saveItem(item);
     }
 
     public void addItemToList(ShoppingList list, ListItem item) throws ProductNotFoundException, BadProductNameException {
@@ -97,6 +108,14 @@ public class ListItemService {
         return this._listItemRepository.save(item);
     }
 
+    /**
+     * Update of item from shopping list. If there was product change, whole item will be deleted and readded to list to eliminate any issues with category,product etc.
+     * In case it was just product category change, change it and update score
+     *
+     * @param item item to be updated
+     * @return updated ListItem
+     * @throws ItemNotFoundException if item was not found in database
+     */
     public ListItem update(ListItem item) throws ItemNotFoundException {
         ListItem listItem = this.findById(item.getId());
         Category updatedCategory = item.getCategory();
@@ -120,6 +139,19 @@ public class ListItemService {
 
 
     public Predicate<ListItem> sameProduct(Product product) {
-        return i -> i.getProduct().equals(product) || i.getProduct().getName().equalsIgnoreCase(product.getName());
+        return i -> i.getProduct().equals(product) || StringUtils.equalsIgnoreCase(product.getName(), i.getProduct().getName());
+    }
+
+    public ListItem replaceProduct(Product updatedProduct, ListItem updatedItem, ShoppingList list) throws ProductNotFoundException, BadProductNameException {
+        Optional<ListItem> itemOptional = list.getItems().stream().filter(sameProduct(updatedProduct)).findFirst();
+        if (itemOptional.isPresent()) {
+            ListItem listItem = itemOptional.get();
+            listItem.setQuantity(atLeastOneQuantity(listItem) + atLeastOneQuantity(updatedItem));
+            return null;
+        } else {
+            updatedItem.setProduct(getProductOrCreate(updatedProduct));
+            updateProductCategoryFromItem(updatedItem, updatedItem.getProduct(), updatedItem.getCategory());
+            return saveItem(updatedItem);
+        }
     }
 }

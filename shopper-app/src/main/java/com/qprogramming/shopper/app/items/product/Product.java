@@ -70,13 +70,13 @@ public class Product {
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
         return Objects.equals(id, product.id) &&
-                name.equalsIgnoreCase(product.name);
-
+                Objects.equals(name, product.name) &&
+                Objects.equals(categoryScore, product.categoryScore);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id, name, categoryScore);
     }
 
     @Override

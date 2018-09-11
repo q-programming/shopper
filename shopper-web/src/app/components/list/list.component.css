@@ -27,3 +27,12 @@
     font-size: 20px;
     margin-bottom: 5px;
 }
+
+.card-menu {
+    display: none;
+}
+
+.mat-card:hover .card-menu {
+    color: #00000050;
+    display: inline;
+}
