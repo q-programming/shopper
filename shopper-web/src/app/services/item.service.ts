@@ -40,6 +40,7 @@ export class ItemService {
     updateItem(listID: number, item: ListItem): Observable<ShoppingList> {
         return this.api.postObject<ShoppingList>(environment.item_url + `/${listID}/update`, item)
     }
+
     deleteItem(listID: number, item: ListItem): Observable<ShoppingList> {
         return this.api.postObject<ShoppingList>(environment.item_url + `/${listID}/delete`, item)
     }
@@ -73,7 +74,7 @@ export class ItemService {
             let dialogRef = this.dialog.open(ItemDialogComponent, this.dialogConfig);
             dialogRef.afterClosed().subscribe(item => {
                 if (item) {
-                    this.api.postObject<ListItem>(environment.item_url + `/${listID}/update`, item).subscribe(edited => {
+                    this.createNewItem(listID, item).subscribe(edited => {
                         if (edited) {
                             observable.next(edited);
                             observable.complete();
@@ -86,6 +87,10 @@ export class ItemService {
                 }
             });
         });
+    }
+
+    createNewItem(listID: number, item: ListItem): Observable<ShoppingList> {
+        return this.api.postObject<ShoppingList>(environment.item_url + `/${listID}/add`, item)
     }
 
 }

@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatAutocompleteSelectedEvent, MatDialogRef} from '@angular/material';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Product} from "../../../model/Product";
 import {ApiService} from "../../../services/api.service";
@@ -54,6 +54,7 @@ export class ItemDialogComponent implements OnInit {
             .debounceTime(400)
             .distinctUntilChanged()
             .subscribe(value => {
+                this.productTerm = value;
                 this.handleProductValueChange(value);
             });
         //filtered categories
@@ -72,7 +73,6 @@ export class ItemDialogComponent implements OnInit {
 
     private handleProductValueChange(value) {
         if (typeof value === 'string') {
-            this.productTerm = value;
             this.item.product = {name: value};
             this.api.getObject<Product>(environment.product_url + '/find', {term: value})
                 .subscribe(response => {
@@ -85,10 +85,6 @@ export class ItemDialogComponent implements OnInit {
                         this.products.pop();
                     }
                 })
-        }
-        else if (value) {
-            this.item.product = value;
-            this.form.controls.category.setValue(value.topCategory);
         }
     }
 
@@ -108,5 +104,11 @@ export class ItemDialogComponent implements OnInit {
     private _filter(value: string): CategoryOption[] {
         const filterValue = value.toLowerCase();
         return value ? _.filter(this.categories, cat => cat.name.toLowerCase().includes(filterValue)) : this.categories;
+    }
+
+    setProduct(event: MatAutocompleteSelectedEvent) {
+        let product = event.option.value;
+        this.item.product = product;
+        this.form.controls.category.setValue(product.topCategory);
     }
 }

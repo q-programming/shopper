@@ -126,7 +126,9 @@ public class ShoppingListService {
     public void sortItems(ShoppingList list) {
         Map<Category, Integer> categoriesOrdered = _propertyService.getCategoriesOrdered();
         Comparator<ListItem> listComparator = Comparator
-                .nullsLast(Comparator.comparing((ListItem l) -> categoriesOrdered.get(l.getCategory())));
+                .nullsLast(
+                        Comparator.comparing((ListItem l) -> categoriesOrdered.get(l.getCategory()))
+                                .thenComparing(listItem -> listItem.getProduct().getName()));
         list.getItems().sort(listComparator);
     }
 

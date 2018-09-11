@@ -43,6 +43,7 @@
   "app.shopping.delete.fail": "There was error while trying to delete list",
   "app.item.add": "Add new item",
   "app.item.add.quick": "Quickly add new item",
+  "app.item.add.quick.confirm":"Click here to add product ( or press enter key next time)",
   "app.item.add.success": "Item was added to list",
   "app.item.add.error": "There were errors while trying to add new item",
   "app.item.product": "Product",

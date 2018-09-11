@@ -61,8 +61,7 @@ export class ListComponent implements OnInit {
     openNewItemDialog() {
         this.itemSrv.openNewItemDialog(this.listID).subscribe(list => {
             if (list) {
-                this.list = list;
-                this.sortDoneNotDone();
+                this.assignListWithSorting(list);
                 this.alertSrv.success("app.item.add.success");
             } else {
                 this.alertSrv.error("app.item.add.error");
@@ -73,8 +72,7 @@ export class ListComponent implements OnInit {
     openEditItemDialog(item: ListItem) {
         this.itemSrv.openEditItemDialog(this.listID, Object.assign({}, item)).subscribe(list => {
             if (list) {
-                this.list = list;
-                this.sortDoneNotDone();
+                this.assignListWithSorting(list);
                 this.alertSrv.success("app.item.update.success");
             } else {
                 this.alertSrv.error("app.item.update.fail");
@@ -92,8 +90,7 @@ export class ListComponent implements OnInit {
         this.itemSrv.updateItem(this.listID, item).subscribe(list => {
             if (list) {
                 this.alertSrv.success("app.item.category.updated");
-                this.list = list;
-                this.sortDoneNotDone();
+                this.assignListWithSorting(list);
             }
         }, () => {
             this.alertSrv.success("app.item.category.fail");
@@ -116,9 +113,10 @@ export class ListComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this.itemSrv.deleteItem(this.listID, item).subscribe((list) => {
-                    this.alertSrv.success("app.item.delete.success");
-                    this.list = list;
-                    this.sortDoneNotDone();
+                    if (list) {
+                        this.alertSrv.success("app.item.delete.success");
+                        this.assignListWithSorting(list);
+                    }
                 });
             }
         })
@@ -138,15 +136,23 @@ export class ListComponent implements OnInit {
 
     private loadItems() {
         this.listSrv.getListByID(this.listID).subscribe(list => {
-            this.list = list;
-            this.sortDoneNotDone();
+            this.assignListWithSorting(list)
         });
+    }
+
+    quickAdd(list: ShoppingList) {
+        this.assignListWithSorting(list);
+        this.alertSrv.success("app.item.add.success");
+    }
+
+    private assignListWithSorting(list: ShoppingList) {
+        this.list = list;
+        this.sortDoneNotDone();
     }
 
     private sortDoneNotDone() {
         this.done = _.filter(this.list.items, item => item.done);
         this.items = _.difference(this.list.items, this.done)
     }
-
 
 }

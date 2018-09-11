@@ -37,6 +37,7 @@ import {ConfirmDialogComponent} from './components/dialogs/confirm/confirm-dialo
 import {ItemService} from "./services/item.service";
 import {ItemDialogComponent} from "./components/dialogs/item/item-dialog.component";
 import { HighlightDirective } from './directives/highlight.directive';
+import { QuickaddComponent } from './components/list/quickadd/quickadd.component';
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -58,7 +59,8 @@ export function initUserFactory(authService: AuthenticationService) {
         NewShoppingListDialogComponent,
         ConfirmDialogComponent,
         ItemDialogComponent,
-        HighlightDirective
+        HighlightDirective,
+        QuickaddComponent
     ],
     entryComponents: [
         AvatarUploadComponent,

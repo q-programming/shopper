@@ -86,7 +86,7 @@ public class ListItem {
     }
 
     public Category getCategory() {
-        return category == null ? Category.OTHER : category;
+        return category;
     }
 
     public void setCategory(Category category) {

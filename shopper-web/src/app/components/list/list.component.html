@@ -8,9 +8,7 @@
     <span class="pull-right">{{list.done}}/{{list.items.length}}</span>
 </h2>
 <mat-card fxLayout="row" class="new-item">
-    <mat-form-field fxFlex="80">
-        <input matInput placeholder="{{'app.item.add.quick' | translate}}">
-    </mat-form-field>
+    <app-quickadd fxFlex="80" [(listID)]="listID" (created)="quickAdd($event)"></app-quickadd>
     <span class="fill-remaining-space"></span>
     <button mat-icon-button class="mt-3" (click)="openNewItemDialog()" matTooltip="{{'app.item.add'|translate}}">
         <mat-icon class="new-item-button">add_circle_outline</mat-icon>

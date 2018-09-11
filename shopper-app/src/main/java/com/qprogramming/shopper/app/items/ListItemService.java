@@ -56,7 +56,7 @@ public class ListItemService {
         if (itemCategory == null) {
             item.setCategory(product.getTopCategory());
         } else {
-            updateCategoryScore(itemCategory, item.getProduct());
+            updateCategoryScore(itemCategory, product);
         }
     }
 

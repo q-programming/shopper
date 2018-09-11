@@ -14,7 +14,7 @@
                        cdkFocusRegionstart formControlName="product" required [matAutocomplete]="productsAuto">
                 <!--<mat-error *ngIf="form.value.listName.invalid"></mat-error>-->
                 <mat-autocomplete #productsAuto="matAutocomplete" [autoActiveFirstOption]
-                                  [displayWith]="productDisplay">
+                                  [displayWith]="productDisplay" (optionSelected)="setProduct($event)">
                     <mat-option *ngFor="let product of products" [value]="product"
                                 [innerHTML]="product.name | highlight: productTerm">
                     </mat-option>
