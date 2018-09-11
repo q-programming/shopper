@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Khobar on 05.03.2017.
@@ -15,7 +16,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Account findOneByUsername(String username);
 
-    Account findOneById(String id);
+    Optional<Account> findOneById(String id);
 
     List<Account> findByIdIn(List<String> list);
 }

@@ -10,26 +10,29 @@ export class AvatarService {
     constructor(private logger: NGXLogger, private api: ApiService) {
     }
 
-    getUserAvatar(account: Account) {
-        let image = localStorage.getItem("avatar:" + account.id);
+    getUserAvatarById(id: string): string {
+        let image = localStorage.getItem("avatar:" + id);
         if (!image) {
-            this.logger.debug(`Getting avatar from DB for user ${account.id}`);
-            let res = this.api.getObject(environment.account_url + `/${account.id}${environment.avatar_url}`).subscribe(result => {
+            this.logger.debug(`Getting avatar from DB for user ${id}`);
+            let res = this.api.getObject(environment.account_url + `/${id}${environment.avatar_url}`).subscribe(result => {
                 if (result) {
                     const dataType = "data:" + result.type + ";base64,";
                     image = dataType + result.image;
-                    localStorage.setItem("avatar:" + account.id, image);
-                    account.avatar = image;
+                    localStorage.setItem("avatar:" + id, image);
                 } else {
-                    account.avatar = 'assets/images/avatar-placeholder.png';
-                    localStorage.setItem("avatar:" + account.id, account.avatar);
+                    image = 'assets/images/avatar-placeholder.png';
+                    localStorage.setItem("avatar:" + id, image);
                 }
             });
             this.logger.info(res);
         } else {
-            this.logger.debug(`Fetching avatar from localStorage for account : ${account.id}`);
-            account.avatar = image;
+            this.logger.debug(`Fetching avatar from localStorage for account : ${id}`);
         }
+        return image;
+    }
+
+    getUserAvatar(account: Account) {
+        account.avatar = this.getUserAvatarById(account.id);
     }
 
     updateAvatar(base64Image: String, account: Account) {

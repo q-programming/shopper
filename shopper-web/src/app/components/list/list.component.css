@@ -1,0 +1,38 @@
+.item {
+    padding: 10px 24px 0 24px;
+}
+
+.new-item {
+    padding: 0 24px 0 24px;
+    margin-bottom: 5px;
+}
+
+.new-item-button {
+    font-size: 40px;
+    margin-left: -19px;
+}
+
+.item.done {
+    background: #e8e8e8bf;
+    box-shadow: none;
+}
+
+.done-checkbox {
+    margin-left: -10px;
+    margin-right: -10px;
+    margin-top: -5px !important;
+}
+
+.mat-card-title {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.card-menu {
+    display: none;
+}
+
+.mat-card:hover .card-menu {
+    color: #00000050;
+    display: inline;
+}

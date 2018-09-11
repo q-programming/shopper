@@ -65,15 +65,23 @@ export class AlertService {
 
     private addMessage(text: string, type: MessageType, timeout: number) {
         let message = new Message(text, type);
-        this.messages.push(message);
-        Observable.timer(timeout).subscribe(() => {
-            this.dissmis(message)
-        });
+        if (!this.exists(message)) {
+            this.messages.push(message);
+            Observable.timer(timeout).subscribe(() => {
+                this.dissmis(message)
+            });
+        }
     }
 
     dissmis(message: Message) {
         _.remove(this.messages, (m) => {
             return m.id === message.id
         });
+    }
+
+    exists(message: Message) {
+        return _.find(this.messages, (m) => {
+            return m.type === message.type && m.text === message.text
+        })
     }
 }

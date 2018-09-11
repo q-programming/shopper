@@ -37,6 +37,13 @@ public class AuthenticationController {
         this.tokenService = tokenService;
     }
 
+    /**
+     * Refreshes token (if it can be refreshed ) passed in request and returns back the token
+     *
+     * @param request  Request
+     * @param response Response
+     * @return refreshed token
+     */
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)
     public ResponseEntity<?> refreshAuthenticationToken(HttpServletRequest request, HttpServletResponse response) {
 

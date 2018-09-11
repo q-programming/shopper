@@ -3,16 +3,17 @@ package com.qprogramming.shopper.app;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.authority.Authority;
 import com.qprogramming.shopper.app.account.authority.Role;
+import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.items.product.Product;
+import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 //import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,21 +39,31 @@ public class TestUtil {
     public static byte[] convertObjectToJsonBytes(Object object)
             throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.writeValueAsBytes(object);
     }
 
     public static <T> T convertJsonToObject(String json, Class<T> object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, object);
     }
 
-    public static <T> List<T> convertJsonToList(String json, Class<List> listClass, Class<T> elementClass) throws IOException {
+    public static <T> List<T> convertJsonToList(String json, Class<? extends List> collectionClass, Class<T> elementClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(json, TypeFactory.defaultInstance().constructCollectionType(listClass, elementClass));
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(json, TypeFactory.defaultInstance().constructCollectionType(collectionClass, elementClass));
+    }
+
+    public static <T> Set<T> convertJsonToSet(String json, Class<? extends Set> collectionClass, Class<T> elementClass) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(json, TypeFactory.defaultInstance().constructCollectionType(collectionClass, elementClass));
     }
 
     public static <T, V> Map<T, V> convertJsonToTreeMap(String json, Class<T> keyClass, Class<V> valueClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, TypeFactory.defaultInstance().constructMapType(TreeMap.class, keyClass, valueClass));
     }
 
@@ -93,6 +104,29 @@ public class TestUtil {
         Authority authority = new Authority();
         authority.setName(Role.ROLE_ADMIN);
         return authority;
+    }
+
+    public static ShoppingList createShoppingList(String name, long id, Account testAccount) {
+        ShoppingList list = new ShoppingList();
+        list.setName(name);
+        list.setId(id);
+        list.setOwnerId(testAccount.getId());
+        list.setLastVisited(new Date());
+        return list;
+    }
+
+    public static ListItem createListItem(String name) {
+        ListItem listItem = new ListItem();
+        listItem.setQuantity(1);
+        listItem.setUnit("kg");
+        listItem.setProduct(createProduct(name));
+        return listItem;
+    }
+
+    public static Product createProduct(String name) {
+        Product product = new Product();
+        product.setName(name);
+        return product;
     }
 
 }

@@ -25,7 +25,19 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {LayoutModule} from '@angular/cdk/layout';
 import {MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule} from '@angular/material';
 import {NgHttpLoaderModule} from "ng-http-loader";
-import { LoaderComponent } from './components/loader/loader.component';
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+import {LoaderComponent} from './components/loader/loader.component';
+import {ListService} from "./services/list.service";
+import {ListComponent} from './components/list/list.component';
+import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {NewShoppingListDialogComponent} from "./components/dialogs/new-list/new-shopping-list-dialog.component";
+import {ShoppingListsComponent} from "./components/shoppinglists/shopping-lists.component";
+import {FormsModule} from '@angular/forms';
+import {ConfirmDialogComponent} from './components/dialogs/confirm/confirm-dialog.component';
+import {ItemService} from "./services/item.service";
+import {ItemDialogComponent} from "./components/dialogs/item/item-dialog.component";
+import { HighlightDirective } from './directives/highlight.directive';
+import { QuickaddComponent } from './components/list/quickadd/quickadd.component';
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -41,13 +53,26 @@ export function initUserFactory(authService: AuthenticationService) {
         AlertComponent,
         SettingsComponent,
         AvatarUploadComponent,
-        LoaderComponent
+        LoaderComponent,
+        ShoppingListsComponent,
+        ListComponent,
+        NewShoppingListDialogComponent,
+        ConfirmDialogComponent,
+        ItemDialogComponent,
+        HighlightDirective,
+        QuickaddComponent
     ],
     entryComponents: [
         AvatarUploadComponent,
+        ShoppingListsComponent,
+        NewShoppingListDialogComponent,
+        ConfirmDialogComponent,
+        ItemDialogComponent,
         LoaderComponent
     ],
     imports: [
+        FormsModule,
+        ReactiveFormsModule,
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule,
@@ -68,6 +93,7 @@ export function initUserFactory(authService: AuthenticationService) {
             }
         }),
         LayoutModule,
+        NgxMatSelectSearchModule,
         MatToolbarModule,
         MatButtonModule,
         MatSidenavModule,
@@ -82,6 +108,9 @@ export function initUserFactory(authService: AuthenticationService) {
         AccountService,
         AvatarService,
         AlertService,
+        ListService,
+        ItemService,
+        FormBuilder,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

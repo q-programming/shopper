@@ -7,6 +7,7 @@ import com.qprogramming.shopper.app.account.authority.Role;
 import com.qprogramming.shopper.app.account.avatar.Avatar;
 import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
 import com.qprogramming.shopper.app.config.property.PropertyService;
+import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import java.net.URLConnection;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -64,8 +66,12 @@ public class AccountService implements UserDetailsService {
         return new UsernamePasswordAuthenticationToken(account, null, account.getAuthorities());
     }
 
-    public Account findById(String id) {
-        return accountRepository.findOneById(id);
+    public Account findById(String id) throws AccountNotFoundException {
+        Optional<Account> optionalAccount = accountRepository.findOneById(id);
+        if (!optionalAccount.isPresent()) {
+            throw new AccountNotFoundException();
+        }
+        return optionalAccount.get();
     }
 
     public Account createOAuthAcount(Account account) {
@@ -95,7 +101,7 @@ public class AccountService implements UserDetailsService {
 
     public String generateID() {
         String uuid = UUID.randomUUID().toString();
-        while (accountRepository.findOneById(uuid) != null) {
+        while (accountRepository.findOneById(uuid).isPresent()) {
             uuid = UUID.randomUUID().toString();
         }
         return uuid;

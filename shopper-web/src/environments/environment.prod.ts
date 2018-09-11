@@ -8,8 +8,11 @@ export const environment = {
     logout_url: '/logout',
     resource_url: '/api/resource',
     all_users_url: '/api/account/all',
+    avatar_upload_url: '/avatar-upload',
+    language_url: '/settings/language',
     account_url: '/api/account',
     avatar_url: '/avatar',
-    avatar_upload_url: '/avatar-upload',
-    language_url: '/settings/language'
+    list_url: '/api/list',
+    item_url: '/api/item',
+    product_url: '/api/product'
 };

@@ -13,7 +13,7 @@ public class Property {
 
     @Id
     private String key;
-    @Column
+    @Column(length = 1000)
     private String value;
 
     public String getKey() {

@@ -4,7 +4,7 @@ import {environment} from "../../environments/environment";
 import {Account, Role} from "../model/Account";
 import * as _ from 'lodash';
 import {AvatarService} from "./avatar.service";
-import {TranslateService} from "@ngx-translate/core";
+import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 import {AlertService} from "./alert.service";
 import {NGXLogger} from "ngx-logger";
 

@@ -100,7 +100,10 @@ export class ApiService {
         if (error && error.status === 401) {
             this.alertSrv.error('app.api.error.unauthorized');
             // this.redirectIfUnauth(error);
-        } else {
+        }else if (error && error.status === 404){
+            this.alertSrv.error('app.api.error.notfound');
+        }
+        else {
             this.alertSrv.error('app.api.error.general');
             // this.displayError(error);
         }
