@@ -12,6 +12,7 @@
   "app.general.add": "Add",
   "app.general.choosefile": "Choose file",
   "app.home.admin": "As you are admin here is a list of all registered users:",
+  "app.home.nolist": "There is nothing yet in here, start adding your lists!",
   "app.menu.logout": "Logout",
   "app.menu.settings": "Settings",
   "app.menu.messages": "Messages({{count}})",

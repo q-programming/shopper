@@ -1,13 +1,11 @@
 <div fxLayout="row">
     <div>
         <h2 class="text-white">
+            <img src="assets/images/list_archive.svg" *ngIf="archived" height="32" class="ml-1">
+            <img src="assets/images/list.svg" *ngIf="!archived" height="32" class="ml-1">
             <span *ngIf="archived">
-                <mat-icon>
-                    archived
-                </mat-icon>
                 {{'app.shopping.archived' | translate}}
             </span>
-            <mat-icon class="ml-2" *ngIf="!archived">list_alt</mat-icon>
             {{'app.shopping.list'|translate}}
         </h2>
     </div>
@@ -19,7 +17,13 @@
         </button>
     </div>
 </div>
-<div>
+<div *ngIf="lists && lists.length===0">
+    <mat-card class="text-center">
+        <h2>{{'app.home.nolist'|translate}}</h2>
+        <img src="assets/images/start_adding.svg" height="200">
+    </mat-card>
+</div>
+<div *ngIf="lists && lists.length>0">
     <!--LIST CARD-->
     <mat-card fxLayout="column" *ngFor="let list of lists" class="list z-depth clickable">
         <mat-card-header>

@@ -7,6 +7,7 @@ import {AvatarService} from "./avatar.service";
 import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 import {AlertService} from "./alert.service";
 import {NGXLogger} from "ngx-logger";
+import {HttpHeaders} from "@angular/common/http";
 
 @Injectable()
 export class AuthenticationService {
@@ -17,9 +18,10 @@ export class AuthenticationService {
     }
 
     initUser() {
-        const promise = this.apiService.get(environment.refresh_token_url).toPromise()
+        const promise = this.apiService.get(environment.refresh_token_url, {}).toPromise()
             .then(res => {
                 if (res.access_token !== null) {
+                    this.currentAccount = {token: res.access_token};
                     return this.getMyInfo().toPromise()
                         .then(resp => {
                             this.currentAccount = resp as Account;
@@ -45,7 +47,7 @@ export class AuthenticationService {
 
 
     getMyInfo() {
-        return this.apiService.get(environment.whoami_url).map(account => this.currentAccount = account);
+        return this.apiService.post(environment.whoami_url, {},).map(account => this.currentAccount = account);
     }
 
     isAdmin(): boolean {

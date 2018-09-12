@@ -31,6 +31,8 @@ import java.util.Map;
 public class TokenService {
     private static final String BEARER = "Bearer ";
     private static final String APP_NAME = "Shopper";
+    //TODO get actual context path
+    public static final String SHOPPER_CONTEXT_PATH = "/shopper";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     @Value("${jwt.secret}")
     private String SECRET;
@@ -89,18 +91,18 @@ public class TokenService {
         response.getWriter().write(jwtResponse);
     }
 
-    public void createTokenRESTCookies(HttpServletResponse response, Account account)  {
+    public void createTokenRESTCookies(HttpServletResponse response, Account account) {
         String tokenValue = generateToken(account.getEmail());
         generateCookies(response, account, tokenValue);
     }
 
     private void generateCookies(HttpServletResponse response, Account account, String tokenValue) {
         Cookie authCookie = new Cookie(TOKEN_COOKIE, (tokenValue));
-        authCookie.setPath("/shopper");
+        authCookie.setPath(SHOPPER_CONTEXT_PATH);
         authCookie.setHttpOnly(true);
         authCookie.setMaxAge(EXPIRES_IN);
         Cookie userCookie = new Cookie(USER_COOKIE, (account.getId()));
-        userCookie.setPath("/shopper");
+        userCookie.setPath(SHOPPER_CONTEXT_PATH);
         userCookie.setMaxAge(EXPIRES_IN);
         response.addCookie(authCookie);
         response.addCookie(userCookie);
@@ -203,6 +205,16 @@ public class TokenService {
             refreshedToken = null;
         }
         return refreshedToken;
+    }
+
+    public void refreshCookie(String authToken, HttpServletResponse response) {
+        Cookie authCookie = new Cookie(TOKEN_COOKIE, authToken);
+        authCookie.setPath(SHOPPER_CONTEXT_PATH);
+        authCookie.setHttpOnly(true);
+        authCookie.setMaxAge(EXPIRES_IN);
+        // Add cookie to response
+        response.addCookie(authCookie);
+
     }
 
 }

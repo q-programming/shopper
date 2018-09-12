@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {
     MatAutocompleteModule,
     MatButtonModule,
+    MatBadgeModule,
     MatButtonToggleModule,
     MatCardModule,
     MatCheckboxModule,
@@ -46,6 +47,7 @@ import {PortalModule} from '@angular/cdk/portal';
     exports: [
         // Material Modules
         MatAutocompleteModule,
+        MatBadgeModule,
         MatButtonModule,
         MatButtonToggleModule,
         MatCardModule,

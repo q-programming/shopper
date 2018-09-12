@@ -12,6 +12,7 @@
   "app.general.add": "Dodaj",
   "app.general.choosefile": "Wybierz plik",
   "app.home.admin": "Ponieważ jesteś administratorem , poniżej lista wszystkich użytkowników:",
+  "app.home.nolist": "Jeszcze nic tutaj nie ma , zacznij dodawac swoje listy!",
   "app.menu.logout": "Wyloguj się",
   "app.menu.settings": "Ustawienia",
   "app.menu.messages": "Wiadomości ({{count}})",
