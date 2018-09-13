@@ -92,15 +92,12 @@ export class ListService {
             dialogRef.afterClosed().subscribe(email => {
                 this.dialogConfig.data = undefined;
                 if (email) {
-                    //TODO sent actual email with list
-                    observable.next(email);
-                    observable.complete();
-                    // this.api.postObject<ShoppingList>(environment.list_url + '/add', listName).subscribe(newlist => {
-                    //     if (newlist) {
-                    //         observable.next(newlist);
-                    //         observable.complete()
-                    //     }
-                    // });
+                    this.api.postObject<ShoppingList>(environment.list_url + `/${list.id}/share`, email).subscribe(shared => {
+                        if (shared) {
+                            observable.next(email);
+                            observable.complete()
+                        }
+                    });
                 }
             }, error => {
                 this.dialogConfig.data = undefined;

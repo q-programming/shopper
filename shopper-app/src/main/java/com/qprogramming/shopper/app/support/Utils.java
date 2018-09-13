@@ -2,6 +2,7 @@ package com.qprogramming.shopper.app.support;
 
 
 import com.qprogramming.shopper.app.account.Account;
+import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -10,13 +11,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Locale;
 
 /**
  * Created by Jakub Romaniszyn  on 17/0702018
  */
 public class Utils {
+    private static final String DATE_FORMAT = "dd-MM-yyyy";
+    private static final String DATE_FORMAT_TIME = "dd-MM-yyyy HH:mm";
     public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername);
     public static final Comparator<ShoppingList> SHOPPING_LIST_COMPARATOR = Comparator.comparing(ShoppingList::getLastVisited).reversed()
             .thenComparing(ShoppingList::getName)
@@ -53,5 +58,37 @@ public class Utils {
      */
     public static Locale getDefaultLocale() {
         return LocaleContextHolder.getLocale();
+    }
+
+    /**
+     * Creates mail out of account
+     *
+     * @param account account for which mail will be created
+     * @param owner   Owner account which triggered mail
+     * @return list of {@link Mail}
+     */
+    public static Mail createMail(Account account, Account owner) {
+        Mail mail = new Mail();
+        mail.setMailTo(account.getEmail());
+        mail.setLocale(account.getLanguage());
+        mail.addToModel("name", account.getFullname());
+        if (owner != null) {
+            mail.addToModel("owner", owner.getFullname());
+        }
+        return mail;
+    }
+
+    public static Mail createMail(Account account) {
+        return createMail(account, null);
+    }
+
+    /**
+     * Returns strng with date and time
+     *
+     * @param date
+     * @return
+     */
+    public static String convertDateTimeToString(Date date) {
+        return new SimpleDateFormat(DATE_FORMAT_TIME).format(date);
     }
 }

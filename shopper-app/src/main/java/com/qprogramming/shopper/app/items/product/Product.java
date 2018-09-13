@@ -27,7 +27,7 @@ public class Product {
     @MapKeyEnumerated(EnumType.STRING)
     @Column(name = "score")
     @CollectionTable(name = "category_score", joinColumns = @JoinColumn(name = "product_id"))
-    private Map<Category, Integer> categoryScore = new HashMap<>();
+    private Map<Category, Long> categoryScore = new HashMap<>();
 
     public Long getId() {
         return id;
@@ -45,14 +45,14 @@ public class Product {
         this.name = name;
     }
 
-    public Map<Category, Integer> getCategoryScore() {
+    public Map<Category, Long> getCategoryScore() {
         if (categoryScore.isEmpty()) {
             categoryScore = new HashMap<>();
         }
         return categoryScore;
     }
 
-    public void setCategoryScore(Map<Category, Integer> categoryScore) {
+    public void setCategoryScore(Map<Category, Long> categoryScore) {
         this.categoryScore = categoryScore;
     }
 

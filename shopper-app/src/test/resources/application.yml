@@ -1,5 +1,11 @@
-application:
+app:
   name: Shopper
+  default:
+    lang: en
+  category:
+    order: FRUIT_VEGETABLES,BAKERY,BABY,CANNED,CAR,CLOTHES,COFFEE_TEA,COSMETICS,DIARY,DIET,ELECTRONICAL,FISH,FROZEN,GRAINS_PASTA,HOME_KITCHEN,HOME_BAKING,CLEANING,MEAT,NEWSPAPERS,OFFICE_SUPPLIES,OILS,HYGIENE,PET,PHARMACY,PRESERVES,READY_MEALS,SNACKS,SPICES,BEVERAGES,ALCOHOL,OTHER
+  newsletter:
+    schedule: 0 0 20-22 * * MON
 security:
 #  user:
 #    password: password
@@ -22,6 +28,9 @@ spring:
     port: 25
     protocol: smtp
     from: shopper@q-programming.pl
+    username: us
+    password: ps
+    default-encoding: UTF-8
   datasource:
     url: jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1
     username: sa

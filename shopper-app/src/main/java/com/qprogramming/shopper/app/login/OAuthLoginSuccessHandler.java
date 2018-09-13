@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by Jakub Romaniszyn on 19.07.2018.
@@ -51,20 +52,16 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         Map<String, String> details = (Map) ((OAuth2Authentication) authentication).getUserAuthentication().getDetails();
         Account account;
         if (details.containsKey(G.SUB)) {//google+
-            account = accountService.findByEmail(details.get(EMAIL));
-            if (account == null) {//no profile yet, create
-                account = createGoogleAccount(details);
-            }
+            Optional<Account> optionalAccount = accountService.findByEmail(details.get(EMAIL));
+            account = optionalAccount.orElseGet(() -> createGoogleAccount(details));
             //TODO facebook
         } else if (details.containsKey(FB.ID)) {//facebook , need to fetch data
             String token = ((OAuth2AuthenticationDetails) authentication.getDetails()).getTokenValue();
             Facebook facebook = getFacebookTemplate(token);
             String[] fields = {FB.ID, EMAIL, FB.FIRST_NAME, FB.LAST_NAME, LOCALE};
             User facebookUser = facebook.fetchObject(FB.ME, User.class, fields);
-            account = accountService.findByEmail(facebookUser.getEmail());
-            if (account == null) {
-                account = createFacebookAccount(facebook, facebookUser);
-            }
+            Optional<Account> optionalAccount = accountService.findByEmail(facebookUser.getEmail());
+            account = optionalAccount.orElseGet(() -> createFacebookAccount(facebook, facebookUser));
         } else {
             throw new BadCredentialsException("Unable to login using OAuth. Response map was neither facebook , nor google");
         }
@@ -97,7 +94,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         return new FacebookTemplate(token);
     }
 
-    private Account createGoogleAccount(Map<String, String> details) throws MalformedURLException {
+    private Account createGoogleAccount(Map<String, String> details) {
         Account account;
         account = new Account();
         account.setId(accountService.generateID());
@@ -107,7 +104,11 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         String locale = details.get(LOCALE);
         setLocale(account, locale);
         account = accountService.createOAuthAcount(account);
-        accountService.createAvatar(account, details.get(G.PICTURE));
+        try {
+            accountService.createAvatar(account, details.get(G.PICTURE));
+        } catch (MalformedURLException e) {
+            LOG.error("Failed to get avatar from google account: {}", e);
+        }
         LOG.debug("Google+ account has been created with id:{} and username{}", account.getId(), account.getUsername());
         return account;
     }

@@ -4,6 +4,7 @@ import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.items.ListItem;
@@ -56,6 +57,8 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     private AccountService accountServiceMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private MailService mailServiceMock;
 
     private ShoppingListService listService;
     private ShoppingListRestController controller;
@@ -64,7 +67,7 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     @Override
     public void setup() {
         super.setup();
-        listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock);
+        listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, mailServiceMock);
         controller = new ShoppingListRestController(listService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
@@ -197,10 +200,9 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
         account.setId(TestUtil.ADMIN_RANDOM_ID);
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
         when(listRepositoryMock.findById(list.getId())).thenReturn(Optional.of(list));
-
-        when(accountServiceMock.findById(account.getId())).thenReturn(account);
+        when(accountServiceMock.findByEmail(account.getEmail())).thenReturn(Optional.of(account));
         MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + list.getId() + SHARE).contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(account.getId()))
+                .content(account.getEmail()))
                 .andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
@@ -217,11 +219,15 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     @Test
     public void shareListAccountNotFoundTest() throws Exception {
         ShoppingList list = createList(NAME, 1L);
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
         when(listRepositoryMock.findById(list.getId())).thenReturn(Optional.of(list));
-        when(accountServiceMock.findById(TestUtil.ADMIN_RANDOM_ID)).thenThrow(new AccountNotFoundException());
-        this.mvc.perform(post(API_LIST_URL + 1L + SHARE).contentType(TestUtil.APPLICATION_JSON_UTF8)
+        when(accountServiceMock.findByEmail(TestUtil.ADMIN_RANDOM_ID)).thenReturn(Optional.empty());
+        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + 1L + SHARE).contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.ADMIN_RANDOM_ID))
-                .andExpect(status().isNotFound());
+                .andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getShared().contains(TestUtil.ADMIN_RANDOM_ID)).isFalse();
     }
 
     @Test

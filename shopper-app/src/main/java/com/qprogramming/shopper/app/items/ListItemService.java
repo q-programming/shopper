@@ -127,7 +127,7 @@ public class ListItemService {
     }
 
     private Product updateCategoryScore(Category updatedCategory, Product product) {
-        Integer categoryScore = product.getCategoryScore().getOrDefault(updatedCategory, 0);
+        Long categoryScore = product.getCategoryScore().getOrDefault(updatedCategory, 0L);
         product.getCategoryScore().put(updatedCategory, ++categoryScore);
         return _productRepository.save(product);
     }

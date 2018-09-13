@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -126,26 +127,27 @@ public class ShoppingListRestController {
     /**
      * Starts sharing list with id to certain user with accountID
      *
-     * @param accountID user which no longer will have list shared
-     * @param id        shopping lis id
+     * @param email user which no longer will have list shared
+     * @param id    shopping lis id
      * @return modified shopping list
      */
     @RequestMapping(value = "/{id}/share", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> shareList(@RequestBody String accountID, @PathVariable String id) {
+    public ResponseEntity<ShoppingList> shareList(@RequestBody String email, @PathVariable String id) {
         try {
             ShoppingList list = _listService.findByID(id);
-            list = _listService.shareList(list, accountID);
+            list = _listService.shareList(list, email);
             return ResponseEntity.ok(list);
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (AccountNotFoundException e) {
-            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ShoppingNotFoundException e) {
             LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (MessagingException e) {
+            LOG.error("There was internal error with mailer when trying to send an email: {}", e);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

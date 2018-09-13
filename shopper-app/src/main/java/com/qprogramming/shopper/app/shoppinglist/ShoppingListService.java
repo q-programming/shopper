@@ -2,6 +2,8 @@ package com.qprogramming.shopper.app.shoppinglist;
 
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.config.mail.Mail;
+import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.ShoppingAccessException;
@@ -12,10 +14,12 @@ import com.qprogramming.shopper.app.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static com.qprogramming.shopper.app.settings.Settings.APP_EMAIL_FROM;
 
 /**
  * Created by Jakub Romaniszyn on 2018-08-08
@@ -26,13 +30,15 @@ public class ShoppingListService {
     private ShoppingListRepository _listRepository;
     private AccountService _accountService;
     private PropertyService _propertyService;
+    private MailService _mailService;
 
 
     @Autowired
-    public ShoppingListService(ShoppingListRepository listRepository, AccountService accountService, PropertyService propertyService) {
+    public ShoppingListService(ShoppingListRepository listRepository, AccountService accountService, PropertyService propertyService, MailService mailService) {
         this._listRepository = listRepository;
         this._accountService = accountService;
-        _propertyService = propertyService;
+        this._propertyService = propertyService;
+        this._mailService = mailService;
     }
 
     public Set<ShoppingList> findAllByCurrentUser(boolean archived) throws AccountNotFoundException {
@@ -81,9 +87,23 @@ public class ShoppingListService {
     }
 
 
-    public ShoppingList shareList(ShoppingList list, String accountID) throws AccountNotFoundException {
-        Account account = _accountService.findById(accountID);
-        list.getShared().add(account.getId());
+    public ShoppingList shareList(ShoppingList list, String email) throws MessagingException {
+        Optional<Account> optionalAccount = _accountService.findByEmail(email);
+        Mail mail = new Mail();
+        mail.setMailTo(email);
+        mail.setMailFrom(_propertyService.getProperty(APP_EMAIL_FROM));
+        mail.addToModel("owner", Utils.getCurrentAccount().getFullname());
+        if (optionalAccount.isPresent()) {
+            Account account = optionalAccount.get();
+            mail.addToModel("name", account.getName());
+            mail.setLocale(account.getLanguage());
+            list.getShared().add(account.getId());
+            _mailService.sendShareMessage(mail, list, false);
+            //TODO sent email about new list
+        } else {
+            //just send initiation email
+            _mailService.sendShareMessage(mail, list, true);
+        }
         return this.save(list);
     }
 

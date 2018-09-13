@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.api.items;
 import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.items.ListItemRepository;
@@ -19,7 +20,6 @@ import org.mockito.Mock;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -54,6 +54,8 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     private ListItemRepository listItemRepositoryMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private MailService mailServiceMock;
 
     private ListItemService listItemService;
 
@@ -64,7 +66,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     @Override
     public void setup() {
         super.setup();
-        listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock);
+        listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, mailServiceMock);
         listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock);
         controller = new ItemRestController(listItemService, listService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
