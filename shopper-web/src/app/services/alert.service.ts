@@ -37,28 +37,28 @@ export class AlertService {
     }
 
 
-    success(key: string, timeout: number = this.normal_timeout) {
-        this.translate.get(key).subscribe(txt => {
+    success(key: string, params?: Object, timeout: number = this.normal_timeout) {
+        this.translate.get(key, params).subscribe(txt => {
             this.addMessage(txt, MessageType.SUCCESS, timeout);
         })
     }
 
 
-    error(key: string, timeout: number = this.error_timeout) {
-        this.translate.get(key).subscribe(txt => {
+    error(key: string, params?: Object, timeout: number = this.error_timeout) {
+        this.translate.get(key, params).subscribe(txt => {
             this.addMessage(txt, MessageType.ERROR, timeout);
         })
     }
 
-    warning(key: string, timeout: number = this.normal_timeout) {
-        this.translate.get(key).subscribe(txt => {
+    warning(key: string, params?: Object, timeout: number = this.normal_timeout) {
+        this.translate.get(key, params).subscribe(txt => {
             this.addMessage(txt, MessageType.ERROR, timeout);
         })
 
     }
 
-    info(key: string, timeout: number = this.error_timeout) {
-        this.translate.get(key).subscribe(txt => {
+    info(key: string, params?: Object, timeout: number = this.error_timeout) {
+        this.translate.get(key, params).subscribe(txt => {
             this.addMessage(txt, MessageType.ERROR, timeout);
         })
     }

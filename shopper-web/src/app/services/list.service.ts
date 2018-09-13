@@ -10,6 +10,7 @@ import {Account} from "../model/Account";
 import * as _ from 'lodash';
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import {NewShoppingListDialogComponent} from "../components/dialogs/new-list/new-shopping-list-dialog.component";
+import {ShareComponent} from "../components/dialogs/share/share.component";
 
 @Injectable({
     providedIn: 'root'
@@ -17,6 +18,13 @@ import {NewShoppingListDialogComponent} from "../components/dialogs/new-list/new
 export class ListService {
 
     currentAccount: Account;
+    dialogConfig: MatDialogConfig = {
+        disableClose: true,
+        autoFocus: true,
+        width: '500px',
+        panelClass: 'shopper-modal'
+    };
+
 
     constructor(private logger: NGXLogger,
                 private api: ApiService,
@@ -58,14 +66,8 @@ export class ListService {
     }
 
     openNewListDialog(): Observable<ShoppingList> {
-        const dialogConfig: MatDialogConfig = {
-            disableClose: true,
-            autoFocus: true,
-            width: '500px',
-            panelClass: 'shopper-modal'
-        };
         return new Observable((observable) => {
-            let dialogRef = this.dialog.open(NewShoppingListDialogComponent, dialogConfig);
+            let dialogRef = this.dialog.open(NewShoppingListDialogComponent, this.dialogConfig);
             dialogRef.afterClosed().subscribe(listName => {
                 if (listName) {
                     this.api.postObject<ShoppingList>(environment.list_url + '/add', listName).subscribe(newlist => {
@@ -76,6 +78,32 @@ export class ListService {
                     });
                 }
             }, error => {
+                this.logger.error(error);
+                observable.next(undefined);
+                observable.complete();
+            });
+        });
+    }
+
+    openShareListDialog(list: ShoppingList): Observable<string> {
+        this.dialogConfig.data = list;
+        return new Observable((observable) => {
+            let dialogRef = this.dialog.open(ShareComponent, this.dialogConfig);
+            dialogRef.afterClosed().subscribe(email => {
+                this.dialogConfig.data = undefined;
+                if (email) {
+                    //TODO sent actual email with list
+                    observable.next(email);
+                    observable.complete();
+                    // this.api.postObject<ShoppingList>(environment.list_url + '/add', listName).subscribe(newlist => {
+                    //     if (newlist) {
+                    //         observable.next(newlist);
+                    //         observable.complete()
+                    //     }
+                    // });
+                }
+            }, error => {
+                this.dialogConfig.data = undefined;
                 this.logger.error(error);
                 observable.next(undefined);
                 observable.complete();

@@ -6,6 +6,11 @@
     </button>
     {{list.name}}
     <span class="pull-right">{{list.done}}/{{list.items.length}}</span>
+    <button mat-icon-button class="pull-right mr-2" (click)="shareListOpenDialog(list)">
+        <mat-icon matBadge="{{list.shared.length}}" matBadgePosition="below before"
+                  [matBadgeHidden]="list.shared.length==0">person
+        </mat-icon>
+    </button>
 </h2>
 <mat-card fxLayout="row" class="new-item">
     <app-quickadd fxFlex="80" [(listID)]="listID" (created)="quickAdd($event)"></app-quickadd>

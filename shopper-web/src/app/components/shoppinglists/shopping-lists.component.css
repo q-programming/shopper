@@ -41,3 +41,8 @@
     margin-left: -5px;
     margin-top: -5px;
 }
+.stick-right{
+    position: absolute;
+    right: 30px;
+    top: 25px;
+}

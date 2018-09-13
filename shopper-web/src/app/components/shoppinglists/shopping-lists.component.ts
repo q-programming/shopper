@@ -47,7 +47,7 @@ export class ShoppingListsComponent implements OnInit {
         })
     }
 
-    openDialog() {
+    newListOpenDialog() {
         this.listSrv.openNewListDialog().subscribe(newList => {
                 if (newList) {
                     this.alertSrv.success("app.shopping.create.success");
@@ -56,6 +56,16 @@ export class ShoppingListsComponent implements OnInit {
             }
         );
     }
+
+    shareListOpenDialog(list: ShoppingList) {
+        this.listSrv.openShareListDialog(list).subscribe(email => {
+                if (email) {
+                    this.alertSrv.success("app.shopping.share.sent", {email: email});
+                }
+            }
+        );
+    }
+
 
     archiveToggle(list: ShoppingList, archived?: boolean) {
         this.listSrv.archive(list).subscribe(res => {

@@ -11,16 +11,22 @@
     </div>
     <div class="fill-remaining-space"></div>
     <div>
-        <button mat-icon-button class="mt-3 mr-1 " (click)="openDialog()"
+        <button mat-icon-button class="mt-3 mr-1 " (click)="newListOpenDialog()"
                 matTooltip="{{'app.shopping.create' | translate}}">
-            <img src="assets/images/plus.png" class="add-list-icon">
+            <img src="assets/images/plus.svg" class="add-list-icon" height="50">
         </button>
     </div>
 </div>
+<!--NO LISTS-->
 <div *ngIf="lists && lists.length===0">
-    <mat-card class="text-center">
+    <mat-card class="text-center" *ngIf="!archived">
         <h2>{{'app.home.nolist'|translate}}</h2>
         <img src="assets/images/start_adding.svg" height="200">
+        <img src="assets/images/arrow_up.svg" height="80" class="stick-right">
+    </mat-card>
+    <mat-card class="text-center" *ngIf="archived">
+        <h2>{{'app.home.archived.nolist'|translate}}</h2>
+        <img src="assets/images/box.svg" height="80">
     </mat-card>
 </div>
 <div *ngIf="lists && lists.length>0">
@@ -45,7 +51,7 @@
                         <mat-icon>edit</mat-icon>
                         <span>{{'app.general.edit'|translate}}</span>
                     </button>
-                    <button *ngIf="!list.notOwner" mat-menu-item>
+                    <button *ngIf="!list.notOwner" mat-menu-item (click)="shareListOpenDialog(list)">
                         <mat-icon>share</mat-icon>
                         <span>{{'app.shopping.share'|translate}}</span>
                     </button>

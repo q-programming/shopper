@@ -122,6 +122,15 @@ export class ListComponent implements OnInit {
         })
     }
 
+    shareListOpenDialog(list: ShoppingList) {
+        this.listSrv.openShareListDialog(list).subscribe(email => {
+                if (email) {
+                    this.alertSrv.success("app.shopping.share.sent", {email: email});
+                }
+            }
+        );
+    }
+
 
     private loadCategoriesWithLocalName() {
         Object.values(Category).map(value => {

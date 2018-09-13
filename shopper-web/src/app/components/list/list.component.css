@@ -36,3 +36,7 @@
     color: #00000050;
     display: inline;
 }
+.mat-badge-content {
+    color: #fff;
+    background: #c3c3c3;
+}
