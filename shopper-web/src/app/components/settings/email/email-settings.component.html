@@ -1,0 +1,37 @@
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60">
+        <form [formGroup]="form">
+            <p>Enter your mailing server detials</p>
+            <div fxLayout="row" fxLayoutGap="10px">
+                <mat-form-field fxFlex="80">
+                    <input matInput formControlName="url" placeholder="email server url">
+                </mat-form-field>
+                <mat-form-field fxFlex="20">
+                    <input type="number" matInput formControlName="port" placeholder="Port">
+                </mat-form-field>
+            </div>
+            <div fxLayout="column">
+                <mat-form-field>
+                    <input type="text" matInput formControlName="username" placeholder="Server username">
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput type="password" formControlName="password" placeholder="Server password">
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput type="email" formControlName="from" placeholder="From email">
+                    <mat-error *ngIf="form.controls.from.hasError('email') && !form.controls.from.hasError('required')">
+                        {{'app.general.email.error'|translate}}
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="40">
+                    <mat-select placeholder="Encoding" formControlName="encoding">
+                        <mat-option *ngFor="let encoding of encodings" [value]="encoding">
+                            {{encoding}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <button mat-raised-button class="success-button pull-right">{{'app.general.saveChanges'|translate}}</button>
+        </form>
+    </div>
+</div>

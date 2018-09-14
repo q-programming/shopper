@@ -17,8 +17,7 @@
                     <mat-form-field class="mat-form-field-full-width">
                         <input id="listName" matInput cdkFocusRegionstart
                                placeholder="{{'app.general.email'|translate}}"
-                               [formControl]="emailControl" required (keydown.enter)="createList()" autocomplete="off"
-                               type="email">
+                               [formControl]="emailControl" required (keydown.enter)="shareList()" type="email">
                         <mat-error *ngIf="emailControl.hasError('email') && !emailControl.hasError('required')">
                             {{'app.general.email.error'|translate}}
                         </mat-error>

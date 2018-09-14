@@ -24,6 +24,8 @@ export class ListComponent implements OnInit {
     items: ListItem[];
     done: ListItem[];
     categories: CategoryOption[] = [];
+    shareTooltip: string;
+    sharedCount = 0;
 
     constructor(private listSrv: ListService,
                 private itemSrv: ItemService,
@@ -41,18 +43,28 @@ export class ListComponent implements OnInit {
         });
     }
 
+    private getSharedButtonTootlip() {
+        if (this.sharedCount > 0) {
+            this.translate.get('app.shopping.share.with', {count: this.list.shared.length}).subscribe(text => this.shareTooltip = text);
+        } else {
+            this.translate.get('app.shopping.share').subscribe(text => this.shareTooltip = text)
+        }
+    }
+
     /**
      * Toggle passed item as done/not done
      * @param item item to be toggled
      */
     toggleItem(item: ListItem) {
-        this.itemSrv.toggleItem(this.listID, item).subscribe((result) => {
-            if (result) {
-                _.find(this.list.items, i => i.id === result.id).done = result.done;
-                result.done ? this.list.done++ : this.list.done--;
-                this.sortDoneNotDone();
-            }
-        })
+        if (!this.list.archived) {
+            this.itemSrv.toggleItem(this.listID, item).subscribe((result) => {
+                if (result) {
+                    _.find(this.list.items, i => i.id === result.id).done = result.done;
+                    result.done ? this.list.done++ : this.list.done--;
+                    this.sortDoneNotDone();
+                }
+            })
+        }
     }
 
     /**
@@ -123,9 +135,14 @@ export class ListComponent implements OnInit {
     }
 
     shareListOpenDialog(list: ShoppingList) {
-        this.listSrv.openShareListDialog(list).subscribe(email => {
-                if (email) {
-                    this.alertSrv.success("app.shopping.share.sent", {email: email});
+        this.listSrv.openShareListDialog(list).subscribe(reply => {
+                if (reply) {
+                    if (reply === 'SENDING') {
+                        this.alertSrv.info("app.shopping.share.email.inqueue");
+                    } else {
+                        this.alertSrv.success("app.shopping.share.sent", {name: this.list.name, email: reply});
+                        this.loadItems();
+                    }
                 }
             }
         );
@@ -156,6 +173,8 @@ export class ListComponent implements OnInit {
 
     private assignListWithSorting(list: ShoppingList) {
         this.list = list;
+        this.sharedCount = list.shared.length;
+        this.getSharedButtonTootlip();
         this.sortDoneNotDone();
     }
 

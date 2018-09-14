@@ -6,13 +6,14 @@
     </button>
     {{list.name}}
     <span class="pull-right">{{list.done}}/{{list.items.length}}</span>
-    <button mat-icon-button class="pull-right mr-2" (click)="shareListOpenDialog(list)">
-        <mat-icon matBadge="{{list.shared.length}}" matBadgePosition="below before"
-                  [matBadgeHidden]="list.shared.length==0">person
+    <button mat-icon-button class="pull-right mr-2" (click)="shareListOpenDialog(list)"
+            matTooltip="{{shareTooltip}}">
+        <mat-icon matBadge="{{sharedCount}}" matBadgePosition="below before"
+                  [matBadgeHidden]="sharedCount==0">person
         </mat-icon>
     </button>
 </h2>
-<mat-card fxLayout="row" class="new-item">
+<mat-card fxLayout="row" class="new-item" *ngIf="list && !list.archived">
     <app-quickadd fxFlex="80" [(listID)]="listID" (created)="quickAdd($event)"></app-quickadd>
     <span class="fill-remaining-space"></span>
     <button mat-icon-button class="mt-3" (click)="openNewItemDialog()" matTooltip="{{'app.item.add'|translate}}">
@@ -21,7 +22,8 @@
 </mat-card>
 <div>
     <mat-card fxLayout="row" *ngFor="let item of items" class="item clickable">
-        <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"></mat-checkbox>
+        <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"
+                      [disabled]="list.archived"></mat-checkbox>
         <mat-card-title-group class="ml-2">
             <mat-card-title>{{item.product.name}}
             </mat-card-title>

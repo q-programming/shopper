@@ -1,40 +1,46 @@
 <mat-card>
-    <div fxLayout="row" fxLayoutAlign="center">
-        <div fxFlex="40%">
-            <h3 class="underlined">
-                <mat-icon>assignment_ind</mat-icon>
-                {{'app.general.avatar'|translate}}
-            </h3>
-        </div>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="center">
-        <div fxFlex="40%" fxLayoutAlign="center">
-            <img [src]="account.avatar" class="img-fluid">
-        </div>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="center">
-        <div fxFlex="40%" fxLayoutAlign="center">
-            <button mat-raised-button (click)="openDialog()" class="mt-2">{{'app.settings.avatar'|translate}}</button>
-        </div>
-    </div>
-    <!--LANGUAGE-->
-    <div fxLayout="row" fxLayoutAlign="center">
-        <div fxFlex="40%">
-            <h3 class="underlined">
-                <mat-icon>language</mat-icon>
-                {{'app.settings.language'|translate}}
-            </h3>
-        </div>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="center">
-        <div fxFlex="60%" fxLayoutAlign="center">
-            <mat-form-field>
-                <mat-select [(value)]="account.language" (selectionChange)="changeLanguage()">
-                    <mat-option *ngFor="let lang of languages" [value]="lang.id">{{lang.name}}</mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-    </div>
+    <mat-tab-group>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon>person</mat-icon>&nbsp;{{'app.settings.account'|translate}}
+            </ng-template>
+            <ng-template matTabContent>
+                <settings-account></settings-account>
+            </ng-template>
+        </mat-tab>
+        <mat-tab *ngIf="admin">
+            <ng-template mat-tab-label>
+                <mat-icon>message</mat-icon>&nbsp;{{'app.settings.notifications'|translate}}
+            </ng-template>
+            <ng-template matTabContent>
+                <settings-notifications></settings-notifications>
+            </ng-template>
+        </mat-tab>
+        <mat-tab *ngIf="admin">
+            <ng-template mat-tab-label>
+                <mat-icon>email</mat-icon>&nbsp;{{'app.settings.email'|translate}}
+            </ng-template>
+            <ng-template matTabContent>
+                <settings-email></settings-email>
+            </ng-template>
+        </mat-tab>
+        <mat-tab *ngIf="admin">
+            <ng-template mat-tab-label>
+                <mat-icon>settings</mat-icon>&nbsp;{{'app.settings.app'|translate}}
+            </ng-template>
+            <ng-template matTabContent>
+                <settings-app></settings-app>
+            </ng-template>
+        </mat-tab>
+        <mat-tab *ngIf="admin">
+            <ng-template mat-tab-label>
+                <mat-icon>local_offer</mat-icon>&nbsp;{{'app.settings.products'|translate}}
+            </ng-template>
+            <ng-template matTabContent>
+                <settings-products></settings-products>
+            </ng-template>
+        </mat-tab>
+    </mat-tab-group>
 </mat-card>
 <!--<div class="row justify-content-center">-->
 <!--<div class="col-6">-->

@@ -1,25 +1,25 @@
-image: khobar/docker-jdk-8-maven-node-ng
-stages:
-  - build_application
-  - test_application
-cache:
-  paths:
-    - .m2/
-variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=.m2"
-  
-build_application:
-  stage: build_application
-  artifacts:
-    paths:
-      - shopper-app/target/*.war
-  script:
-    - mvn clean install -DskipTests=true
-  artifacts:
-    untracked: true    
-test_application:
-  stage: test_application
-  dependencies: 
-    - build_application
-  script:
-    - mvn surefire:test
+#image: khobar/docker-jdk-8-maven-node-ng
+#stages:
+#  - build_application
+#  - test_application
+#cache:
+#  paths:
+#    - .m2/
+#variables:
+#  MAVEN_OPTS: "-Dmaven.repo.local=.m2"
+#
+#build_application:
+#  stage: build_application
+#  artifacts:
+#    paths:
+#      - shopper-app/target/*.war
+#  script:
+#    - mvn clean install -DskipTests=true
+#  artifacts:
+#    untracked: true
+#test_application:
+#  stage: test_application
+#  dependencies:
+#    - build_application
+#  script:
+#    - mvn surefire:test

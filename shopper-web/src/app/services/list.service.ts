@@ -56,7 +56,7 @@ export class ListService {
         let filtered = _.filter(lists, list => this.notOwner(list));
         filtered.forEach(list => {
             list.notOwner = true;
-            list.ownerAvatar = this.avatarSrv.getUserAvatarById(list.ownerId)
+            this.avatarSrv.getUserAvatarById(list.ownerId).subscribe(avatar => list.ownerAvatar = avatar);
         });
         return lists
     }
@@ -92,6 +92,7 @@ export class ListService {
             dialogRef.afterClosed().subscribe(email => {
                 this.dialogConfig.data = undefined;
                 if (email) {
+                    observable.next("SENDING");
                     this.api.postObject<ShoppingList>(environment.list_url + `/${list.id}/share`, email).subscribe(shared => {
                         if (shared) {
                             observable.next(email);

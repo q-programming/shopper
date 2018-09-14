@@ -52,14 +52,14 @@ export class AlertService {
 
     warning(key: string, params?: Object, timeout: number = this.normal_timeout) {
         this.translate.get(key, params).subscribe(txt => {
-            this.addMessage(txt, MessageType.ERROR, timeout);
+            this.addMessage(txt, MessageType.WARNING, timeout);
         })
 
     }
 
     info(key: string, params?: Object, timeout: number = this.error_timeout) {
         this.translate.get(key, params).subscribe(txt => {
-            this.addMessage(txt, MessageType.ERROR, timeout);
+            this.addMessage(txt, MessageType.INFO, timeout);
         })
     }
 

@@ -33,8 +33,10 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
         this.account = this.authSrv.currentAccount;
-        this.message_count.count = "" + 1;
-        this.listSrv.getUserList().subscribe(lists => this.lists = lists.splice(0, 4));
+        if (this.account) {
+            this.message_count.count = "" + 1;
+            this.listSrv.getUserList().subscribe(lists => this.lists = lists.splice(0, 4));
+        }
     }
 
     loggedIn() {
