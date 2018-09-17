@@ -102,7 +102,7 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
     }
 
     public Long getDone() {
-        return done;
+        return done == null ? 0L : done;
     }
 
     public void setDone(Long done) {

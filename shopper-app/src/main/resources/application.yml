@@ -19,8 +19,8 @@ security:
       userInfoUri: "*"
 logging:
   level:
-    org.springframework.security: ERROR
-    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web.filter.CommonsRequestLoggingFilter: ERROR
 spring:
   mail:
     host: localhost
@@ -31,12 +31,12 @@ spring:
     password: ps
     default-encoding: UTF-8
   datasource:
-    url: jdbc:h2:./db/h2databaseFile;AUTO_SERVER=TRUE
-    username: sa
-    password:
-  #    url: jdbc:postgresql://localhost:5432/gifts
-  #    username: giftshub
-  #    password: h9fj67kmZ9FyU75ndwZU
+        url: jdbc:h2:./db/shopperH2databaseFile;AUTO_SERVER=TRUE
+        username: sa
+        password:
+#    url: jdbc:postgresql://localhost:5432/shopper
+#    username: shopper
+#    password: cZmYpQWeJXSaWEUHSp3V
   mvc:
     favicon:
       enabled: false

@@ -1,5 +1,7 @@
 export class AppSettings {
+    language: string;
     email: EmailSettings;
+    appUrl: string;
 
     constructor() {
         this.email = new EmailSettings();
@@ -8,7 +10,7 @@ export class AppSettings {
 }
 
 export class EmailSettings {
-    url: string = '';
+    host: string = '';
     port: number = 25;
     username: string = '';
     password: string = '';
