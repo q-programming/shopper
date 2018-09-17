@@ -46,7 +46,6 @@ export class AuthenticationService {
         return this.apiService.post(environment.logout_url, {})
             .map(() => {
                 this.currentAccount = null;
-                this.cookieSrv.set('COOKIE-AUTH-TOKEN', '', new Date());
             });
     }
 

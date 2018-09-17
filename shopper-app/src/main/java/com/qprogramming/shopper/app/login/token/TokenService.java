@@ -214,7 +214,15 @@ public class TokenService {
         authCookie.setMaxAge(EXPIRES_IN);
         // Add cookie to response
         response.addCookie(authCookie);
-
     }
+
+    public void invalidateCookie(HttpServletResponse response) {
+        Cookie authCookie = new Cookie(TOKEN_COOKIE, null);
+        authCookie.setPath(SHOPPER_CONTEXT_PATH);
+        authCookie.setHttpOnly(true);
+        authCookie.setMaxAge(0);
+        response.addCookie(authCookie);
+    }
+
 
 }
