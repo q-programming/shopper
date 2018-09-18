@@ -13,6 +13,7 @@ Messages
     -webkit-border-radius: .125rem;
     border-radius: .125rem;
 }
+
 #message-container {
     position: fixed;
     z-index: 999999;
@@ -67,4 +68,10 @@ Messages
 
 .message-warning {
     background-color: #f4ab27;
+}
+
+.message-undo {
+    color: #103444;
+    margin-right: -50px;
+    /*font-weight: bold;*/
 }

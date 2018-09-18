@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {AlertService} from "../services/alert.service";
+import {AlertService} from "../../services/alert.service";
 import {animate, keyframes, query, stagger, style, transition, trigger} from '@angular/animations';
-import {Message, MessageType} from "../model/Message";
+import {Message, MessageType} from "../../model/Message";
 
 @Component({
     selector: 'alert',
@@ -40,6 +40,11 @@ export class AlertComponent implements OnInit {
     ngOnInit() {
         this.messages = this.alertService.getMessages();
     }
+
+    undo(message: Message) {
+        this.alertService.undo(message);
+    }
+
 
     dismiss(message: Message) {
         this.alertService.dissmis(message);

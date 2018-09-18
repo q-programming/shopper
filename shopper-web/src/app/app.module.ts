@@ -8,7 +8,7 @@ import {LoginComponent} from './components/login/login.component';
 import {HomeComponent} from './components/home/home.component';
 import {AuthenticationService} from "./services/authentication.service";
 import {AuthInterceptor} from "./guards/auth.interceptor";
-import {AlertComponent} from './directives/alert.component';
+import {AlertComponent} from './components/alert/alert.component';
 import {AlertService} from "./services/alert.service";
 import {AuthGuard} from "./guards/auth.guard";
 import {ApiService} from "./services/api.service";
@@ -47,7 +47,6 @@ import {ProductsSettingsComponent} from './components/settings/products/products
 import {NotificationsSettingsComponent} from './components/settings/notifications/notifications-settings.component';
 import {AppSettingsComponent} from "./components/settings/app/app-settings.component";
 import {CookieService} from "ngx-cookie-service";
-
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();

@@ -9,8 +9,6 @@ import {AlertService} from "../../services/alert.service";
 import {Category} from "../../model/Category";
 import {CategoryOption} from "../../model/CategoryOption";
 import {TranslateService} from "@ngx-translate/core";
-import {ConfirmDialog, ConfirmDialogComponent} from "../dialogs/confirm/confirm-dialog.component";
-import {MatDialog, MatDialogConfig} from "@angular/material";
 
 @Component({
     selector: 'app-list',
@@ -31,8 +29,7 @@ export class ListComponent implements OnInit {
                 private itemSrv: ItemService,
                 private route: ActivatedRoute,
                 private alertSrv: AlertService,
-                private translate: TranslateService,
-                private dialog: MatDialog) {
+                private translate: TranslateService) {
     }
 
     ngOnInit() {
@@ -110,28 +107,22 @@ export class ListComponent implements OnInit {
     }
 
     confirmDeletion(item: ListItem) {
-        const data: ConfirmDialog = {
-            title_key: 'app.item.delete.confirm',
-            message_key: 'app.item.delete.confirm.msg',
-            action_key: 'app.general.delete',
-            action_class: 'warn'
-        };
-        const dialogConfig: MatDialogConfig = {
-            disableClose: true,
-            panelClass: 'shopper-modal',
-            data: data
-        };
-        let dialogRef = this.dialog.open(ConfirmDialogComponent, dialogConfig);
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this.itemSrv.deleteItem(this.listID, item).subscribe((list) => {
-                    if (list) {
-                        this.alertSrv.success("app.item.delete.success");
-                        this.assignListWithSorting(list);
-                    }
-                });
+        _.remove(this.items, (i) => {
+            return i.id === item.id
+        });
+        this.alertSrv.undoable("app.item.delete.success").subscribe(undo => {
+            if (undo !== undefined) {
+                if (!undo) {
+                    this.itemSrv.deleteItem(this.listID, item).subscribe((list) => {
+                        if (list) {
+                            this.assignListWithSorting(list);
+                        }
+                    });
+                } else {
+                    this.loadItems();
+                }
             }
-        })
+        });
     }
 
     shareListOpenDialog(list: ShoppingList) {

@@ -3,6 +3,7 @@ import {Message, MessageType} from "../model/Message";
 import {Observable} from "rxjs/Observable";
 import {TranslateService} from "@ngx-translate/core";
 import * as _ from 'lodash';
+import {Subscriber} from "rxjs";
 
 @Injectable()
 export class AlertService {
@@ -63,8 +64,16 @@ export class AlertService {
         })
     }
 
-    private addMessage(text: string, type: MessageType, timeout: number) {
-        let message = new Message(text, type);
+    undoable(key: string, params?: Object): Observable<boolean> {
+        return new Observable((observable) => {
+            this.translate.get(key, params).subscribe(txt => {
+                this.addMessage(txt, MessageType.UNDOABLE, 5000, observable);
+            })
+        });
+    }
+
+    private addMessage(text: string, type: MessageType, timeout: number, observable?: Subscriber<boolean>) {
+        let message = new Message(text, type, observable);
         if (!this.exists(message)) {
             this.messages.push(message);
             Observable.timer(timeout).subscribe(() => {
@@ -77,11 +86,24 @@ export class AlertService {
         _.remove(this.messages, (m) => {
             return m.id === message.id
         });
+        if (message.type == MessageType.UNDOABLE && message.undoObservable) {
+            if (message.undo) {
+                message.undoObservable.next(true);
+            } else {
+                message.undoObservable.next(false);
+            }
+            message.undoObservable.complete();
+        }
     }
 
     exists(message: Message) {
         return _.find(this.messages, (m) => {
             return m.type === message.type && m.text === message.text
         })
+    }
+
+    undo(message: Message) {
+        message.undo = true;
+        this.dissmis(message)
     }
 }

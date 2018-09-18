@@ -10,6 +10,7 @@
   "app.general.create": "Create",
   "app.general.cancel": "Cancel",
   "app.general.add": "Add",
+  "app.general.undo": "Undo",
   "app.general.choosefile": "Choose file",
   "app.general.email": "Adres e-mail",
   "app.general.email.error": "Niepoprawny adres email",

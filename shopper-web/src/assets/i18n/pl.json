@@ -10,6 +10,7 @@
   "app.general.cancel": "Anuluj",
   "app.general.delete": "Usuń",
   "app.general.add": "Dodaj",
+  "app.general.undo": "Cofnij",
   "app.general.choosefile": "Wybierz plik",
   "app.general.email": "Adres e-mail",
   "app.general.email.error": "Niepoprawny adres email",
