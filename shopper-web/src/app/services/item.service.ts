@@ -74,7 +74,7 @@ export class ItemService {
             let dialogRef = this.dialog.open(ItemDialogComponent, this.dialogConfig);
             dialogRef.afterClosed().subscribe(item => {
                 if (item) {
-                    this.createNewItem(listID, item).subscribe(edited => {
+                    this.updateItem(listID, item).subscribe(edited => {
                         if (edited) {
                             observable.next(edited);
                             observable.complete();
