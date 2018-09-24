@@ -103,6 +103,7 @@ export class ApiService {
         } else if (error && error.status === 404) {
             this.alertSrv.error('app.api.error.notfound');
         } else if (error && error.status === 403) {
+            this.alertSrv.error('app.api.error.unauthorized');
             //TODO redirect to login?
         }
         else if (error && error.status === 503) {

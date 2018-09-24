@@ -141,11 +141,11 @@
                 <p>Witaj ${name},</p>
             </#if>
                 <div>
-                ${owner} podzieli\u0142 si\u0119 z tob\u0105 swoj\u0105 ist\u0105 zakup\u00F3w w aplikacji Shopper
+                ${owner} podzieli&#322; si&#281; z tob&#261; swoj&#261; list&#261; w aplikacji Shopper
                 </div>
                 <div>
                     <p>
-                        Kliknij w odno\u015Bnik poni\u017Cej aby przej\u015B\u0107 do listy
+                        Kliknij w odno&#347;nik poni&#380;ej aby przej&#347;&#263; do listy
                     </p>
                     <p>
                         <a href="${listLink}">${listLink}</a>

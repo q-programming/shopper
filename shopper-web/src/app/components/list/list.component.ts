@@ -23,6 +23,8 @@ export class ListComponent implements OnInit {
     done: ListItem[];
     categories: CategoryOption[] = [];
     shareTooltip: string;
+    listName: string;
+    edit: boolean;
     sharedCount = 0;
 
     constructor(private listSrv: ListService,
@@ -38,6 +40,9 @@ export class ListComponent implements OnInit {
             this.listID = params['listid'];
             this.loadItems();
         });
+        this.route.queryParams.subscribe(params => {
+            this.edit = params['edit'];
+        })
     }
 
     private getSharedButtonTootlip() {
@@ -131,7 +136,7 @@ export class ListComponent implements OnInit {
                     if (reply === 'SENDING') {
                         this.alertSrv.info("app.shopping.share.email.inqueue");
                     } else {
-                        this.alertSrv.success("app.shopping.share.sent", {name: this.list.name, email: reply});
+                        this.alertSrv.success("app.shopping.share.sent", {name: list.name, email: reply});
                         this.loadItems();
                     }
                 }
@@ -153,6 +158,7 @@ export class ListComponent implements OnInit {
 
     private loadItems() {
         this.listSrv.getListByID(this.listID).subscribe(list => {
+            this.listName = list.name;
             this.assignListWithSorting(list)
         });
     }
@@ -172,6 +178,18 @@ export class ListComponent implements OnInit {
     private sortDoneNotDone() {
         this.done = _.filter(this.list.items, item => item.done);
         this.items = _.difference(this.list.items, this.done)
+    }
+
+    editList() {
+        if (this.listName !== this.list.name) {
+            this.listSrv.editName(this.list, this.listName).subscribe(list => {
+                this.alertSrv.success('app.shopping.name.success');
+                this.list.name = list.name;
+            }, error => {
+                this.alertSrv.error('app.shopping.name.fail')
+            })
+        }
+        this.edit = false;
     }
 
 }

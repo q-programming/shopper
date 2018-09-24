@@ -48,6 +48,7 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     private static final String STOP_SHARING = "/stop-sharing";
     private static final String ARCHIVE = "/archive";
     private static final String DELETE = "/delete";
+    private static final String EDIT = "/edit";
     private static final String MINE = "mine";
     private static final String USER = "user/";
 
@@ -359,6 +360,44 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
         assertThat(result.getItems().get(0)).isEqualTo(item2);
+    }
+
+    @Test
+    public void editListTestNoPermission() throws Exception {
+        ShoppingList list1 = createList(NAME, 1L);
+        list1.setOwnerId(TestUtil.ADMIN_RANDOM_ID);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list1));
+        String new_name = "NEW NAME";
+        this.mvc.perform(post(API_LIST_URL + 1 + EDIT).content(new_name))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void editListTestNotFound() throws Exception {
+        String new_name = "NEW NAME";
+        this.mvc.perform(post(API_LIST_URL + 1 + EDIT).content(new_name))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void editListEmptyName() throws Exception {
+        String new_name = "";
+        this.mvc.perform(post(API_LIST_URL + 1 + EDIT).content(new_name))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    public void editListTest() throws Exception {
+        ShoppingList list1 = createList(NAME, 1L);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list1));
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        String new_name = "NEW NAME";
+        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + 1 + EDIT).content(new_name))
+                .andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getName()).isEqualTo(new_name);
     }
 
 

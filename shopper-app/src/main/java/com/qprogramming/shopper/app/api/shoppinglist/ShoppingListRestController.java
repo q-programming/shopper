@@ -7,6 +7,7 @@ import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.support.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -215,5 +216,29 @@ public class ShoppingListRestController {
         }
     }
 
+    /**
+     * Delete list with id . If currently logged in user is not an owner , he/she will just remove himself from shares of that list
+     *
+     * @param id shopping lis id
+     * @return true if operation was success
+     */
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> editList(@PathVariable String id, @RequestBody String name) {
+        try {
+            if (StringUtils.isBlank(name)) {
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            ShoppingList list = _listService.findByID(id);
+            list.setName(name);
+            return ResponseEntity.ok(_listService.save(list));
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
 }

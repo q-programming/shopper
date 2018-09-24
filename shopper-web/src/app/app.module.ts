@@ -30,7 +30,7 @@ import {LoaderComponent} from './components/loader/loader.component';
 import {ListService} from "./services/list.service";
 import {ListComponent} from './components/list/list.component';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {NewShoppingListDialogComponent} from "./components/dialogs/new-list/new-shopping-list-dialog.component";
+import {ShoppingListDialogComponent} from "./components/dialogs/list/shopping-list-dialog.component";
 import {ShoppingListsComponent} from "./components/shoppinglists/shopping-lists.component";
 import {ConfirmDialogComponent} from './components/dialogs/confirm/confirm-dialog.component';
 import {ItemService} from "./services/item.service";
@@ -64,7 +64,7 @@ export function initUserFactory(authService: AuthenticationService) {
         LoaderComponent,
         ShoppingListsComponent,
         ListComponent,
-        NewShoppingListDialogComponent,
+        ShoppingListDialogComponent,
         ConfirmDialogComponent,
         ItemDialogComponent,
         HighlightDirective,
@@ -79,7 +79,7 @@ export function initUserFactory(authService: AuthenticationService) {
     entryComponents: [
         AvatarUploadComponent,
         ShoppingListsComponent,
-        NewShoppingListDialogComponent,
+        ShoppingListDialogComponent,
         ConfirmDialogComponent,
         ItemDialogComponent,
         LoaderComponent,

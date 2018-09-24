@@ -30,6 +30,10 @@
 .mat-progress-bar {
     height: 3px !important;
 }
+::ng-deep .mat-progress-bar-fill::after {
+    background-color: #00c500;
+}
+
 .list-count{
     margin-top: 5px;
     font-size: larger;

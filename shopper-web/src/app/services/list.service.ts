@@ -9,7 +9,7 @@ import {AuthenticationService} from "./authentication.service";
 import {Account} from "../model/Account";
 import * as _ from 'lodash';
 import {MatDialog, MatDialogConfig} from "@angular/material";
-import {NewShoppingListDialogComponent} from "../components/dialogs/new-list/new-shopping-list-dialog.component";
+import {ShoppingListDialogComponent} from "../components/dialogs/list/shopping-list-dialog.component";
 import {ShareComponent} from "../components/dialogs/share/share.component";
 
 @Injectable({
@@ -67,7 +67,7 @@ export class ListService {
 
     openNewListDialog(): Observable<ShoppingList> {
         return new Observable((observable) => {
-            let dialogRef = this.dialog.open(NewShoppingListDialogComponent, this.dialogConfig);
+            let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
             dialogRef.afterClosed().subscribe(listName => {
                 if (listName) {
                     this.api.postObject<ShoppingList>(environment.list_url + '/add', listName).subscribe(newlist => {
@@ -110,10 +110,14 @@ export class ListService {
     }
 
     archive(list: ShoppingList): Observable<ShoppingList> {
-        return this.api.post(environment.list_url + `/${list.id}/archive`, null)
+        return this.api.post(environment.list_url + `/${list.id}/archive`, null);
     }
 
     delete(list: ShoppingList): Observable<any> {
-        return this.api.post(environment.list_url + `/${list.id}/delete`, null)
+        return this.api.post(environment.list_url + `/${list.id}/delete`, null);
+    }
+
+    editName(list: ShoppingList, listName: string): Observable<ShoppingList> {
+        return this.api.post(environment.list_url + `/${list.id}/edit`, listName);
     }
 }

@@ -36,7 +36,27 @@
     color: #00000050;
     display: inline;
 }
+
 .mat-badge-content {
     color: #fff;
     background: #c3c3c3;
+}
+
+.list-name-input {
+    margin-bottom: -35px !important;
+}
+
+.mat-focused .mat-form-field-label {
+    color: #027D7C !important;
+}
+
+::ng-deep .mat-progress-bar-fill::after {
+    background-color: #00c500;
+}
+.mat-progress-bar-fill::after {
+    background-color: #00c500 !important;
+}
+
+.mat-input-element {
+    caret-color: white !important;
 }
