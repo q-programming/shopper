@@ -7,7 +7,8 @@ export class Account {
     role?: Role;
     authorities?: Authority[];
     avatar?: any;
-    token:string;
+    token: string;
+    fullname?: string;
 }
 
 export class Authority {

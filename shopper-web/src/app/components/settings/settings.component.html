@@ -1,5 +1,5 @@
 <mat-card>
-    <mat-tab-group>
+    <mat-tab-group mat-stretch-tabs>
         <mat-tab>
             <ng-template mat-tab-label>
                 <mat-icon>person</mat-icon>&nbsp;{{'app.settings.account'|translate}}
@@ -42,65 +42,3 @@
         </mat-tab>
     </mat-tab-group>
 </mat-card>
-<!--<div class="row justify-content-center">-->
-<!--<div class="col-6">-->
-<!--&lt;!&ndash;AVATAR&ndash;&gt;-->
-<!--<div class="row justify-content-start mt-5">-->
-<!--<h4><i class="fa fa-user-circle-o mr-1"></i> {{'app.general.avatar'|translate}}</h4>-->
-<!--</div>-->
-<!--<div class="row justify-content-center">-->
-<!--<div class="col-6 text-center">-->
-<!--<img [src]="account.avatar" class="img-fluid">-->
-<!--</div>-->
-<!--</div>-->
-<!--<div class="row justify-content-center">-->
-<!--<div class="col-6 text-center">-->
-<!--<button class="btn btn-white waves-light" (click)="avatarUploadModal.show()">-->
-<!--{{'app.settings.avatar'|translate}}-->
-<!--</button>-->
-<!--</div>-->
-<!--</div>-->
-<!--&lt;!&ndash;LANGUAGE&ndash;&gt;-->
-<!--<div class="row justify-content-start mt-5">-->
-<!--<h4><i class="fa fa-globe mr-1"></i> {{'app.settings.language'|translate}}</h4>-->
-<!--</div>-->
-<!--<div class="row justify-content-center">-->
-<!--<mat-select [(value)]="account.language" (selectionChange)="changeLanguage()">-->
-<!--<mat-option *ngFor="let lang of languages" [value]="lang.id">{{lang.name}}</mat-option>-->
-<!--</mat-select>-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->
-
-<!--<div #avatarUploadModal class="modal fade" tabindex="-1" role="dialog"-->
-<!--aria-labelledby="myBasicModalLabel"-->
-<!--aria-hidden="true">-->
-<!--<div class="modal-dialog" role="document">-->
-<!--<div class="modal-content">-->
-<!--<div class="modal-header">-->
-<!--<button type="button" class="close pull-right" aria-label="Close" (click)="avatarUploadModal.hide()">-->
-<!--<span aria-hidden="true">×</span>-->
-<!--</button>-->
-<!--<h4 class="modal-title w-100" id="myModalLabel"> {{'app.settings.avatar.change'|translate}}</h4>-->
-<!--</div>-->
-<!--<div class="modal-body">-->
-<!--<div class="file-upload">-->
-<!--<button class="btn btn-primary" (click)="fileInput.click()">-->
-<!--<i class="fa fa-upload mr-1"></i>{{'app.general.choosefile' |translate}}-->
-<!--</button>-->
-<!--<input #fileInput type="file" (change)="fileChangeListener($event)" style="display:none;">-->
-<!--</div>-->
-<!--<div><span>{{fileInput.value}}</span></div>-->
-<!--<img-cropper #cropper [image]="avatarData" [settings]="cropperSettings"></img-cropper>-->
-<!--</div>-->
-<!--<div class="modal-footer">-->
-<!--<button type="button" class="btn btn-white waves-light" aria-label="Close"-->
-<!--(click)="avatarUploadModal.hide()">{{'app.general.close'|translate}}-->
-<!--</button>-->
-<!--<button type="button" class="btn btn-success relative waves-light"-->
-<!--(click)="uploadNewAvatar()">{{'app.general.saveChanges'|translate}}-->
-<!--</button>-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->

@@ -15,14 +15,19 @@
         </button>
         <span (click)="edit = true" class="clickable" matTooltip="{{'app.shopping.clicktoedit'| translate}}">{{list.name}}</span>
         <span class="pull-right" fxShow.xs="false">{{list.done}}/{{list.items.length}}</span>
+        <!--SHARE-->
         <button mat-icon-button class="pull-right mr-2" (click)="shareListOpenDialog(list)"
-                matTooltip="{{shareTooltip}}" fxShow.xs="false">
+                matTooltip="{{shareTooltip}}">
             <mat-icon matBadge="{{sharedCount}}" matBadgePosition="below before"
                       [matBadgeHidden]="sharedCount==0">person
             </mat-icon>
         </button>
     </h2>
-    <mat-progress-bar mode="determinate" value="{{(list.done/list.items.length)*100}}"></mat-progress-bar>
+    <!--ITEMS DONE %-->
+    <div class="m-plr-5">
+        <mat-progress-bar mode="determinate"
+                          value="{{list.items.length>0?(list.done/list.items.length)*100:0}}"></mat-progress-bar>
+    </div>
 </div>
 <!--QUICK ADD AND REGULAR ADD-->
 <mat-card fxLayout="row" class="new-item" *ngIf="list && !list.archived">

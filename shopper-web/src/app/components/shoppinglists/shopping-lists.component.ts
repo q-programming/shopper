@@ -58,9 +58,9 @@ export class ShoppingListsComponent implements OnInit {
     }
 
     shareListOpenDialog(list: ShoppingList) {
-        this.listSrv.openShareListDialog(list).subscribe(email => {
-                if (email) {
-                    this.alertSrv.success("app.shopping.share.sent", {email: email});
+        this.listSrv.openShareListDialog(list).subscribe(reply => {
+                if (reply) {
+                    this.loadUserLists();
                 }
             }
         );

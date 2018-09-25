@@ -165,6 +165,14 @@ img.avatar.large {
     color: #fff;
 }
 
+.full-width {
+    max-width: 100%;
+}
+
+.v-middle {
+    vertical-align: middle;
+}
+
 .fill-remaining-space {
     flex: 1 1 auto;
 }
@@ -206,12 +214,28 @@ img.avatar.large {
     background: #43b05c;
     color: white;
 }
-.underlined{
+
+.underlined {
     border-bottom: 1px solid;
 }
 
+.mat-card {
+    border-radius: 0 !important;
+}
+
 @media (max-width: 768px) {
+    .shopper-modal-normal{
+        max-width: 100% !important;
+    }
+    .shopper-modal{
+        max-width: 100% !important;
+    }
+
     .mat-card {
         margin: 0 5px;
+    }
+
+    .m-plr-5 {
+        padding: 0 5px;
     }
 }

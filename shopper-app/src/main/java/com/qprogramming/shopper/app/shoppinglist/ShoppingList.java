@@ -1,6 +1,8 @@
 package com.qprogramming.shopper.app.shoppinglist;
 
 import com.qprogramming.shopper.app.items.ListItem;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,7 +22,7 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
     private Long id;
 
     @Column
-    private String name;
+    private String name;;
 
     @Column
     private String ownerId;
@@ -31,7 +33,8 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
     @Column
     private boolean archived;
 
-    @ElementCollection
+    @Fetch(FetchMode.JOIN)
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> shared = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

@@ -1,0 +1,29 @@
+<div fxLayout="row" fxLayoutGap="10px" class="mt-2 pb-1">
+    <div fxFlex="20">
+        <img src="assets/images/list_share.svg" height="64" class="ml-2">
+    </div>
+    <div fxFlex="80" class="mr-2">
+        <div [innerHTML]="'app.shopping.share.msg'|translate:{listName: list.name}"></div>
+        <div class="mt-2">
+            <form>
+                <mat-dialog-content class="mat-typography text-center ml-0 mr-0">
+                    <mat-form-field class="mat-form-field-full-width">
+                        <input id="listName" matInput cdkFocusRegionstart
+                               placeholder="{{'app.general.email'|translate}}"
+                               [formControl]="emailControl" required (keydown.enter)="shareList()" type="email">
+                        <mat-error *ngIf="emailControl.hasError('email') && !emailControl.hasError('required')">
+                            {{'app.general.email.error'|translate}}
+                        </mat-error>
+                    </mat-form-field>
+                </mat-dialog-content>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="p-2 pull-right">
+    <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
+    <button mat-raised-button class="success-button" (click)="shareList()"
+            [disabled]="emailControl.invalid">
+        {{'app.shopping.share.action'|translate}}
+    </button>
+</div>

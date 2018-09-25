@@ -85,20 +85,15 @@ export class ListService {
         });
     }
 
-    openShareListDialog(list: ShoppingList): Observable<string> {
+    openShareListDialog(list: ShoppingList): Observable<boolean> {
         this.dialogConfig.data = list;
         return new Observable((observable) => {
             let dialogRef = this.dialog.open(ShareComponent, this.dialogConfig);
-            dialogRef.afterClosed().subscribe(email => {
+            dialogRef.afterClosed().subscribe(done => {
                 this.dialogConfig.data = undefined;
-                if (email) {
-                    observable.next("SENDING");
-                    this.api.postObject<ShoppingList>(environment.list_url + `/${list.id}/share`, email).subscribe(shared => {
-                        if (shared) {
-                            observable.next(email);
-                            observable.complete()
-                        }
-                    });
+                if (done) {
+                    observable.next(done);
+                    observable.complete()
                 }
             }, error => {
                 this.dialogConfig.data = undefined;

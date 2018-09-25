@@ -133,12 +133,7 @@ export class ListComponent implements OnInit {
     shareListOpenDialog(list: ShoppingList) {
         this.listSrv.openShareListDialog(list).subscribe(reply => {
                 if (reply) {
-                    if (reply === 'SENDING') {
-                        this.alertSrv.info("app.shopping.share.email.inqueue");
-                    } else {
-                        this.alertSrv.success("app.shopping.share.sent", {name: list.name, email: reply});
-                        this.loadItems();
-                    }
+                    this.loadItems();
                 }
             }
         );
