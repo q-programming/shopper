@@ -26,16 +26,18 @@ export class NewShareComponent implements OnInit {
 
     shareList() {
         if (this.emailControl.valid) {
+            let email = this.emailControl.value;
             this.alertSrv.info('app.shopping.share.email.inqueue');
-            this.api.postObject<ShoppingList>(environment.list_url + `/${this.list.id}/share`, this.emailControl.value)
+            this.api.postObject<ShoppingList>(environment.list_url + `/${this.list.id}/share`, email)
                 .subscribe(shared => {
                     if (shared) {
                         this.alertSrv.success('app.shopping.share.sent', {
                             name: this.list.name,
-                            email: this.emailControl.value
+                            email: email
                         });
                     }
                 });
+            this.emailControl.setValue(undefined);
             this.done.emit(true);
         }
     }

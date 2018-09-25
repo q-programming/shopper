@@ -13,20 +13,54 @@
                 arrow_back_ios
             </mat-icon>
         </button>
-        <span (click)="edit = true" class="clickable" matTooltip="{{'app.shopping.clicktoedit'| translate}}">{{list.name}}</span>
-        <span class="pull-right" fxShow.xs="false">{{list.done}}/{{list.items.length}}</span>
+        <span (click)="startEdit()" class="clickable"
+              matTooltip="{{list.archived?'':('app.shopping.clicktoedit'| translate)}}">{{list.name}}</span>
+        <!--MENU-->
+        <button mat-icon-button class="pull-right" [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <!--NORMAL-->
+            <ng-container *ngIf="!list.archived">
+                <button mat-menu-item (click)="startEdit()">
+                    <mat-icon>edit</mat-icon>
+                    <span>{{'app.general.edit'|translate}}</span>
+                </button>
+                <button mat-menu-item (click)="shareListOpenDialog(list)">
+                    <mat-icon>share</mat-icon>
+                    <span>{{'app.shopping.share'|translate}}</span>
+                </button>
+                <button mat-menu-item (click)="cleanup()" [disabled]="done.length==0">
+                    <mat-icon>delete_forever</mat-icon>
+                    <span>{{'app.shopping.clear'|translate}}</span>
+                </button>
+                <button mat-menu-item (click)="archiveToggle(list)">
+                    <mat-icon>archive</mat-icon>
+                    <span>{{'app.shopping.archive'|translate}}</span>
+                </button>
+            </ng-container>
+            <!--ARCHIVED-->
+            <ng-container *ngIf="list.archived">
+                <button mat-menu-item (click)="archiveToggle(list,list.archived)">
+                    <mat-icon>unarchive</mat-icon>
+                    <span>{{'app.shopping.unarchive'|translate}}</span>
+                </button>
+            </ng-container>
+        </mat-menu>
         <!--SHARE-->
-        <button mat-icon-button class="pull-right mr-2" (click)="shareListOpenDialog(list)"
+        <button *ngIf="!list.archived"
+                mat-icon-button class="pull-right" (click)="shareListOpenDialog(list)"
                 matTooltip="{{shareTooltip}}">
             <mat-icon matBadge="{{sharedCount}}" matBadgePosition="below before"
                       [matBadgeHidden]="sharedCount==0">person
             </mat-icon>
         </button>
+        <span class="pull-right mr-2" fxShow.xs="false">{{done.length}}/{{list.items.length}}</span>
     </h2>
     <!--ITEMS DONE %-->
     <div class="m-plr-5">
         <mat-progress-bar mode="determinate"
-                          value="{{list.items.length>0?(list.done/list.items.length)*100:0}}"></mat-progress-bar>
+                          value="{{list.items.length>0?(done.length/list.items.length)*100:0}}"></mat-progress-bar>
     </div>
 </div>
 <!--QUICK ADD AND REGULAR ADD-->
@@ -49,11 +83,11 @@
         </mat-card-title-group>
         <span class="fill-remaining-space"></span>
         <!--CARD MENU-->
-        <span class="card-menu">
+        <span class="card-menu" *ngIf="!list.archived">
                     <button mat-icon-button (click)="openEditItemDialog(item)">
                         <mat-icon class="card-menu">edit</mat-icon>
                     </button>
-                    <button mat-icon-button (click)="confirmDeletion(item)">
+                    <button mat-icon-button (click)="deleteItem(item)">
                         <mat-icon class="card-menu">delete</mat-icon>
                 </button>
         </span>

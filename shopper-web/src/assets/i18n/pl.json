@@ -57,6 +57,8 @@
   "app.shopping.delete.confirm.msg": "Czy jesteś pewień, że chcesz usunąć tą listę? Tej operacji nie da się cofnąć",
   "app.shopping.delete.success": "Usunięto listę",
   "app.shopping.delete.fail": "Wystąpił bład podczas usuwania listy",
+  "app.shopping.clear": "Usuń kupione produkty",
+  "app.shopping.cleanup": "Kupione produkty zostały usunięte z listy",
   "app.item.add": "Dodaj nowy produkt",
   "app.item.add.quick": "Szybko dodaj nowy produkt",
   "app.item.add.quick.confirm": "Kliknij tutaj aby dodać produkt (lub następnym razem naciśnij klawisz Enter)",

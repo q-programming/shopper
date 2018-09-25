@@ -11,6 +11,13 @@ export class AvatarService {
     constructor(private logger: NGXLogger, private api: ApiService) {
     }
 
+    /**
+     * Returns Observable with base64 string data of avatar.
+     * Firstly local storage is checked if image was not already wrote there.
+     * If nothing is found in local storage, read avatar from database and persist it on local storage
+     *
+     * @param id user id for which avatar should be read
+     */
     getUserAvatarById(id: string): Observable<string> {
         return new Observable((observable) => {
             let image = localStorage.getItem("avatar:" + id);
@@ -36,16 +43,25 @@ export class AvatarService {
         });
     }
 
+    /**
+     * Get avatar for account
+     *
+     * @see AvatarService.getUserAvatarById
+     * @param account
+     */
     getUserAvatar(account: Account): Observable<string> {
         return this.getUserAvatarById(account.id);
 
     }
 
-    //TODO Depreciated
-    getUserAvatar_old(account: Account) {
-        account.avatar = this.getUserAvatarById(account.id);
-    }
-
+    /**
+     * Updates avatar data for given account.
+     * Data for that account is removed from localstorage. But it only removed currently logged user ( other users will still see old avatar,
+     * until their local storage is cleared ( for ex. logout )
+     *
+     * @param base64Image new avatar base 64 data
+     * @param account account for which avatar is updated
+     */
     updateAvatar(base64Image: String, account: Account) {
         return this.api.post(`${environment.account_url}${environment.avatar_upload_url}`, base64Image).subscribe(() => {
             localStorage.removeItem("avatar:" + account.id);

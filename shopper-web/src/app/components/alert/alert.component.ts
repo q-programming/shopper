@@ -47,6 +47,6 @@ export class AlertComponent implements OnInit {
 
 
     dismiss(message: Message) {
-        this.alertService.dissmis(message);
+        this.alertService.dismiss(message);
     }
 }

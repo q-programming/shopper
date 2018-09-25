@@ -4,6 +4,7 @@ import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.ShoppingAccessException;
 import com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException;
 import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.items.ListItemService;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.support.Utils;
@@ -35,10 +36,12 @@ public class ShoppingListRestController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ShoppingListRestController.class);
     private ShoppingListService _listService;
+    private ListItemService _listItemService;
 
     @Autowired
-    public ShoppingListRestController(ShoppingListService listService) {
+    public ShoppingListRestController(ShoppingListService listService, ListItemService listItemService) {
         this._listService = listService;
+        _listItemService = listItemService;
     }
 
     /**
@@ -231,6 +234,34 @@ public class ShoppingListRestController {
             }
             ShoppingList list = _listService.findByID(id);
             list.setName(name);
+            return ResponseEntity.ok(_listService.save(list));
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+
+    /**
+     * Cleans up shopping list by deleting all items that are marked as done
+     *
+     * @param id shopping lis id
+     * @return shopping list if operation was success
+     */
+    @RequestMapping(value = "/{id}/cleanup", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<ShoppingList> cleanup(@PathVariable String id) {
+        try {
+            ShoppingList list = _listService.findByID(id);
+            Set<ListItem> toPurge = list.getItems().stream().filter(ListItem::isDone).collect(Collectors.toSet());
+            toPurge.forEach(item -> {
+                list.getItems().remove(item);
+                _listItemService.deleteListItem(item);
+            });
+            _listService.sortItems(list);
             return ResponseEntity.ok(_listService.save(list));
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());

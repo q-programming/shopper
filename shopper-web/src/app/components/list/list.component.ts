@@ -62,7 +62,6 @@ export class ListComponent implements OnInit {
             this.itemSrv.toggleItem(this.listID, item).subscribe((result) => {
                 if (result) {
                     _.find(this.list.items, i => i.id === result.id).done = result.done;
-                    result.done ? this.list.done++ : this.list.done--;
                     this.sortDoneNotDone();
                 }
             })
@@ -111,7 +110,7 @@ export class ListComponent implements OnInit {
         })
     }
 
-    confirmDeletion(item: ListItem) {
+    deleteItem(item: ListItem) {
         _.remove(this.items, (i) => {
             return i.id === item.id
         });
@@ -129,6 +128,7 @@ export class ListComponent implements OnInit {
             }
         });
     }
+
 
     shareListOpenDialog(list: ShoppingList) {
         this.listSrv.openShareListDialog(list).subscribe(reply => {
@@ -175,6 +175,12 @@ export class ListComponent implements OnInit {
         this.items = _.difference(this.list.items, this.done)
     }
 
+    startEdit() {
+        if (!this.list.archived) {
+            this.edit = true;
+        }
+    }
+
     editList() {
         if (this.listName !== this.list.name) {
             this.listSrv.editName(this.list, this.listName).subscribe(list => {
@@ -185,6 +191,39 @@ export class ListComponent implements OnInit {
             })
         }
         this.edit = false;
+    }
+
+    archiveToggle(list: ShoppingList, archived?: boolean) {
+        this.listSrv.archive(list).subscribe(res => {
+            if (res && res.archived != archived) {
+                let msgKey = archived ? 'app.shopping.unarchive.success' : 'app.shopping.archive.success';
+                this.alertSrv.success(msgKey);
+                this.loadItems();
+            } else {
+                let msgKey = archived ? 'app.shopping.unarchive.fail' : 'app.shopping.archive.fail';
+                this.alertSrv.error(msgKey);
+            }
+        })
+    }
+
+
+    cleanup() {
+        this.done = [];
+        this.list.done = 0;
+        this.list.items = this.items;
+        this.alertSrv.undoable("app.shopping.cleanup").subscribe(undo => {
+            if (undo !== undefined) {
+                if (!undo) {
+                    this.listSrv.cleanup(this.listID).subscribe((list) => {
+                        if (list) {
+                            this.assignListWithSorting(list);
+                        }
+                    });
+                } else {
+                    this.loadItems();
+                }
+            }
+        });
     }
 
 }
