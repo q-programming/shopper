@@ -3,6 +3,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {CategoryPreset} from "../../../model/CategoryPreset";
 import {ShoppingList} from "../../../model/ShoppingList";
+import * as _ from 'lodash';
 
 @Component({
     templateUrl: './shopping-list-dialog.component.html'
@@ -21,6 +22,9 @@ export class ShoppingListDialogComponent implements OnInit {
         this.presets = (data.presets as CategoryPreset[]);
         this.presets.unshift(defaultPreset);
         this.list = data.list;
+        if (this.list && this.list.preset && !_.find(this.presets, (p) => p.id == this.list.preset.id)) {
+            this.presets.push(this.list.preset);
+        }
         this.selectedPreset = (this.list && this.list.preset) ? this.list.preset : defaultPreset;
         this.update = data.update;
     }

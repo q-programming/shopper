@@ -28,7 +28,7 @@
             <form fxFlex="60">
                 <mat-dialog-content class="mat-typography text-center ml-0 mr-0">
                     <mat-form-field class="mat-form-field-full-width">
-                        <input id="orderingName" matInput cdkFocusRegionstart
+                        <input #orderingName matInput cdkFocusRegionstart
                                placeholder="{{'app.general.name'|translate}}"
                                [formControl]="categoryPresetControl" required>
                     </mat-form-field>

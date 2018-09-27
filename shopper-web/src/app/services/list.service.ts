@@ -192,7 +192,7 @@ export class ListService {
      * @param listName new list name
      */
     updateList(list: ShoppingList): Observable<ShoppingList> {
-        return this.api.post(environment.list_url + `/${list.id}/edit`, list);
+        return this.api.post(environment.list_url + `/edit`, list);
     }
 
     /**

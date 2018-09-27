@@ -2,7 +2,8 @@
     <mat-tab-group mat-stretch-tabs>
         <mat-tab>
             <ng-template mat-tab-label>
-                <mat-icon>person</mat-icon>&nbsp;{{'app.settings.account'|translate}}
+                <mat-icon>person</mat-icon>
+                <span fxShow.xs="false" class="ml-1">{{'app.settings.account'|translate}}</span>
             </ng-template>
             <ng-template matTabContent>
                 <settings-account></settings-account>
@@ -10,7 +11,8 @@
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
-                <mat-icon>local_offer</mat-icon>&nbsp;{{'app.settings.products'|translate}}
+                <mat-icon>local_offer</mat-icon>
+                <span fxShow.xs="false" class="ml-1">{{'app.settings.products'|translate}}</span>
             </ng-template>
             <ng-template matTabContent>
                 <settings-products></settings-products>
@@ -18,7 +20,8 @@
         </mat-tab>
         <mat-tab *ngIf="admin">
             <ng-template mat-tab-label>
-                <mat-icon>message</mat-icon>&nbsp;{{'app.settings.notifications'|translate}}
+                <mat-icon>message</mat-icon>
+                <span fxShow.xs="false" class="ml-1">{{'app.settings.notifications'|translate}}</span>
             </ng-template>
             <ng-template matTabContent>
                 <settings-notifications></settings-notifications>
@@ -26,7 +29,8 @@
         </mat-tab>
         <mat-tab *ngIf="admin">
             <ng-template mat-tab-label>
-                <mat-icon>email</mat-icon>&nbsp;{{'app.settings.email'|translate}}
+                <mat-icon>email</mat-icon>
+                <span fxShow.xs="false" class="ml-1">{{'app.settings.email'|translate}}</span>
             </ng-template>
             <ng-template matTabContent>
                 <settings-email></settings-email>
@@ -34,7 +38,8 @@
         </mat-tab>
         <mat-tab *ngIf="admin">
             <ng-template mat-tab-label>
-                <mat-icon>settings</mat-icon>&nbsp;{{'app.settings.app'|translate}}
+                <mat-icon>settings</mat-icon>
+                <span fxShow.xs="false" class="ml-1">{{'app.settings.app'|translate}}</span>
             </ng-template>
             <ng-template matTabContent>
                 <settings-app></settings-app>

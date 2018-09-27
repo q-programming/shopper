@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {AlertService} from "../../../services/alert.service";
 import {ApiService} from "../../../services/api.service";
 import {Category} from "../../../model/Category";
@@ -12,7 +12,7 @@ import {ListService} from "../../../services/list.service";
     styleUrls: ["./products-settings.component.css"]
 })
 export class ProductsSettingsComponent implements OnInit {
-
+    @ViewChild('orderingName') orderingNameInput;
     categoryPresetControl: FormControl;
     presets: CategoryPreset[];
     preset: CategoryPreset;
@@ -46,6 +46,7 @@ export class ProductsSettingsComponent implements OnInit {
         this.preset = new CategoryPreset();
         this.currentOrdering = this.defaultOrdering;
         this.categoryPresetControl.setValue(this.preset.name);
+        this.orderingNameInput.nativeElement.focus();
     }
 
     saveCategoryPreset() {
@@ -54,7 +55,7 @@ export class ProductsSettingsComponent implements OnInit {
             this.preset.categoriesOrder = this.currentOrdering.join(",");
             this.listSrv.saveCategoryPreset(this.preset).subscribe(result => {
                 if (result) {
-                    this.alertSrv.success('app.settings.products.category.success', {name: this.preset.name})
+                    this.alertSrv.success('app.settings.products.category.success', {name: this.preset.name});
                     this.loadUserPresets();
                 }
             })
