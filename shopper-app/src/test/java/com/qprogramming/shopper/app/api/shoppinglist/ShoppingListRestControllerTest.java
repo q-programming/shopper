@@ -168,9 +168,12 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
 
     @Test
     public void addNewListTest() throws Exception {
+        ShoppingList newList = new ShoppingList();
+        newList.setName(NAME);
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
-        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + "add").contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(NAME))
+        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + "add")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(newList)))
                 .andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
@@ -378,32 +381,40 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
         list.setOwnerId(TestUtil.ADMIN_RANDOM_ID);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         String new_name = "NEW NAME";
-        this.mvc.perform(post(API_LIST_URL + 1 + EDIT).content(new_name))
+        this.mvc.perform(post(API_LIST_URL + EDIT)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(list)))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     public void editListTestNotFound() throws Exception {
-        String new_name = "NEW NAME";
-        this.mvc.perform(post(API_LIST_URL + 1 + EDIT).content(new_name))
+        ShoppingList list = createList(NAME, 1L);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.empty());
+        this.mvc.perform(post(API_LIST_URL + EDIT)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(list)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void editListEmptyName() throws Exception {
         String new_name = "";
-        this.mvc.perform(post(API_LIST_URL + 1 + EDIT).content(new_name))
+        this.mvc.perform(post(API_LIST_URL + EDIT).content(new_name))
                 .andExpect(status().isBadRequest());
     }
 
 
     @Test
     public void editListTest() throws Exception {
+        String new_name = "NEW NAME";
         ShoppingList list = createList(NAME, 1L);
+        ShoppingList updatedlist = createList(new_name, 1L);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
-        String new_name = "NEW NAME";
-        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + 1 + EDIT).content(new_name))
+        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + EDIT)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(updatedlist)))
                 .andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);

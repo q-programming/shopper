@@ -1,7 +1,6 @@
 package com.qprogramming.shopper.app.api;
 
 import com.qprogramming.shopper.app.TestUtil;
-import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.login.token.TokenService;
 import org.junit.Before;
 import org.junit.Test;

@@ -83,6 +83,10 @@ public class ConfigRestController {
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/settings/email", method = RequestMethod.POST)
     public ResponseEntity changeEmailSettings(@RequestBody Settings appSettings) {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         Email settings = appSettings.getEmail();
         try {
             mailService.testConnection(settings.getHost(), settings.getPort(), settings.getUsername(), settings.getPassword());
@@ -103,6 +107,10 @@ public class ConfigRestController {
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/settings/app", method = RequestMethod.POST)
     public ResponseEntity changeAppSettings(@RequestBody Settings settings) {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         propertyService.update(APP_DEFAULT_LANG, settings.getLanguage());
         propertyService.update(APP_URL, settings.getAppUrl());
         return new ResponseEntity<>(HttpStatus.OK);
@@ -111,14 +119,14 @@ public class ConfigRestController {
 
     @RolesAllowed("ROLE_USER")
     @RequestMapping(value = "/settings/preset-update", method = RequestMethod.POST)
-    public ResponseEntity<CategoryPreset> updateCategorySorting(@RequestBody CategoryPreset order) {
+    public ResponseEntity<CategoryPreset> updateCategoryPreset(@RequestBody CategoryPreset order) {
         order.setOwner(Utils.getCurrentAccountId());
         return ResponseEntity.ok(categoryPresetRepository.save(order));
     }
 
     @RolesAllowed("ROLE_USER")
     @RequestMapping(value = "/settings/presets", method = RequestMethod.GET)
-    public ResponseEntity<List<CategoryPreset>> getUserCategorySorting() {
+    public ResponseEntity<List<CategoryPreset>> getCategoryPresets() {
         return ResponseEntity.ok(categoryPresetRepository.findAllByOwner(Utils.getCurrentAccountId()));
     }
 }
