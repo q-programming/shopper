@@ -224,10 +224,11 @@ img.avatar.large {
 }
 
 @media (max-width: 768px) {
-    .shopper-modal-normal{
+    .shopper-modal-normal {
         max-width: 100% !important;
     }
-    .shopper-modal{
+
+    .shopper-modal {
         max-width: 100% !important;
     }
 
@@ -238,4 +239,12 @@ img.avatar.large {
     .m-plr-5 {
         padding: 0 5px;
     }
+}
+
+.mat-progress-spinner circle, .mat-spinner circle {
+    stroke: #ffffff;
+}
+
+.full-page {
+    height: 90vh;
 }

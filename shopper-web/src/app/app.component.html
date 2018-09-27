@@ -1,5 +1,8 @@
-<ng-http-loader [entryComponent]="loader" [debounceDelay]="100" [minDuration]="300"
-                [filteredUrlPatterns]="['^(?!find$).*']"></ng-http-loader>
+<ng-progress [color]="'white'"
+             [trickleSpeed]="500"
+             [thick]="true"
+             [ease]="'easeInSine'">
+</ng-progress>
 <alert></alert>
 <!--TOOLBAR-->
 <mat-toolbar color="primary" class="fixed-top">

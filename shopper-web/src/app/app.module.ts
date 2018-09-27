@@ -24,9 +24,7 @@ import {AppMaterialModules} from "./material.module";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {LayoutModule} from '@angular/cdk/layout';
 import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule} from '@angular/material';
-import {NgHttpLoaderModule} from "ng-http-loader";
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
-import {LoaderComponent} from './components/loader/loader.component';
 import {ListService} from "./services/list.service";
 import {ListComponent} from './components/list/list.component';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -50,6 +48,7 @@ import {CookieService} from "ngx-cookie-service";
 import {SharedWithComponent} from './components/dialogs/share/shared-with/shared-with.component';
 import {NewShareComponent} from './components/dialogs/share/new-share/new-share.component';
 import {DndModule} from "ng2-dnd";
+import {NgProgressModule} from "ngx-progressbar";
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -64,7 +63,6 @@ export function initUserFactory(authService: AuthenticationService) {
         AlertComponent,
         SettingsComponent,
         AvatarUploadComponent,
-        LoaderComponent,
         ShoppingListsComponent,
         ListComponent,
         ShoppingListDialogComponent,
@@ -87,7 +85,6 @@ export function initUserFactory(authService: AuthenticationService) {
         ShoppingListDialogComponent,
         ConfirmDialogComponent,
         ItemDialogComponent,
-        LoaderComponent,
         ShareComponent
     ],
     imports: [
@@ -98,7 +95,7 @@ export function initUserFactory(authService: AuthenticationService) {
         HttpClientModule,
         routing,
         AppMaterialModules,
-        NgHttpLoaderModule,
+        NgProgressModule,
         FlexLayoutModule,
         DndModule.forRoot(),
         LoggerModule.forRoot({

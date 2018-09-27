@@ -1,3 +1,6 @@
+<div *ngIf="!list" fxLayout="column" fxLayoutAlign="center center" class="full-page">
+    <mat-spinner [strokeWidth]="15"></mat-spinner>
+</div>
 <div *ngIf="list" class="text-white">
     <!--LIST NAME EDIT-->
     <h2 *ngIf="edit">
@@ -76,8 +79,8 @@
     </h2>
     <!--ITEMS DONE %-->
     <div class="m-plr-5">
-        <mat-progress-bar mode="determinate"
-                          value="{{list.items.length>0?(done.length/list.items.length)*100:0}}"></mat-progress-bar>
+        <mat-progress-bar mode="determinate" matTooltip="{{percentage}} %" matTooltipPosition="above"
+                          value="{{percentage}}"></mat-progress-bar>
     </div>
 </div>
 <!--QUICK ADD AND REGULAR ADD-->

@@ -6,6 +6,7 @@ import 'rxjs/add/observable/throw';
 import {serialize} from "../utils/serialize";
 import {environment} from "../../environments/environment";
 import {AlertService} from "./alert.service";
+import {NgProgress} from "ngx-progressbar";
 
 export enum RequestMethod {
     Get = 'GET',
@@ -25,7 +26,7 @@ export class ApiService {
         'Content-Type': 'application/json'
     });
 
-    constructor(private http: HttpClient, private alertSrv: AlertService) {
+    constructor(private http: HttpClient, private alertSrv: AlertService, public ngProgress: NgProgress) {
     }
 
     get(path: string, args?: any): Observable<any> {
@@ -83,6 +84,7 @@ export class ApiService {
     }
 
     private request(path: string, body: any, method = RequestMethod.Post, custemHeaders?: HttpHeaders): Observable<any> {
+        this.ngProgress.start();
         path = environment.context + path;
         const req = new HttpRequest(method, path, body, {
             headers: custemHeaders || this.headers,
@@ -91,7 +93,10 @@ export class ApiService {
 
         return this.http.request(req)
             .filter(response => response instanceof HttpResponse)
-            .map((response: HttpResponse<any>) => response.body)
+            .map((response: HttpResponse<any>) => {
+                this.ngProgress.done();
+                return response.body
+            })
             .catch(error => this.checkError(error));
     }
 

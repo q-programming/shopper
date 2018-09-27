@@ -141,9 +141,9 @@ export class ListComponent implements OnInit {
 
     openEditListDialog() {
         this.listSrv.openEditListDialog(this.list).subscribe(reply => {
-            if(reply){
-            this.alertSrv.success('app.shopping.update.success');
-            this.loadItems();
+            if (reply) {
+                this.alertSrv.success('app.shopping.update.success');
+                this.loadItems();
             }
         }, error => {
             this.alertSrv.error('app.shopping.update.fail');
@@ -236,6 +236,11 @@ export class ListComponent implements OnInit {
                 }
             }
         });
+    }
+
+    get percentage() {
+        let perc = this.list.items.length > 0 ? (this.done.length / this.list.items.length) * 100 : 0;
+        return parseFloat(`${perc}`).toFixed(2);
     }
 
 }
