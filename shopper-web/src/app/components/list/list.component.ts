@@ -139,6 +139,17 @@ export class ListComponent implements OnInit {
         );
     }
 
+    openEditListDialog() {
+        this.listSrv.openEditListDialog(this.list).subscribe(reply => {
+            if(reply){
+            this.alertSrv.success('app.shopping.update.success');
+            this.loadItems();
+            }
+        }, error => {
+            this.alertSrv.error('app.shopping.update.fail');
+        })
+    }
+
 
     private loadCategoriesWithLocalName() {
         Object.values(Category).map(value => {
@@ -181,9 +192,10 @@ export class ListComponent implements OnInit {
         }
     }
 
-    editList() {
+    editListName() {
         if (this.listName !== this.list.name) {
-            this.listSrv.editName(this.list, this.listName).subscribe(list => {
+            this.list.name = this.listName;
+            this.listSrv.updateList(this.list).subscribe(list => {
                 this.alertSrv.success('app.shopping.name.success');
                 this.list.name = list.name;
             }, error => {

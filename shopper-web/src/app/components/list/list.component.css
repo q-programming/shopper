@@ -60,3 +60,7 @@
 .mat-input-element {
     caret-color: white !important;
 }
+.category-preset{
+    font-size: initial;
+    font-weight: normal;
+}

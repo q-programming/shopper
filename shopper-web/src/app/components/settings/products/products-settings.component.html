@@ -1,3 +1,55 @@
-<p>
-  products works!
-</p>
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+        <h3 class="underlined">
+            <mat-icon>sort</mat-icon>
+            {{'app.settings.products.category.sort'|translate}}
+        </h3>
+    </div>
+</div>
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center">
+        <mat-form-field class="mat-form-field-full-width">
+            <mat-select placeholder="{{'app.settings.products.category.preset'|translate}}" [(value)]="preset"
+                        (selectionChange)="loadCategoryOrder()">
+                <mat-option *ngFor="let userPreset of presets" [value]="userPreset">
+                    {{userPreset.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <button mat-icon-button (click)="createNewCategoryPreset()"
+                matTooltip="{{'app.settings.products.category.new'|translate}}">
+            <mat-icon>add_circle_outline</mat-icon>
+        </button>
+    </div>
+</div>
+<div fxLayout="row" fxLayoutAlign="center" *ngIf="preset" class="mt-3">
+    <div fxFlex="60" fxFlex.xs="100" class="preset-container">
+        <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center center">
+            <form fxFlex="60">
+                <mat-dialog-content class="mat-typography text-center ml-0 mr-0">
+                    <mat-form-field class="mat-form-field-full-width">
+                        <input id="orderingName" matInput cdkFocusRegionstart
+                               placeholder="{{'app.general.name'|translate}}"
+                               [formControl]="categoryPresetControl" required>
+                    </mat-form-field>
+                </mat-dialog-content>
+            </form>
+            <div fxFlex="20">
+                <button mat-raised-button class="success-button pull-right" (click)="saveCategoryPreset()"
+                        [disabled]="categoryPresetControl.invalid">
+                    {{'app.general.save'|translate}}
+                </button>
+            </div>
+        </div>
+        <div class="text-center mt-2" [innerHTML]="'app.settings.products.category.sort.hint' | translate">
+        </div>
+        <div dnd-sortable-container [sortableData]="currentOrdering" class="mt-2">
+            <mat-card *ngFor="let category of currentOrdering;let i = index" dnd-sortable [sortableIndex]="i"
+                      class="mat-list-compact">
+                <mat-icon matListIcon>more_vert</mat-icon>
+                <img [src]='"assets/images/categories/"+ category + ".png"' class="category mr-1">
+                {{category | translate}}
+            </mat-card>
+        </div>
+    </div>
+</div>

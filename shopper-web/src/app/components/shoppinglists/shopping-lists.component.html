@@ -47,7 +47,7 @@
             <mat-menu #menu="matMenu">
                 <!--NORMAL LIST-->
                 <ng-container *ngIf="!archived">
-                    <button mat-menu-item [routerLink]="['list', list.id]" [queryParams]="{edit:true}">
+                    <button mat-menu-item (click)="editListOpenDialog(list)">
                         <mat-icon>edit</mat-icon>
                         <span>{{'app.general.edit'|translate}}</span>
                     </button>

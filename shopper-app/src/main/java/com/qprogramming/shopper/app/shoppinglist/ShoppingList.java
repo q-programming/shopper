@@ -1,6 +1,7 @@
 package com.qprogramming.shopper.app.shoppinglist;
 
 import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -22,7 +23,7 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
     private Long id;
 
     @Column
-    private String name;;
+    private String name;
 
     @Column
     private String ownerId;
@@ -42,6 +43,9 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
 
     @Column
     private Date lastVisited;
+
+    @ManyToOne
+    private CategoryPreset preset;
 
     private Long done;
 
@@ -118,6 +122,14 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
 
     public void setLastVisited(Date lastVisited) {
         this.lastVisited = lastVisited;
+    }
+
+    public CategoryPreset getPreset() {
+        return preset;
+    }
+
+    public void setPreset(CategoryPreset preset) {
+        this.preset = preset;
     }
 
     @Override

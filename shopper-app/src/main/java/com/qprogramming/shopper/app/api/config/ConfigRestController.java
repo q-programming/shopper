@@ -4,6 +4,8 @@ import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.settings.Settings;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
 import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 import static com.qprogramming.shopper.app.settings.Settings.*;
 
@@ -32,11 +35,13 @@ public class ConfigRestController {
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     private MailService mailService;
     private PropertyService propertyService;
+    private CategoryPresetRepository categoryPresetRepository;
 
     @Autowired
-    public ConfigRestController(MailService mailService, PropertyService propertyService) {
+    public ConfigRestController(MailService mailService, PropertyService propertyService, CategoryPresetRepository categoryPresetRepository) {
         this.mailService = mailService;
         this.propertyService = propertyService;
+        this.categoryPresetRepository = categoryPresetRepository;
     }
 
     @RolesAllowed("ROLE_ADMIN")
@@ -101,5 +106,19 @@ public class ConfigRestController {
         propertyService.update(APP_DEFAULT_LANG, settings.getLanguage());
         propertyService.update(APP_URL, settings.getAppUrl());
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @RolesAllowed("ROLE_USER")
+    @RequestMapping(value = "/settings/preset-update", method = RequestMethod.POST)
+    public ResponseEntity<CategoryPreset> updateCategorySorting(@RequestBody CategoryPreset order) {
+        order.setOwner(Utils.getCurrentAccountId());
+        return ResponseEntity.ok(categoryPresetRepository.save(order));
+    }
+
+    @RolesAllowed("ROLE_USER")
+    @RequestMapping(value = "/settings/presets", method = RequestMethod.GET)
+    public ResponseEntity<List<CategoryPreset>> getUserCategorySorting() {
+        return ResponseEntity.ok(categoryPresetRepository.findAllByOwner(Utils.getCurrentAccountId()));
     }
 }

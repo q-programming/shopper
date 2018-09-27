@@ -8,6 +8,14 @@
                 <settings-account></settings-account>
             </ng-template>
         </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon>local_offer</mat-icon>&nbsp;{{'app.settings.products'|translate}}
+            </ng-template>
+            <ng-template matTabContent>
+                <settings-products></settings-products>
+            </ng-template>
+        </mat-tab>
         <mat-tab *ngIf="admin">
             <ng-template mat-tab-label>
                 <mat-icon>message</mat-icon>&nbsp;{{'app.settings.notifications'|translate}}
@@ -30,14 +38,6 @@
             </ng-template>
             <ng-template matTabContent>
                 <settings-app></settings-app>
-            </ng-template>
-        </mat-tab>
-        <mat-tab>
-            <ng-template mat-tab-label>
-                <mat-icon>local_offer</mat-icon>&nbsp;{{'app.settings.products'|translate}}
-            </ng-template>
-            <ng-template matTabContent>
-                <settings-products></settings-products>
             </ng-template>
         </mat-tab>
     </mat-tab-group>

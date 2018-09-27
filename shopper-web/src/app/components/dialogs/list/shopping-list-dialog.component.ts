@@ -1,6 +1,8 @@
-import {Component, OnInit} from '@angular/core';
-import {MatDialogRef} from '@angular/material';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {Component, Inject, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {CategoryPreset} from "../../../model/CategoryPreset";
+import {ShoppingList} from "../../../model/ShoppingList";
 
 @Component({
     templateUrl: './shopping-list-dialog.component.html'
@@ -8,20 +10,38 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 export class ShoppingListDialogComponent implements OnInit {
 
     form: FormGroup;
+    presets: CategoryPreset[];
+    selectedPreset: CategoryPreset;
+    list: ShoppingList;
+    update: boolean;
 
     constructor(private dialogRef: MatDialogRef<ShoppingListDialogComponent>,
-                private formBuilder: FormBuilder) {
+                @Inject(MAT_DIALOG_DATA) public data: any) {
+        let defaultPreset = new CategoryPreset();
+        this.presets = (data.presets as CategoryPreset[]);
+        this.presets.unshift(defaultPreset);
+        this.list = data.list;
+        this.selectedPreset = (this.list && this.list.preset) ? this.list.preset : defaultPreset;
+        this.update = data.update;
     }
 
-    createList() {
+    commitList() {
         if (this.form.valid) {
-            this.dialogRef.close(this.form.value.listName);
+            this.dialogRef.close({
+                listName: this.form.value.listName,
+                preset: this.form.value.preset
+            });
         }
     }
 
     ngOnInit() {
-        this.form = this.formBuilder.group({
-            listName: ['', Validators.required]
+        this.form = new FormGroup({
+            listName: new FormControl(this.list ? this.list.name : '', Validators.required),
+            preset: new FormControl(this.selectedPreset, Validators.required)
         })
+    }
+
+    comparePresets(o1: CategoryPreset, o2: CategoryPreset) {
+        return o1.id == o2.id
     }
 }

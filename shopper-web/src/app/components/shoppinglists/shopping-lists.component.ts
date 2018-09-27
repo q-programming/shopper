@@ -57,6 +57,15 @@ export class ShoppingListsComponent implements OnInit {
         );
     }
 
+    editListOpenDialog(list: ShoppingList) {
+        this.listSrv.openEditListDialog(list).subscribe(newList => {
+                if (newList) {
+                    this.alertSrv.success("app.shopping.update.success");
+                }
+            }
+        );
+    }
+
     shareListOpenDialog(list: ShoppingList) {
         this.listSrv.openShareListDialog(list).subscribe(reply => {
                 if (reply) {

@@ -1,6 +1,7 @@
 package com.qprogramming.shopper.app.api.shoppinglist;
 
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.exceptions.PresetNotFoundException;
 import com.qprogramming.shopper.app.exceptions.ShoppingAccessException;
 import com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException;
 import com.qprogramming.shopper.app.items.ListItem;
@@ -24,6 +25,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static com.qprogramming.shopper.app.exceptions.AccountNotFoundException.ACCOUNT_WITH_ID_WAS_NOT_FOUND;
+import static com.qprogramming.shopper.app.exceptions.PresetNotFoundException.PRESET_WITH_ID_WAS_NOT_FOUND;
 import static com.qprogramming.shopper.app.exceptions.ShoppingAccessException.ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID;
 import static com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException.SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND;
 
@@ -94,13 +96,18 @@ public class ShoppingListRestController {
     /**
      * Adds new lists with name
      *
-     * @param name name of new list
+     * @param list new list
      * @return adds freshly created lists
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> addNewList(@RequestBody String name) {
-        return ResponseEntity.ok(_listService.addList(name));
+    public ResponseEntity<ShoppingList> addNewList(@RequestBody ShoppingList list) {
+        try {
+            return ResponseEntity.ok(_listService.addList(list));
+        } catch (PresetNotFoundException e) {
+            LOG.error(PRESET_WITH_ID_WAS_NOT_FOUND, list.getPreset().getId());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -112,7 +119,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> getList(@PathVariable String id) {
+    public ResponseEntity<ShoppingList> getList(@PathVariable Long id) {
         try {
             ShoppingList list = _listService.findByID(id);
             _listService.visitList(list);
@@ -137,7 +144,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/{id}/share", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> shareList(@RequestBody String email, @PathVariable String id) {
+    public ResponseEntity<ShoppingList> shareList(@RequestBody String email, @PathVariable Long id) {
         try {
             ShoppingList list = _listService.findByID(id);
             list = _listService.shareList(list, email);
@@ -164,7 +171,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/{id}/stop-sharing", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> stopSharingList(@RequestBody String accountID, @PathVariable String id) {
+    public ResponseEntity<ShoppingList> stopSharingList(@RequestBody String accountID, @PathVariable Long id) {
         try {
             ShoppingList list = _listService.findByID(id);
             list = _listService.stopSharingList(list, accountID);
@@ -186,7 +193,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/{id}/archive", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> archiveList(@PathVariable String id) {
+    public ResponseEntity<ShoppingList> archiveList(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(_listService.toggleArchiveList(id));
         } catch (ShoppingAccessException e) {
@@ -206,7 +213,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/{id}/delete", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<?> deleteList(@PathVariable String id) {
+    public ResponseEntity<?> deleteList(@PathVariable Long id) {
         try {
             _listService.deleteList(id);
             return ResponseEntity.ok().build();
@@ -222,24 +229,26 @@ public class ShoppingListRestController {
     /**
      * Delete list with id . If currently logged in user is not an owner , he/she will just remove himself from shares of that list
      *
-     * @param id shopping lis id
+     * @param updatedList shopping list to be updated
      * @return true if operation was success
      */
-    @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<?> editList(@PathVariable String id, @RequestBody String name) {
+    public ResponseEntity<?> editList(@RequestBody ShoppingList updatedList) {
         try {
-            if (StringUtils.isBlank(name)) {
+            if (StringUtils.isBlank(updatedList.getName())) {
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
-            ShoppingList list = _listService.findByID(id);
-            list.setName(name);
-            return ResponseEntity.ok(_listService.save(list));
+            ShoppingList list = _listService.findByID(updatedList.getId());
+            return ResponseEntity.ok(_listService.update(list, updatedList));
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
-            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, updatedList.getId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (PresetNotFoundException e) {
+            LOG.error(PRESET_WITH_ID_WAS_NOT_FOUND, updatedList.getPreset().getId());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -253,7 +262,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/{id}/cleanup", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> cleanup(@PathVariable String id) {
+    public ResponseEntity<ShoppingList> cleanup(@PathVariable Long id) {
         try {
             ShoppingList list = _listService.findByID(id);
             Set<ListItem> toPurge = list.getItems().stream().filter(ListItem::isDone).collect(Collectors.toSet());

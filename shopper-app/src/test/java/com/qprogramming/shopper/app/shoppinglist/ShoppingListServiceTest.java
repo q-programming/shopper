@@ -6,6 +6,7 @@ import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -32,6 +33,8 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     private PropertyService propertyServiceMock;
     @Mock
     private MailService mailServiceMock;
+    @Mock
+    private CategoryPresetRepository presetRepositoryMock;
 
     private ShoppingListService listService;
 
@@ -40,7 +43,7 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     @Override
     public void setup() {
         super.setup();
-        listService = new ShoppingListService(listRepository, accountServiceMock, propertyServiceMock, mailServiceMock);
+        listService = new ShoppingListService(listRepository, accountServiceMock, propertyServiceMock, mailServiceMock, presetRepositoryMock);
     }
 
     @Test

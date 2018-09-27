@@ -6,10 +6,13 @@ import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.exceptions.PresetNotFoundException;
 import com.qprogramming.shopper.app.exceptions.ShoppingAccessException;
 import com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException;
 import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.items.category.Category;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
 import com.qprogramming.shopper.app.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +21,10 @@ import javax.mail.MessagingException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.qprogramming.shopper.app.settings.Settings.APP_EMAIL_FROM;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Created by Jakub Romaniszyn on 2018-08-08
@@ -31,14 +36,16 @@ public class ShoppingListService {
     private AccountService _accountService;
     private PropertyService _propertyService;
     private MailService _mailService;
+    private CategoryPresetRepository presetRepository;
 
 
     @Autowired
-    public ShoppingListService(ShoppingListRepository listRepository, AccountService accountService, PropertyService propertyService, MailService mailService) {
+    public ShoppingListService(ShoppingListRepository listRepository, AccountService accountService, PropertyService propertyService, MailService mailService, CategoryPresetRepository presetRepository) {
         this._listRepository = listRepository;
         this._accountService = accountService;
         this._propertyService = propertyService;
         this._mailService = mailService;
+        this.presetRepository = presetRepository;
     }
 
     public Set<ShoppingList> findAllByCurrentUser(boolean archived) throws AccountNotFoundException {
@@ -57,14 +64,34 @@ public class ShoppingListService {
         return accounts.stream().anyMatch(Predicate.isEqual(Utils.getCurrentAccountId()));
     }
 
-    public ShoppingList addList(String name) {
+    public ShoppingList addList(ShoppingList list) throws PresetNotFoundException {
         Account currentAccount = Utils.getCurrentAccount();
-        ShoppingList list = new ShoppingList();
-        list.setName(name);
         list.setOwnerId(currentAccount.getId());
         list.setOwnerName(currentAccount.getName());
         list.setLastVisited(new Date());
+        getPreset(list);
         return this.save(list);
+    }
+
+    public ShoppingList update(ShoppingList original, ShoppingList updatedList) throws PresetNotFoundException {
+        original.setName(updatedList.getName());
+        original.setPreset(updatedList.getPreset());
+        getPreset(original);
+        return this.save(original);
+    }
+
+    private void getPreset(ShoppingList list) throws PresetNotFoundException {
+        if (list.getPreset() != null) {
+            if (list.getPreset().getId() == null) {
+                list.setPreset(null);
+            } else {
+                Optional<CategoryPreset> preset = presetRepository.findById(list.getPreset().getId());
+                if (!preset.isPresent()) {
+                    throw new PresetNotFoundException();
+                }
+                list.setPreset(preset.get());
+            }
+        }
     }
 
     /**
@@ -74,8 +101,8 @@ public class ShoppingListService {
      * @return Shopping list
      * @throws ShoppingAccessException if currently logged in user don't have access to list
      */
-    public ShoppingList findByID(String id) throws ShoppingAccessException, ShoppingNotFoundException {
-        Optional<ShoppingList> listOptional = _listRepository.findById(Long.valueOf(id));
+    public ShoppingList findByID(Long id) throws ShoppingAccessException, ShoppingNotFoundException {
+        Optional<ShoppingList> listOptional = _listRepository.findById(id);
         if (listOptional.isPresent()) {
             ShoppingList shoppingList = listOptional.get();
             if (!canView(shoppingList)) {
@@ -112,7 +139,7 @@ public class ShoppingListService {
         return this.save(list);
     }
 
-    public ShoppingList toggleArchiveList(String id) throws ShoppingAccessException, ShoppingNotFoundException {
+    public ShoppingList toggleArchiveList(Long id) throws ShoppingAccessException, ShoppingNotFoundException {
         ShoppingList list = this.findByID(id);
         String currentAccountId = Utils.getCurrentAccountId();
         if (list.getOwnerId().equals(currentAccountId)) {
@@ -123,7 +150,7 @@ public class ShoppingListService {
         }
     }
 
-    public void deleteList(String id) throws ShoppingAccessException, ShoppingNotFoundException {
+    public void deleteList(Long id) throws ShoppingAccessException, ShoppingNotFoundException {
         String currentAccountId = Utils.getCurrentAccountId();
         ShoppingList list = this.findByID(id);
         if (list.getOwnerId().equals(currentAccountId)) {
@@ -144,12 +171,28 @@ public class ShoppingListService {
     }
 
     public void sortItems(ShoppingList list) {
-        Map<Category, Integer> categoriesOrdered = _propertyService.getCategoriesOrdered();
+        Map<Category, Integer> categoriesOrdered = getCategoriesOrdered(list);
         Comparator<ListItem> listComparator = Comparator
                 .nullsLast(
                         Comparator.comparing((ListItem l) -> categoriesOrdered.get(l.getCategory()))
                                 .thenComparing(listItem -> listItem.getProduct().getName()));
         list.getItems().sort(listComparator);
+    }
+
+    public Map<Category, Integer> getCategoriesOrdered(ShoppingList list) {
+        String categories;
+        if (list.getPreset() == null) {
+            return convertArrayToMap(Category.values());
+        }
+        categories = list.getPreset().getCategoriesOrder();
+        return convertArrayToMap(Arrays.stream(categories.split(",")).map(Category::valueOf).toArray(Category[]::new));
+    }
+
+    private <T> Map<T, Integer> convertArrayToMap(T[] array) {
+        List<T> collection = Arrays.asList(array);
+        return IntStream.range(0, collection.size())
+                .boxed()
+                .collect(toMap(collection::get, i -> i));
     }
 
     public void visitList(ShoppingList list) {

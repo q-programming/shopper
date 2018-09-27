@@ -1,27 +1,35 @@
 <h2 mat-dialog-title class="modal-header">
-    <mat-icon class="text-white mr-2">add_circle_outline</mat-icon>
-    {{'app.shopping.create'|translate}}
+    <mat-icon class="text-white mr-2">{{update?'edit':'add_circle_outline'}}</mat-icon>
+    {{update?('app.shopping.update'|translate):('app.shopping.create'|translate)}}
     <button mat-icon-button mat-dialog-close class="pull-right">
         <mat-icon>close</mat-icon>
     </button>
 </h2>
 <div fxLayout="row" fxLayoutGap="10px">
     <div fxFlex="10">
-        <img src="assets/images/list_add.svg" height="64" class="ml-2">
+        <img [src]="update?'assets/images/list.svg':'assets/images/list_add.svg'" height="64" class="ml-2">
     </div>
     <form [formGroup]="form" fxFlex="80">
         <mat-dialog-content class="mat-typography text-center ml-0 mr-0">
             <mat-form-field class="mat-form-field-full-width">
                 <input id="listName" matInput cdkFocusRegionstart placeholder="{{'app.general.name'|translate}}"
-                       formControlName="listName" required (keydown.enter)="createList()" autocomplete="off">
+                       formControlName="listName" required (keydown.enter)="commitList()" autocomplete="off">
                 <mat-error *ngIf="form.value.listName.invalid"></mat-error>
+            </mat-form-field>
+            <mat-form-field class="mat-form-field-full-width">
+                <mat-select placeholder="{{'app.settings.products.category.preset'|translate}}"
+                            formControlName="preset" [compareWith]="comparePresets">
+                    <mat-option *ngFor="let userPreset of presets" [value]="userPreset">
+                        {{userPreset.name?userPreset.name:('app.settings.products.category.default'|translate)}}
+                    </mat-option>
+                </mat-select>
             </mat-form-field>
         </mat-dialog-content>
     </form>
 </div>
 <mat-dialog-actions align="end" class="pr-2 pl-2">
     <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
-    <button mat-raised-button class="success-button" (click)="createList()" [disabled]="form.invalid">
-        {{'app.general.create'|translate}}
+    <button mat-raised-button class="success-button" (click)="commitList()" [disabled]="form.invalid">
+        {{update?('app.general.edit'|translate):('app.general.create'|translate)}}
     </button>
 </mat-dialog-actions>

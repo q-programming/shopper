@@ -11,6 +11,8 @@ import * as _ from 'lodash';
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ShoppingListDialogComponent} from "../components/dialogs/list/shopping-list-dialog.component";
 import {ShareComponent} from "../components/dialogs/share/share.component";
+import {AppSettings} from "../model/AppSettings";
+import {CategoryPreset} from "../model/CategoryPreset";
 
 @Injectable({
     providedIn: 'root'
@@ -81,20 +83,62 @@ export class ListService {
      */
     openNewListDialog(): Observable<ShoppingList> {
         return new Observable((observable) => {
-            let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
-            dialogRef.afterClosed().subscribe(listName => {
-                if (listName) {
-                    this.api.postObject<ShoppingList>(environment.list_url + '/add', listName).subscribe(newlist => {
-                        if (newlist) {
-                            observable.next(newlist);
-                            observable.complete()
-                        }
-                    });
-                }
-            }, error => {
-                this.logger.error(error);
-                observable.next(undefined);
-                observable.complete();
+            this.loadUserSortingPresets().subscribe(presets => {
+                this.dialogConfig.data = {
+                    presets: presets,
+                };
+                let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
+                dialogRef.afterClosed().subscribe(form => {
+                    if (form && form.listName) {
+                        let list = new ShoppingList();
+                        list.name = form.listName;
+                        list.preset = form.preset;
+                        this.api.postObject<ShoppingList>(environment.list_url + '/add', list).subscribe(newlist => {
+                            if (newlist) {
+                                observable.next(newlist);
+                                observable.complete()
+                            }
+                        });
+                    }
+                }, error => {
+                    this.logger.error(error);
+                    observable.next(undefined);
+                    observable.complete();
+                });
+            });
+        });
+    }
+
+    /**
+     * Opens edit list modal dialog
+     *
+     * @param list Shopping List to be edited
+     */
+    openEditListDialog(list: ShoppingList): Observable<ShoppingList> {
+        return new Observable((observable) => {
+            this.loadUserSortingPresets().subscribe(presets => {
+                this.dialogConfig.data = {
+                    presets: presets,
+                    list: list,
+                    update: true
+                };
+                let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
+                dialogRef.afterClosed().subscribe(form => {
+                    if (form && form.listName) {
+                        list.name = form.listName;
+                        list.preset = form.preset;
+                        this.api.postObject<ShoppingList>(environment.list_url + '/edit', list).subscribe(updated => {
+                            if (updated) {
+                                observable.next(updated);
+                                observable.complete()
+                            }
+                        });
+                    }
+                }, error => {
+                    this.logger.error(error);
+                    observable.next(undefined);
+                    observable.complete();
+                });
             });
         });
     }
@@ -147,8 +191,8 @@ export class ListService {
      * @param list list to be edited
      * @param listName new list name
      */
-    editName(list: ShoppingList, listName: string): Observable<ShoppingList> {
-        return this.api.post(environment.list_url + `/${list.id}/edit`, listName);
+    updateList(list: ShoppingList): Observable<ShoppingList> {
+        return this.api.post(environment.list_url + `/${list.id}/edit`, list);
     }
 
     /**
@@ -160,4 +204,12 @@ export class ListService {
         return this.api.postObject<ShoppingList>(environment.list_url + `/${listID}/cleanup`, undefined);
     }
 
+    loadUserSortingPresets(): Observable<CategoryPreset[]> {
+        return this.api.getObject<AppSettings>(`${environment.config_url}/settings/presets`);
+    }
+
+
+    saveCategoryPreset(preset: CategoryPreset): Observable<CategoryPreset> {
+        return this.api.postObject(`${environment.config_url}/settings/preset-update`, preset);
+    }
 }
