@@ -3,7 +3,7 @@ app:
   default:
     lang: en
   category:
-    order: FRUIT_VEGETABLES,BAKERY,BABY,CANNED,CAR,CLOTHES,COFFEE_TEA,COSMETICS,DIARY,DIET,ELECTRONICAL,FISH,FROZEN,GRAINS_PASTA,HOME_KITCHEN,HOME_BAKING,CLEANING,MEAT,NEWSPAPERS,OFFICE_SUPPLIES,OILS,HYGIENE,PET,PHARMACY,PRESERVES,READY_MEALS,SNACKS,SPICES,BEVERAGES,ALCOHOL,OTHER
+    order: FRUIT_VEGETABLES,BAKERY,BABY,CANNED,CAR,CLOTHES,COFFEE_TEA,COSMETICS,DIARY,DIET,ELECTRONICAL,FISH,FROZEN,GRAINS_PASTA,HOME_KITCHEN,HOME_BAKING,CLEANING,MEAT,NEWSPAPERS,OFFICE_SUPPLIES,OILS,HYGIENE,PET,PHARMACY,PRESERVES,READY_MEALS,SNACKS,SPICES,BEVERAGES,ALCOHOL,GARDEN,OTHER
   newsletter:
     schedule: 0 0 20-22 * * MON
 security:
@@ -19,7 +19,7 @@ security:
       userInfoUri: "*"
 logging:
   level:
-    org.springframework.security: DEBUG
+    org.springframework.security: ERROR
     org.springframework.web.filter.CommonsRequestLoggingFilter: ERROR
 spring:
   mail:
@@ -31,12 +31,12 @@ spring:
     password: ps
     default-encoding: UTF-8
   datasource:
-    url: jdbc:h2:./db/shopperH2databaseFile;AUTO_SERVER=TRUE
-    username: sa
-    password:
-  #    url: jdbc:postgresql://localhost:5432/shopper
-  #    username: shopper
-  #    password: cZmYpQWeJXSaWEUHSp3V
+    #    url: jdbc:h2:./db/shopperH2databaseFile;AUTO_SERVER=TRUE
+    #    username: sa
+    #    password:
+    url: jdbc:postgresql://localhost:5432/shopper
+    username: shopper
+    password: cZmYpQWeJXSaWEUHSp3V
   mvc:
     favicon:
       enabled: false
@@ -50,8 +50,8 @@ spring:
       app-secret: fb3c3e7ed3b5ffa7db0586c659198424
 facebook:
   client:
-    clientId: 1750703375258695
-    clientSecret: fb3c3e7ed3b5ffa7db0586c659198424
+    clientId: 1085784114929242
+    clientSecret: b7704a518a9db12f2a7511bcd2522541
     accessTokenUri: https://graph.facebook.com/oauth/access_token
     userAuthorizationUri: https://www.facebook.com/dialog/oauth
     tokenName: oauth_token

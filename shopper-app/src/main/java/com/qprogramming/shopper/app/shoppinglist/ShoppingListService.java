@@ -14,6 +14,7 @@ import com.qprogramming.shopper.app.items.category.Category;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
 import com.qprogramming.shopper.app.support.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.qprogramming.shopper.app.settings.Settings.APP_CATEGORY_ORDER;
 import static com.qprogramming.shopper.app.settings.Settings.APP_EMAIL_FROM;
 import static java.util.stream.Collectors.toMap;
 
@@ -181,10 +183,14 @@ public class ShoppingListService {
 
     public Map<Category, Integer> getCategoriesOrdered(ShoppingList list) {
         String categories;
-        if (list.getPreset() == null) {
-            return convertArrayToMap(Category.values());
+        if (list.getPreset() == null) {//no list preset load app defaults
+            categories = _propertyService.getProperty(APP_CATEGORY_ORDER);
+            if (StringUtils.isBlank(categories)) {
+                return convertArrayToMap(Category.values());
+            }
+        } else {
+            categories = list.getPreset().getCategoriesOrder();
         }
-        categories = list.getPreset().getCategoriesOrder();
         return convertArrayToMap(Arrays.stream(categories.split(",")).map(Category::valueOf).toArray(Category[]::new));
     }
 
