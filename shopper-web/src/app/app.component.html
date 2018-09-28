@@ -29,12 +29,12 @@
             <!--<mat-icon class="ml-2">archived</mat-icon>-->
         </button>
 
-        <button mat-button class="mat-toolbar-button" routerLink="/">
-
-            <mat-icon class="ml-2" matBadge="{{message_count.count}}" matBadgePosition="before" matBadgeColor="accent">
-                message
-            </mat-icon>
-        </button>
+        <!--MESSAGES-->
+        <!--<button mat-button class="mat-toolbar-button" routerLink="/">-->
+        <!--<mat-icon class="ml-2" matBadge="{{message_count.count}}" matBadgePosition="before" matBadgeColor="accent">-->
+        <!--message-->
+        <!--</mat-icon>-->
+        <!--</button>-->
         <button mat-button class="mat-toolbar-button" (click)="sidenav.toggle()">
             <img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>
             <img *ngIf="!account.avatar" src="assets/images/avatar-placeholder.png" class="avatar nav-avatar"/>
@@ -75,10 +75,11 @@
         </div>
         <mat-divider class="mt-2"></mat-divider>
         <div fxLayout="column">
-            <button mat-button routerLink="/messages">
-                <mat-icon class="mr-2">message</mat-icon>
-                {{'app.menu.messages'|translate:message_count}}
-            </button>
+            <!--MESSAGES-->
+            <!--<button mat-button routerLink="/messages">-->
+            <!--<mat-icon class="mr-2">message</mat-icon>-->
+            <!--{{'app.menu.messages'|translate:message_count}}-->
+            <!--</button>-->
             <button mat-button routerLink="/settings">
                 <mat-icon class="mr-2">settings</mat-icon>
                 {{'app.menu.settings'|translate}}

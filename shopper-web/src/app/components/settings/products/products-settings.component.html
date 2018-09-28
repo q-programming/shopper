@@ -20,6 +20,10 @@
                 matTooltip="{{'app.settings.products.category.new'|translate}}">
             <mat-icon>add_circle_outline</mat-icon>
         </button>
+        <button *ngIf="this.preset && this.preset.id" mat-icon-button (click)="deleteCategoryPreset()"
+                matTooltip="{{'app.settings.products.category.delete'|translate}}">
+            <mat-icon>remove_circle_outline</mat-icon>
+        </button>
     </div>
 </div>
 <div fxLayout="row" fxLayoutAlign="center" *ngIf="preset" class="mt-3">

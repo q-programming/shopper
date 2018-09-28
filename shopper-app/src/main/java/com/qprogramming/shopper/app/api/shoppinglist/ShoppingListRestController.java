@@ -8,6 +8,8 @@ import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.items.ListItemService;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,7 +21,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -39,11 +43,14 @@ public class ShoppingListRestController {
     private static final Logger LOG = LoggerFactory.getLogger(ShoppingListRestController.class);
     private ShoppingListService _listService;
     private ListItemService _listItemService;
+    private CategoryPresetService _presetService;
+
 
     @Autowired
-    public ShoppingListRestController(ShoppingListService listService, ListItemService listItemService) {
+    public ShoppingListRestController(ShoppingListService listService, ListItemService listItemService, CategoryPresetService presetService) {
         this._listService = listService;
-        _listItemService = listItemService;
+        this._listItemService = listItemService;
+        this._presetService = presetService;
     }
 
     /**
@@ -144,6 +151,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/{id}/share", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
     public ResponseEntity<ShoppingList> shareList(@RequestBody String email, @PathVariable Long id) {
         try {
             ShoppingList list = _listService.findByID(id);
@@ -277,6 +285,54 @@ public class ShoppingListRestController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
             LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+
+    @RolesAllowed("ROLE_USER")
+    @RequestMapping(value = "/presets", method = RequestMethod.GET)
+    public ResponseEntity<List<CategoryPreset>> getCategoryPresets() {
+        return ResponseEntity.ok(_presetService.findAllByOwner(Utils.getCurrentAccountId()));
+    }
+
+
+    @RolesAllowed("ROLE_USER")
+    @RequestMapping(value = "/presets/update", method = RequestMethod.POST)
+    public ResponseEntity<CategoryPreset> updateCategoryPreset(@RequestBody CategoryPreset categoryPreset) {
+        if (categoryPreset.getId() == null) {
+            categoryPreset.setOwner(Utils.getCurrentAccountId());
+            return ResponseEntity.ok(_presetService.save(categoryPreset));
+        }
+        try {
+            CategoryPreset dbPreset = _presetService.findById(categoryPreset.getId());
+            String currentAccountId = Utils.getCurrentAccountId();
+            if (!dbPreset.getOwner().equals(currentAccountId)) {
+                LOG.error("User with id {} tried to remove preset {} for which he is not owner", currentAccountId, dbPreset.getId());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            return ResponseEntity.ok(_presetService.save(categoryPreset));
+        } catch (PresetNotFoundException e) {
+            LOG.error(PRESET_WITH_ID_WAS_NOT_FOUND, categoryPreset.getId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @RolesAllowed("ROLE_USER")
+    @RequestMapping(value = "/presets/delete", method = RequestMethod.POST)
+    public ResponseEntity<CategoryPreset> deleteCategoryPreset(@RequestBody CategoryPreset categoryPreset) {
+        try {
+            CategoryPreset preset = _presetService.findById(categoryPreset.getId());
+            String currentAccountId = Utils.getCurrentAccountId();
+            if (!preset.getOwner().equals(currentAccountId)) {
+                LOG.error("User with id {} tried to remove preset {} for which he is not owner", currentAccountId, preset.getId());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            _listService.removePresetFromLists(preset);
+            _presetService.remove(preset);
+            return ResponseEntity.ok().build();
+        } catch (PresetNotFoundException e) {
+            LOG.error(PRESET_WITH_ID_WAS_NOT_FOUND, categoryPreset.getId());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

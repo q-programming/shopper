@@ -35,13 +35,11 @@ public class ConfigRestController {
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     private MailService mailService;
     private PropertyService propertyService;
-    private CategoryPresetRepository categoryPresetRepository;
 
     @Autowired
-    public ConfigRestController(MailService mailService, PropertyService propertyService, CategoryPresetRepository categoryPresetRepository) {
+    public ConfigRestController(MailService mailService, PropertyService propertyService) {
         this.mailService = mailService;
         this.propertyService = propertyService;
-        this.categoryPresetRepository = categoryPresetRepository;
     }
 
     @RolesAllowed("ROLE_ADMIN")
@@ -114,19 +112,5 @@ public class ConfigRestController {
         propertyService.update(APP_DEFAULT_LANG, settings.getLanguage());
         propertyService.update(APP_URL, settings.getAppUrl());
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-
-    @RolesAllowed("ROLE_USER")
-    @RequestMapping(value = "/settings/preset-update", method = RequestMethod.POST)
-    public ResponseEntity<CategoryPreset> updateCategoryPreset(@RequestBody CategoryPreset order) {
-        order.setOwner(Utils.getCurrentAccountId());
-        return ResponseEntity.ok(categoryPresetRepository.save(order));
-    }
-
-    @RolesAllowed("ROLE_USER")
-    @RequestMapping(value = "/settings/presets", method = RequestMethod.GET)
-    public ResponseEntity<List<CategoryPreset>> getCategoryPresets() {
-        return ResponseEntity.ok(categoryPresetRepository.findAllByOwner(Utils.getCurrentAccountId()));
     }
 }

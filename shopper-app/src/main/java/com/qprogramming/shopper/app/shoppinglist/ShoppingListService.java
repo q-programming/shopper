@@ -205,4 +205,10 @@ public class ShoppingListService {
         list.setLastVisited(new Date());
         save(list);
     }
+
+    public void removePresetFromLists(CategoryPreset preset) {
+        List<ShoppingList> shoppingListWithPreset = _listRepository.findAllByPreset(preset);
+        shoppingListWithPreset.forEach(shoppingList -> shoppingList.setPreset(null));
+        _listRepository.saveAll(shoppingListWithPreset);
+    }
 }

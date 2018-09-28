@@ -16,9 +16,12 @@
                 arrow_back_ios
             </mat-icon>
         </button>
-        <span (click)="startEdit()" class="clickable"
+        <span (click)="startEdit()" class="{{list.archived?'':'clickable'}}"
               matTooltip="{{list.archived?'':('app.shopping.clicktoedit'| translate)}}">
             <!--TITLE-->
+            <span *ngIf="list.archived" matTooltip="{{'app.shopping.archived'|translate}}">
+                <img class="v-middle" src="assets/images/box.svg" height="24">
+            </span>
             <span fxShow.xs="true" fxShow.gt-sm="false">
                 <span *ngIf="list.name.length > 20" matTooltip="{{list.name}}">
                     {{list.name|slice:0:18}}...
@@ -93,7 +96,7 @@
 </mat-card>
 <div>
     <!--ITEMS-->
-    <mat-card fxLayout="row" *ngFor="let item of items" class="item clickable">
+    <mat-card fxLayout="row" *ngFor="let item of items" class="item">
         <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"
                       [disabled]="list.archived"></mat-checkbox>
         <mat-card-title-group class="ml-2">
@@ -125,7 +128,7 @@
         </mat-menu>
     </mat-card>
     <!--DONE-->
-    <mat-card fxLayout="row" *ngFor="let item of done" class="item clickable done">
+    <mat-card fxLayout="row" *ngFor="let item of done" class="item done">
         <button mat-icon-button (click)="toggleItem(item)" class="done-checkbox">
             <mat-icon>check</mat-icon>
         </button>

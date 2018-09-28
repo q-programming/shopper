@@ -205,11 +205,15 @@ export class ListService {
     }
 
     loadUserSortingPresets(): Observable<CategoryPreset[]> {
-        return this.api.getObject<AppSettings>(`${environment.config_url}/settings/presets`);
+        return this.api.getObject<AppSettings>(`${environment.list_url}/presets`);
     }
 
 
     saveCategoryPreset(preset: CategoryPreset): Observable<CategoryPreset> {
-        return this.api.postObject(`${environment.config_url}/settings/preset-update`, preset);
+        return this.api.postObject(`${environment.list_url}/presets/update`, preset);
+    }
+
+    deleteCategoryPreset(preset: CategoryPreset): Observable<CategoryPreset> {
+        return this.api.postObject(`${environment.list_url}/presets/delete`, preset);
     }
 }

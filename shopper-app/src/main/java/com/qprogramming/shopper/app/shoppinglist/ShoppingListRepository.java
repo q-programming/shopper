@@ -1,5 +1,6 @@
 package com.qprogramming.shopper.app.shoppinglist;
 
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,8 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
     List<ShoppingList> findAllByOwnerId(String ownerID);
 
     Set<ShoppingList> findAllByOwnerIdOrSharedIn(String ownerID, Set<String> shared);
+
+    List<ShoppingList> findAllByPreset(CategoryPreset preset);
 
 
 }

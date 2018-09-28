@@ -13,8 +13,8 @@
 }
 
 .item.done {
-    background: #e8e8e8bf;
-    box-shadow: none;
+    background: #e8e8e8bf !important;
+    box-shadow: none !important;
 }
 
 .done-checkbox {

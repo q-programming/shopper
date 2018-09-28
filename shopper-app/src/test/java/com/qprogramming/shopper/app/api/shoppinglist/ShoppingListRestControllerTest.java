@@ -15,7 +15,9 @@ import com.qprogramming.shopper.app.items.product.ProductRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -23,9 +25,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +56,9 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     private static final String ITEM_CLEANUP = "/cleanup";
     private static final String MINE = "mine";
     private static final String USER = "user/";
+    private static final String PRESETS = "presets";
+    private static final String PRESETS_UPDATE = "presets/update";
+    private static final String PRESETS_DELETE = "presets/delete";
 
     @Mock
     private ShoppingListRepository listRepositoryMock;
@@ -71,6 +74,8 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     private ProductRepository productRepositoryMock;
     @Mock
     private CategoryPresetRepository presetRepositoryMock;
+    @Mock
+    private CategoryPresetRepository categoryPresetRepositoryMock;
 
 
     @Before
@@ -79,7 +84,8 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
         super.setup();
         ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, mailServiceMock, presetRepositoryMock);
         ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock);
-        ShoppingListRestController controller = new ShoppingListRestController(listService, listItemService);
+        CategoryPresetService presetService = new CategoryPresetService(categoryPresetRepositoryMock);
+        ShoppingListRestController controller = new ShoppingListRestController(listService, listItemService, presetService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
     }
@@ -445,6 +451,99 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
         assertThat(result.getItems()).containsOnly(item1);
         verify(listItemRepositoryMock, times(2)).delete(any(ListItem.class));
     }
+
+
+    @Test
+    public void createPresetTest() throws Exception {
+        CategoryPreset preset = new CategoryPreset();
+        when(categoryPresetRepositoryMock.save(any(CategoryPreset.class))).then(returnsFirstArg());
+        MvcResult mvcResult = mvc.perform(post(API_LIST_URL + PRESETS_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isOk()).andReturn();
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        CategoryPreset result = TestUtil.convertJsonToObject(jsonResponse, CategoryPreset.class);
+        assertThat(result.getOwner()).isEqualTo(testAccount.getId());
+        verify(categoryPresetRepositoryMock, times(1)).save(any(CategoryPreset.class));
+    }
+
+    @Test
+    public void updatePresetTest() throws Exception {
+        CategoryPreset preset = new CategoryPreset();
+        preset.setId(1L);
+        preset.setOwner(testAccount.getId());
+        preset.setName(NAME);
+        CategoryPreset dbpreset = new CategoryPreset();
+        dbpreset.setId(1L);
+        dbpreset.setOwner(testAccount.getId());
+        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.of(dbpreset));
+        when(categoryPresetRepositoryMock.save(any(CategoryPreset.class))).then(returnsFirstArg());
+        MvcResult mvcResult = mvc.perform(post(API_LIST_URL + PRESETS_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isOk()).andReturn();
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        CategoryPreset result = TestUtil.convertJsonToObject(jsonResponse, CategoryPreset.class);
+        assertThat(result.getOwner()).isEqualTo(testAccount.getId());
+        assertThat(result.getName()).isEqualTo(NAME);
+        verify(categoryPresetRepositoryMock, times(1)).save(any(CategoryPreset.class));
+    }
+
+
+    @Test
+    public void getUserPresetsTest() throws Exception {
+        when(categoryPresetRepositoryMock.findAllByOwner(testAccount.getId())).thenReturn(Collections.singletonList(new CategoryPreset()));
+        MvcResult mvcResult = mvc.perform(get(API_LIST_URL + PRESETS)).andExpect(status().isOk()).andReturn();
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        List<CategoryPreset> result = TestUtil.convertJsonToList(jsonResponse, List.class, CategoryPreset.class);
+        assertThat(result.size()).isEqualTo(1);
+
+    }
+
+    @Test
+    public void presetNotFoundOperationsTest() throws Exception {
+        CategoryPreset preset = new CategoryPreset();
+        preset.setId(1L);
+        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.empty());
+        mvc.perform(post(API_LIST_URL + PRESETS_DELETE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isNotFound());
+        mvc.perform(post(API_LIST_URL + PRESETS_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void presetNotOwnerOperationsTest() throws Exception {
+        CategoryPreset preset = new CategoryPreset();
+        preset.setId(1L);
+        preset.setOwner(TestUtil.ADMIN_RANDOM_ID);
+        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.of(preset));
+        mvc.perform(post(API_LIST_URL + PRESETS_DELETE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isForbidden());
+        mvc.perform(post(API_LIST_URL + PRESETS_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void deletePresetTest() throws Exception {
+        CategoryPreset preset = new CategoryPreset();
+        preset.setId(1L);
+        preset.setOwner(testAccount.getId());
+        ShoppingList shoppingList1 = TestUtil.createShoppingList(NAME, 1L, testAccount);
+        ShoppingList shoppingList2 = TestUtil.createShoppingList(NAME, 2L, testAccount);
+        shoppingList1.setPreset(preset);
+        shoppingList2.setPreset(preset);
+        List<ShoppingList> shoppingLists = Arrays.asList(shoppingList1, shoppingList2);
+        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.of(preset));
+        when(listRepositoryMock.findAllByPreset(preset)).thenReturn(shoppingLists);
+        mvc.perform(post(API_LIST_URL + PRESETS_DELETE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isOk());
+        verify(categoryPresetRepositoryMock, times(1)).delete(any(CategoryPreset.class));
+        verify(listRepositoryMock, times(1)).saveAll(shoppingLists);
+    }
+
 
     private ShoppingList createList(String name, long id) {
         return TestUtil.createShoppingList(name, id, testAccount);

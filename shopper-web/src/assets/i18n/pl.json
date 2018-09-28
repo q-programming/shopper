@@ -108,7 +108,10 @@
   "app.settings.app.save.fail": "Wystąpił bład podczas aktualizowania ustawień aplikacji, proszę sprawdzić logi aby uzyskać więcej infornacji",
   "app.settings.products": "Ustawienia Produktów",
   "app.settings.products.category.default": "Domyślny",
-  "app.settings.products.category.new": "Kliknij aby dodawć nowy typ sortowanie",
+  "app.settings.products.category.new": "Kliknij aby dodawć nowy sorter kategorii",
+  "app.settings.products.category.delete": "Kliknij aby usunąc wybrany sorter categorii",
+  "app.settings.products.category.delete.success": "Sorter kategorii został usunięty",
+  "app.settings.products.category.delete.fail": "Wystąpił bład podczas usuwania sortera kategorii",
   "app.settings.products.category.sort": "Sortowanie produktów po kategoriach",
   "app.settings.products.category.sort.change": "Zmień sortowanie",
   "app.settings.products.category.preset": "Sorter kategorii",
@@ -144,6 +147,6 @@
   "READY_MEALS": "gotowe posiłki",
   "SNACKS": "przekąski",
   "SPICES": "przyprawy sosy i dodatki",
-  "GARDEN":"art. ogrodnicze",
+  "GARDEN": "art. ogrodnicze",
   "OTHER": "inne"
 }

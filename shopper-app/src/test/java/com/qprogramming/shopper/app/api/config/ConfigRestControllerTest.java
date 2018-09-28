@@ -36,23 +36,21 @@ public class ConfigRestControllerTest extends MockedAccountTestBase {
     public static final String API_CONFIG_SETTINGS_URL = "/settings";
     public static final String API_CONFIG_EMAIL_URL = "/settings/email";
     public static final String API_CONFIG_APP_URL = "/settings/app";
-    public static final String API_CONFIG_PRESETS_UPDATE_URL = "/settings/preset-update";
-    public static final String API_CONFIG_PRESETS_URL = "/settings/presets";
+
 
 
     @Mock
     private MailService mailServiceMock;
     @Mock
     private PropertyService propertyServiceMock;
-    @Mock
-    private CategoryPresetRepository categoryPresetRepositoryMock;
+
 
 
     @Before
     @Override
     public void setup() {
         super.setup();
-        ConfigRestController controller = new ConfigRestController(mailServiceMock, propertyServiceMock, categoryPresetRepositoryMock);
+        ConfigRestController controller = new ConfigRestController(mailServiceMock, propertyServiceMock);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
     }
@@ -112,27 +110,6 @@ public class ConfigRestControllerTest extends MockedAccountTestBase {
         verify(propertyServiceMock, times(2)).update(anyString(), anyString());
     }
 
-    @Test
-    public void updatePresetTest() throws Exception {
-        CategoryPreset preset = new CategoryPreset();
-        when(categoryPresetRepositoryMock.save(any(CategoryPreset.class))).then(returnsFirstArg());
-        MvcResult mvcResult = mvc.perform(post(API_CONFIG_URL + API_CONFIG_PRESETS_UPDATE_URL)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
-                .andExpect(status().isOk()).andReturn();
-        String jsonResponse = mvcResult.getResponse().getContentAsString();
-        CategoryPreset result = TestUtil.convertJsonToObject(jsonResponse, CategoryPreset.class);
-        assertThat(result.getOwner()).isEqualTo(testAccount.getId());
-        verify(categoryPresetRepositoryMock, times(1)).save(any(CategoryPreset.class));
-    }
-
-    @Test
-    public void getUserPresetsTest() throws Exception {
-        when(categoryPresetRepositoryMock.findAllByOwner(testAccount.getId())).thenReturn(Collections.singletonList(new CategoryPreset()));
-        MvcResult mvcResult = mvc.perform(get(API_CONFIG_URL + API_CONFIG_PRESETS_URL)).andExpect(status().isOk()).andReturn();
-        String jsonResponse = mvcResult.getResponse().getContentAsString();
-        List<CategoryPreset> result = TestUtil.convertJsonToList(jsonResponse, List.class, CategoryPreset.class);
-
-    }
 
     private Settings createEmailSettings() {
         Settings settings = new Settings();
@@ -145,13 +122,5 @@ public class ConfigRestControllerTest extends MockedAccountTestBase {
         email.setFrom("from");
         settings.setEmail(email);
         return settings;
-    }
-
-    @Test
-    public void updateCategorySorting() {
-    }
-
-    @Test
-    public void getUserCategorySorting() {
     }
 }
