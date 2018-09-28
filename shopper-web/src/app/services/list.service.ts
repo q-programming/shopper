@@ -216,4 +216,8 @@ export class ListService {
     deleteCategoryPreset(preset: CategoryPreset): Observable<CategoryPreset> {
         return this.api.postObject(`${environment.list_url}/presets/delete`, preset);
     }
+
+    getDefaultCategoriesSorting(): Observable<string> {
+        return this.api.getObject<AppSettings>(`${environment.config_url}/categories/defaults`);
+    }
 }

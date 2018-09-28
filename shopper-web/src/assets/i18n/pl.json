@@ -39,7 +39,7 @@
   "app.shopping.share.msg": "Wprowadz adres e-mail osoby z którą chcesz się podzielić listą <b>{{listName}}</b>.</br> Jeżeli nie posiada ona jeszcze konta , zostanie zaproszona do założenia go",
   "app.shopping.share.action": "Podziel się",
   "app.shopping.share.email.inqueue": "Wysyłanie e-maila dodane do kolejki",
-  "app.shopping.share.sent": "Podzielono się listą {{name}} z adresem {{email}}",
+  "app.shopping.share.sent": "Podzielono się listą \"{{name}}\" z adresem {{email}}",
   "app.shopping.share.with.new": "Podziel się listą",
   "app.shopping.share.with": "List dzielona z {{count}} użytkownikami",
   "app.shopping.share.with.header": "Dzielona z ...",

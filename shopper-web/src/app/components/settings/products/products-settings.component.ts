@@ -17,11 +17,19 @@ export class ProductsSettingsComponent implements OnInit {
     categoryPresetControl: FormControl;
     presets: CategoryPreset[];
     preset: CategoryPreset;
-    defaultOrdering: Category[] = Object.values(Category);
+    defaultOrdering: Category[];
     currentOrdering: Category[];
 
     constructor(private alertSrv: AlertService, private api: ApiService, private listSrv: ListService) {
-        this.categoryPresetControl = new FormControl('', [Validators.required])
+        this.categoryPresetControl = new FormControl('', [Validators.required]);
+        this.listSrv.getDefaultCategoriesSorting().subscribe(defaults => {
+            if (defaults) {
+                this.defaultOrdering = defaults[0].split(",").map(value => Category[value]);
+            }
+            else {
+                this.defaultOrdering = Object.values(Category);
+            }
+        })
     }
 
     ngOnInit() {

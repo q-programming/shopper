@@ -39,7 +39,7 @@
   "app.shopping.share.action": "Share",
   "app.shopping.share.msg": "Enter e-mail address of somebody who, which whom you would like to share list <b>{{listName}}</b>.</br> If he/she don't have application account , they will be invited to create one",
   "app.shopping.share.email.inqueue": "Sending of e-mail added to background queue",
-  "app.shopping.share.sent": "Successfully shared list {{name}} with address {{email}}",
+  "app.shopping.share.sent": "Successfully shared list \"{{name}}\" with address {{email}}",
   "app.shopping.share.with": "List shared with {{count}} users",
   "app.shopping.share.with.new": "Share list",
   "app.shopping.share.with.header": "Shared with...",

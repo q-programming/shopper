@@ -11,7 +11,7 @@
         <ng-template mat-tab-label>
             <mat-icon>share</mat-icon>&nbsp;{{'app.shopping.share.with.new'|translate}}
         </ng-template>
-        <new-share [list]="shoppingList" (done)="shared($event)"></new-share>
+        <new-share [list]="shoppingList" (done)="shared($event)" [dialogRef]="dialogRef"></new-share>
     </mat-tab>
     <mat-tab *ngIf="shoppingList.shared.length >0">
         <ng-template mat-tab-label>

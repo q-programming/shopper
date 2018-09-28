@@ -4,8 +4,6 @@ import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.settings.Settings;
-import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
-import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
 import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.Collections;
 
 import static com.qprogramming.shopper.app.settings.Settings.*;
 
@@ -112,5 +110,11 @@ public class ConfigRestController {
         propertyService.update(APP_DEFAULT_LANG, settings.getLanguage());
         propertyService.update(APP_URL, settings.getAppUrl());
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RolesAllowed("ROLE_USER")
+    @RequestMapping(value = "/categories/defaults", method = RequestMethod.GET)
+    public ResponseEntity getDefaultSorting() {
+        return ResponseEntity.ok(Collections.singleton(propertyService.getProperty(APP_CATEGORY_ORDER)));
     }
 }

@@ -141,7 +141,7 @@
                 <p>Witaj ${name},</p>
             </#if>
                 <div>
-                ${owner} chce się podzielić z tobą swojąl istą zakupów w aplikacji Shopper
+                ${owner} chce się podzielić z tobą swoją istą zakupów w aplikacji Shopper
                 </div>
                 <div>
                     <p>
