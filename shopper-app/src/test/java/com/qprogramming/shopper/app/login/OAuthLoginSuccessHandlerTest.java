@@ -5,6 +5,7 @@ import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.login.token.TokenService;
+import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -52,6 +53,8 @@ public class OAuthLoginSuccessHandlerTest {
     private TokenService tokenServiceMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private ShoppingListService listServiceMock;
 
     private OAuthLoginSuccessHandler handler;
 
@@ -63,7 +66,7 @@ public class OAuthLoginSuccessHandlerTest {
         when((OAuth2AuthenticationDetails) authMock.getDetails()).thenReturn(oauthDetailsMock);
         when(authenticationMock.getDetails()).thenReturn(details);
         when(propertyServiceMock.getLanguages()).thenReturn(languageList());
-        handler = spy(new OAuthLoginSuccessHandler(accSrvMock, tokenServiceMock, propertyServiceMock));
+        handler = spy(new OAuthLoginSuccessHandler(accSrvMock, tokenServiceMock, propertyServiceMock, listServiceMock));
     }
 
     @Test

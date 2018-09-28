@@ -148,12 +148,9 @@
                         Ponieważ nie posiadasz jeszcze konta w applikacji, zaloguj się używając Google+ lub Facebooka
                     </p>
                     <p>
-                        Po zalogowaniu się, poproś ${owner} o ponowne udostępnienie listy.
+                        Link do aplikacji : <a href="${application}">${application}</a>
                     </p>
                 </div>
-                <p>
-                    <a href="${application}">${application}</a>
-                </p>
             </td>
         </tr>
         </tbody>

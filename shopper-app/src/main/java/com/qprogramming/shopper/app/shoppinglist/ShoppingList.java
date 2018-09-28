@@ -38,6 +38,9 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> shared = new HashSet<>();
 
+    @ElementCollection
+    private Set<String> pendingshares = new HashSet<>();
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ListItem> items = new ArrayList<>();
 
@@ -46,6 +49,7 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
 
     @ManyToOne
     private CategoryPreset preset;
+
 
     private Long done;
 
@@ -130,6 +134,17 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
 
     public void setPreset(CategoryPreset preset) {
         this.preset = preset;
+    }
+
+    public Set<String> getPendingshares() {
+        if (pendingshares == null) {
+            pendingshares = new HashSet<>();
+        }
+        return pendingshares;
+    }
+
+    public void setPendingshares(Set<String> pendingshares) {
+        this.pendingshares = pendingshares;
     }
 
     @Override

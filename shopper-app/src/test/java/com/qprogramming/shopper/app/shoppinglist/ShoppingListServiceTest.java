@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -76,6 +78,19 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
         when(accountServiceMock.findById(testAccount.getId())).thenReturn(testAccount);
         Set<ShoppingList> result = listService.findAllByAccountID(testAccount.getId(), false);
         assertThat(result.contains(list2)).isFalse();
+    }
+
+    @Test
+    public void addToListIfPending() {
+        ShoppingList list1 = createList(NAME, 1L);
+        ShoppingList list2 = createList(NAME, 2L);
+        list1.getPendingshares().add(testAccount.getEmail());
+        list2.getPendingshares().add(testAccount.getEmail());
+        List<ShoppingList> shoppingLists = Arrays.asList(list1, list2);
+        when(listRepository.findAllByPendingshares(testAccount.getEmail())).thenReturn(shoppingLists);
+        listService.addToListIfPending(testAccount);
+        verify(listRepository, times(1)).saveAll(shoppingLists);
+
     }
 
 

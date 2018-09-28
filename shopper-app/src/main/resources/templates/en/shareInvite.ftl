@@ -149,12 +149,9 @@
                         facebook accounts
                     </p>
                     <p>
-                        Afterwards kindly ask ${owner} to share list once more.
+                        Application link : <a href="${application}">${application}</a>
                     </p>
                 </div>
-                <p>
-                    <a href="${application}">${application}</a>
-                </p>
             </td>
         </tr>
         </tbody>

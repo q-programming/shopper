@@ -19,5 +19,7 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
 
     List<ShoppingList> findAllByPreset(CategoryPreset preset);
 
+    List<ShoppingList> findAllByPendingshares(String email);
+
 
 }

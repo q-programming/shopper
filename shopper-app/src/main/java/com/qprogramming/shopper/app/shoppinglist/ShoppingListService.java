@@ -128,9 +128,10 @@ public class ShoppingListService {
             mail.setLocale(account.getLanguage());
             list.getShared().add(account.getId());
             _mailService.sendShareMessage(mail, list, false);
-            //TODO sent email about new list
         } else {
-            //just send initiation email
+            //add emial to pending and just send initiation email
+            list.getPendingshares().add(email);
+            _listRepository.save(list);
             _mailService.sendShareMessage(mail, list, true);
         }
         return this.save(list);
@@ -210,5 +211,20 @@ public class ShoppingListService {
         List<ShoppingList> shoppingListWithPreset = _listRepository.findAllByPreset(preset);
         shoppingListWithPreset.forEach(shoppingList -> shoppingList.setPreset(null));
         _listRepository.saveAll(shoppingListWithPreset);
+    }
+
+    /**
+     * Searches for all lists where user potentially is waiting to have acces as shared
+     * Afterwards his email is removed from pedningshares
+     *
+     * @param account Account which will be checked if waiting somewhere to be added
+     */
+    public void addToListIfPending(Account account) {
+        List<ShoppingList> shoppingLists = _listRepository.findAllByPendingshares(account.getEmail());
+        shoppingLists.forEach(shoppingList -> {
+            shoppingList.getShared().add(account.getId());
+            shoppingList.getPendingshares().remove(account.getEmail());
+        });
+        _listRepository.saveAll(shoppingLists);
     }
 }
