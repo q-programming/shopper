@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ListService} from "../../services/list.service";
 import {ActivatedRoute} from "@angular/router";
 import {ShoppingList} from "../../model/ShoppingList";
@@ -9,13 +9,14 @@ import {AlertService} from "../../services/alert.service";
 import {Category} from "../../model/Category";
 import {CategoryOption} from "../../model/CategoryOption";
 import {TranslateService} from "@ngx-translate/core";
+import {Observable, Subscription} from "rxjs";
 
 @Component({
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.css']
 })
-export class ListComponent implements OnInit {
+export class ListComponent implements OnInit, OnDestroy {
 
     listID: number;
     list: ShoppingList;
@@ -26,6 +27,7 @@ export class ListComponent implements OnInit {
     listName: string;
     edit: boolean;
     sharedCount = 0;
+    sub: Subscription;
 
     constructor(private listSrv: ListService,
                 private itemSrv: ItemService,
@@ -42,7 +44,28 @@ export class ListComponent implements OnInit {
         });
         this.route.queryParams.subscribe(params => {
             this.edit = params['edit'];
-        })
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.stopListWatcher();
+    }
+
+
+    private startListWatcher() {
+        if (this.list.shared.length > 0 && !this.list.archived) {
+            this.stopListWatcher();
+            this.sub = Observable.interval(10000)
+                .subscribe((val) => {
+                    this.loadItems();
+                });
+        }
+    }
+
+    private stopListWatcher() {
+        if (this.sub) {
+            this.sub.unsubscribe();
+        }
     }
 
     private getSharedButtonTootlip() {
@@ -72,6 +95,7 @@ export class ListComponent implements OnInit {
      * Open new item dialog
      */
     openNewItemDialog() {
+        // this.stopListWatcher();
         this.itemSrv.openNewItemDialog(this.listID).subscribe(list => {
             if (list) {
                 this.assignListWithSorting(list);
@@ -79,10 +103,12 @@ export class ListComponent implements OnInit {
             } else {
                 this.alertSrv.error("app.item.add.error");
             }
+            // this.startListWatcher();
         })
     }
 
     openEditItemDialog(item: ListItem) {
+        // this.stopListWatcher();
         this.itemSrv.openEditItemDialog(this.listID, Object.assign({}, item)).subscribe(list => {
             if (list) {
                 this.assignListWithSorting(list);
@@ -90,6 +116,7 @@ export class ListComponent implements OnInit {
             } else {
                 this.alertSrv.error("app.item.update.fail");
             }
+            // this.startListWatcher();
         })
     }
 
@@ -111,6 +138,7 @@ export class ListComponent implements OnInit {
     }
 
     deleteItem(item: ListItem) {
+        this.stopListWatcher();
         _.remove(this.items, (i) => {
             return i.id === item.id
         });
@@ -120,6 +148,7 @@ export class ListComponent implements OnInit {
                     this.itemSrv.deleteItem(this.listID, item).subscribe((list) => {
                         if (list) {
                             this.assignListWithSorting(list);
+                            this.startListWatcher();
                         }
                     });
                 } else {
@@ -140,6 +169,7 @@ export class ListComponent implements OnInit {
     }
 
     openEditListDialog() {
+        // this.stopListWatcher();
         this.listSrv.openEditListDialog(this.list).subscribe(reply => {
             if (reply) {
                 this.alertSrv.success('app.shopping.update.success');
@@ -158,15 +188,32 @@ export class ListComponent implements OnInit {
                     category: value,
                     name: name
                 });
+            }, undefined, () => {
+                this.categories.sort((a, b) => a.name.localeCompare(b.name))
             })
         });
     }
 
     private loadItems() {
         this.listSrv.getListByID(this.listID).subscribe(list => {
+            if (this.list) {
+                this.wereItemsChangedByShared(list);
+            }
             this.listName = list.name;
             this.assignListWithSorting(list)
+            this.startListWatcher();
         });
+    }
+
+    private wereItemsChangedByShared(list) {
+        let itemsDiff = this.list.items.length - list.items.length;
+        if (itemsDiff == -1) {
+            this.alertSrv.info('app.item.new.one');
+        } else if (itemsDiff < -1) {
+            this.alertSrv.info('app.item.new.many', {count: Math.abs(itemsDiff)});
+        } else if (itemsDiff > 0) {
+            this.alertSrv.info('app.item.removed.many', {count: Math.abs(itemsDiff)});
+        }
     }
 
     quickAdd(list: ShoppingList) {
@@ -206,6 +253,7 @@ export class ListComponent implements OnInit {
     }
 
     archiveToggle(list: ShoppingList, archived?: boolean) {
+        this.stopListWatcher();
         this.listSrv.archive(list).subscribe(res => {
             if (res && res.archived != archived) {
                 let msgKey = archived ? 'app.shopping.unarchive.success' : 'app.shopping.archive.success';
@@ -214,12 +262,14 @@ export class ListComponent implements OnInit {
             } else {
                 let msgKey = archived ? 'app.shopping.unarchive.fail' : 'app.shopping.archive.fail';
                 this.alertSrv.error(msgKey);
+                this.startListWatcher();
             }
         })
     }
 
 
     cleanup() {
+        this.stopListWatcher();
         this.done = [];
         this.list.done = 0;
         this.list.items = this.items;
@@ -229,6 +279,7 @@ export class ListComponent implements OnInit {
                     this.listSrv.cleanup(this.listID).subscribe((list) => {
                         if (list) {
                             this.assignListWithSorting(list);
+                            this.stopListWatcher();
                         }
                     });
                 } else {
