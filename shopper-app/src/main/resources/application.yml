@@ -19,6 +19,7 @@ security:
       userInfoUri: "*"
 logging:
   level:
+    org.hibernate.engine.jdbc.env.internal.LobCreatorBuilderImpl: ERROR
     org.springframework.security: ERROR
     org.springframework.web.filter.CommonsRequestLoggingFilter: ERROR
 spring:

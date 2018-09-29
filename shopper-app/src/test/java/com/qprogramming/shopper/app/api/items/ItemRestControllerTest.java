@@ -218,7 +218,6 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(listItem))).andExpect(status().is2xxSuccessful());
         verify(productRepositoryMock, times(2)).save(any(Product.class));
-        verify(listItemRepositoryMock, times(1)).delete(any(ListItem.class));
         verify(listRepositoryMock, times(1)).save(any(ShoppingList.class));
     }
 
