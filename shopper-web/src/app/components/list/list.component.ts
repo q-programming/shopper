@@ -28,6 +28,7 @@ export class ListComponent implements OnInit, OnDestroy {
     edit: boolean;
     sharedCount = 0;
     sub: Subscription;
+    cleanupInProgress: boolean;
 
     constructor(private listSrv: ListService,
                 private itemSrv: ItemService,
@@ -196,11 +197,12 @@ export class ListComponent implements OnInit, OnDestroy {
 
     private loadItems() {
         this.listSrv.getListByID(this.listID).subscribe(list => {
-            if (this.list) {
+            if (this.list && !this.cleanupInProgress) {
                 this.wereItemsChangedByShared(list);
             }
+            this.cleanupInProgress = false;//clear any potential cleanup flag
             this.listName = list.name;
-            this.assignListWithSorting(list)
+            this.assignListWithSorting(list);
             this.startListWatcher();
         });
     }
@@ -270,6 +272,7 @@ export class ListComponent implements OnInit, OnDestroy {
 
     cleanup() {
         this.stopListWatcher();
+        this.cleanupInProgress = true;
         this.done = [];
         this.list.done = 0;
         this.list.items = this.items;
@@ -279,7 +282,7 @@ export class ListComponent implements OnInit, OnDestroy {
                     this.listSrv.cleanup(this.listID).subscribe((list) => {
                         if (list) {
                             this.assignListWithSorting(list);
-                            this.stopListWatcher();
+                            this.startListWatcher();
                         }
                     });
                 } else {

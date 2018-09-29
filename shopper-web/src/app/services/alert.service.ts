@@ -126,7 +126,7 @@ export class AlertService {
     undoable(key: string, params?: Object): Observable<boolean> {
         return new Observable((observable) => {
             this.translate.get(key, params).subscribe(txt => {
-                this.addMessage(txt, MessageType.UNDOABLE, 5000, observable);
+                this.addMessage(txt, MessageType.UNDOABLE, 50000, observable);
             })
         });
     }

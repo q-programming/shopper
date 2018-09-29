@@ -14,9 +14,9 @@
             <mat-icon *ngSwitchCase="MessageType.WARNING" class="mr-2">warning</mat-icon>
             {{message.text}}
             <div class="pull-right ml-4">
-                <mat-icon class="clickable pull-right ml-1" (click)="dismiss(message)">close</mat-icon>
+                <mat-icon class="clickable pull-right" (click)="dismiss(message)">close</mat-icon>
                 <a *ngIf="message.type === MessageType.UNDOABLE" (click)="undo(message)"
-                   class="message-undo">{{'app.general.undo'|translate}}
+                   class="message-undo mt-1">{{'app.general.undo'|translate}}
                 </a>
             </div>
         </div>

@@ -33,11 +33,13 @@
     <!--LIST CARD-->
     <mat-card fxLayout="column" *ngFor="let list of lists" class="list z-depth clickable">
         <mat-card-header>
-            <mat-card-title [routerLink]="['list', list.id]">{{list.name}}</mat-card-title>
-            <mat-card-subtitle *ngIf="list.ownerId !== account.id">
-                <img class="avatar small" [src]="list.ownerAvatar">
-                {{list.ownerName}}
-            </mat-card-subtitle>
+            <span [routerLink]="['list', list.id]">
+                <mat-card-title>{{list.name}}</mat-card-title>
+                <mat-card-subtitle *ngIf="list.ownerId !== account.id">
+                    <img class="avatar small" [src]="list.ownerAvatar">
+                    {{list.ownerName}}
+                </mat-card-subtitle>
+            </span>
             <span class="fill-remaining-space" [routerLink]="['list', list.id]"></span>
             <span class="list-count">{{list.done}}/{{list.items.length}}</span>
             <button mat-icon-button [matMenuTriggerFor]="menu">

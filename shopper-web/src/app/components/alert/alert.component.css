@@ -72,6 +72,6 @@ Messages
 
 .message-undo {
     color: #103444;
-    /*margin-right: -50px;*/
+    vertical-align: sub;
     font-weight: bold;
 }
