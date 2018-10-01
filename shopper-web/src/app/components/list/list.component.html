@@ -57,14 +57,20 @@
                     <mat-icon>delete_forever</mat-icon>
                     <span>{{'app.shopping.clear'|translate}}</span>
                 </button>
-                <button mat-menu-item (click)="archiveToggle(list)">
+                <button *ngIf="list.isOwner" mat-menu-item (click)="archiveToggle()">
                     <mat-icon>archive</mat-icon>
                     <span>{{'app.shopping.archive'|translate}}</span>
+                </button>
+                <!--LEAVE SHARED LIST-->
+                <button *ngIf="!list.isOwner" mat-menu-item (click)="leaveShared()"
+                        matTooltip="{{'app.shopping.share.leave.hint'|translate}}">
+                    <mat-icon>clear</mat-icon>
+                    <span>{{'app.shopping.share.leave'|translate}}</span>
                 </button>
             </ng-container>
             <!--ARCHIVED-->
             <ng-container *ngIf="list.archived">
-                <button mat-menu-item (click)="archiveToggle(list,list.archived)">
+                <button mat-menu-item (click)="archiveToggle(list.archived)">
                     <mat-icon>unarchive</mat-icon>
                     <span>{{'app.shopping.unarchive'|translate}}</span>
                 </button>
@@ -72,7 +78,7 @@
         </mat-menu>
         <!--SHARE-->
         <button *ngIf="!list.archived"
-                mat-icon-button class="pull-right" (click)="shareListOpenDialog(list)"
+                mat-icon-button class="pull-right" (click)="shareListOpenDialog()"
                 matTooltip="{{shareTooltip}}">
             <mat-icon matBadge="{{sharedCount}}" matBadgePosition="below before"
                       [matBadgeHidden]="sharedCount==0">person
@@ -137,7 +143,8 @@
             <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
         </mat-card-title-group>
         <span class="fill-remaining-space"></span>
-        <mat-card-subtitle class="mt-2" fxShow.xs="false"><span *ngIf="item.quantity!==0">{{item.quantity}}</span>
+        <mat-card-subtitle class="mt-2">
+            <span *ngIf="item.quantity!==0">{{item.quantity}}</span>
             {{item.unit}}
         </mat-card-subtitle>
         <button mat-icon-button>

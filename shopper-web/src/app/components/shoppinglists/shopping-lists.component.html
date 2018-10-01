@@ -57,9 +57,14 @@
                         <mat-icon>share</mat-icon>
                         <span>{{'app.shopping.share'|translate}}</span>
                     </button>
-                    <button mat-menu-item (click)="archiveToggle(list)">
+                    <button *ngIf="list.isOwner" mat-menu-item (click)="archiveToggle(list)">
                         <mat-icon>archive</mat-icon>
                         <span>{{'app.shopping.archive'|translate}}</span>
+                    </button>
+                    <button *ngIf="!list.isOwner" mat-menu-item (click)="leaveShared(list)"
+                            matTooltip="{{'app.shopping.share.leave.hint'|translate}}">
+                        <mat-icon>clear</mat-icon>
+                        <span>{{'app.shopping.share.leave'|translate}}</span>
                     </button>
                 </ng-container>
                 <!--ARCHIVED-->

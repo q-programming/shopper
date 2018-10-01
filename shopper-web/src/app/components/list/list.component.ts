@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ListService} from "../../services/list.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {ShoppingList} from "../../model/ShoppingList";
 import {ListItem} from "../../model/ListItem";
 import * as _ from 'lodash';
@@ -32,18 +32,19 @@ export class ListComponent implements OnInit, OnDestroy {
 
     constructor(private listSrv: ListService,
                 private itemSrv: ItemService,
-                private route: ActivatedRoute,
+                private router: Router,
+                private activatedRoute: ActivatedRoute,
                 private alertSrv: AlertService,
                 private translate: TranslateService) {
     }
 
     ngOnInit() {
         this.loadCategoriesWithLocalName();
-        this.route.params.subscribe(params => {
+        this.activatedRoute.params.subscribe(params => {
             this.listID = params['listid'];
             this.loadItems();
         });
-        this.route.queryParams.subscribe(params => {
+        this.activatedRoute.queryParams.subscribe(params => {
             this.edit = params['edit'];
         });
     }
@@ -160,8 +161,8 @@ export class ListComponent implements OnInit, OnDestroy {
     }
 
 
-    shareListOpenDialog(list: ShoppingList) {
-        this.listSrv.openShareListDialog(list).subscribe(reply => {
+    shareListOpenDialog() {
+        this.listSrv.openShareListDialog(this.list).subscribe(reply => {
                 if (reply) {
                     this.loadItems();
                 }
@@ -254,19 +255,28 @@ export class ListComponent implements OnInit, OnDestroy {
         this.edit = false;
     }
 
-    archiveToggle(list: ShoppingList, archived?: boolean) {
+    archiveToggle(archived?: boolean) {
         this.stopListWatcher();
-        this.listSrv.archive(list).subscribe(res => {
-            if (res && res.archived != archived) {
+        this.listSrv.archive(this.list).subscribe(res => {
+            if (res) {
                 let msgKey = archived ? 'app.shopping.unarchive.success' : 'app.shopping.archive.success';
                 this.alertSrv.success(msgKey);
                 this.loadItems();
-            } else {
-                let msgKey = archived ? 'app.shopping.unarchive.fail' : 'app.shopping.archive.fail';
-                this.alertSrv.error(msgKey);
-                this.startListWatcher();
             }
+        }, error => {
+            let msgKey = archived ? 'app.shopping.unarchive.fail' : 'app.shopping.archive.fail';
+            this.alertSrv.error(msgKey);
+            this.startListWatcher();
         })
+    }
+
+    leaveShared() {
+        this.listSrv.archive(this.list).subscribe(res => {
+            if (res) {
+                this.alertSrv.success('app.shopping.share.leave.success');
+                this.router.navigate(['/']);
+            }
+        });
     }
 
 

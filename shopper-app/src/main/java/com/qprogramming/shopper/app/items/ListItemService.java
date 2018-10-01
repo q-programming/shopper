@@ -66,6 +66,7 @@ public class ListItemService {
         if (itemOptional.isPresent()) {
             listItem = itemOptional.get();
             listItem.setQuantity(atLeastOneQuantity(listItem) + atLeastOneQuantity(item));
+            listItem.setDone(false);
         } else {
             listItem = createListItem(item);
             list.getItems().add(listItem);

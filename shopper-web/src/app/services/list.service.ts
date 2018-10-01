@@ -62,20 +62,23 @@ export class ListService {
      * @param listID list id
      */
     getListByID(listID: number): Observable<ShoppingList> {
-        return this.api.getObject<ShoppingList>(environment.list_url + `/${listID}`)
+        return this.api.getObject<ShoppingList>(environment.list_url + `/${listID}`).map(list => {
+            list.isOwner = this.isOwner(list);
+            return list;
+        })
     }
 
     private processList(lists: ShoppingList[]): ShoppingList[] {
-        let filtered = _.filter(lists, list => this.notOwner(list));
+        let filtered = _.filter(lists, list => !this.isOwner(list));
         filtered.forEach(list => {
-            list.notOwner = true;
+            list.isOwner = false;
             this.avatarSrv.getUserAvatarById(list.ownerId).subscribe(avatar => list.ownerAvatar = avatar);
         });
         return lists
     }
 
-    private notOwner(list: ShoppingList): boolean {
-        return list.ownerId !== this.currentAccount.id
+    isOwner(list: ShoppingList): boolean {
+        return list.ownerId === this.currentAccount.id
     }
 
     /**

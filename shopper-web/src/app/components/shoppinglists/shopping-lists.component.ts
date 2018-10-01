@@ -89,6 +89,15 @@ export class ShoppingListsComponent implements OnInit {
         })
     }
 
+    leaveShared(list: ShoppingList) {
+        this.listSrv.archive(list).subscribe(res => {
+            if (res) {
+                this.alertSrv.success('app.shopping.share.leave.success');
+                this.loadUserLists();
+            }
+        });
+    }
+
     confirmDeletion(list: ShoppingList) {
         const data: ConfirmDialog = {
             title_key: 'app.shopping.delete.confirm',

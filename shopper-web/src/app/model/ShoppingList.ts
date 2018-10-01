@@ -8,7 +8,7 @@ export class ShoppingList {
     ownerId: string;
     ownerName: string;
     ownerAvatar: any;
-    notOwner: boolean;
+    isOwner: boolean;
     done: number;
     archived: boolean;
     shared: string[];

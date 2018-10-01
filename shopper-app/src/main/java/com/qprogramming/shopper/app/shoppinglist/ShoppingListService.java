@@ -178,7 +178,7 @@ public class ShoppingListService {
         Comparator<ListItem> listComparator = Comparator
                 .nullsLast(
                         Comparator.comparing((ListItem l) -> categoriesOrdered.get(l.getCategory()))
-                                .thenComparing(listItem -> listItem.getProduct().getName()));
+                                .thenComparing(listItem -> listItem.getProduct().getName().toLowerCase()));
         list.getItems().sort(listComparator);
     }
 
