@@ -1,0 +1,9 @@
+.mat-list-compact {
+    cursor: move !important;
+    padding: 0;
+    margin: 0 5px 2px 5px;
+}
+.preset-container{
+    padding: 15px;
+    border: 1px solid lightgray;
+}

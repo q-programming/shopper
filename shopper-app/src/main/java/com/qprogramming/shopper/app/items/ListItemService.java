@@ -66,6 +66,7 @@ public class ListItemService {
         if (itemOptional.isPresent()) {
             listItem = itemOptional.get();
             listItem.setQuantity(atLeastOneQuantity(listItem) + atLeastOneQuantity(item));
+            listItem.setDone(false);
         } else {
             listItem = createListItem(item);
             list.getItems().add(listItem);
@@ -94,12 +95,13 @@ public class ListItemService {
     }
 
     private Product getProductByNameOrCreate(Product product) {
-        Optional<Product> optionalProduct = _productRepository.findByNameIgnoreCase(product.getName());
+        Optional<Product> optionalProduct = _productRepository.findByNameIgnoreCase(product.getName().trim());
         return optionalProduct.orElseGet(() -> saveProduct(product));
     }
 
 
     public Product saveProduct(Product product) {
+        product.setName(product.getName().trim());
         return this._productRepository.save(product);
     }
 
@@ -127,7 +129,7 @@ public class ListItemService {
     }
 
     private Product updateCategoryScore(Category updatedCategory, Product product) {
-        Integer categoryScore = product.getCategoryScore().getOrDefault(updatedCategory, 0);
+        Long categoryScore = product.getCategoryScore().getOrDefault(updatedCategory, 0L);
         product.getCategoryScore().put(updatedCategory, ++categoryScore);
         return _productRepository.save(product);
     }
@@ -142,16 +144,17 @@ public class ListItemService {
         return i -> i.getProduct().equals(product) || StringUtils.equalsIgnoreCase(product.getName(), i.getProduct().getName());
     }
 
-    public ListItem replaceProduct(Product updatedProduct, ListItem updatedItem, ShoppingList list) throws ProductNotFoundException, BadProductNameException {
+    public void replaceProduct(Product updatedProduct, ListItem updatedItem, ShoppingList list) throws ProductNotFoundException, BadProductNameException {
         Optional<ListItem> itemOptional = list.getItems().stream().filter(sameProduct(updatedProduct)).findFirst();
         if (itemOptional.isPresent()) {
             ListItem listItem = itemOptional.get();
             listItem.setQuantity(atLeastOneQuantity(listItem) + atLeastOneQuantity(updatedItem));
-            return null;
+            list.getItems().remove(updatedItem);
+            deleteListItem(updatedItem);
         } else {
             updatedItem.setProduct(getProductOrCreate(updatedProduct));
             updateProductCategoryFromItem(updatedItem, updatedItem.getProduct(), updatedItem.getCategory());
-            return saveItem(updatedItem);
+            saveItem(updatedItem);
         }
     }
 }

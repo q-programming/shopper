@@ -12,6 +12,90 @@
 					"name": "item",
 					"item": [
 						{
+							"name": "product",
+							"item": [
+								{
+									"name": "find product",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "1abf26dd-7cd9-495d-a9d5-b8f1b30db186",
+												"type": "text/javascript",
+												"exec": [
+													"",
+													""
+												]
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"id": "4dd537a2-411d-4074-acd7-e6f9bbf0e76f",
+												"type": "text/javascript",
+												"exec": [
+													"let cookieValue = pm.cookies.get('XSRF-TOKEN');",
+													"pm.environment.set('XSRF-TOKEN', cookieValue);"
+												]
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "basic",
+											"basic": [
+												{
+													"key": "username",
+													"value": "{{username}}",
+													"type": "string"
+												},
+												{
+													"key": "password",
+													"value": "{{password}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "X-XSRF-TOKEN",
+												"value": "{{XSRF-TOKEN}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"id\":13\n}\n"
+										},
+										"url": {
+											"raw": "{{url}}/shopper/api/product/find?term=pom",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopper",
+												"api",
+												"product",
+												"find"
+											],
+											"query": [
+												{
+													"key": "term",
+													"value": "pom"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
 							"name": "add item",
 							"event": [
 								{
@@ -42,13 +126,13 @@
 									"type": "basic",
 									"basic": [
 										{
-											"key": "password",
-											"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+											"key": "username",
+											"value": "{{username}}",
 											"type": "string"
 										},
 										{
-											"key": "username",
-											"value": "kubarom@gmail.com",
+											"key": "password",
+											"value": "{{password}}",
 											"type": "string"
 										}
 									]
@@ -115,13 +199,13 @@
 									"type": "basic",
 									"basic": [
 										{
-											"key": "password",
-											"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+											"key": "username",
+											"value": "{{username}}",
 											"type": "string"
 										},
 										{
-											"key": "username",
-											"value": "kubarom@gmail.com",
+											"key": "password",
+											"value": "{{password}}",
 											"type": "string"
 										}
 									]
@@ -188,13 +272,13 @@
 									"type": "basic",
 									"basic": [
 										{
-											"key": "password",
-											"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+											"key": "username",
+											"value": "{{username}}",
 											"type": "string"
 										},
 										{
-											"key": "username",
-											"value": "kubarom@gmail.com",
+											"key": "password",
+											"value": "{{password}}",
 											"type": "string"
 										}
 									]
@@ -261,13 +345,13 @@
 									"type": "basic",
 									"basic": [
 										{
-											"key": "password",
-											"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+											"key": "username",
+											"value": "{{username}}",
 											"type": "string"
 										},
 										{
-											"key": "username",
-											"value": "kubarom@gmail.com",
+											"key": "password",
+											"value": "{{password}}",
 											"type": "string"
 										}
 									]
@@ -337,13 +421,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"key": "username",
+									"value": "{{username}}",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "kubarom@gmail.com",
+									"key": "password",
+									"value": "{{password}}",
 									"type": "string"
 								}
 							]
@@ -361,7 +445,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "delete me"
+							"raw": "some new list"
 						},
 						"url": {
 							"raw": "{{url}}/shopper/api/list/add",
@@ -409,13 +493,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"key": "username",
+									"value": "{{username}}",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "kubarom@gmail.com",
+									"key": "password",
+									"value": "{{password}}",
 									"type": "string"
 								}
 							]
@@ -481,13 +565,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"key": "username",
+									"value": "{{username}}",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "kubarom@gmail.com",
+									"key": "password",
+									"value": "{{password}}",
 									"type": "string"
 								}
 							]
@@ -554,13 +638,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"key": "username",
+									"value": "{{username}}",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "kubarom@gmail.com",
+									"key": "password",
+									"value": "{{password}}",
 									"type": "string"
 								}
 							]
@@ -626,13 +710,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"key": "username",
+									"value": "{{username}}",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "kubarom@gmail.com",
+									"key": "password",
+									"value": "{{password}}",
 									"type": "string"
 								}
 							]
@@ -699,13 +783,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"key": "username",
+									"value": "{{username}}",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "kubarom@gmail.com",
+									"key": "password",
+									"value": "{{password}}",
 									"type": "string"
 								}
 							]
@@ -772,13 +856,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"key": "username",
+									"value": "{{username}}",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "kubarom@gmail.com",
+									"key": "password",
+									"value": "{{password}}",
 									"type": "string"
 								}
 							]
@@ -845,13 +929,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"key": "username",
+									"value": "{{username}}",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "kubarom@gmail.com",
+									"key": "password",
+									"value": "{{password}}",
 									"type": "string"
 								}
 							]
@@ -924,13 +1008,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+									"key": "username",
+									"value": "{{username}}",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "kubarom@gmail.com",
+									"key": "password",
+									"value": "{{password}}",
 									"type": "string"
 								}
 							]
@@ -1000,13 +1084,13 @@
 					"type": "basic",
 					"basic": [
 						{
-							"key": "password",
-							"value": "cK=3f*-#[Osr=2oPM+F+%%aXJLw}kgvu",
+							"key": "username",
+							"value": "{{username}}",
 							"type": "string"
 						},
 						{
-							"key": "username",
-							"value": "kubarom@gmail.com",
+							"key": "password",
+							"value": "{{password}}",
 							"type": "string"
 						}
 					]

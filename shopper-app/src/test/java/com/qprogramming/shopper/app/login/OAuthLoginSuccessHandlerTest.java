@@ -5,6 +5,7 @@ import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.login.token.TokenService;
+import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -51,6 +53,8 @@ public class OAuthLoginSuccessHandlerTest {
     private TokenService tokenServiceMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private ShoppingListService listServiceMock;
 
     private OAuthLoginSuccessHandler handler;
 
@@ -62,13 +66,13 @@ public class OAuthLoginSuccessHandlerTest {
         when((OAuth2AuthenticationDetails) authMock.getDetails()).thenReturn(oauthDetailsMock);
         when(authenticationMock.getDetails()).thenReturn(details);
         when(propertyServiceMock.getLanguages()).thenReturn(languageList());
-        handler = spy(new OAuthLoginSuccessHandler(accSrvMock, tokenServiceMock, propertyServiceMock));
+        handler = spy(new OAuthLoginSuccessHandler(accSrvMock, tokenServiceMock, propertyServiceMock, listServiceMock));
     }
 
     @Test
     public void onAuthenticationSuccessGoogleUserExists() throws Exception {
         Account testAccount = TestUtil.createAccount();
-        when(accSrvMock.findByEmail(TestUtil.EMAIL)).thenReturn(testAccount);
+        when(accSrvMock.findByEmail(TestUtil.EMAIL)).thenReturn(Optional.of(testAccount));
         details.put(OAuthLoginSuccessHandler.G.SUB, TestUtil.USER_RANDOM_ID);
         details.put(OAuthLoginSuccessHandler.EMAIL, TestUtil.EMAIL);
         handler.onAuthenticationSuccess(requestMock, responseMock, authMock);
@@ -93,7 +97,7 @@ public class OAuthLoginSuccessHandlerTest {
     @Test
     public void onAuthenticationSuccessFacebookUserExists() throws Exception {
         Account testAccount = TestUtil.createAccount();
-        when(accSrvMock.findByEmail(TestUtil.EMAIL)).thenReturn(testAccount);
+        when(accSrvMock.findByEmail(TestUtil.EMAIL)).thenReturn(Optional.of(testAccount));
         doReturn(facebookTemplateMock).when(handler).getFacebookTemplate(any());
         String[] fields = {OAuthLoginSuccessHandler.FB.ID, OAuthLoginSuccessHandler.EMAIL
                 , OAuthLoginSuccessHandler.FB.FIRST_NAME, OAuthLoginSuccessHandler.FB.LAST_NAME

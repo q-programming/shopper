@@ -1,0 +1,25 @@
+<h2 mat-dialog-title class="modal-header mb-0 ">
+    <mat-icon class="text-white mr-2">share</mat-icon>
+    {{'app.shopping.share'|translate}}
+    <button mat-icon-button mat-dialog-close class="pull-right" (click)="close()">
+        <mat-icon>close</mat-icon>
+    </button>
+</h2>
+<new-share *ngIf="shoppingList.shared.length == 0" [list]="shoppingList" [dialogRef]="dialogRef"></new-share>
+<mat-tab-group mat-stretch-tabs *ngIf="shoppingList.shared && shoppingList.shared.length >0">
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon>share</mat-icon>&nbsp;{{'app.shopping.share.with.new'|translate}}
+        </ng-template>
+        <new-share [list]="shoppingList" (done)="shared($event)" [dialogRef]="dialogRef"></new-share>
+    </mat-tab>
+    <mat-tab *ngIf="shoppingList.shared.length >0">
+        <ng-template mat-tab-label>
+            <mat-icon>person</mat-icon>&nbsp;{{'app.shopping.share.with.header'|translate}}
+        </ng-template>
+        <ng-template matTabContent>
+            <shared-with [list]="shoppingList" (done)="stopedSharing($event)"></shared-with>
+        </ng-template>
+    </mat-tab>
+</mat-tab-group>
+

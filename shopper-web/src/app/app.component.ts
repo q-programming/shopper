@@ -4,7 +4,6 @@ import {HttpClient} from "@angular/common/http";
 import {AuthenticationService} from "./services/authentication.service";
 import {Account} from "./model/Account";
 import {MatSidenav} from "@angular/material";
-import {LoaderComponent} from "./components/loader/loader.component";
 import {ListService} from "./services/list.service";
 import {ShoppingList} from "./model/ShoppingList";
 import {AlertService} from "./services/alert.service";
@@ -19,7 +18,6 @@ export class AppComponent implements OnInit {
     account: Account;
     message_count = {count: ""};
     lists: ShoppingList[];
-    public loader = LoaderComponent;
     @ViewChild("sidenav")
     private sidenav: MatSidenav;
 
@@ -33,8 +31,10 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
         this.account = this.authSrv.currentAccount;
-        this.message_count.count = "" + 1;
-        this.listSrv.getUserList().subscribe(lists => this.lists = lists.splice(0, 4));
+        if (this.account) {
+            this.message_count.count = "" + 1;
+            this.listSrv.getUserList().subscribe(lists => this.lists = lists.splice(0, 4));
+        }
     }
 
     loggedIn() {

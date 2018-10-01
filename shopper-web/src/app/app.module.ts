@@ -8,14 +8,14 @@ import {LoginComponent} from './components/login/login.component';
 import {HomeComponent} from './components/home/home.component';
 import {AuthenticationService} from "./services/authentication.service";
 import {AuthInterceptor} from "./guards/auth.interceptor";
-import {AlertComponent} from './directives/alert.component';
+import {AlertComponent} from './components/alert/alert.component';
 import {AlertService} from "./services/alert.service";
 import {AuthGuard} from "./guards/auth.guard";
 import {ApiService} from "./services/api.service";
 import {LoggerModule, NgxLoggerLevel} from 'ngx-logger';
 import {AvatarService} from "./services/avatar.service";
 import {AccountService} from "./services/account.service";
-import {AvatarUploadComponent, SettingsComponent} from './components/settings/settings.component';
+import {SettingsComponent} from './components/settings/settings.component';
 import {ImageCropperModule} from "ngx-img-cropper";
 import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
@@ -23,22 +23,32 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AppMaterialModules} from "./material.module";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {LayoutModule} from '@angular/cdk/layout';
-import {MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule} from '@angular/material';
-import {NgHttpLoaderModule} from "ng-http-loader";
+import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule} from '@angular/material';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
-import {LoaderComponent} from './components/loader/loader.component';
 import {ListService} from "./services/list.service";
 import {ListComponent} from './components/list/list.component';
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
-import {NewShoppingListDialogComponent} from "./components/dialogs/new-list/new-shopping-list-dialog.component";
+import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {ShoppingListDialogComponent} from "./components/dialogs/list/shopping-list-dialog.component";
 import {ShoppingListsComponent} from "./components/shoppinglists/shopping-lists.component";
-import {FormsModule} from '@angular/forms';
 import {ConfirmDialogComponent} from './components/dialogs/confirm/confirm-dialog.component';
 import {ItemService} from "./services/item.service";
 import {ItemDialogComponent} from "./components/dialogs/item/item-dialog.component";
-import { HighlightDirective } from './directives/highlight.directive';
-import { QuickaddComponent } from './components/list/quickadd/quickadd.component';
-
+import {HighlightDirective} from './directives/highlight.directive';
+import {QuickaddComponent} from './components/list/quickadd/quickadd.component';
+import {ShareComponent} from './components/dialogs/share/share.component';
+import {EmailSettingsComponent} from './components/settings/email/email-settings.component';
+import {
+    AccountSettingsComponent,
+    AvatarUploadComponent
+} from './components/settings/account/account-settings.component';
+import {ProductsSettingsComponent} from './components/settings/products/products-settings.component';
+import {NotificationsSettingsComponent} from './components/settings/notifications/notifications-settings.component';
+import {AppSettingsComponent} from "./components/settings/app/app-settings.component";
+import {CookieService} from "ngx-cookie-service";
+import {SharedWithComponent} from './components/dialogs/share/shared-with/shared-with.component';
+import {NewShareComponent} from './components/dialogs/share/new-share/new-share.component';
+import {DndModule} from "ng2-dnd";
+import {NgProgressModule} from "ngx-progressbar";
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -53,22 +63,29 @@ export function initUserFactory(authService: AuthenticationService) {
         AlertComponent,
         SettingsComponent,
         AvatarUploadComponent,
-        LoaderComponent,
         ShoppingListsComponent,
         ListComponent,
-        NewShoppingListDialogComponent,
+        ShoppingListDialogComponent,
         ConfirmDialogComponent,
         ItemDialogComponent,
         HighlightDirective,
-        QuickaddComponent
+        QuickaddComponent,
+        ShareComponent,
+        EmailSettingsComponent,
+        AccountSettingsComponent,
+        ProductsSettingsComponent,
+        NotificationsSettingsComponent,
+        AppSettingsComponent,
+        SharedWithComponent,
+        NewShareComponent
     ],
     entryComponents: [
         AvatarUploadComponent,
         ShoppingListsComponent,
-        NewShoppingListDialogComponent,
+        ShoppingListDialogComponent,
         ConfirmDialogComponent,
         ItemDialogComponent,
-        LoaderComponent
+        ShareComponent
     ],
     imports: [
         FormsModule,
@@ -78,8 +95,9 @@ export function initUserFactory(authService: AuthenticationService) {
         HttpClientModule,
         routing,
         AppMaterialModules,
-        NgHttpLoaderModule,
+        NgProgressModule,
         FlexLayoutModule,
+        DndModule.forRoot(),
         LoggerModule.forRoot({
             level: NgxLoggerLevel.DEBUG,
             serverLogLevel: NgxLoggerLevel.ERROR
@@ -111,6 +129,7 @@ export function initUserFactory(authService: AuthenticationService) {
         ListService,
         ItemService,
         FormBuilder,
+        CookieService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

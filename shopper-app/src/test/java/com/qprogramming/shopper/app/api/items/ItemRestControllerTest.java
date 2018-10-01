@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.api.items;
 import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.items.ListItemRepository;
@@ -13,13 +14,13 @@ import com.qprogramming.shopper.app.items.product.ProductRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -54,6 +55,10 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     private ListItemRepository listItemRepositoryMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private MailService mailServiceMock;
+    @Mock
+    private CategoryPresetRepository presetRepositoryMock;
 
     private ListItemService listItemService;
 
@@ -64,7 +69,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     @Override
     public void setup() {
         super.setup();
-        listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock);
+        listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, mailServiceMock, presetRepositoryMock);
         listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock);
         controller = new ItemRestController(listItemService, listService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
@@ -213,7 +218,6 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(listItem))).andExpect(status().is2xxSuccessful());
         verify(productRepositoryMock, times(2)).save(any(Product.class));
-        verify(listItemRepositoryMock, times(1)).delete(any(ListItem.class));
         verify(listRepositoryMock, times(1)).save(any(ShoppingList.class));
     }
 

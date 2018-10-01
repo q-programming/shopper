@@ -88,7 +88,7 @@ export class ItemDialogComponent implements OnInit {
         }
     }
 
-    addItem() {
+    commitItem() {
         if (this.form.valid) {
             this.dialogRef.close(this.item);
         }

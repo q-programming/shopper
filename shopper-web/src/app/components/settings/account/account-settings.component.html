@@ -1,0 +1,37 @@
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+        <h3 class="underlined">
+            <mat-icon>assignment_ind</mat-icon>
+            {{'app.general.avatar'|translate}}
+        </h3>
+    </div>
+</div>
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center">
+        <img [src]="account.avatar" height="100px">
+    </div>
+</div>
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center">
+        <button mat-raised-button (click)="openDialog()" class="mt-2">{{'app.settings.account.avatar'|translate}}
+        </button>
+    </div>
+</div>
+<!--LANGUAGE-->
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+        <h3 class="underlined">
+            <mat-icon>language</mat-icon>
+            {{'app.settings.account.language'|translate}}
+        </h3>
+    </div>
+</div>
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center">
+        <mat-form-field>
+            <mat-select [(value)]="account.language" (selectionChange)="changeLanguage()">
+                <mat-option *ngFor="let lang of languages" [value]="lang.id">{{lang.name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</div>

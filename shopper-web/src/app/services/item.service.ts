@@ -33,18 +33,41 @@ export class ItemService {
         this.currentAccount = this.authSrv.currentAccount
     }
 
+    /**
+     * Togle item done status ( bought or to buy )
+     *
+     * @param listID items list id
+     * @param item item to be toggled
+     */
     toggleItem(listID: number, item: ListItem): Observable<ListItem> {
         return this.api.postObject<ListItem>(environment.item_url + `/${listID}/toggle`, item)
     }
 
+    /**
+     * Updates item with new data
+     *
+     * @param listID items list id
+     * @param item new item data
+     */
     updateItem(listID: number, item: ListItem): Observable<ShoppingList> {
         return this.api.postObject<ShoppingList>(environment.item_url + `/${listID}/update`, item)
     }
 
+    /**
+     * Deletes item from list
+     *
+     * @param listID items list id
+     * @param item new item data
+     */
     deleteItem(listID: number, item: ListItem): Observable<ShoppingList> {
         return this.api.postObject<ShoppingList>(environment.item_url + `/${listID}/delete`, item)
     }
 
+    /**
+     * Open modal dialog to add new item to list
+     *
+     * @param listID list for which item will be added
+     */
     openNewItemDialog(listID: number): Observable<ShoppingList> {
         this.dialogConfig.data.update = false;
         this.dialogConfig.data.item = undefined;
@@ -67,6 +90,12 @@ export class ItemService {
         });
     }
 
+    /**
+     * Open edit modal dialog
+     *
+     * @param listID listID list where item will be edited
+     * @param item item to be updated
+     */
     openEditItemDialog(listID: number, item: ListItem): Observable<ShoppingList> {
         this.dialogConfig.data.update = true;
         this.dialogConfig.data.item = item;
@@ -74,7 +103,7 @@ export class ItemService {
             let dialogRef = this.dialog.open(ItemDialogComponent, this.dialogConfig);
             dialogRef.afterClosed().subscribe(item => {
                 if (item) {
-                    this.createNewItem(listID, item).subscribe(edited => {
+                    this.updateItem(listID, item).subscribe(edited => {
                         if (edited) {
                             observable.next(edited);
                             observable.complete();
@@ -89,6 +118,12 @@ export class ItemService {
         });
     }
 
+    /**
+     * Create new item for list
+     *
+     * @param listID new items lits id
+     * @param item new item data
+     */
     createNewItem(listID: number, item: ListItem): Observable<ShoppingList> {
         return this.api.postObject<ShoppingList>(environment.item_url + `/${listID}/add`, item)
     }

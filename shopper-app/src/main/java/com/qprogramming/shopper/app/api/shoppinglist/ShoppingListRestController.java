@@ -1,12 +1,17 @@
 package com.qprogramming.shopper.app.api.shoppinglist;
 
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.exceptions.PresetNotFoundException;
 import com.qprogramming.shopper.app.exceptions.ShoppingAccessException;
 import com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException;
 import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.items.ListItemService;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import com.qprogramming.shopper.app.support.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +21,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
+import javax.mail.MessagingException;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static com.qprogramming.shopper.app.exceptions.AccountNotFoundException.ACCOUNT_WITH_ID_WAS_NOT_FOUND;
+import static com.qprogramming.shopper.app.exceptions.PresetNotFoundException.PRESET_WITH_ID_WAS_NOT_FOUND;
 import static com.qprogramming.shopper.app.exceptions.ShoppingAccessException.ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID;
 import static com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException.SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND;
 
@@ -33,10 +42,15 @@ public class ShoppingListRestController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ShoppingListRestController.class);
     private ShoppingListService _listService;
+    private ListItemService _listItemService;
+    private CategoryPresetService _presetService;
+
 
     @Autowired
-    public ShoppingListRestController(ShoppingListService listService) {
+    public ShoppingListRestController(ShoppingListService listService, ListItemService listItemService, CategoryPresetService presetService) {
         this._listService = listService;
+        this._listItemService = listItemService;
+        this._presetService = presetService;
     }
 
     /**
@@ -89,13 +103,18 @@ public class ShoppingListRestController {
     /**
      * Adds new lists with name
      *
-     * @param name name of new list
+     * @param list new list
      * @return adds freshly created lists
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> addNewList(@RequestBody String name) {
-        return ResponseEntity.ok(_listService.addList(name));
+    public ResponseEntity<ShoppingList> addNewList(@RequestBody ShoppingList list) {
+        try {
+            return ResponseEntity.ok(_listService.addList(list));
+        } catch (PresetNotFoundException e) {
+            LOG.error(PRESET_WITH_ID_WAS_NOT_FOUND, list.getPreset().getId());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -107,7 +126,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> getList(@PathVariable String id) {
+    public ResponseEntity<ShoppingList> getList(@PathVariable Long id) {
         try {
             ShoppingList list = _listService.findByID(id);
             _listService.visitList(list);
@@ -126,26 +145,28 @@ public class ShoppingListRestController {
     /**
      * Starts sharing list with id to certain user with accountID
      *
-     * @param accountID user which no longer will have list shared
-     * @param id        shopping lis id
+     * @param email user which no longer will have list shared
+     * @param id    shopping lis id
      * @return modified shopping list
      */
     @RequestMapping(value = "/{id}/share", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> shareList(@RequestBody String accountID, @PathVariable String id) {
+    @Transactional
+    public ResponseEntity<ShoppingList> shareList(@RequestBody String email, @PathVariable Long id) {
         try {
             ShoppingList list = _listService.findByID(id);
-            list = _listService.shareList(list, accountID);
+            list = _listService.shareList(list, email);
             return ResponseEntity.ok(list);
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (AccountNotFoundException e) {
-            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ShoppingNotFoundException e) {
             LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (MessagingException e) {
+            LOG.error("There was internal error with mailer when trying to send an email: {}", e);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -158,7 +179,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/{id}/stop-sharing", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> stopSharingList(@RequestBody String accountID, @PathVariable String id) {
+    public ResponseEntity<ShoppingList> stopSharingList(@RequestBody String accountID, @PathVariable Long id) {
         try {
             ShoppingList list = _listService.findByID(id);
             list = _listService.stopSharingList(list, accountID);
@@ -180,7 +201,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/{id}/archive", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ShoppingList> archiveList(@PathVariable String id) {
+    public ResponseEntity<ShoppingList> archiveList(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(_listService.toggleArchiveList(id));
         } catch (ShoppingAccessException e) {
@@ -200,7 +221,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/{id}/delete", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<?> deleteList(@PathVariable String id) {
+    public ResponseEntity<?> deleteList(@PathVariable Long id) {
         try {
             _listService.deleteList(id);
             return ResponseEntity.ok().build();
@@ -213,5 +234,107 @@ public class ShoppingListRestController {
         }
     }
 
+    /**
+     * Delete list with id . If currently logged in user is not an owner , he/she will just remove himself from shares of that list
+     *
+     * @param updatedList shopping list to be updated
+     * @return true if operation was success
+     */
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> editList(@RequestBody ShoppingList updatedList) {
+        try {
+            if (StringUtils.isBlank(updatedList.getName())) {
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            ShoppingList list = _listService.findByID(updatedList.getId());
+            return ResponseEntity.ok(_listService.update(list, updatedList));
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, updatedList.getId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (PresetNotFoundException e) {
+            LOG.error(PRESET_WITH_ID_WAS_NOT_FOUND, updatedList.getPreset().getId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+
+    /**
+     * Cleans up shopping list by deleting all items that are marked as done
+     *
+     * @param id shopping lis id
+     * @return shopping list if operation was success
+     */
+    @RequestMapping(value = "/{id}/cleanup", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<ShoppingList> cleanup(@PathVariable Long id) {
+        try {
+            ShoppingList list = _listService.findByID(id);
+            Set<ListItem> toPurge = list.getItems().stream().filter(ListItem::isDone).collect(Collectors.toSet());
+            toPurge.forEach(item -> {
+                list.getItems().remove(item);
+                _listItemService.deleteListItem(item);
+            });
+            _listService.sortItems(list);
+            return ResponseEntity.ok(_listService.save(list));
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+
+    @RolesAllowed("ROLE_USER")
+    @RequestMapping(value = "/presets", method = RequestMethod.GET)
+    public ResponseEntity<List<CategoryPreset>> getCategoryPresets() {
+        return ResponseEntity.ok(_presetService.findAllByOwner(Utils.getCurrentAccountId()));
+    }
+
+
+    @RolesAllowed("ROLE_USER")
+    @RequestMapping(value = "/presets/update", method = RequestMethod.POST)
+    public ResponseEntity<CategoryPreset> updateCategoryPreset(@RequestBody CategoryPreset categoryPreset) {
+        if (categoryPreset.getId() == null) {
+            categoryPreset.setOwner(Utils.getCurrentAccountId());
+            return ResponseEntity.ok(_presetService.save(categoryPreset));
+        }
+        try {
+            CategoryPreset dbPreset = _presetService.findById(categoryPreset.getId());
+            String currentAccountId = Utils.getCurrentAccountId();
+            if (!dbPreset.getOwner().equals(currentAccountId)) {
+                LOG.error("User with id {} tried to remove preset {} for which he is not owner", currentAccountId, dbPreset.getId());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            return ResponseEntity.ok(_presetService.save(categoryPreset));
+        } catch (PresetNotFoundException e) {
+            LOG.error(PRESET_WITH_ID_WAS_NOT_FOUND, categoryPreset.getId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @RolesAllowed("ROLE_USER")
+    @RequestMapping(value = "/presets/delete", method = RequestMethod.POST)
+    public ResponseEntity<CategoryPreset> deleteCategoryPreset(@RequestBody CategoryPreset categoryPreset) {
+        try {
+            CategoryPreset preset = _presetService.findById(categoryPreset.getId());
+            String currentAccountId = Utils.getCurrentAccountId();
+            if (!preset.getOwner().equals(currentAccountId)) {
+                LOG.error("User with id {} tried to remove preset {} for which he is not owner", currentAccountId, preset.getId());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            _listService.removePresetFromLists(preset);
+            _presetService.remove(preset);
+            return ResponseEntity.ok().build();
+        } catch (PresetNotFoundException e) {
+            LOG.error(PRESET_WITH_ID_WAS_NOT_FOUND, categoryPreset.getId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
 }

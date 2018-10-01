@@ -1,12 +1,14 @@
 export class Account {
-    id: string;
-    name: string;
-    surname: string;
-    email: string;
-    language: string;
-    role: Role;
-    authorities: Authority[];
-    avatar: any;
+    id?: string;
+    name?: string;
+    surname?: string;
+    email?: string;
+    language?: string;
+    role?: Role;
+    authorities?: Authority[];
+    avatar?: any;
+    token: string;
+    fullname?: string;
 }
 
 export class Authority {

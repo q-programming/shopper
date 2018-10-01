@@ -28,8 +28,12 @@
 }
 
 .mat-progress-bar {
-    height: 3px !important;
+    /*height: 5px !important;*/
 }
+::ng-deep .mat-progress-bar-fill::after {
+    background-color: #00c500;
+}
+
 .list-count{
     margin-top: 5px;
     font-size: larger;
@@ -40,4 +44,9 @@
     height: 50px;
     margin-left: -5px;
     margin-top: -5px;
+}
+.stick-right{
+    position: absolute;
+    right: 30px;
+    top: 25px;
 }

@@ -1,6 +1,9 @@
 package com.qprogramming.shopper.app.shoppinglist;
 
 import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -31,14 +34,22 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
     @Column
     private boolean archived;
 
-    @ElementCollection
+    @Fetch(FetchMode.JOIN)
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> shared = new HashSet<>();
+
+    @ElementCollection
+    private Set<String> pendingshares = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ListItem> items = new ArrayList<>();
 
     @Column
     private Date lastVisited;
+
+    @ManyToOne
+    private CategoryPreset preset;
+
 
     private Long done;
 
@@ -102,7 +113,7 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
     }
 
     public Long getDone() {
-        return done;
+        return done == null ? 0L : done;
     }
 
     public void setDone(Long done) {
@@ -115,6 +126,25 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
 
     public void setLastVisited(Date lastVisited) {
         this.lastVisited = lastVisited;
+    }
+
+    public CategoryPreset getPreset() {
+        return preset;
+    }
+
+    public void setPreset(CategoryPreset preset) {
+        this.preset = preset;
+    }
+
+    public Set<String> getPendingshares() {
+        if (pendingshares == null) {
+            pendingshares = new HashSet<>();
+        }
+        return pendingshares;
+    }
+
+    public void setPendingshares(Set<String> pendingshares) {
+        this.pendingshares = pendingshares;
     }
 
     @Override

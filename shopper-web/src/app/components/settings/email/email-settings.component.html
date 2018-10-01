@@ -1,0 +1,43 @@
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+        <form [formGroup]="form">
+            <p>{{'app.settings.email.header'|translate}}</p>
+            <div fxLayout="row" fxLayoutGap="10px">
+                <mat-form-field fxFlex="80">
+                    <input matInput formControlName="host" placeholder="{{'app.settings.email.host'|translate}}">
+                </mat-form-field>
+                <mat-form-field fxFlex="20">
+                    <input type="number" matInput formControlName="port"
+                           placeholder="{{'app.settings.email.port'|translate}}">
+                </mat-form-field>
+            </div>
+            <div fxLayout="column">
+                <mat-form-field>
+                    <input type="text" matInput formControlName="username"
+                           placeholder="{{'app.settings.email.username'|translate}}">
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput type="password" formControlName="password"
+                           placeholder="{{'app.settings.email.password'|translate}}">
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput type="email" formControlName="from"
+                           placeholder="{{'app.settings.email.from'|translate}}">
+                    <mat-error *ngIf="form.controls.from.hasError('email') && !form.controls.from.hasError('required')">
+                        {{'app.general.email.error'|translate}}
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="40">
+                    <mat-select placeholder="{{'app.settings.email.encoding'|translate}}" formControlName="encoding">
+                        <mat-option *ngFor="let encoding of encodings" [value]="encoding">
+                            {{encoding}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <button mat-raised-button class="success-button pull-right" (click)="saveConfiguration()"
+                    [disabled]="form.invalid || !form.touched ">{{'app.general.saveChanges'|translate}}
+            </button>
+        </form>
+    </div>
+</div>

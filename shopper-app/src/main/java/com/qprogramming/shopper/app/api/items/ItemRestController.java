@@ -49,7 +49,7 @@ public class ItemRestController {
     @RequestMapping(value = "/{id}/add", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
-    public ResponseEntity<ShoppingList> addItem(@PathVariable String id, @RequestBody ListItem item) {
+    public ResponseEntity<ShoppingList> addItem(@PathVariable Long id, @RequestBody ListItem item) {
         try {
             ShoppingList list = _listService.findByID(id);
             _listItemService.addItemToList(list, item);
@@ -79,15 +79,13 @@ public class ItemRestController {
     @RequestMapping(value = "/{id}/update", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
-    public ResponseEntity<ShoppingList> updateItem(@PathVariable String id, @RequestBody ListItem item) {
+    public ResponseEntity<ShoppingList> updateItem(@PathVariable Long id, @RequestBody ListItem item) {
         try {
             ShoppingList list = _listService.findByID(id);
             ListItem updatedItem = _listItemService.findById(item.getId());
             Product updatedProduct = item.getProduct();
             if (!updatedProduct.equals(updatedItem.getProduct())) {//there was product change, delete product and create new
                 _listItemService.replaceProduct(updatedProduct, updatedItem, list);
-                list.getItems().remove(updatedItem);
-                _listItemService.deleteListItem(updatedItem);
             } else {
                 _listItemService.update(item);
             }
@@ -120,7 +118,7 @@ public class ItemRestController {
     @RequestMapping(value = "/{id}/delete", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
-    public ResponseEntity<ShoppingList> deleteItem(@PathVariable String id, @RequestBody ListItem item) {
+    public ResponseEntity<ShoppingList> deleteItem(@PathVariable Long id, @RequestBody ListItem item) {
         try {
             ShoppingList list = _listService.findByID(id);
             item = _listItemService.findById(item.getId());
@@ -149,7 +147,7 @@ public class ItemRestController {
     @RequestMapping(value = "/{id}/toggle", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
-    public ResponseEntity<ListItem> toggleItem(@PathVariable String id, @RequestBody ListItem item) {
+    public ResponseEntity<ListItem> toggleItem(@PathVariable Long id, @RequestBody ListItem item) {
         try {
             ShoppingList list = _listService.findByID(id);//just verify that list exists and user has access
             item = _listItemService.findById(item.getId());

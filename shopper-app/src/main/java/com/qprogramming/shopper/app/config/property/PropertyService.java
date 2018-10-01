@@ -94,4 +94,21 @@ public class PropertyService {
         }
         return languages;
     }
+
+    /**
+     * Updates property in database. If not found it's created
+     *
+     * @param key   key to be updated
+     * @param value new value of either existing or new property
+     * @return updated property
+     */
+    public Property update(String key, String value) {
+        Property property = propertyRepository.findByKey(key);
+        if (property == null) {
+            property = new Property();
+            property.setKey(key);
+        }
+        property.setValue(value);
+        return propertyRepository.save(property);
+    }
 }

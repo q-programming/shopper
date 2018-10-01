@@ -47,7 +47,7 @@ export class ShoppingListsComponent implements OnInit {
         })
     }
 
-    openDialog() {
+    newListOpenDialog() {
         this.listSrv.openNewListDialog().subscribe(newList => {
                 if (newList) {
                     this.alertSrv.success("app.shopping.create.success");
@@ -56,6 +56,25 @@ export class ShoppingListsComponent implements OnInit {
             }
         );
     }
+
+    editListOpenDialog(list: ShoppingList) {
+        this.listSrv.openEditListDialog(list).subscribe(newList => {
+                if (newList) {
+                    this.alertSrv.success("app.shopping.update.success");
+                }
+            }
+        );
+    }
+
+    shareListOpenDialog(list: ShoppingList) {
+        this.listSrv.openShareListDialog(list).subscribe(reply => {
+                if (reply) {
+                    this.loadUserLists();
+                }
+            }
+        );
+    }
+
 
     archiveToggle(list: ShoppingList, archived?: boolean) {
         this.listSrv.archive(list).subscribe(res => {
@@ -68,6 +87,15 @@ export class ShoppingListsComponent implements OnInit {
                 this.alertSrv.error(msgKey);
             }
         })
+    }
+
+    leaveShared(list: ShoppingList) {
+        this.listSrv.archive(list).subscribe(res => {
+            if (res) {
+                this.alertSrv.success('app.shopping.share.leave.success');
+                this.loadUserLists();
+            }
+        });
     }
 
     confirmDeletion(list: ShoppingList) {

@@ -6,7 +6,7 @@
     <parent>
         <artifactId>shopper</artifactId>
         <groupId>com.qprogramming.shopper</groupId>
-        <version>0.2.3</version>
+        <version>0.3.0</version>
     </parent>
     <artifactId>shopper-app</artifactId>
     <packaging>war</packaging>
@@ -74,6 +74,11 @@
             <version>2.9.0</version>
         </dependency>
         <!--need postgresql-->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.4.1212</version>
+        </dependency>
         <!--common-->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -95,6 +100,21 @@
             <groupId>com.qprogramming.shopper</groupId>
             <artifactId>shopper-web</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <!--mail-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.28</version>
+        </dependency>
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>4.2</version>
         </dependency>
         <!--TEST-->
         <dependency>

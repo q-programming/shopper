@@ -1,33 +1,45 @@
 <div fxLayout="row">
     <div>
         <h2 class="text-white">
+            <img src="assets/images/list_archive.svg" *ngIf="archived" height="32" class="ml-1">
+            <img src="assets/images/list.svg" *ngIf="!archived" height="32" class="ml-1">
             <span *ngIf="archived">
-                <mat-icon>
-                    archived
-                </mat-icon>
                 {{'app.shopping.archived' | translate}}
             </span>
-            <mat-icon class="ml-2" *ngIf="!archived">list_alt</mat-icon>
             {{'app.shopping.list'|translate}}
         </h2>
     </div>
     <div class="fill-remaining-space"></div>
     <div>
-        <button mat-icon-button class="mt-3 mr-1 " (click)="openDialog()"
+        <button mat-icon-button class="mt-3 mr-1 " (click)="newListOpenDialog()"
                 matTooltip="{{'app.shopping.create' | translate}}">
-            <img src="assets/images/plus.png" class="add-list-icon">
+            <img src="assets/images/plus.svg" class="add-list-icon" height="50">
         </button>
     </div>
 </div>
-<div>
+<!--NO LISTS-->
+<div *ngIf="lists && lists.length===0">
+    <mat-card class="text-center" *ngIf="!archived">
+        <h2>{{'app.home.nolist'|translate}}</h2>
+        <img src="assets/images/start_adding.svg" height="200">
+        <img src="assets/images/arrow_up.svg" height="80" class="stick-right">
+    </mat-card>
+    <mat-card class="text-center" *ngIf="archived">
+        <h2>{{'app.home.archived.nolist'|translate}}</h2>
+        <img src="assets/images/box.svg" height="80">
+    </mat-card>
+</div>
+<div *ngIf="lists && lists.length>0">
     <!--LIST CARD-->
     <mat-card fxLayout="column" *ngFor="let list of lists" class="list z-depth clickable">
         <mat-card-header>
-            <mat-card-title [routerLink]="['list', list.id]">{{list.name}}</mat-card-title>
-            <mat-card-subtitle *ngIf="list.ownerId !== account.id">
-                <img class="avatar small" [src]="list.ownerAvatar">
-                {{list.ownerName}}
-            </mat-card-subtitle>
+            <span [routerLink]="['list', list.id]">
+                <mat-card-title>{{list.name}}</mat-card-title>
+                <mat-card-subtitle *ngIf="list.ownerId !== account.id">
+                    <img class="avatar small" [src]="list.ownerAvatar">
+                    {{list.ownerName}}
+                </mat-card-subtitle>
+            </span>
             <span class="fill-remaining-space" [routerLink]="['list', list.id]"></span>
             <span class="list-count">{{list.done}}/{{list.items.length}}</span>
             <button mat-icon-button [matMenuTriggerFor]="menu">
@@ -37,17 +49,22 @@
             <mat-menu #menu="matMenu">
                 <!--NORMAL LIST-->
                 <ng-container *ngIf="!archived">
-                    <button mat-menu-item>
+                    <button mat-menu-item (click)="editListOpenDialog(list)">
                         <mat-icon>edit</mat-icon>
                         <span>{{'app.general.edit'|translate}}</span>
                     </button>
-                    <button *ngIf="!list.notOwner" mat-menu-item>
+                    <button mat-menu-item (click)="shareListOpenDialog(list)">
                         <mat-icon>share</mat-icon>
                         <span>{{'app.shopping.share'|translate}}</span>
                     </button>
-                    <button mat-menu-item (click)="archiveToggle(list)">
+                    <button *ngIf="list.isOwner" mat-menu-item (click)="archiveToggle(list)">
                         <mat-icon>archive</mat-icon>
                         <span>{{'app.shopping.archive'|translate}}</span>
+                    </button>
+                    <button *ngIf="!list.isOwner" mat-menu-item (click)="leaveShared(list)"
+                            matTooltip="{{'app.shopping.share.leave.hint'|translate}}">
+                        <mat-icon>clear</mat-icon>
+                        <span>{{'app.shopping.share.leave'|translate}}</span>
                     </button>
                 </ng-container>
                 <!--ARCHIVED-->

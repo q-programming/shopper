@@ -112,14 +112,17 @@ public class AccountService implements UserDetailsService {
         account.setLanguage(defaultLanguage);
     }
 
-    public Account findByEmail(String email) {
+    public Optional<Account> findByEmail(String email) {
         return accountRepository.findOneByEmail(email);
     }
 
     @Override
     public Account loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = accountRepository.findOneByEmail(username);
-        if (account == null) {
+        Account account;
+        Optional<Account> optionalAccount = accountRepository.findOneByEmail(username);
+        if (optionalAccount.isPresent()) {
+            account = optionalAccount.get();
+        } else {
             account = accountRepository.findOneByUsername(username);
             if (account == null) {
                 throw new UsernameNotFoundException("user not found");

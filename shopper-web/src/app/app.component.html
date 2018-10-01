@@ -1,10 +1,13 @@
-<ng-http-loader [entryComponent]="loader" [debounceDelay]="100" [minDuration]="300"
-                [filteredUrlPatterns]="['^(?!find$).*']"></ng-http-loader>
+<ng-progress [color]="'white'"
+             [trickleSpeed]="500"
+             [thick]="true"
+             [ease]="'easeInSine'">
+</ng-progress>
 <alert></alert>
 <!--TOOLBAR-->
 <mat-toolbar color="primary" class="fixed-top">
     <button mat-button routerLink="/" class="mat-toolbar-button">
-        <img src="assets/images/logo_white.png" height="30" class="d-inline-block align-top" alt="">
+        <img src="assets/images/logo_white.svg" height="30" class="d-inline-block align-top" alt="">
         Shopper
     </button>
     <span class="fill-remaining-space"></span>
@@ -17,19 +20,24 @@
     <!--DESKTOP MENU-->
     <div fxShow="true" fxHide.lt-md="true" *ngIf="loggedIn()">
         <button mat-button class="mat-toolbar-button" routerLink="/" matTooltip="{{'app.shopping.all' | translate}}">
-            <mat-icon class="ml-2">list_alt</mat-icon>
+            <!--<mat-icon class="ml-2">list_alt</mat-icon>-->
+            <img src="assets/images/list.svg" height="26">
         </button>
         <button mat-button class="mat-toolbar-button" [routerLink]="['/']" [queryParams]="{archived:true}"
                 matTooltip="{{'app.shopping.archived' | translate}} {{'app.shopping.list' | translate}} ">
-            <mat-icon class="ml-2">archived</mat-icon>
+            <img src="assets/images/list_archive.svg" height="26">
+            <!--<mat-icon class="ml-2">archived</mat-icon>-->
         </button>
 
-        <button mat-button class="mat-toolbar-button" routerLink="/">
-            {{message_count.count}}
-            <mat-icon class="ml-2">message</mat-icon>
-        </button>
+        <!--MESSAGES-->
+        <!--<button mat-button class="mat-toolbar-button" routerLink="/">-->
+        <!--<mat-icon class="ml-2" matBadge="{{message_count.count}}" matBadgePosition="before" matBadgeColor="accent">-->
+        <!--message-->
+        <!--</mat-icon>-->
+        <!--</button>-->
         <button mat-button class="mat-toolbar-button" (click)="sidenav.toggle()">
-            <img [src]="account.avatar" class="avatar nav-avatar"/>
+            <img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>
+            <img *ngIf="!account.avatar" src="assets/images/avatar-placeholder.png" class="avatar nav-avatar"/>
             <mat-icon>more_vert</mat-icon>
         </button>
     </div>
@@ -39,17 +47,19 @@
     <mat-sidenav color="primary" #sidenav fxLayout="column" mode="over" position="end" hasBackdrop="false"
                  *ngIf="loggedIn()">
         <div fxLayout="column">
-            <img [src]="account.avatar" class="avatar large"/>
+            <img *ngIf="account.avatar" [src]="account.avatar" class="avatar large"/>
+            <img *ngIf="!account.avatar" src="assets/images/avatar-placeholder.png" class="avatar large"/>
             <span class="mt-4">{{account.name}} {{account.surname}}</span>
         </div>
         <mat-divider class="mt-2"></mat-divider>
         <div fxLayout="column">
             <button mat-button (click)="openNewListDialog()">
-                <mat-icon class="text-white mr-2">add_circle_outline</mat-icon>
+                <img src="assets/images/plus.svg" height="20" class="mr-1">
+                <!--<mat-icon class="text-white mr-2">add_circle_outline</mat-icon>-->
                 {{'app.shopping.create'|translate}}
             </button>
             <button mat-button routerLink="/">
-                <mat-icon class="mr-2">list_alt</mat-icon>
+                <img src="assets/images/list.svg" height="26">
                 {{'app.menu.lists'| translate}}
             </button>
             <div *ngFor="let list of lists">
@@ -58,20 +68,18 @@
                     {{list.name}}
                 </button>
             </div>
-            <button mat-button routerLink="/">
-                <mat-icon class="mr-2">more_horiz</mat-icon>
-            </button>
             <button mat-button [routerLink]="['/']" [queryParams]="{archived:true}">
-                <mat-icon class="mr-2">archive</mat-icon>
+                <img src="assets/images/list_archive.svg" height="26">
                 {{'app.shopping.archived' | translate}}
             </button>
         </div>
         <mat-divider class="mt-2"></mat-divider>
         <div fxLayout="column">
-            <button mat-button routerLink="/messages">
-                <mat-icon class="mr-2">message</mat-icon>
-                {{'app.menu.messages'|translate:message_count}}
-            </button>
+            <!--MESSAGES-->
+            <!--<button mat-button routerLink="/messages">-->
+            <!--<mat-icon class="mr-2">message</mat-icon>-->
+            <!--{{'app.menu.messages'|translate:message_count}}-->
+            <!--</button>-->
             <button mat-button routerLink="/settings">
                 <mat-icon class="mr-2">settings</mat-icon>
                 {{'app.menu.settings'|translate}}

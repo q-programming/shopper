@@ -36,7 +36,7 @@
                     </ngx-mat-select-search>
                     <mat-option *ngFor="let cat of filteredCategories | async" [value]="cat.category">
                         <span matSuffix>
-                            <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category">
+                            <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category mr-1">
                         </span>
                         <span [innerHTML]="cat.name | highlight: categoryTerm"></span>
                     </mat-option>
@@ -63,7 +63,7 @@
 </form>
 <mat-dialog-actions align="end" class="pr-2 pl-2">
     <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
-    <button mat-raised-button class="success-button" (click)="addItem()" [disabled]="form.invalid">
+    <button mat-raised-button class="success-button" (click)="commitItem()" [disabled]="form.invalid">
         {{(update?'app.general.edit':'app.general.add') |translate}}
     </button>
 </mat-dialog-actions>

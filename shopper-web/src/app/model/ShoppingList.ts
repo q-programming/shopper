@@ -1,4 +1,5 @@
 import {ListItem} from "./ListItem";
+import {CategoryPreset} from "./CategoryPreset";
 
 export class ShoppingList {
     id: number;
@@ -7,9 +8,14 @@ export class ShoppingList {
     ownerId: string;
     ownerName: string;
     ownerAvatar: any;
-    notOwner:boolean;
-    done:number;
+    isOwner: boolean;
+    done: number;
     archived: boolean;
     shared: string[];
+    preset: CategoryPreset;
+
+    constructor() {
+
+    }
 }
 

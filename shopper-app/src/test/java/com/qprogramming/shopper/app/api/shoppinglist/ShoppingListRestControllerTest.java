@@ -4,13 +4,20 @@ import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.items.ListItemRepository;
+import com.qprogramming.shopper.app.items.ListItemService;
 import com.qprogramming.shopper.app.items.category.Category;
+import com.qprogramming.shopper.app.items.product.ProductRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -18,9 +25,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,8 +52,13 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     private static final String STOP_SHARING = "/stop-sharing";
     private static final String ARCHIVE = "/archive";
     private static final String DELETE = "/delete";
+    private static final String EDIT = "/edit";
+    private static final String ITEM_CLEANUP = "/cleanup";
     private static final String MINE = "mine";
     private static final String USER = "user/";
+    private static final String PRESETS = "presets";
+    private static final String PRESETS_UPDATE = "presets/update";
+    private static final String PRESETS_DELETE = "presets/delete";
 
     @Mock
     private ShoppingListRepository listRepositoryMock;
@@ -56,16 +66,26 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     private AccountService accountServiceMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private MailService mailServiceMock;
+    @Mock
+    private ListItemRepository listItemRepositoryMock;
+    @Mock
+    private ProductRepository productRepositoryMock;
+    @Mock
+    private CategoryPresetRepository presetRepositoryMock;
+    @Mock
+    private CategoryPresetRepository categoryPresetRepositoryMock;
 
-    private ShoppingListService listService;
-    private ShoppingListRestController controller;
 
     @Before
     @Override
     public void setup() {
         super.setup();
-        listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock);
-        controller = new ShoppingListRestController(listService);
+        ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, mailServiceMock, presetRepositoryMock);
+        ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock);
+        CategoryPresetService presetService = new CategoryPresetService(categoryPresetRepositoryMock);
+        ShoppingListRestController controller = new ShoppingListRestController(listService, listItemService, presetService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
     }
@@ -154,9 +174,12 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
 
     @Test
     public void addNewListTest() throws Exception {
+        ShoppingList newList = new ShoppingList();
+        newList.setName(NAME);
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
-        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + "add").contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(NAME))
+        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + "add")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(newList)))
                 .andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
@@ -165,20 +188,13 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
 
     @Test
     public void getListTest() throws Exception {
-        ShoppingList list1 = createList(NAME, 1L);
-        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list1));
+        ShoppingList list = createList(NAME, 1L);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         MvcResult mvcResult = this.mvc.perform(get(API_LIST_URL + 1))
                 .andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
         assertThat(result.getOwnerId()).isEqualTo(TestUtil.USER_RANDOM_ID);
-    }
-
-    @Test
-    public void getListNotFoundTest() throws Exception {
-        when(listRepositoryMock.findById(1L)).thenReturn(Optional.empty());
-        this.mvc.perform(get(API_LIST_URL + 1))
-                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -197,10 +213,9 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
         account.setId(TestUtil.ADMIN_RANDOM_ID);
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
         when(listRepositoryMock.findById(list.getId())).thenReturn(Optional.of(list));
-
-        when(accountServiceMock.findById(account.getId())).thenReturn(account);
+        when(accountServiceMock.findByEmail(account.getEmail())).thenReturn(Optional.of(account));
         MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + list.getId() + SHARE).contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(account.getId()))
+                .content(account.getEmail()))
                 .andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
@@ -217,11 +232,15 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     @Test
     public void shareListAccountNotFoundTest() throws Exception {
         ShoppingList list = createList(NAME, 1L);
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
         when(listRepositoryMock.findById(list.getId())).thenReturn(Optional.of(list));
-        when(accountServiceMock.findById(TestUtil.ADMIN_RANDOM_ID)).thenThrow(new AccountNotFoundException());
-        this.mvc.perform(post(API_LIST_URL + 1L + SHARE).contentType(TestUtil.APPLICATION_JSON_UTF8)
+        when(accountServiceMock.findByEmail(TestUtil.ADMIN_RANDOM_ID)).thenReturn(Optional.empty());
+        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + 1L + SHARE).contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.ADMIN_RANDOM_ID))
-                .andExpect(status().isNotFound());
+                .andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getShared().contains(TestUtil.ADMIN_RANDOM_ID)).isFalse();
     }
 
     @Test
@@ -250,23 +269,30 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
         when(listRepositoryMock.findById(list.getId())).thenReturn(Optional.of(list));
         this.mvc.perform(post(API_LIST_URL + 1L + SHARE).contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.ADMIN_RANDOM_ID))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isForbidden());
         this.mvc.perform(post(API_LIST_URL + 1L + STOP_SHARING).contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.ADMIN_RANDOM_ID))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isForbidden());
         this.mvc.perform(post(API_LIST_URL + 1L + DELETE).contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.ADMIN_RANDOM_ID))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isForbidden());
         this.mvc.perform(post(API_LIST_URL + 1L + ARCHIVE).contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.ADMIN_RANDOM_ID))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isForbidden());
+        this.mvc.perform(post(API_LIST_URL + 1L + ITEM_CLEANUP)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)).andExpect(status().isForbidden());
+
 
     }
 
     @Test
-    public void archiveListNotFoundTest() throws Exception {
-        this.mvc.perform(post(API_LIST_URL + 1L + ARCHIVE).contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.ADMIN_RANDOM_ID))
+    public void listOperationListNotFoundTest() throws Exception {
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.empty());
+        this.mvc.perform(get(API_LIST_URL + 1))
+                .andExpect(status().isNotFound());
+        this.mvc.perform(post(API_LIST_URL + 1L + ARCHIVE))
+                .andExpect(status().isNotFound());
+        this.mvc.perform(post(API_LIST_URL + 1L + ITEM_CLEANUP))
                 .andExpect(status().isNotFound());
     }
 
@@ -279,8 +305,8 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
 
     @Test
     public void archiveListTest() throws Exception {
-        ShoppingList list1 = createList(NAME, 1L);
-        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list1));
+        ShoppingList list = createList(NAME, 1L);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
         MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + 1 + ARCHIVE))
                 .andExpect(status().is2xxSuccessful()).andReturn();
@@ -336,23 +362,186 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
 
     @Test
     public void getListSortedTest() throws Exception {
-        ShoppingList list1 = createList(NAME, 1L);
+        ShoppingList list = createList(NAME, 1L);
         ListItem item1 = TestUtil.createListItem(NAME);
         ListItem item2 = TestUtil.createListItem(NAME);
         ListItem item3 = TestUtil.createListItem(NAME);
         item1.setCategory(Category.OTHER);
         item2.setCategory(Category.ALCOHOL);
         item3.setCategory(Category.FRUIT_VEGETABLES);
-        list1.getItems().add(item1);
-        list1.getItems().add(item2);
-        list1.getItems().add(item3);
-        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list1));
+        list.getItems().add(item1);
+        list.getItems().add(item2);
+        list.getItems().add(item3);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(propertyServiceMock.getCategoriesOrdered()).thenCallRealMethod();
         MvcResult mvcResult = this.mvc.perform(get(API_LIST_URL + 1))
                 .andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
         assertThat(result.getItems().get(0)).isEqualTo(item2);
+    }
+
+    @Test
+    public void editListTestNoPermission() throws Exception {
+        ShoppingList list = createList(NAME, 1L);
+        list.setOwnerId(TestUtil.ADMIN_RANDOM_ID);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        String new_name = "NEW NAME";
+        this.mvc.perform(post(API_LIST_URL + EDIT)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(list)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void editListTestNotFound() throws Exception {
+        ShoppingList list = createList(NAME, 1L);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.empty());
+        this.mvc.perform(post(API_LIST_URL + EDIT)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(list)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void editListEmptyName() throws Exception {
+        String new_name = "";
+        this.mvc.perform(post(API_LIST_URL + EDIT).content(new_name))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    public void editListTest() throws Exception {
+        String new_name = "NEW NAME";
+        ShoppingList list = createList(NAME, 1L);
+        ShoppingList updatedlist = createList(new_name, 1L);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + EDIT)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(updatedlist)))
+                .andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getName()).isEqualTo(new_name);
+    }
+
+    @Test
+    public void cleanupListTest() throws Exception {
+        ShoppingList list = createList(NAME, 1L);
+        ListItem item1 = TestUtil.createListItem(NAME);
+        ListItem item2 = TestUtil.createListItem(NAME);
+        ListItem item3 = TestUtil.createListItem(NAME);
+        item1.setId(1L);
+        item2.setId(2L);
+        item3.setId(3L);
+        item2.setDone(true);
+        item3.setDone(true);
+        list.getItems().add(item1);
+        list.getItems().add(item2);
+        list.getItems().add(item3);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        when(propertyServiceMock.getCategoriesOrdered()).thenCallRealMethod();
+        MvcResult mvcResult = this.mvc.perform(post(API_LIST_URL + 1 + ITEM_CLEANUP)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)).andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getItems()).containsOnly(item1);
+        verify(listItemRepositoryMock, times(2)).delete(any(ListItem.class));
+    }
+
+
+    @Test
+    public void createPresetTest() throws Exception {
+        CategoryPreset preset = new CategoryPreset();
+        when(categoryPresetRepositoryMock.save(any(CategoryPreset.class))).then(returnsFirstArg());
+        MvcResult mvcResult = mvc.perform(post(API_LIST_URL + PRESETS_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isOk()).andReturn();
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        CategoryPreset result = TestUtil.convertJsonToObject(jsonResponse, CategoryPreset.class);
+        assertThat(result.getOwner()).isEqualTo(testAccount.getId());
+        verify(categoryPresetRepositoryMock, times(1)).save(any(CategoryPreset.class));
+    }
+
+    @Test
+    public void updatePresetTest() throws Exception {
+        CategoryPreset preset = new CategoryPreset();
+        preset.setId(1L);
+        preset.setOwner(testAccount.getId());
+        preset.setName(NAME);
+        CategoryPreset dbpreset = new CategoryPreset();
+        dbpreset.setId(1L);
+        dbpreset.setOwner(testAccount.getId());
+        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.of(dbpreset));
+        when(categoryPresetRepositoryMock.save(any(CategoryPreset.class))).then(returnsFirstArg());
+        MvcResult mvcResult = mvc.perform(post(API_LIST_URL + PRESETS_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isOk()).andReturn();
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        CategoryPreset result = TestUtil.convertJsonToObject(jsonResponse, CategoryPreset.class);
+        assertThat(result.getOwner()).isEqualTo(testAccount.getId());
+        assertThat(result.getName()).isEqualTo(NAME);
+        verify(categoryPresetRepositoryMock, times(1)).save(any(CategoryPreset.class));
+    }
+
+
+    @Test
+    public void getUserPresetsTest() throws Exception {
+        when(categoryPresetRepositoryMock.findAllByOwner(testAccount.getId())).thenReturn(Collections.singletonList(new CategoryPreset()));
+        MvcResult mvcResult = mvc.perform(get(API_LIST_URL + PRESETS)).andExpect(status().isOk()).andReturn();
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        List<CategoryPreset> result = TestUtil.convertJsonToList(jsonResponse, List.class, CategoryPreset.class);
+        assertThat(result.size()).isEqualTo(1);
+
+    }
+
+    @Test
+    public void presetNotFoundOperationsTest() throws Exception {
+        CategoryPreset preset = new CategoryPreset();
+        preset.setId(1L);
+        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.empty());
+        mvc.perform(post(API_LIST_URL + PRESETS_DELETE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isNotFound());
+        mvc.perform(post(API_LIST_URL + PRESETS_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void presetNotOwnerOperationsTest() throws Exception {
+        CategoryPreset preset = new CategoryPreset();
+        preset.setId(1L);
+        preset.setOwner(TestUtil.ADMIN_RANDOM_ID);
+        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.of(preset));
+        mvc.perform(post(API_LIST_URL + PRESETS_DELETE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isForbidden());
+        mvc.perform(post(API_LIST_URL + PRESETS_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void deletePresetTest() throws Exception {
+        CategoryPreset preset = new CategoryPreset();
+        preset.setId(1L);
+        preset.setOwner(testAccount.getId());
+        ShoppingList shoppingList1 = TestUtil.createShoppingList(NAME, 1L, testAccount);
+        ShoppingList shoppingList2 = TestUtil.createShoppingList(NAME, 2L, testAccount);
+        shoppingList1.setPreset(preset);
+        shoppingList2.setPreset(preset);
+        List<ShoppingList> shoppingLists = Arrays.asList(shoppingList1, shoppingList2);
+        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.of(preset));
+        when(listRepositoryMock.findAllByPreset(preset)).thenReturn(shoppingLists);
+        mvc.perform(post(API_LIST_URL + PRESETS_DELETE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
+                .andExpect(status().isOk());
+        verify(categoryPresetRepositoryMock, times(1)).delete(any(CategoryPreset.class));
+        verify(listRepositoryMock, times(1)).saveAll(shoppingLists);
     }
 
 

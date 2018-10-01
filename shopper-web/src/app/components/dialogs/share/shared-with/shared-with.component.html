@@ -1,0 +1,15 @@
+<mat-list *ngFor="let account of sharedWith" class="p-4">
+    <mat-list-item>
+        <h4 mat-line>
+            <img class="avatar small v-middle" [src]="account.avatar">
+            {{account.name}} {{account.surname}}
+        </h4>
+        <span class="pull-right">
+            <code *ngIf="account.id === list.ownerId">({{'app.shopping.share.owner'|translate}})</code>
+            <button mat-icon-button *ngIf="account.id !== list.ownerId"
+                    matTooltip="{{'app.shopping.share.stop'|translate}} {{account.fullname}}" (click)="stopSharing(account)">
+                <mat-icon>remove</mat-icon>
+            </button>
+        </span>
+    </mat-list-item>
+</mat-list>
