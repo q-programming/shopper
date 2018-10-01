@@ -271,10 +271,15 @@ export class ListComponent implements OnInit, OnDestroy {
     }
 
     leaveShared() {
-        this.listSrv.archive(this.list).subscribe(res => {
-            if (res) {
-                this.alertSrv.success('app.shopping.share.leave.success');
-                this.router.navigate(['/']);
+        this.alertSrv.undoable('app.shopping.share.leave.success').subscribe(undo => {
+            if (undo !== undefined) {
+                if (!undo) {
+                    this.listSrv.archive(this.list).subscribe(res => {
+                        if (res) {
+                            this.router.navigate(['/']);
+                        }
+                    });
+                }
             }
         });
     }

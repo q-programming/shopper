@@ -10,6 +10,7 @@ export class AlertService {
 
     private messages: Message[] = [];
     private normal_timeout: number = 4000; //4 seconds
+    private undo_timeout: number = 5000; //5 seconds
     private error_timeout: number = 6000; //6 seconds
 
     constructor(private translate: TranslateService) {
@@ -126,7 +127,7 @@ export class AlertService {
     undoable(key: string, params?: Object): Observable<boolean> {
         return new Observable((observable) => {
             this.translate.get(key, params).subscribe(txt => {
-                this.addMessage(txt, MessageType.UNDOABLE, 50000, observable);
+                this.addMessage(txt, MessageType.UNDOABLE, this.undo_timeout, observable);
             })
         });
     }

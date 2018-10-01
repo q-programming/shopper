@@ -13,9 +13,7 @@
     <span class="fill-remaining-space"></span>
     <!--MOBILE BUTTON MENU-->
     <div fxShow="true" fxHide.gt-sm="true" *ngIf="loggedIn()">
-        <button mat-icon-button (click)="sidenav.toggle()" *ngIf="activatedRo">
-            <mat-icon>menu</mat-icon>
-        </button><button mat-icon-button (click)="sidenav.toggle()">
+        <button mat-icon-button (click)="sidenav.toggle()">
             <mat-icon>menu</mat-icon>
         </button>
     </div>
