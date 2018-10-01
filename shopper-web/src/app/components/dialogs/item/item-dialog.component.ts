@@ -21,7 +21,7 @@ export class ItemDialogComponent implements OnInit {
     update: boolean;
     item: ListItem;
     form: FormGroup;
-    products: Product[] = [];
+    // products: Product[] = [];
     categories: CategoryOption[];
     filteredCategories: Observable<CategoryOption[]>;
     productTerm: String = '';
@@ -42,7 +42,7 @@ export class ItemDialogComponent implements OnInit {
         this.item = data.item ? data.item : new ListItem();
         this.update = data.update;
         this.form = this.formBuilder.group({
-            product: [this.item.product, Validators.required],
+            product: [this.item.product ? this.item.product.name : '', Validators.required],
             category: [this.item.category, Validators.required],
             quantity: this.item.quantity,
             unit: this.item.unit,
@@ -74,15 +74,11 @@ export class ItemDialogComponent implements OnInit {
     private handleProductValueChange(value) {
         if (typeof value === 'string') {
             this.item.product = {name: value};
-            this.api.getObject<Product>(environment.product_url + '/find', {term: value})
+            this.api.getObject<Product>(environment.product_url + '/category', {term: value})
                 .subscribe(response => {
-                    if (response && response.length > 0) {
-                        this.products = response
-                    } else {
-                        //TODO later on api should return dummy product with proposed category
+                    if (response) {
+                        this.form.controls.category.setValue(response);
                         this.item.product = new Product(value);
-                        this.form.controls.product.setValue(this.item.product);
-                        this.products.pop();
                     }
                 })
         }

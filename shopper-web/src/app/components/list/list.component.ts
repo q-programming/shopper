@@ -128,15 +128,17 @@ export class ListComponent implements OnInit, OnDestroy {
      * @param newCategory new category
      */
     updateCategory(item: ListItem, newCategory: Category) {
-        item.category = newCategory;
-        this.itemSrv.updateItem(this.listID, item).subscribe(list => {
-            if (list) {
-                this.alertSrv.success("app.item.category.updated");
-                this.assignListWithSorting(list);
-            }
-        }, () => {
-            this.alertSrv.success("app.item.category.fail");
-        })
+        if (newCategory !== item.category) {
+            item.category = newCategory;
+            this.itemSrv.updateItem(this.listID, item).subscribe(list => {
+                if (list) {
+                    this.alertSrv.success("app.item.category.updated");
+                    this.assignListWithSorting(list);
+                }
+            }, () => {
+                this.alertSrv.success("app.item.category.fail");
+            })
+        }
     }
 
     deleteItem(item: ListItem) {

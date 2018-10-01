@@ -49,6 +49,7 @@ import {SharedWithComponent} from './components/dialogs/share/shared-with/shared
 import {NewShareComponent} from './components/dialogs/share/new-share/new-share.component';
 import {DndModule} from "ng2-dnd";
 import {NgProgressModule} from "ngx-progressbar";
+import {HelpComponent} from './components/help/help.component';
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -77,7 +78,8 @@ export function initUserFactory(authService: AuthenticationService) {
         NotificationsSettingsComponent,
         AppSettingsComponent,
         SharedWithComponent,
-        NewShareComponent
+        NewShareComponent,
+        HelpComponent
     ],
     entryComponents: [
         AvatarUploadComponent,
