@@ -50,7 +50,7 @@
   "app.shopping.share.stop.fail": "Wystąpił bład podczas przestania dzielenia się listą",
   "app.shopping.share.leave": "Opuść dzieloną listę",
   "app.shopping.share.leave.hint": "Dzielona lista nie będzie dla Ciebie widoczna, ale będzie nie zmieniona dla innych użytkowników",
-  "app.shopping.share.leave.success": "Opuściłeś dzieloną listę",
+  "app.shopping.share.leave.success": "Opuszczanie dzielonej listy",
   "app.shopping.create": "Stwórz nową listę",
   "app.shopping.create.success": "Utworzono nową listę",
   "app.shopping.create.fail": "Wystąpił bład podczas tworzenia nowej listy",

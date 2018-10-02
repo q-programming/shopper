@@ -13,6 +13,10 @@
     <span class="fill-remaining-space"></span>
     <!--MOBILE BUTTON MENU-->
     <div fxShow="true" fxHide.gt-sm="true" *ngIf="loggedIn()">
+        <button *ngIf="onListView" mat-icon-button (click)="openNewItemDialog()"
+                matTooltip="{{'app.item.add'|translate}}">
+            <mat-icon>add_circle_outline</mat-icon>
+        </button>
         <button mat-icon-button (click)="sidenav.toggle()">
             <mat-icon>menu</mat-icon>
         </button>
@@ -52,14 +56,56 @@
             <span class="mt-4">{{account.name}} {{account.surname}}</span>
         </div>
         <mat-divider class="mt-2"></mat-divider>
-        <div fxLayout="column">
-            <button mat-button (click)="openNewListDialog()">
-                <img src="assets/images/plus.svg" height="20" class="mr-1">
+        <button mat-button (click)="openNewListDialog()" *ngIf="!onListView">
+            <img src="assets/images/plus.svg" height="20" class="mr-1">
+            <!--<mat-icon class="text-white mr-2">add_circle_outline</mat-icon>-->
+            {{'app.shopping.create'|translate}}
+        </button>
+        <div fxLayout="column" *ngIf="list && onListView">
+            <button mat-button (click)="openNewItemDialog()">
+                <img src="assets/images/plus.svg" height="20" class="mr-2">
                 <!--<mat-icon class="text-white mr-2">add_circle_outline</mat-icon>-->
-                {{'app.shopping.create'|translate}}
+                {{'app.item.add'|translate}}
             </button>
+            <ng-container *ngIf="!list.archived">
+                <button mat-button (click)="openEditListDialog()">
+                    <mat-icon class="mr-2">edit</mat-icon>
+                    <span>{{'app.general.edit'|translate}}</span>
+                </button>
+                <button mat-button (click)="shareListOpenDialog()">
+                    <mat-icon matBadge="{{list.shared.length}}" matBadgePosition="below before"
+                              [matBadgeHidden]="list.shared.length==0" class="mr-2">
+                        person
+                    </mat-icon>
+                    <span>{{'app.shopping.share'|translate}}</span>
+                </button>
+                <button mat-button (click)="cleanup()" [disabled]="list.done==0">
+                    <mat-icon class="mr-2">delete_forever</mat-icon>
+                    <span>{{'app.shopping.clear'|translate}}</span>
+                </button>
+                <button *ngIf="list.isOwner" mat-button (click)="archiveToggle()">
+                    <mat-icon class="mr-2">archive</mat-icon>
+                    <span>{{'app.shopping.archive'|translate}}</span>
+                </button>
+                <!--LEAVE SHARED LIST-->
+                <button *ngIf="!list.isOwner" mat-button (click)="leaveShared()"
+                        matTooltip="{{'app.shopping.share.leave.hint'|translate}}">
+                    <mat-icon class="mr-2">clear</mat-icon>
+                    <span>{{'app.shopping.share.leave'|translate}}</span>
+                </button>
+            </ng-container>
+            <!--ARCHIVED-->
+            <ng-container *ngIf="list.archived">
+                <button mat-button (click)="archiveToggle(list.archived)">
+                    <mat-icon>unarchive</mat-icon>
+                    <span>{{'app.shopping.unarchive'|translate}}</span>
+                </button>
+            </ng-container>
+        </div>
+        <mat-divider class="mt-2"></mat-divider>
+        <div fxLayout="column">
             <button mat-button routerLink="/">
-                <img src="assets/images/list.svg" height="26">
+                <img src="assets/images/list.svg" height="26" class="mr-2">
                 {{'app.menu.lists'| translate}}
             </button>
             <div *ngFor="let list of lists">
@@ -69,7 +115,7 @@
                 </button>
             </div>
             <button mat-button [routerLink]="['/']" [queryParams]="{archived:true}">
-                <img src="assets/images/list_archive.svg" height="26">
+                <img src="assets/images/list_archive.svg" height="26" class="mr-2">
                 {{'app.shopping.archived' | translate}}
             </button>
         </div>

@@ -8,6 +8,7 @@ import {AlertService} from "../../services/alert.service";
 import {NGXLogger} from "ngx-logger";
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ConfirmDialog, ConfirmDialogComponent} from "../dialogs/confirm/confirm-dialog.component";
+import {ActionsService} from "../../services/actions.service";
 
 
 @Component({
@@ -27,7 +28,13 @@ export class ShoppingListsComponent implements OnInit {
                 private router: Router,
                 private authSrv: AuthenticationService,
                 private alertSrv: AlertService,
+                private refreshSrv: ActionsService,
                 private dialog: MatDialog) {
+        this.refreshSrv.refreshEmitted.subscribe(refresh => {
+            if (refresh) {
+                this.loadUserLists();
+            }
+        })
     }
 
     ngOnInit() {

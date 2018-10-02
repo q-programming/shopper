@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {NGXLogger} from "ngx-logger";
 import {ApiService} from "./api.service";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {environment} from "../../environments/environment";
 import {ShoppingList} from "../model/ShoppingList";
 import {AvatarService} from "./avatar.service";
@@ -19,6 +19,9 @@ import {CategoryPreset} from "../model/CategoryPreset";
 })
 export class ListService {
 
+    private emitListSource = new Subject<any>();
+    listEmiter = this.emitListSource.asObservable();
+    listId: number;
     currentAccount: Account;
     dialogConfig: MatDialogConfig = {
         disableClose: true,
@@ -62,8 +65,10 @@ export class ListService {
      * @param listID list id
      */
     getListByID(listID: number): Observable<ShoppingList> {
+        this.listId = listID;
         return this.api.getObject<ShoppingList>(environment.list_url + `/${listID}`).map(list => {
             list.isOwner = this.isOwner(list);
+            this.emitListSource.next(list);//tell any other subscriber that there was list loaded
             return list;
         })
     }

@@ -4,8 +4,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Product} from "../../../model/Product";
 import {ApiService} from "../../../services/api.service";
 import {environment} from "../../../../environments/environment";
-import {Category} from "../../../model/Category";
-import {TranslateService} from "@ngx-translate/core";
 import {ListItem} from "../../../model/ListItem";
 import {Observable} from "rxjs";
 import * as _ from 'lodash';
@@ -30,15 +28,9 @@ export class ItemDialogComponent implements OnInit {
     constructor(private dialogRef: MatDialogRef<ItemDialogComponent>,
                 private formBuilder: FormBuilder,
                 private api: ApiService,
-                private translate: TranslateService,
                 @Inject(MAT_DIALOG_DATA) public data: any) {
         //load categories
-        this.categories = Object.values(Category).map(value => {
-            return {
-                category: value,
-                name: this.translate.instant(value.toString())
-            }
-        });
+        this.categories = data.categories;
         this.item = data.item ? data.item : new ListItem();
         this.update = data.update;
         this.form = this.formBuilder.group({

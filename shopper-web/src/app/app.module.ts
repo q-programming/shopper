@@ -44,12 +44,12 @@ import {
 import {ProductsSettingsComponent} from './components/settings/products/products-settings.component';
 import {NotificationsSettingsComponent} from './components/settings/notifications/notifications-settings.component';
 import {AppSettingsComponent} from "./components/settings/app/app-settings.component";
-import {CookieService} from "ngx-cookie-service";
 import {SharedWithComponent} from './components/dialogs/share/shared-with/shared-with.component';
 import {NewShareComponent} from './components/dialogs/share/new-share/new-share.component';
 import {DndModule} from "ng2-dnd";
 import {NgProgressModule} from "ngx-progressbar";
 import {HelpComponent} from './components/help/help.component';
+import {ActionsService} from "./services/actions.service";
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -131,7 +131,7 @@ export function initUserFactory(authService: AuthenticationService) {
         ListService,
         ItemService,
         FormBuilder,
-        CookieService,
+        ActionsService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

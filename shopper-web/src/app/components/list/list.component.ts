@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, Output} from '@angular/core';
 import {ListService} from "../../services/list.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ShoppingList} from "../../model/ShoppingList";
@@ -10,6 +10,7 @@ import {Category} from "../../model/Category";
 import {CategoryOption} from "../../model/CategoryOption";
 import {TranslateService} from "@ngx-translate/core";
 import {Observable, Subscription} from "rxjs";
+import {Action, ActionsService} from "../../services/actions.service";
 
 @Component({
     selector: 'app-list',
@@ -28,18 +29,50 @@ export class ListComponent implements OnInit, OnDestroy {
     edit: boolean;
     sharedCount = 0;
     sub: Subscription;
-    cleanupInProgress: boolean;
+    inProgress: boolean;
+
 
     constructor(private listSrv: ListService,
                 private itemSrv: ItemService,
                 private router: Router,
                 private activatedRoute: ActivatedRoute,
                 private alertSrv: AlertService,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                private refreshSrv: ActionsService) {
+        this.refreshSrv.refreshEmitted.subscribe(action => {
+            /**
+             * Action usually comes from current user so disable
+             * any potential external changes notifications
+             */
+            switch (action) {
+                case Action.REFRESH:
+                    this.inProgress = true;
+                    this.loadItems();
+                    break;
+                case Action.SHARE:
+                    this.shareListOpenDialog();
+                    break;
+                case Action.ADD:
+                    this.openNewItemDialog();
+                    break;
+                case Action.EDIT:
+                    this.openEditListDialog();
+                    break;
+                case Action.CLEANUP:
+                    this.cleanup();
+                    break;
+                case Action.ARCHIVE:
+                    this.archiveToggle(this.list.archived);
+                    break;
+                case Action.LEAVE:
+                    this.leaveShared();
+                    break;
+            }
+        });
     }
 
     ngOnInit() {
-        this.loadCategoriesWithLocalName();
+        this.categories = this.itemSrv.categories;
         this.activatedRoute.params.subscribe(params => {
             this.listID = params['listid'];
             this.loadItems();
@@ -184,26 +217,12 @@ export class ListComponent implements OnInit, OnDestroy {
         })
     }
 
-
-    private loadCategoriesWithLocalName() {
-        Object.values(Category).map(value => {
-            return this.translate.get(value.toString()).subscribe(name => {
-                this.categories.push({
-                    category: value,
-                    name: name
-                });
-            }, undefined, () => {
-                this.categories.sort((a, b) => a.name.localeCompare(b.name))
-            })
-        });
-    }
-
     private loadItems() {
         this.listSrv.getListByID(this.listID).subscribe(list => {
-            if (this.list && !this.cleanupInProgress) {
+            if (this.list && !this.inProgress) {
                 this.wereItemsChangedByShared(list);
             }
-            this.cleanupInProgress = false;//clear any potential cleanup flag
+            this.inProgress = false;//clear any potential cleanup flag
             this.listName = list.name;
             this.assignListWithSorting(list);
             this.startListWatcher();
@@ -263,12 +282,12 @@ export class ListComponent implements OnInit, OnDestroy {
             if (res) {
                 let msgKey = archived ? 'app.shopping.unarchive.success' : 'app.shopping.archive.success';
                 this.alertSrv.success(msgKey);
-                this.loadItems();
             }
         }, error => {
             let msgKey = archived ? 'app.shopping.unarchive.fail' : 'app.shopping.archive.fail';
             this.alertSrv.error(msgKey);
-            this.startListWatcher();
+        }, () => {
+            this.loadItems();
         })
     }
 
@@ -289,7 +308,7 @@ export class ListComponent implements OnInit, OnDestroy {
 
     cleanup() {
         this.stopListWatcher();
-        this.cleanupInProgress = true;
+        this.inProgress = true;
         this.done = [];
         this.list.done = 0;
         this.list.items = this.items;
@@ -310,8 +329,8 @@ export class ListComponent implements OnInit, OnDestroy {
     }
 
     get percentage() {
-        let perc = this.list.items.length > 0 ? (this.done.length / this.list.items.length) * 100 : 0;
-        return parseFloat(`${perc}`).toFixed(2);
+        let percentage = this.list.items.length > 0 ? (this.done.length / this.list.items.length) * 100 : 0;
+        return parseFloat(`${percentage}`).toFixed(2);
     }
 
 }

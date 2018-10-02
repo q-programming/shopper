@@ -39,7 +39,7 @@
                 ({{list.preset.name}})
         </span>
         <!--MENU-->
-        <button mat-icon-button class="pull-right" [matMenuTriggerFor]="menu">
+        <button mat-icon-button class="pull-right" [matMenuTriggerFor]="menu" fxShow.xs="false">
             <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
@@ -79,7 +79,7 @@
         <!--SHARE-->
         <button *ngIf="!list.archived"
                 mat-icon-button class="pull-right" (click)="shareListOpenDialog()"
-                matTooltip="{{shareTooltip}}">
+                matTooltip="{{shareTooltip}}" fxShow.xs="false">
             <mat-icon matBadge="{{sharedCount}}" matBadgePosition="below before"
                       [matBadgeHidden]="sharedCount==0">person
             </mat-icon>
