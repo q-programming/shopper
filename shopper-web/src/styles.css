@@ -55,58 +55,6 @@ main {
     height: 100vh !important;
 }
 
-.mat-toolbar.mat-primary {
-    background: #2c5aa0;
-}
-
-.mat-toolbar-button {
-    padding: 12px 16px !important;
-}
-
-.mat-sidenav {
-    padding: 10px 60px;
-    z-index: 1031 !important;
-    background: #2c5aa0;
-    color: white;
-}
-
-.mat-sidenav > .mat-divider {
-    border-top-color: rgba(255, 255, 255, 0.5);
-}
-
-.mat-sidenav > div > button {
-    width: 100%;
-    text-align: left;
-}
-
-.fixed-top {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    z-index: 1030;
-}
-
-.navbar {
-    background-color: #2c5aa0 !important;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
-    font-weight: 300;
-}
-
-.nav-modal {
-    background-color: #2c5aa0 !important;
-    color: white;
-    box-shadow: none !important;
-}
-
-.nav-avatar {
-    margin-bottom: -10px;
-    margin-top: -10px;
-}
-
-.nav-menu {
-    padding: 19px;
-}
 
 img.avatar {
     border-radius: 50%;
@@ -119,11 +67,27 @@ img.avatar.small {
     height: 30px;
     width: 30px;
 }
-
+.mat-sidenav {
+    padding: 10px 60px;
+    z-index: 1031 !important;
+    background: #2c5aa0;
+    color: white;
+}
 img.avatar.large {
     height: 100px;
     width: 100px;
+    margin: 0 auto;
 }
+
+menu-sidenav > .mat-divider {
+    border-top-color: rgba(255, 255, 255, 0.5);
+}
+
+menu-sidenav > div > button {
+    width: 100% !important;
+    text-align: left !important;
+}
+
 
 /*FLOAT MENU*/
 .floating {

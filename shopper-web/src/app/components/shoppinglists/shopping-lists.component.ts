@@ -8,7 +8,7 @@ import {AlertService} from "../../services/alert.service";
 import {NGXLogger} from "ngx-logger";
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ConfirmDialog, ConfirmDialogComponent} from "../dialogs/confirm/confirm-dialog.component";
-import {ActionsService} from "../../services/actions.service";
+import {MenuAction, MenuActionsService} from "../../services/menu-actions.service";
 
 
 @Component({
@@ -28,10 +28,10 @@ export class ShoppingListsComponent implements OnInit {
                 private router: Router,
                 private authSrv: AuthenticationService,
                 private alertSrv: AlertService,
-                private refreshSrv: ActionsService,
+                private menuSrv: MenuActionsService,
                 private dialog: MatDialog) {
-        this.refreshSrv.refreshEmitted.subscribe(refresh => {
-            if (refresh) {
+        this.menuSrv.actionEmitted.subscribe(action => {
+            if (action && action === MenuAction.REFRESH) {
                 this.loadUserLists();
             }
         })
@@ -54,6 +54,9 @@ export class ShoppingListsComponent implements OnInit {
         })
     }
 
+    /**
+     * Open new list dialog
+     */
     newListOpenDialog() {
         this.listSrv.openNewListDialog().subscribe(newList => {
                 if (newList) {
@@ -64,6 +67,10 @@ export class ShoppingListsComponent implements OnInit {
         );
     }
 
+    /**
+     * Edit list ( name and category sorting preset )
+     * @param list list to be edited
+     */
     editListOpenDialog(list: ShoppingList) {
         this.listSrv.openEditListDialog(list).subscribe(newList => {
                 if (newList) {
@@ -73,6 +80,10 @@ export class ShoppingListsComponent implements OnInit {
         );
     }
 
+    /**
+     * Open share list dialog
+     * @param list list for which dialog should be opened
+     */
     shareListOpenDialog(list: ShoppingList) {
         this.listSrv.openShareListDialog(list).subscribe(reply => {
                 if (reply) {
@@ -82,7 +93,11 @@ export class ShoppingListsComponent implements OnInit {
         );
     }
 
-
+    /**
+     * Toggle archive status for list
+     * @param list list for which status will be toggled
+     * @param archived is list already archived ?
+     */
     archiveToggle(list: ShoppingList, archived?: boolean) {
         this.listSrv.archive(list).subscribe(res => {
             if (res && res.archived != archived) {
@@ -96,6 +111,10 @@ export class ShoppingListsComponent implements OnInit {
         })
     }
 
+    /**
+     * Leave shared list
+     * @param list list which will be left
+     */
     leaveShared(list: ShoppingList) {
         this.listSrv.archive(list).subscribe(res => {
             if (res) {
@@ -105,6 +124,11 @@ export class ShoppingListsComponent implements OnInit {
         });
     }
 
+    /**
+     * Confirm deletion of list
+     * Unlike any other events this actually requires confimration of deletion
+     * @param list list which will be deleted after operation will be confirmed
+     */
     confirmDeletion(list: ShoppingList) {
         const data: ConfirmDialog = {
             title_key: 'app.shopping.delete.confirm',

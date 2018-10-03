@@ -30,7 +30,6 @@ export class ListService {
         panelClass: 'shopper-modal'
     };
 
-
     constructor(private logger: NGXLogger,
                 private api: ApiService,
                 private avatarSrv: AvatarService,
@@ -82,6 +81,10 @@ export class ListService {
         return lists
     }
 
+    /**
+     * Checks if currently logged in account is owner of list
+     * @param list list for which owner will be checked
+     */
     isOwner(list: ShoppingList): boolean {
         return list.ownerId === this.currentAccount.id
     }
@@ -212,19 +215,33 @@ export class ListService {
         return this.api.postObject<ShoppingList>(environment.list_url + `/${listID}/cleanup`, undefined);
     }
 
+    /**
+     * Load all sorting presets for current user
+     */
     loadUserSortingPresets(): Observable<CategoryPreset[]> {
         return this.api.getObject<AppSettings>(`${environment.list_url}/presets`);
     }
 
 
+    /**
+     * Save category preset
+     * @param preset preset to be updated/saved
+     */
     saveCategoryPreset(preset: CategoryPreset): Observable<CategoryPreset> {
         return this.api.postObject(`${environment.list_url}/presets/update`, preset);
     }
 
+    /**
+     * Delete category preset. API will determine if user is just leaving that preset or it should be deleted completely
+     * @param preset preset to be deleted/left
+     */
     deleteCategoryPreset(preset: CategoryPreset): Observable<CategoryPreset> {
         return this.api.postObject(`${environment.list_url}/presets/delete`, preset);
     }
 
+    /**
+     * Get default sorting of categories . Determined from api from application property
+     */
     getDefaultCategoriesSorting(): Observable<string> {
         return this.api.getObject<AppSettings>(`${environment.config_url}/categories/defaults`);
     }

@@ -49,7 +49,8 @@ import {NewShareComponent} from './components/dialogs/share/new-share/new-share.
 import {DndModule} from "ng2-dnd";
 import {NgProgressModule} from "ngx-progressbar";
 import {HelpComponent} from './components/help/help.component';
-import {ActionsService} from "./services/actions.service";
+import {MenuToolbarComponent} from './components/menu/toolbar/menu-toolbar.component';
+import {MenuSideNavComponent} from './components/menu/sidenav/menu-side-nav.component';
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -79,7 +80,9 @@ export function initUserFactory(authService: AuthenticationService) {
         AppSettingsComponent,
         SharedWithComponent,
         NewShareComponent,
-        HelpComponent
+        HelpComponent,
+        MenuToolbarComponent,
+        MenuSideNavComponent
     ],
     entryComponents: [
         AvatarUploadComponent,
@@ -131,7 +134,6 @@ export function initUserFactory(authService: AuthenticationService) {
         ListService,
         ItemService,
         FormBuilder,
-        ActionsService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

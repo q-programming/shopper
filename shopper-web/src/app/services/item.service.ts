@@ -20,7 +20,6 @@ export class ItemService {
 
     currentAccount: Account;
     categories: CategoryOption[] = [];
-
     private dialogConfig: MatDialogConfig = {
         disableClose: true,
         autoFocus: true,
@@ -137,7 +136,9 @@ export class ItemService {
         return this.api.postObject<ShoppingList>(environment.item_url + `/${listID}/add`, item)
     }
 
-
+    /**
+     * Load all categories with localised name and sort by name
+     */
     loadCategoriesWithLocalName() {
         Object.values(Category).map(value => {
             return this.translate.get(value.toString()).subscribe(name => {
