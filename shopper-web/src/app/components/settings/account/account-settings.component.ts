@@ -11,6 +11,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
 import {environment} from "../../../../environments/environment";
 import {getBase64Image} from "../../../utils/utils";
+import {ItemService} from "../../../services/item.service";
 
 @Component({
     selector: 'settings-account',
@@ -29,6 +30,7 @@ export class AccountSettingsComponent implements OnInit {
                 private logger: NGXLogger,
                 private alertSrv: AlertService,
                 private avatarSrv: AvatarService,
+                private itemSrv: ItemService,
                 private translate: TranslateService) {
     }
 
@@ -38,11 +40,11 @@ export class AccountSettingsComponent implements OnInit {
     }
 
 
-
     changeLanguage() {
         this.api.post(`${environment.account_url}${environment.language_url}`, this.account.language).subscribe(() => {
             this.translate.use(this.account.language).subscribe(() => {
                 this.alertSrv.success('app.settings.account.language.success');
+                this.itemSrv.loadCategoriesWithLocalName();
             });
         })
     }

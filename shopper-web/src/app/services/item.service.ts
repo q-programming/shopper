@@ -140,6 +140,7 @@ export class ItemService {
      * Load all categories with localised name and sort by name
      */
     loadCategoriesWithLocalName() {
+        this.categories = [];
         Object.values(Category).map(value => {
             return this.translate.get(value.toString()).subscribe(name => {
                 this.categories.push({

@@ -30,7 +30,7 @@ public class ListItem {
     private String unit;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "name")
+    @Column(name = "category")
     private Category category;
 
     @Column
