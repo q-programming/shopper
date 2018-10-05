@@ -1,9 +1,11 @@
 package com.qprogramming.shopper.app.shoppinglist.ordering;
 
 import com.qprogramming.shopper.app.exceptions.PresetNotFoundException;
+import com.qprogramming.shopper.app.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +29,7 @@ public class CategoryPresetService {
      * @return list of category presets
      */
     public List<CategoryPreset> findAllByOwner(String accountId) {
-        return _presetRepository.findAllByOwner(accountId);
+        return _presetRepository.findAllByOwnerIdOrOwnersIn(accountId, Collections.singleton(accountId));
     }
 
     /**
@@ -61,6 +63,18 @@ public class CategoryPresetService {
      * @param preset Category preset to be removed
      */
     public void remove(CategoryPreset preset) {
+
         _presetRepository.delete(preset);
+    }
+
+    public CategoryPreset create(CategoryPreset categoryPreset) {
+        categoryPreset.setOwnerId(Utils.getCurrentAccountId());
+        categoryPreset.getOwners().add(Utils.getCurrentAccountId());
+        categoryPreset.setOwnername(Utils.getCurrentAccount().getName());
+        return save(categoryPreset);
+    }
+
+    public boolean canAccess(CategoryPreset preset, String accountID) {
+        return preset.getOwnerId().equals(accountID) || preset.getOwners().contains(accountID);
     }
 }

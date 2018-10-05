@@ -97,6 +97,7 @@ export class ListService {
             this.loadUserSortingPresets().subscribe(presets => {
                 this.dialogConfig.data = {
                     presets: presets,
+                    currentAccount : this.currentAccount
                 };
                 let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
                 dialogRef.afterClosed().subscribe(form => {
@@ -131,7 +132,8 @@ export class ListService {
                 this.dialogConfig.data = {
                     presets: presets,
                     list: list,
-                    update: true
+                    update: true,
+                    currentAccount : this.currentAccount
                 };
                 let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
                 dialogRef.afterClosed().subscribe(form => {

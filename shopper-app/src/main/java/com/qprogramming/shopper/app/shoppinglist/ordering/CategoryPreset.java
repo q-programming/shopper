@@ -1,6 +1,10 @@
 package com.qprogramming.shopper.app.shoppinglist.ordering;
 
+import io.jsonwebtoken.lang.Collections;
+
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Jakub Romaniszyn on 2018-09-26
@@ -17,7 +21,15 @@ public class CategoryPreset {
     private String name;
 
     @Column
-    private String owner;
+    private String ownername;
+
+    @Column
+    private String ownerId;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column(name = "owners")
+    private Set<String> owners;
+
 
     @Column(length = 1000)
     private String categoriesOrder;
@@ -31,6 +43,14 @@ public class CategoryPreset {
         this.id = id;
     }
 
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
     public String getName() {
         return name;
     }
@@ -39,12 +59,12 @@ public class CategoryPreset {
         this.name = name;
     }
 
-    public String getOwner() {
-        return owner;
+    public String getOwnername() {
+        return ownername;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public void setOwnername(String ownername) {
+        this.ownername = ownername;
     }
 
     public String getCategoriesOrder() {
@@ -53,5 +73,16 @@ public class CategoryPreset {
 
     public void setCategoriesOrder(String categoriesOrder) {
         this.categoriesOrder = categoriesOrder;
+    }
+
+    public Set<String> getOwners() {
+        if (Collections.isEmpty(owners)) {
+            this.owners = new HashSet<>();
+        }
+        return owners;
+    }
+
+    public void setOwners(Set<String> owners) {
+        this.owners = owners;
     }
 }

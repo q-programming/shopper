@@ -124,6 +124,7 @@
   "app.settings.products.category.preset": "Sorter kategorii",
   "app.settings.products.category.sort.hint": "<p>Zdefniuj w jaki sposób będą sortowane produkty, np zaleznie od sklepu do którego jest lista.</p><p>Przesuń która kategoria ma być wyżej niżej i zatwierdz klikająć przyciskiem \"Zapisz\"</p>",
   "app.settings.products.category.success": "Sorter kategorii {{name}} został zapisany",
+  "app.settings.products.category.by": "od ",
   "ALCOHOL": "alkohole",
   "BABY": "dziecięce",
   "BAKERY": "pieczywo",

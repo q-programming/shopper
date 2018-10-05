@@ -242,6 +242,7 @@ public class ShoppingListRestController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
     public ResponseEntity<?> editList(@RequestBody ShoppingList updatedList) {
         try {
             if (StringUtils.isBlank(updatedList.getName())) {
@@ -301,13 +302,12 @@ public class ShoppingListRestController {
     @RequestMapping(value = "/presets/update", method = RequestMethod.POST)
     public ResponseEntity<CategoryPreset> updateCategoryPreset(@RequestBody CategoryPreset categoryPreset) {
         if (categoryPreset.getId() == null) {
-            categoryPreset.setOwner(Utils.getCurrentAccountId());
-            return ResponseEntity.ok(_presetService.save(categoryPreset));
+            return ResponseEntity.ok(_presetService.create(categoryPreset));
         }
         try {
             CategoryPreset dbPreset = _presetService.findById(categoryPreset.getId());
             String currentAccountId = Utils.getCurrentAccountId();
-            if (!dbPreset.getOwner().equals(currentAccountId)) {
+            if (!_presetService.canAccess(dbPreset, currentAccountId)) {
                 LOG.error("User with id {} tried to remove preset {} for which he is not owner", currentAccountId, dbPreset.getId());
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
@@ -324,12 +324,17 @@ public class ShoppingListRestController {
         try {
             CategoryPreset preset = _presetService.findById(categoryPreset.getId());
             String currentAccountId = Utils.getCurrentAccountId();
-            if (!preset.getOwner().equals(currentAccountId)) {
+            if (!_presetService.canAccess(preset, currentAccountId)) {
                 LOG.error("User with id {} tried to remove preset {} for which he is not owner", currentAccountId, preset.getId());
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
-            _listService.removePresetFromLists(preset);
-            _presetService.remove(preset);
+            preset.getOwners().remove(Utils.getCurrentAccountId());
+            if (preset.getOwners().size() == 0) {
+                _listService.removePresetFromLists(preset);
+                _presetService.remove(preset);
+            } else {
+                _presetService.save(preset);
+            }
             return ResponseEntity.ok().build();
         } catch (PresetNotFoundException e) {
             LOG.error(PRESET_WITH_ID_WAS_NOT_FOUND, categoryPreset.getId());

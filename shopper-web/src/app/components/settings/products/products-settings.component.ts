@@ -6,6 +6,8 @@ import {CategoryPreset} from "../../../model/CategoryPreset";
 import {FormControl, Validators} from "@angular/forms";
 import {ListService} from "../../../services/list.service";
 import * as _ from "lodash"
+import {AuthenticationService} from "../../../services/authentication.service";
+import {Account} from "../../../model/Account";
 
 @Component({
     selector: 'settings-products',
@@ -19,8 +21,9 @@ export class ProductsSettingsComponent implements OnInit {
     preset: CategoryPreset;
     defaultOrdering: Category[];
     currentOrdering: Category[];
+    currentAccount: Account;
 
-    constructor(private alertSrv: AlertService, private api: ApiService, private listSrv: ListService) {
+    constructor(private alertSrv: AlertService, private api: ApiService, private listSrv: ListService, private authSrv: AuthenticationService) {
         this.categoryPresetControl = new FormControl('', [Validators.required]);
         this.listSrv.getDefaultCategoriesSorting().subscribe(defaults => {
             if (defaults) {
@@ -33,6 +36,7 @@ export class ProductsSettingsComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.currentAccount = this.authSrv.currentAccount;
         this.loadUserPresets();
     }
 

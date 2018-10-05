@@ -10,10 +10,13 @@
     <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center">
         <mat-form-field class="mat-form-field-full-width">
             <mat-select placeholder="{{'app.settings.products.category.preset'|translate}}" [(value)]="preset"
-                        [disabled]="presets.length == 0"
+                        [disabled]="!presets || presets.length == 0"
                         (selectionChange)="loadCategoryOrder()">
                 <mat-option *ngFor="let userPreset of presets" [value]="userPreset">
                     {{userPreset.name}}
+                    <span *ngIf="currentAccount.id!==userPreset.ownerId">
+                        ({{'app.settings.products.category.by'|translate}}{{userPreset.ownername}})
+                    </span>
                 </mat-option>
             </mat-select>
         </mat-form-field>

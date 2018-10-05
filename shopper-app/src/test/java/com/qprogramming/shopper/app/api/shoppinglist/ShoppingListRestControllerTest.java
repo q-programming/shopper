@@ -74,17 +74,15 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     private ProductRepository productRepositoryMock;
     @Mock
     private CategoryPresetRepository presetRepositoryMock;
-    @Mock
-    private CategoryPresetRepository categoryPresetRepositoryMock;
 
 
     @Before
     @Override
     public void setup() {
         super.setup();
-        ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, mailServiceMock, presetRepositoryMock);
+        CategoryPresetService presetService = new CategoryPresetService(presetRepositoryMock);
+        ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, mailServiceMock, presetService);
         ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock);
-        CategoryPresetService presetService = new CategoryPresetService(categoryPresetRepositoryMock);
         ShoppingListRestController controller = new ShoppingListRestController(listService, listItemService, presetService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
@@ -456,41 +454,41 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     @Test
     public void createPresetTest() throws Exception {
         CategoryPreset preset = new CategoryPreset();
-        when(categoryPresetRepositoryMock.save(any(CategoryPreset.class))).then(returnsFirstArg());
+        when(presetRepositoryMock.save(any(CategoryPreset.class))).then(returnsFirstArg());
         MvcResult mvcResult = mvc.perform(post(API_LIST_URL + PRESETS_UPDATE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
                 .andExpect(status().isOk()).andReturn();
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         CategoryPreset result = TestUtil.convertJsonToObject(jsonResponse, CategoryPreset.class);
-        assertThat(result.getOwner()).isEqualTo(testAccount.getId());
-        verify(categoryPresetRepositoryMock, times(1)).save(any(CategoryPreset.class));
+        assertThat(result.getOwnerId()).isEqualTo(testAccount.getId());
+        verify(presetRepositoryMock, times(1)).save(any(CategoryPreset.class));
     }
 
     @Test
     public void updatePresetTest() throws Exception {
         CategoryPreset preset = new CategoryPreset();
         preset.setId(1L);
-        preset.setOwner(testAccount.getId());
+        preset.setOwnerId(testAccount.getId());
         preset.setName(NAME);
         CategoryPreset dbpreset = new CategoryPreset();
         dbpreset.setId(1L);
-        dbpreset.setOwner(testAccount.getId());
-        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.of(dbpreset));
-        when(categoryPresetRepositoryMock.save(any(CategoryPreset.class))).then(returnsFirstArg());
+        dbpreset.setOwnerId(testAccount.getId());
+        when(presetRepositoryMock.findById(1L)).thenReturn(Optional.of(dbpreset));
+        when(presetRepositoryMock.save(any(CategoryPreset.class))).then(returnsFirstArg());
         MvcResult mvcResult = mvc.perform(post(API_LIST_URL + PRESETS_UPDATE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
                 .andExpect(status().isOk()).andReturn();
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         CategoryPreset result = TestUtil.convertJsonToObject(jsonResponse, CategoryPreset.class);
-        assertThat(result.getOwner()).isEqualTo(testAccount.getId());
+        assertThat(result.getOwnerId()).isEqualTo(testAccount.getId());
         assertThat(result.getName()).isEqualTo(NAME);
-        verify(categoryPresetRepositoryMock, times(1)).save(any(CategoryPreset.class));
+        verify(presetRepositoryMock, times(1)).save(any(CategoryPreset.class));
     }
 
 
     @Test
     public void getUserPresetsTest() throws Exception {
-        when(categoryPresetRepositoryMock.findAllByOwner(testAccount.getId())).thenReturn(Collections.singletonList(new CategoryPreset()));
+        when(presetRepositoryMock.findAllByOwnerIdOrOwnersIn(testAccount.getId(), Collections.singleton(testAccount.getId()))).thenReturn(Collections.singletonList(new CategoryPreset()));
         MvcResult mvcResult = mvc.perform(get(API_LIST_URL + PRESETS)).andExpect(status().isOk()).andReturn();
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         List<CategoryPreset> result = TestUtil.convertJsonToList(jsonResponse, List.class, CategoryPreset.class);
@@ -502,7 +500,7 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     public void presetNotFoundOperationsTest() throws Exception {
         CategoryPreset preset = new CategoryPreset();
         preset.setId(1L);
-        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.empty());
+        when(presetRepositoryMock.findById(1L)).thenReturn(Optional.empty());
         mvc.perform(post(API_LIST_URL + PRESETS_DELETE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
                 .andExpect(status().isNotFound());
@@ -515,8 +513,8 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     public void presetNotOwnerOperationsTest() throws Exception {
         CategoryPreset preset = new CategoryPreset();
         preset.setId(1L);
-        preset.setOwner(TestUtil.ADMIN_RANDOM_ID);
-        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.of(preset));
+        preset.setOwnerId(TestUtil.ADMIN_RANDOM_ID);
+        when(presetRepositoryMock.findById(1L)).thenReturn(Optional.of(preset));
         mvc.perform(post(API_LIST_URL + PRESETS_DELETE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
                 .andExpect(status().isForbidden());
@@ -529,18 +527,18 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     public void deletePresetTest() throws Exception {
         CategoryPreset preset = new CategoryPreset();
         preset.setId(1L);
-        preset.setOwner(testAccount.getId());
+        preset.setOwnerId(testAccount.getId());
         ShoppingList shoppingList1 = TestUtil.createShoppingList(NAME, 1L, testAccount);
         ShoppingList shoppingList2 = TestUtil.createShoppingList(NAME, 2L, testAccount);
         shoppingList1.setPreset(preset);
         shoppingList2.setPreset(preset);
         List<ShoppingList> shoppingLists = Arrays.asList(shoppingList1, shoppingList2);
-        when(categoryPresetRepositoryMock.findById(1L)).thenReturn(Optional.of(preset));
+        when(presetRepositoryMock.findById(1L)).thenReturn(Optional.of(preset));
         when(listRepositoryMock.findAllByPreset(preset)).thenReturn(shoppingLists);
         mvc.perform(post(API_LIST_URL + PRESETS_DELETE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(preset)))
                 .andExpect(status().isOk());
-        verify(categoryPresetRepositoryMock, times(1)).delete(any(CategoryPreset.class));
+        verify(presetRepositoryMock, times(1)).delete(any(CategoryPreset.class));
         verify(listRepositoryMock, times(1)).saveAll(shoppingLists);
     }
 

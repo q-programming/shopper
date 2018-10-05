@@ -124,6 +124,7 @@
   "app.settings.products.category.preset": "Category sorting preset",
   "app.settings.products.category.sort.hint": "<p>Define how products will be sorted ( for example based on shop for which list is).</p><p>Drag and drop category higher/lower and confirm by clicking \"Save\" button</p>",
   "app.settings.products.category.success": "Product category sorting preset {{name}} saved",
+  "app.settings.products.category.by": "by ",
   "ALCOHOL": "Alcohol",
   "BABY": "Baby",
   "BAKERY": "Bakery",

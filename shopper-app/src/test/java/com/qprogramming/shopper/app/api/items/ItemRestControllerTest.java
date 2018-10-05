@@ -15,6 +15,7 @@ import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -60,18 +61,14 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     @Mock
     private CategoryPresetRepository presetRepositoryMock;
 
-    private ListItemService listItemService;
-
-    private ShoppingListService listService;
-    private ItemRestController controller;
-
     @Before
     @Override
     public void setup() {
         super.setup();
-        listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, mailServiceMock, presetRepositoryMock);
-        listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock);
-        controller = new ItemRestController(listItemService, listService);
+        CategoryPresetService presetService = new CategoryPresetService(presetRepositoryMock);
+        ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, mailServiceMock, presetService);
+        ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock);
+        ItemRestController controller = new ItemRestController(listItemService, listService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
     }

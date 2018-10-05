@@ -4,6 +4,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {CategoryPreset} from "../../../model/CategoryPreset";
 import {ShoppingList} from "../../../model/ShoppingList";
 import * as _ from 'lodash';
+import {Account} from "../../../model/Account";
 
 @Component({
     templateUrl: './shopping-list-dialog.component.html'
@@ -15,6 +16,7 @@ export class ShoppingListDialogComponent implements OnInit {
     selectedPreset: CategoryPreset;
     list: ShoppingList;
     update: boolean;
+    currentAccount: Account;
 
     constructor(private dialogRef: MatDialogRef<ShoppingListDialogComponent>,
                 @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -27,6 +29,7 @@ export class ShoppingListDialogComponent implements OnInit {
         }
         this.selectedPreset = (this.list && this.list.preset) ? this.list.preset : defaultPreset;
         this.update = data.update;
+        this.currentAccount = data.currentAccount;
     }
 
     commitList() {
