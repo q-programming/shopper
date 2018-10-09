@@ -51,6 +51,8 @@ import {NgProgressModule} from "ngx-progressbar";
 import {HelpComponent} from './components/help/help.component';
 import {MenuToolbarComponent} from './components/menu/toolbar/menu-toolbar.component';
 import {MenuSideNavComponent} from './components/menu/sidenav/menu-side-nav.component';
+import { FavoritesComponent } from './components/dialogs/item/favorites/favorites.component';
+import { ItemDetailsComponent } from './components/dialogs/item/item-details/item-details.component';
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -82,7 +84,9 @@ export function initUserFactory(authService: AuthenticationService) {
         NewShareComponent,
         HelpComponent,
         MenuToolbarComponent,
-        MenuSideNavComponent
+        MenuSideNavComponent,
+        FavoritesComponent,
+        ItemDetailsComponent
     ],
     entryComponents: [
         AvatarUploadComponent,

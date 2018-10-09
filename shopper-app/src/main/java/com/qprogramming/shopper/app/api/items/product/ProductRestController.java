@@ -47,7 +47,7 @@ public class ProductRestController {
         if (StringUtils.isBlank(term)) {
             return ResponseEntity.ok(Category.OTHER);
         } else {
-            Set<Product> products = _productRepository.findByNameContainingIgnoreCase(term);
+            Set<Product> products = _productRepository.findByNameContainingIgnoreCase(term.trim());
             //TODO get the best match in the future. For now just return first one from list. Vetter the term the better result
             return ResponseEntity.ok(Collections.isEmpty(products) ? Category.OTHER : products.iterator().next().getTopCategory());
         }

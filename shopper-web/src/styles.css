@@ -55,7 +55,6 @@ main {
     height: 100vh !important;
 }
 
-
 img.avatar {
     border-radius: 50%;
     height: 45px;
@@ -67,12 +66,14 @@ img.avatar.small {
     height: 30px;
     width: 30px;
 }
+
 .mat-sidenav {
     padding: 10px 60px;
     z-index: 1031 !important;
     background: #2c5aa0;
     color: white;
 }
+
 img.avatar.large {
     height: 100px;
     width: 100px;
@@ -87,7 +88,6 @@ menu-sidenav > div > button {
     width: 100% !important;
     text-align: left !important;
 }
-
 
 /*FLOAT MENU*/
 .floating {
@@ -131,6 +131,10 @@ menu-sidenav > div > button {
 
 .full-width {
     max-width: 100%;
+}
+
+.full-width-button {
+    width: 100% !important;
 }
 
 .v-middle {

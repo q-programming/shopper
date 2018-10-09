@@ -129,15 +129,16 @@ export class ListComponent implements OnInit, OnDestroy {
      * Open new item dialog
      */
     openNewItemDialog() {
-        // this.stopListWatcher();
+        this.stopListWatcher();
         this.itemSrv.openNewItemDialog(this.listID).subscribe(list => {
             if (list) {
                 this.assignListWithSorting(list);
                 this.alertSrv.success("app.item.add.success");
             } else {
-                this.alertSrv.error("app.item.add.error");
+                this.inProgress = true;
+                this.loadItems();
             }
-            // this.startListWatcher();
+            this.startListWatcher();
         })
     }
 
@@ -184,18 +185,20 @@ export class ListComponent implements OnInit, OnDestroy {
         _.remove(this.items, (i) => {
             return i.id === item.id
         });
-        this.alertSrv.undoable("app.item.delete.success").subscribe(undo => {
-            if (undo !== undefined) {
-                if (!undo) {
-                    this.itemSrv.deleteItem(this.listID, item).subscribe((list) => {
-                        if (list) {
+        this.inProgress = true;
+        this.alertSrv.undoable("app.item.delete.success", {name: item.product.name}).subscribe(undo => {
+            if (undo !== undefined && !undo) {
+                this.itemSrv.deleteItem(this.listID, item).subscribe((list) => {
+                    if (list) {
+                        if (!this.inProgress) {
                             this.assignListWithSorting(list);
-                            this.startListWatcher();
                         }
-                    });
-                } else {
-                    this.loadItems();
-                }
+                        this.inProgress = true;
+                        this.startListWatcher();
+                    }
+                });
+            } else if (undo !== undefined && undo) {
+                this.loadItems();
             }
         });
     }

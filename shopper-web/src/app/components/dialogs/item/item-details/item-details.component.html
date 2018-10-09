@@ -1,0 +1,62 @@
+<div fxLayout="row" fxLayoutGap="10px" class="mt-2 pb-1" fxLayoutAlign="center center">
+    <form [formGroup]="form">
+        <div fxLayout="row" fxLayoutAlign="center">
+            <mat-form-field class="" fxFlex="70">
+                <img [src]='"assets/images/spacer.png"' class="mr-2" matPrefix>
+                <input id="product" matInput placeholder="{{'app.item.product'|translate}}"
+                       cdkFocusRegionstart formControlName="product" required>
+                <!--<mat-error *ngIf="form.value.listName.invalid"></mat-error>-->
+                <!--<mat-autocomplete #productsAuto="matAutocomplete" [autoActiveFirstOption]-->
+                <!--[displayWith]="productDisplay" (optionSelected)="setProduct($event)">-->
+                <!--<mat-option *ngFor="let product of products" [value]="product"-->
+                <!--[innerHTML]="product.name | highlight: productTerm">-->
+                <!--</mat-option>-->
+                <!--</mat-autocomplete>-->
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center">
+            <mat-form-field class="" fxFlex="70">
+                <img *ngIf="item.category" [src]='"assets/images/categories/"+ item.category + ".png"'
+                     class="category mr-2"
+                     matPrefix>
+                <img *ngIf="!item.category" [src]='"assets/images/spacer.png"' class="category mr-2"
+                     matPrefix>
+                <mat-select required formControlName="category" placeholder="{{'app.item.category'|translate}}"
+                            #singleSelect>
+                    <ngx-mat-select-search formControlName="categoryFilterCtrl"
+                                           [placeholderLabel]="'app.item.category.search' | translate"
+                                           [noEntriesFoundLabel]="'app.item.category.search.notfound'|translate">
+                    </ngx-mat-select-search>
+                    <mat-option *ngFor="let cat of filteredCategories | async" [value]="cat.category">
+                        <span matSuffix>
+                            <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category mr-1">
+                        </span>
+                        <span [innerHTML]="cat.name | highlight: categoryTerm"></span>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="40px">
+            <mat-form-field fxFlex="20">
+                <input id="quantity" type="number" matInput placeholder="{{'app.item.quantity'|translate}}"
+                       formControlName="quantity">
+            </mat-form-field>
+            <mat-form-field fxFlex="20">
+                <input id="unit" matInput placeholder="{{'app.item.unit'|translate}}"
+                       formControlName="unit">
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center">
+            <mat-form-field fxFlex="80">
+                <textarea matInput placeholder="{{'app.item.description'|translate}}"
+                          formControlName="description"></textarea>
+            </mat-form-field>
+        </div>
+    </form>
+</div>
+<div class="p-2 pull-right">
+    <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
+    <button mat-raised-button class="success-button" (click)="commitItem()" [disabled]="form.invalid">
+        {{(update?'app.general.edit':'app.general.add') |translate}}
+    </button>
+</div>

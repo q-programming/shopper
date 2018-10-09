@@ -78,6 +78,7 @@ export class ItemService {
         this.dialogConfig.data.update = false;
         this.dialogConfig.data.item = undefined;
         this.dialogConfig.data.categories = this.categories;
+        this.dialogConfig.data.listID = listID;
         return new Observable((observable) => {
             let dialogRef = this.dialog.open(ItemDialogComponent, this.dialogConfig);
             dialogRef.afterClosed().subscribe(item => {
@@ -92,6 +93,9 @@ export class ItemService {
                         observable.next(undefined);
                         observable.complete();
                     });
+                } else {
+                    observable.next(undefined);
+                    observable.complete();
                 }
             });
         });
@@ -107,6 +111,7 @@ export class ItemService {
         this.dialogConfig.data.update = true;
         this.dialogConfig.data.item = item;
         this.dialogConfig.data.categories = this.categories;
+        this.dialogConfig.data.listID = listID;
         return new Observable((observable) => {
             let dialogRef = this.dialog.open(ItemDialogComponent, this.dialogConfig);
             dialogRef.afterClosed().subscribe(item => {
