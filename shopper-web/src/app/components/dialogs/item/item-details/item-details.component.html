@@ -1,5 +1,5 @@
 <div fxLayout="row" fxLayoutGap="10px" class="mt-2 pb-1" fxLayoutAlign="center center">
-    <form [formGroup]="form">
+    <form [formGroup]="form" class="no-overflow">
         <div fxLayout="row" fxLayoutAlign="center">
             <mat-form-field class="" fxFlex="70">
                 <img [src]='"assets/images/spacer.png"' class="mr-2" matPrefix>
@@ -48,13 +48,14 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="center">
             <mat-form-field fxFlex="80">
-                <textarea matInput placeholder="{{'app.item.description'|translate}}"
+                <textarea matInput placeholder="{{'app.item.description'|translate}}" matTextareaAutosize
+                          [matAutosizeMinRows]="4"
                           formControlName="description"></textarea>
             </mat-form-field>
         </div>
     </form>
 </div>
-<div class="p-2 pull-right">
+<div class="p-2 button-panel">
     <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
     <button mat-raised-button class="success-button" (click)="commitItem()" [disabled]="form.invalid">
         {{(update?'app.general.edit':'app.general.add') |translate}}

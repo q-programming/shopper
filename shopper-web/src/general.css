@@ -1699,3 +1699,6 @@
 .text-white {
     color: #fff !important
 }
+.no-overflow{
+    overflow: hidden;
+}

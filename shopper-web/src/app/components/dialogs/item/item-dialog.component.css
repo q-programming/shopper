@@ -3,3 +3,13 @@
     left: 0;
     margin-top: -5px
 }
+::ng-deep .mat-tab-body-wrapper {
+    height: 50vh;
+    padding: 5px;
+}
+
+@media (max-width: 768px) {
+    ::ng-deep .mat-tab-body-wrapper {
+        height: 60vh;
+    }
+}

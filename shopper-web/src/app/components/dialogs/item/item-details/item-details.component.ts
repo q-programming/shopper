@@ -12,7 +12,7 @@ import * as _ from 'lodash';
 @Component({
     selector: 'item-details',
     templateUrl: './item-details.component.html',
-    styles: []
+    styleUrls: ['./item-details.component.css']
 })
 export class ItemDetailsComponent implements OnInit {
 
