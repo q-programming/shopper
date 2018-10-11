@@ -19,6 +19,7 @@ export class ItemDetailsComponent implements OnInit {
     form: FormGroup;
     @Input() item: ListItem;
     @Input() listID: number;
+    @Input() update: boolean;
     @Output() itemChange: EventEmitter<ListItem> = new EventEmitter<ListItem>();
     @Input() categories: CategoryOption[];
     @Output() commit: EventEmitter<boolean> = new EventEmitter<boolean>();

@@ -8,6 +8,7 @@
 <div *ngIf="update">
     <item-details [listID]="listID"
                   [(item)]="item"
+                  [update]="update"
                   [categories]="categories">
     </item-details>
 </div>
@@ -24,6 +25,7 @@
                 [listID]="listID"
                 [(item)]="item"
                 [categories]="categories"
+                [update]="update"
                 (commit)="commitItem($event)"
         ></item-details>
     </mat-tab>
