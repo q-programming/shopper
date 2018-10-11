@@ -1699,6 +1699,12 @@
 .text-white {
     color: #fff !important
 }
-.no-overflow{
+
+.no-overflow {
     overflow: hidden;
+}
+
+.wrapped-text {
+    line-height: initial !important;
+    white-space: pre-wrap
 }

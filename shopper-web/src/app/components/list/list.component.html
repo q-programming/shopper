@@ -22,14 +22,7 @@
             <span *ngIf="list.archived" matTooltip="{{'app.shopping.archived'|translate}}">
                 <img class="v-middle" src="assets/images/box.svg" height="24">
             </span>
-            <span fxShow.xs="true" fxShow.gt-sm="false">
-                <span *ngIf="list.name.length > 20" matTooltip="{{list.name}}">
-                    {{list.name|slice:0:18}}...
-                </span>
-                <span *ngIf="list.name.length < 20">
-                    {{list.name}}
-                </span>
-            </span>
+            <span fxShow.xs="true" fxShow.gt-sm="false" [innerHtml]="list.name | trim:20"></span>
             <span fxShow.lt-md="false">
                     {{list.name}}
             </span>
@@ -50,7 +43,7 @@
                     <span>{{'app.general.edit'|translate}}</span>
                 </button>
                 <button mat-menu-item (click)="shareListOpenDialog(list)">
-                    <mat-icon >person</mat-icon>
+                    <mat-icon>person</mat-icon>
                     <span>{{'app.shopping.share'|translate}}</span>
                 </button>
                 <button mat-menu-item (click)="cleanup()" [disabled]="done.length==0">

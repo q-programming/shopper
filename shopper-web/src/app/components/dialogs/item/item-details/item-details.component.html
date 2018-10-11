@@ -48,14 +48,13 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="center">
             <mat-form-field fxFlex="80">
-                <textarea matInput placeholder="{{'app.item.description'|translate}}" matTextareaAutosize
-                          [matAutosizeMinRows]="4"
-                          formControlName="description"></textarea>
+                <textarea matInput placeholder="{{'app.item.description'|translate}}" formControlName="description">
+                </textarea>
             </mat-form-field>
         </div>
     </form>
 </div>
-<div class="p-2 button-panel">
+<div class="p-2 button-panel pull-right">
     <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
     <button mat-raised-button class="success-button" (click)="commitItem()" [disabled]="form.invalid">
         {{(update?'app.general.edit':'app.general.add') |translate}}

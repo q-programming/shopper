@@ -1,12 +1,33 @@
-<div fxLayout="row wrap" fxLayoutGap="5px" class="m-1">
-    <div *ngIf="favorites && favorites.length==0" class="text-center font-italic">
+<div fxLayout="row wrap" fxLayoutGap="5px" fxLayoutAlign="space-around start" class="m-1 favorites">
+    <div fxFlex="100">
+        <form>
+            <mat-form-field class="mat-form-field-full-width mr-1 ml-1">
+                <input matInput placeholder="{{'app.item.add.favorites.filter'|translate}}" value=""
+                       autocomplete="false" [formControl]="filterControl">
+                <button mat-button *ngIf="filterControl.value" matSuffix mat-icon-button aria-label="Clear"
+                        matTooltip="{{'app.general.clear'|translate}}"
+                        (click)="filterControl.setValue('')">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+        </form>
+    </div>
+    <div *ngIf="filteredProducts && (filteredProducts|async).length==0" class="text-center font-italic">
         {{'app.item.add.favorites.onlist'|translate}}
     </div>
-    <div *ngFor="let fav of favorites" fxFlex="calc(50%-5px)" class="mt-1">
+    <div *ngFor="let fav of filteredProducts | async" fxFlex="calc(50%-5px)" class="mt-1">
         <button mat-raised-button class="full-width-button" (click)="addItem(fav)">
-            <mat-icon class="pull-left">add</mat-icon>
-            {{fav.name}}
-            <img fxShow.xs="false" [src]='"assets/images/categories/"+ fav.topCategory+ ".png"' class="category v-middle pull-right">
+            <div fxLayout="row">
+                <mat-icon fxFlex="15" class="mt-1 pull-left">add</mat-icon>
+                <span [innerHtml]="(fav.name) | highlight:filter"
+                      class="font-weight-normal text-left wrapped-text mt-2"
+                      fxFlex>
+                </span>
+                <span fxFlex="15" fxShow.xs="false">
+                <img [src]='"assets/images/categories/"+ fav.topCategory+ ".png"'
+                     class="category v-middle pull-right">
+                </span>
+            </div>
         </button>
     </div>
 </div>

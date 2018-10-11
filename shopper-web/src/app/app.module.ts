@@ -53,6 +53,7 @@ import {MenuToolbarComponent} from './components/menu/toolbar/menu-toolbar.compo
 import {MenuSideNavComponent} from './components/menu/sidenav/menu-side-nav.component';
 import { FavoritesComponent } from './components/dialogs/item/favorites/favorites.component';
 import { ItemDetailsComponent } from './components/dialogs/item/item-details/item-details.component';
+import {TrimDirective } from './directives/trim.directive';
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -86,7 +87,8 @@ export function initUserFactory(authService: AuthenticationService) {
         MenuToolbarComponent,
         MenuSideNavComponent,
         FavoritesComponent,
-        ItemDetailsComponent
+        ItemDetailsComponent,
+        TrimDirective
     ],
     entryComponents: [
         AvatarUploadComponent,

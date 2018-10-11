@@ -1,17 +1,17 @@
-<h2 mat-dialog-title class="modal-header">
+<h2 mat-dialog-title class="modal-header mb-0">
     <mat-icon class="text-white mr-2">{{update?'edit':'add'}}</mat-icon>
     {{(update?'app.item.update':'app.item.add')|translate}}
     <button mat-icon-button mat-dialog-close class="pull-right">
         <mat-icon>close</mat-icon>
     </button>
 </h2>
-<item-details *ngIf="update"
-              [listID]="listID"
-              [(item)]="item"
-              [categories]="categories"
-></item-details>
-
-<mat-tab-group mat-stretch-tabs *ngIf="!update" >
+<div *ngIf="update">
+    <item-details [listID]="listID"
+                  [(item)]="item"
+                  [categories]="categories">
+    </item-details>
+</div>
+<mat-tab-group mat-stretch-tabs *ngIf="!update">
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon>add</mat-icon>

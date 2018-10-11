@@ -9,6 +9,7 @@ import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.items.ListItemRepository;
 import com.qprogramming.shopper.app.items.ListItemService;
 import com.qprogramming.shopper.app.items.category.Category;
+import com.qprogramming.shopper.app.items.favorites.FavoriteProducts;
 import com.qprogramming.shopper.app.items.favorites.FavoriteProductsRepository;
 import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.items.product.ProductRepository;
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,6 +49,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     private static final String ITEM_UPDATE = "/update";
     private static final String ITEM_DELETE = "/delete";
     private static final String ITEM_TOGGLE = "/toggle";
+    private static final String FAVORITES = "/favorites";
 
     @Mock
     private ShoppingListRepository listRepositoryMock;
@@ -70,7 +74,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         super.setup();
         CategoryPresetService presetService = new CategoryPresetService(presetRepositoryMock);
         ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, mailServiceMock, presetService);
-        ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock,favoritesRepositoryMock);
+        ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock);
         ItemRestController controller = new ItemRestController(listItemService, listService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
@@ -144,7 +148,8 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isNotFound());
-
+        this.mvc.perform(get(API_ITEM_URL + 1 + FAVORITES))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -170,6 +175,9 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isForbidden());
+        this.mvc.perform(get(API_ITEM_URL + 1 + FAVORITES))
+                .andExpect(status().isForbidden());
+
     }
 
 
@@ -278,6 +286,49 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         verify(listItemRepositoryMock, times(1)).save(listItem);
         assertThat(result.isDone()).isTrue();
     }
+
+    @Test
+    public void getFavoritesNothingFoundTest() throws Exception {
+        ListItem listItem = new ListItem();
+        listItem.setId(1L);
+        ShoppingList list = createList(NAME, 1L);
+        list.getItems().add(listItem);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(favoritesRepositoryMock.findById(testAccount.getId())).thenReturn(Optional.empty());
+        MvcResult mvcResult = this.mvc.perform(get(API_ITEM_URL + list.getId() + FAVORITES))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Product> favorites = TestUtil.convertJsonToList(contentAsString, List.class, Product.class);
+        assertThat(favorites).isEmpty();
+
+    }
+
+    @Test
+    public void favoritesTest() throws Exception {
+        Product product1 = TestUtil.createProduct(NAME + 1);
+        Product product2 = TestUtil.createProduct(NAME + 2);
+        Product product3 = TestUtil.createProduct(NAME + 3);
+        FavoriteProducts fav = new FavoriteProducts();
+        fav.getFavorites().put(product1, 1L);
+        fav.getFavorites().put(product2, 2L);
+        fav.getFavorites().put(product3, 3L);
+        ListItem listItem = new ListItem();
+        listItem.setProduct(product1);
+        listItem.setId(1L);
+        ShoppingList list = createList(NAME, 1L);
+        list.getItems().add(listItem);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(favoritesRepositoryMock.findById(testAccount.getId())).thenReturn(Optional.of(fav));
+        MvcResult mvcResult = this.mvc.perform(get(API_ITEM_URL + list.getId() + FAVORITES))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Product> favorites = TestUtil.convertJsonToList(contentAsString, List.class, Product.class);
+        assertThat(favorites.size()).isEqualTo(2);
+        assertThat(favorites.get(0)).isEqualTo(product3);
+    }
+
 
     private ShoppingList createList(String name, long id) {
         return TestUtil.createShoppingList(name, id, testAccount);
