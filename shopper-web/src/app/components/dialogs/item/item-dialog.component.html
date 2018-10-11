@@ -9,7 +9,9 @@
     <item-details [listID]="listID"
                   [(item)]="item"
                   [update]="update"
-                  [categories]="categories">
+                  [categories]="categories"
+                  (commit)="commitItem($event)"
+    >
     </item-details>
 </div>
 <mat-tab-group mat-stretch-tabs *ngIf="!update">

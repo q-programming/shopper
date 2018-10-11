@@ -161,7 +161,8 @@ public class ListItemService {
         return p -> list.contains(p) || list.stream().anyMatch(pr -> pr.getName().equalsIgnoreCase(p.getName()));
     }
 
-    public void replaceProduct(Product updatedProduct, ListItem updatedItem, ShoppingList list) throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
+    public void replaceProduct(Product updatedProduct, ListItem updatedItem, ShoppingList list, ListItem item) throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
+        updatedItem.setCategory(item.getCategory());
         Optional<ListItem> itemOptional = list.getItems().stream().filter(sameProduct(updatedProduct)).findFirst();
         if (itemOptional.isPresent()) {
             ListItem listItem = itemOptional.get();
@@ -169,6 +170,9 @@ public class ListItemService {
             list.getItems().remove(updatedItem);
             deleteListItem(updatedItem);
         } else {
+            updatedItem.setDescription(item.getDescription());
+            updatedItem.setQuantity(item.getQuantity());
+            updatedItem.setUnit(item.getUnit());
             updatedItem.setProduct(getProductOrCreate(updatedProduct));
             updateProductCategoryFromItem(updatedItem, updatedItem.getProduct(), updatedItem.getCategory());
             saveItem(updatedItem);

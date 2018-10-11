@@ -91,8 +91,7 @@ public class ItemRestController {
             ListItem updatedItem = _listItemService.findById(item.getId());
             Product updatedProduct = item.getProduct();
             if (!updatedProduct.equals(updatedItem.getProduct())) {//there was product change, delete product and create new
-                updatedItem.setCategory(item.getCategory());
-                _listItemService.replaceProduct(updatedProduct, updatedItem, list);
+                _listItemService.replaceProduct(updatedProduct, updatedItem, list, item);
             } else {
                 _listItemService.update(item);
             }
