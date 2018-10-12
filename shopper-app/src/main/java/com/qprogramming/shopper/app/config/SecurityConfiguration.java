@@ -103,6 +103,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().exceptionHandling()
                     .authenticationEntryPoint(restAuthenticationEntryPoint)
+                // ws
+                .and().antMatcher("/ws").authorizeRequests().anyRequest().permitAll()
                 //token based auth
                 .and().addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
                     .authorizeRequests()

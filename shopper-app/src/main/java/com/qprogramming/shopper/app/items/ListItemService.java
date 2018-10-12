@@ -170,7 +170,7 @@ public class ListItemService {
             list.getItems().remove(updatedItem);
             deleteListItem(updatedItem);
         } else {
-            updatedItem.setDescription(item.getDescription());
+            updatedItem.setDescription(item.getDescription());;
             updatedItem.setQuantity(item.getQuantity());
             updatedItem.setUnit(item.getUnit());
             updatedItem.setProduct(getProductOrCreate(updatedProduct));

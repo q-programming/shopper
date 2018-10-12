@@ -3,6 +3,8 @@ import {ListService} from "../../services/list.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ShoppingList} from "../../model/ShoppingList";
 import {ListItem} from "../../model/ListItem";
+import * as Stomp from 'stompjs';
+import * as SockJS from 'sockjs-client';
 import * as _ from 'lodash';
 import {AlertService} from "../../services/alert.service";
 import {Category} from "../../model/Category";
@@ -31,6 +33,7 @@ export class ListComponent implements OnInit, OnDestroy {
     sharedCount = 0;
     sub: Subscription;
     inProgress: boolean;
+    stompClient;
 
 
     constructor(private listSrv: ListService,
@@ -40,6 +43,7 @@ export class ListComponent implements OnInit, OnDestroy {
                 private alertSrv: AlertService,
                 private menuSrv: MenuActionsService,
                 private translate: TranslateService) {
+        this.initializeWebSocketConnection();
         //handle menu srv actions
         this.menuSrv.actionEmitted.subscribe(action => {
             switch (action) {
@@ -364,6 +368,22 @@ export class ListComponent implements OnInit, OnDestroy {
     get percentage() {
         let percentage = this.list.items.length > 0 ? (this.done.length / this.list.items.length) * 100 : 0;
         return parseFloat(`${percentage}`).toFixed(2);
+    }
+
+    sendRefresh() {
+        console.log(`Sending refresh for list :${this.listID}`);
+        this.stompClient.send("/ws/send/refresh", {}, this.listID);
+    }
+
+    initializeWebSocketConnection() {
+        let ws = new SockJS("/shopper/ws");
+        this.stompClient = Stomp.over(ws);
+        let that = this;
+        this.stompClient.connect({}, function (frame) {
+            that.stompClient.subscribe("/refresh", (list) => {
+                console.log(`Got refresh message from ws : ${list}`)
+            });
+        });
     }
 
 }
