@@ -1,5 +1,6 @@
 package pl.qprogramming.shopper;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -16,7 +17,9 @@ public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
     private ImageView imageView;
+    private boolean appLoaded;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,13 +52,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPageStarted(WebView webview, String url, Bitmap favicon) {
-            webview.setVisibility(webview.INVISIBLE);
+            if (!appLoaded) {
+                webview.setVisibility(View.INVISIBLE);
+            }
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
+            appLoaded = true;
             imageView.setVisibility(View.GONE);
-            view.setVisibility(webView.VISIBLE);
+            view.setVisibility(View.VISIBLE);
             super.onPageFinished(view, url);
 
         }

@@ -14,7 +14,7 @@
                         (selectionChange)="loadCategoryOrder()">
                 <mat-option *ngFor="let userPreset of presets" [value]="userPreset">
                     {{userPreset.name}}
-                    <span *ngIf="currentAccount.id!==userPreset.ownerId">
+                    <span *ngIf="currentAccount.id !== userPreset.ownerId">
                         ({{'app.settings.products.category.by'|translate}}{{userPreset.ownername}})
                     </span>
                 </mat-option>
