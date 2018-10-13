@@ -52,7 +52,6 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Transient
     private String apikey;
 
-
     public String getId() {
         return id;
     }

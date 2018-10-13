@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
+import java.util.function.Predicate;
 
 /**
  * Created by Jakub Romaniszyn  on 17/0702018
@@ -90,5 +91,9 @@ public class Utils {
      */
     public static String convertDateTimeToString(Date date) {
         return new SimpleDateFormat(DATE_FORMAT_TIME).format(date);
+    }
+
+    public static <T> Predicate<T> not(Predicate<T> t) {
+        return t.negate();
     }
 }

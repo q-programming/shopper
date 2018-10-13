@@ -4,12 +4,14 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ShoppingList} from "../../model/ShoppingList";
 import {ListItem} from "../../model/ListItem";
 import * as _ from 'lodash';
-import {ItemService} from "../../services/item.service";
 import {AlertService} from "../../services/alert.service";
 import {Category} from "../../model/Category";
 import {CategoryOption} from "../../model/CategoryOption";
 import {TranslateService} from "@ngx-translate/core";
 import {Observable, Subscription} from "rxjs";
+import {MenuAction, MenuActionsService} from "../../services/menu-actions.service";
+import {ItemService} from "../../services/item.service";
+
 
 @Component({
     selector: 'app-list',
@@ -28,18 +30,48 @@ export class ListComponent implements OnInit, OnDestroy {
     edit: boolean;
     sharedCount = 0;
     sub: Subscription;
-    cleanupInProgress: boolean;
+    inProgress: boolean;
+
 
     constructor(private listSrv: ListService,
                 private itemSrv: ItemService,
                 private router: Router,
                 private activatedRoute: ActivatedRoute,
                 private alertSrv: AlertService,
+                private menuSrv: MenuActionsService,
                 private translate: TranslateService) {
+        //handle menu srv actions
+        this.menuSrv.actionEmitted.subscribe(action => {
+            switch (action) {
+                case MenuAction.REFRESH:
+                    //Action usually comes from current user so disable any potential notifications
+                    this.inProgress = true;
+                    this.loadItems();
+                    break;
+                case MenuAction.SHARE:
+                    this.shareListOpenDialog();
+                    break;
+                case MenuAction.ADD_ITEM:
+                    this.openNewItemDialog();
+                    break;
+                case MenuAction.EDIT:
+                    this.openEditListDialog();
+                    break;
+                case MenuAction.CLEANUP:
+                    this.cleanup();
+                    break;
+                case MenuAction.ARCHIVE:
+                    this.archiveToggle(this.list.archived);
+                    break;
+                case MenuAction.LEAVE:
+                    this.leaveShared();
+                    break;
+            }
+        });
     }
 
     ngOnInit() {
-        this.loadCategoriesWithLocalName();
+        this.categories = this.itemSrv.categories;
         this.activatedRoute.params.subscribe(params => {
             this.listID = params['listid'];
             this.loadItems();
@@ -97,20 +129,24 @@ export class ListComponent implements OnInit, OnDestroy {
      * Open new item dialog
      */
     openNewItemDialog() {
-        // this.stopListWatcher();
+        this.stopListWatcher();
         this.itemSrv.openNewItemDialog(this.listID).subscribe(list => {
             if (list) {
                 this.assignListWithSorting(list);
                 this.alertSrv.success("app.item.add.success");
             } else {
-                this.alertSrv.error("app.item.add.error");
+                this.inProgress = true;
+                this.loadItems();
             }
-            // this.startListWatcher();
+            this.startListWatcher();
         })
     }
 
+    /**
+     * Open edit dialog
+     * @param item item to be edited
+     */
     openEditItemDialog(item: ListItem) {
-        // this.stopListWatcher();
         this.itemSrv.openEditItemDialog(this.listID, Object.assign({}, item)).subscribe(list => {
             if (list) {
                 this.assignListWithSorting(list);
@@ -118,7 +154,6 @@ export class ListComponent implements OnInit, OnDestroy {
             } else {
                 this.alertSrv.error("app.item.update.fail");
             }
-            // this.startListWatcher();
         })
     }
 
@@ -128,39 +163,49 @@ export class ListComponent implements OnInit, OnDestroy {
      * @param newCategory new category
      */
     updateCategory(item: ListItem, newCategory: Category) {
-        item.category = newCategory;
-        this.itemSrv.updateItem(this.listID, item).subscribe(list => {
-            if (list) {
-                this.alertSrv.success("app.item.category.updated");
-                this.assignListWithSorting(list);
-            }
-        }, () => {
-            this.alertSrv.success("app.item.category.fail");
-        })
+        if (newCategory !== item.category) {
+            item.category = newCategory;
+            this.itemSrv.updateItem(this.listID, item).subscribe(list => {
+                if (list) {
+                    this.alertSrv.success("app.item.category.updated");
+                    this.assignListWithSorting(list);
+                }
+            }, () => {
+                this.alertSrv.success("app.item.category.fail");
+            })
+        }
     }
 
+    /**
+     * Delete item. First there will be undoable message shown . After timer is done , perform actual deletion
+     * @param item item to be deleted after undoable timer
+     */
     deleteItem(item: ListItem) {
         this.stopListWatcher();
         _.remove(this.items, (i) => {
             return i.id === item.id
         });
-        this.alertSrv.undoable("app.item.delete.success").subscribe(undo => {
-            if (undo !== undefined) {
-                if (!undo) {
-                    this.itemSrv.deleteItem(this.listID, item).subscribe((list) => {
-                        if (list) {
+        this.inProgress = true;
+        this.alertSrv.undoable("app.item.delete.success", {name: item.product.name}).subscribe(undo => {
+            if (undo !== undefined && !undo) {
+                this.itemSrv.deleteItem(this.listID, item).subscribe((list) => {
+                    if (list) {
+                        if (!this.inProgress) {
                             this.assignListWithSorting(list);
-                            this.startListWatcher();
                         }
-                    });
-                } else {
-                    this.loadItems();
-                }
+                        this.inProgress = true;
+                        this.startListWatcher();
+                    }
+                });
+            } else if (undo !== undefined && undo) {
+                this.loadItems();
             }
         });
     }
 
-
+    /**
+     * Open share list dialog
+     */
     shareListOpenDialog() {
         this.listSrv.openShareListDialog(this.list).subscribe(reply => {
                 if (reply) {
@@ -170,6 +215,9 @@ export class ListComponent implements OnInit, OnDestroy {
         );
     }
 
+    /**
+     * Open edit list dialog
+     */
     openEditListDialog() {
         // this.stopListWatcher();
         this.listSrv.openEditListDialog(this.list).subscribe(reply => {
@@ -182,26 +230,12 @@ export class ListComponent implements OnInit, OnDestroy {
         })
     }
 
-
-    private loadCategoriesWithLocalName() {
-        Object.values(Category).map(value => {
-            return this.translate.get(value.toString()).subscribe(name => {
-                this.categories.push({
-                    category: value,
-                    name: name
-                });
-            }, undefined, () => {
-                this.categories.sort((a, b) => a.name.localeCompare(b.name))
-            })
-        });
-    }
-
     private loadItems() {
         this.listSrv.getListByID(this.listID).subscribe(list => {
-            if (this.list && !this.cleanupInProgress) {
+            if (this.list && !this.inProgress) {
                 this.wereItemsChangedByShared(list);
             }
-            this.cleanupInProgress = false;//clear any potential cleanup flag
+            this.inProgress = false;//clear any potential cleanup flag
             this.listName = list.name;
             this.assignListWithSorting(list);
             this.startListWatcher();
@@ -219,6 +253,11 @@ export class ListComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Handler for child element which quickly added some item
+     * Main purpose is just to refresh items based on loaded list
+     * @param list list to be refreshed
+     */
     quickAdd(list: ShoppingList) {
         this.assignListWithSorting(list);
         this.alertSrv.success("app.item.add.success");
@@ -236,12 +275,18 @@ export class ListComponent implements OnInit, OnDestroy {
         this.items = _.difference(this.list.items, this.done)
     }
 
+    /**
+     * Start edit process if list is not archived
+     */
     startEdit() {
         if (!this.list.archived) {
             this.edit = true;
         }
     }
 
+    /**
+     * Change list name if new value is actually different than current one
+     */
     editListName() {
         if (this.listName !== this.list.name) {
             this.list.name = this.listName;
@@ -255,21 +300,28 @@ export class ListComponent implements OnInit, OnDestroy {
         this.edit = false;
     }
 
+    /**
+     * Toggle archive status for current list
+     * @param archived is current list archived already ?
+     */
     archiveToggle(archived?: boolean) {
         this.stopListWatcher();
         this.listSrv.archive(this.list).subscribe(res => {
             if (res) {
                 let msgKey = archived ? 'app.shopping.unarchive.success' : 'app.shopping.archive.success';
                 this.alertSrv.success(msgKey);
-                this.loadItems();
             }
         }, error => {
             let msgKey = archived ? 'app.shopping.unarchive.fail' : 'app.shopping.archive.fail';
             this.alertSrv.error(msgKey);
-            this.startListWatcher();
+        }, () => {
+            this.loadItems();
         })
     }
 
+    /**
+     * Leave shared list
+     */
     leaveShared() {
         this.alertSrv.undoable('app.shopping.share.leave.success').subscribe(undo => {
             if (undo !== undefined) {
@@ -284,10 +336,12 @@ export class ListComponent implements OnInit, OnDestroy {
         });
     }
 
-
+    /**
+     * Cleanup all done items. Actual cleanup API call is performed after undoable timeout (or alert dismiss )
+     */
     cleanup() {
         this.stopListWatcher();
-        this.cleanupInProgress = true;
+        this.inProgress = true;
         this.done = [];
         this.list.done = 0;
         this.list.items = this.items;
@@ -308,8 +362,8 @@ export class ListComponent implements OnInit, OnDestroy {
     }
 
     get percentage() {
-        let perc = this.list.items.length > 0 ? (this.done.length / this.list.items.length) * 100 : 0;
-        return parseFloat(`${perc}`).toFixed(2);
+        let percentage = this.list.items.length > 0 ? (this.done.length / this.list.items.length) * 100 : 0;
+        return parseFloat(`${percentage}`).toFixed(2);
     }
 
 }

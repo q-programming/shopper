@@ -13,6 +13,7 @@ import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.items.category.Category;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
+import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,16 +39,16 @@ public class ShoppingListService {
     private AccountService _accountService;
     private PropertyService _propertyService;
     private MailService _mailService;
-    private CategoryPresetRepository presetRepository;
+    private CategoryPresetService _presetService;
 
 
     @Autowired
-    public ShoppingListService(ShoppingListRepository listRepository, AccountService accountService, PropertyService propertyService, MailService mailService, CategoryPresetRepository presetRepository) {
+    public ShoppingListService(ShoppingListRepository listRepository, AccountService accountService, PropertyService propertyService, MailService mailService, CategoryPresetService presetService) {
         this._listRepository = listRepository;
         this._accountService = accountService;
         this._propertyService = propertyService;
         this._mailService = mailService;
-        this.presetRepository = presetRepository;
+        this._presetService = presetService;
     }
 
     public Set<ShoppingList> findAllByCurrentUser(boolean archived) throws AccountNotFoundException {
@@ -77,7 +78,11 @@ public class ShoppingListService {
 
     public ShoppingList update(ShoppingList original, ShoppingList updatedList) throws PresetNotFoundException {
         original.setName(updatedList.getName());
-        original.setPreset(updatedList.getPreset());
+        CategoryPreset preset = updatedList.getPreset();
+        original.setPreset(preset);
+        if (preset != null) {
+            preset.getOwners().addAll(updatedList.getShared());
+        }
         getPreset(original);
         return this.save(original);
     }
@@ -87,11 +92,8 @@ public class ShoppingListService {
             if (list.getPreset().getId() == null) {
                 list.setPreset(null);
             } else {
-                Optional<CategoryPreset> preset = presetRepository.findById(list.getPreset().getId());
-                if (!preset.isPresent()) {
-                    throw new PresetNotFoundException();
-                }
-                list.setPreset(preset.get());
+                CategoryPreset preset = _presetService.findById(list.getPreset().getId());
+                list.setPreset(preset);
             }
         }
     }
@@ -115,7 +117,17 @@ public class ShoppingListService {
         throw new ShoppingNotFoundException();
     }
 
-
+    /**
+     * Shares passed list with email.
+     * If there already is account with that email, he will be just added to shared list , and list preset will be shared for him as well.
+     * If account is not yet there , email will be added to pending shared list .
+     * When user registers list with pending shares will be made available for her/him
+     *
+     * @param list  list to be shared
+     * @param email email of recipient
+     * @return shared shopping list
+     * @throws MessagingException if there was error while sending email
+     */
     public ShoppingList shareList(ShoppingList list, String email) throws MessagingException {
         Optional<Account> optionalAccount = _accountService.findByEmail(email);
         Mail mail = new Mail();
@@ -127,6 +139,9 @@ public class ShoppingListService {
             mail.addToModel("name", account.getName());
             mail.setLocale(account.getLanguage());
             list.getShared().add(account.getId());
+            if (list.getPreset() != null) {
+                list.getPreset().getOwners().add(account.getId());
+            }
             _mailService.sendShareMessage(mail, list, false);
         } else {
             //add emial to pending and just send initiation email
@@ -224,6 +239,9 @@ public class ShoppingListService {
         shoppingLists.forEach(shoppingList -> {
             shoppingList.getShared().add(account.getId());
             shoppingList.getPendingshares().remove(account.getEmail());
+            if (shoppingList.getPreset() != null) {
+                shoppingList.getPreset().getOwners().add(account.getId());
+            }
         });
         _listRepository.saveAll(shoppingLists);
     }

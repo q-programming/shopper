@@ -16,6 +16,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+import static com.qprogramming.shopper.app.exceptions.AccountNotFoundException.ACCOUNT_WITH_ID_WAS_NOT_FOUND;
 import static com.qprogramming.shopper.app.exceptions.BadProductNameException.BAD_PRODUCT_NAME;
 import static com.qprogramming.shopper.app.exceptions.ItemNotFoundException.ITEM_NOT_FOUND;
 import static com.qprogramming.shopper.app.exceptions.ProductNotFoundException.PRODUCT_NOT_FOUND;
@@ -67,6 +70,9 @@ public class ItemRestController {
         } catch (ShoppingNotFoundException e) {
             LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (AccountNotFoundException e) {
+            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
@@ -85,7 +91,7 @@ public class ItemRestController {
             ListItem updatedItem = _listItemService.findById(item.getId());
             Product updatedProduct = item.getProduct();
             if (!updatedProduct.equals(updatedItem.getProduct())) {//there was product change, delete product and create new
-                _listItemService.replaceProduct(updatedProduct, updatedItem, list);
+                _listItemService.replaceProduct(updatedProduct, updatedItem, list, item);
             } else {
                 _listItemService.update(item);
             }
@@ -106,6 +112,9 @@ public class ItemRestController {
         } catch (BadProductNameException e) {
             LOG.error(BAD_PRODUCT_NAME);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (AccountNotFoundException e) {
+            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
@@ -160,6 +169,21 @@ public class ItemRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ItemNotFoundException e) {
             LOG.error(ITEM_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @RequestMapping(value = "/{id}/favorites", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<List<Product>> getFavorites(@PathVariable Long id) {
+        try {
+            ShoppingList list = _listService.findByID(id);
+            return ResponseEntity.ok(_listItemService.getFavoriteProducts(list));
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

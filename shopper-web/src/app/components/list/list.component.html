@@ -22,14 +22,7 @@
             <span *ngIf="list.archived" matTooltip="{{'app.shopping.archived'|translate}}">
                 <img class="v-middle" src="assets/images/box.svg" height="24">
             </span>
-            <span fxShow.xs="true" fxShow.gt-sm="false">
-                <span *ngIf="list.name.length > 20" matTooltip="{{list.name}}">
-                    {{list.name|slice:0:18}}...
-                </span>
-                <span *ngIf="list.name.length < 20">
-                    {{list.name}}
-                </span>
-            </span>
+            <span fxShow.xs="true" fxShow.gt-sm="false" [innerHtml]="list.name | trim:20"></span>
             <span fxShow.lt-md="false">
                     {{list.name}}
             </span>
@@ -39,7 +32,7 @@
                 ({{list.preset.name}})
         </span>
         <!--MENU-->
-        <button mat-icon-button class="pull-right" [matMenuTriggerFor]="menu">
+        <button mat-icon-button class="pull-right" [matMenuTriggerFor]="menu" fxShow.xs="false">
             <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
@@ -50,7 +43,7 @@
                     <span>{{'app.general.edit'|translate}}</span>
                 </button>
                 <button mat-menu-item (click)="shareListOpenDialog(list)">
-                    <mat-icon>share</mat-icon>
+                    <mat-icon>person</mat-icon>
                     <span>{{'app.shopping.share'|translate}}</span>
                 </button>
                 <button mat-menu-item (click)="cleanup()" [disabled]="done.length==0">
@@ -79,7 +72,7 @@
         <!--SHARE-->
         <button *ngIf="!list.archived"
                 mat-icon-button class="pull-right" (click)="shareListOpenDialog()"
-                matTooltip="{{shareTooltip}}">
+                matTooltip="{{shareTooltip}}" fxShow.xs="false">
             <mat-icon matBadge="{{sharedCount}}" matBadgePosition="below before"
                       [matBadgeHidden]="sharedCount==0">person
             </mat-icon>

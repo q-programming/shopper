@@ -1,6 +1,7 @@
 export class CategoryPreset {
     id?: number;
-    owner?: String;
+    ownername?: String;
+    ownerId?: String;
     name?: String;
     categoriesOrder: String;
 

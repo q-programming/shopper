@@ -1,6 +1,9 @@
 package com.qprogramming.shopper.app.api.items.product;
 
+import com.qprogramming.shopper.app.items.category.Category;
+import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.items.product.ProductRepository;
+import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Set;
 
 /**
  * Created by Jakub Romaniszyn on 2018-08-20
@@ -30,4 +35,22 @@ public class ProductRestController {
             return ResponseEntity.ok(_productRepository.findByNameContainingIgnoreCase(term));
         }
     }
+
+    /**
+     * Propose best category for passed product name
+     *
+     * @param term search term
+     * @return top category of first product
+     */
+    @RequestMapping(value = "/category", method = RequestMethod.GET)
+    public ResponseEntity<Category> getCategory(@RequestParam(required = false) String term) {
+        if (StringUtils.isBlank(term)) {
+            return ResponseEntity.ok(Category.OTHER);
+        } else {
+            Set<Product> products = _productRepository.findByNameContainingIgnoreCase(term.trim());
+            //TODO get the best match in the future. For now just return first one from list. Vetter the term the better result
+            return ResponseEntity.ok(Collections.isEmpty(products) ? Category.OTHER : products.iterator().next().getTopCategory());
+        }
+    }
+
 }

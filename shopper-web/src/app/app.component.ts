@@ -1,12 +1,12 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Router} from "@angular/router";
-import {HttpClient} from "@angular/common/http";
+import {ActivatedRoute, Router} from "@angular/router";
 import {AuthenticationService} from "./services/authentication.service";
 import {Account} from "./model/Account";
 import {MatSidenav} from "@angular/material";
 import {ListService} from "./services/list.service";
 import {ShoppingList} from "./model/ShoppingList";
 import {AlertService} from "./services/alert.service";
+import {SideNavAction} from "./components/menu/sidenav/menu-side-nav.component";
 
 @Component({
     selector: 'app-root',
@@ -18,14 +18,22 @@ export class AppComponent implements OnInit {
     account: Account;
     message_count = {count: ""};
     lists: ShoppingList[];
+    list: ShoppingList;
     @ViewChild("sidenav")
     private sidenav: MatSidenav;
 
-    constructor(private http: HttpClient, private router: Router, private authSrv: AuthenticationService, private listSrv: ListService, private alertSrv: AlertService) {
+    constructor(private router: Router,
+                private activatedRoute: ActivatedRoute,
+                private authSrv: AuthenticationService,
+                private listSrv: ListService,
+                private alertSrv: AlertService) {
         router.events.subscribe(() => {
             if (this.sidenav && this.sidenav.opened) {
                 this.sidenav.close();
             }
+        });
+        this.listSrv.listEmiter.subscribe(list => {
+            this.list = list;
         })
     }
 
@@ -33,24 +41,19 @@ export class AppComponent implements OnInit {
         this.account = this.authSrv.currentAccount;
         if (this.account) {
             this.message_count.count = "" + 1;
-            this.listSrv.getUserList().subscribe(lists => this.lists = lists.splice(0, 4));
+            this.getUserLists();
         }
     }
 
-    loggedIn() {
-        return !!this.authSrv.currentAccount;
-    }
-
-    logout() {
-        this.authSrv.logout().subscribe(() => {
-            this.router.navigate(['/login']);
-        });
+    private getUserLists() {
+        this.listSrv.getUserList().subscribe(lists => this.lists = lists.splice(0, 4));
     }
 
     openNewListDialog() {
         this.sidenav.close();
         this.listSrv.openNewListDialog().subscribe(res => {
                 if (res) {
+                    this.getUserLists();
                     this.router.navigate(['/list', res.id]);
                     this.alertSrv.success("app.shopping.create.success");
                 } else {
@@ -58,6 +61,29 @@ export class AppComponent implements OnInit {
                 }
             }
         );
+    }
+
+    get onListView(): boolean {
+        return this.router.url.includes('/list')
+    }
+
+    get loggedIn() {
+        return !!this.authSrv.currentAccount;
+    }
+
+
+    handleSideNav($event: SideNavAction) {
+        switch ($event) {
+            case SideNavAction.CLOSE:
+                this.sidenav.close();
+                break;
+            case SideNavAction.TOGGLE:
+                this.sidenav.toggle();
+                break;
+            case SideNavAction.OPEN:
+                this.sidenav.open();
+                break;
+        }
     }
 }
 

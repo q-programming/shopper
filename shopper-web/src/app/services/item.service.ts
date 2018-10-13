@@ -9,6 +9,9 @@ import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 import {ItemDialogComponent} from "../components/dialogs/item/item-dialog.component";
 import {ShoppingList} from "../model/ShoppingList";
+import {CategoryOption} from "../model/CategoryOption";
+import {Category} from "../model/Category";
+import {TranslateService} from "@ngx-translate/core";
 
 @Injectable({
     providedIn: 'root'
@@ -16,6 +19,7 @@ import {ShoppingList} from "../model/ShoppingList";
 export class ItemService {
 
     currentAccount: Account;
+    categories: CategoryOption[] = [];
     private dialogConfig: MatDialogConfig = {
         disableClose: true,
         autoFocus: true,
@@ -29,8 +33,10 @@ export class ItemService {
     constructor(private logger: NGXLogger,
                 private api: ApiService,
                 private authSrv: AuthenticationService,
+                private translate: TranslateService,
                 private dialog: MatDialog) {
-        this.currentAccount = this.authSrv.currentAccount
+        this.currentAccount = this.authSrv.currentAccount;
+        this.loadCategoriesWithLocalName();
     }
 
     /**
@@ -71,6 +77,8 @@ export class ItemService {
     openNewItemDialog(listID: number): Observable<ShoppingList> {
         this.dialogConfig.data.update = false;
         this.dialogConfig.data.item = undefined;
+        this.dialogConfig.data.categories = this.categories;
+        this.dialogConfig.data.listID = listID;
         return new Observable((observable) => {
             let dialogRef = this.dialog.open(ItemDialogComponent, this.dialogConfig);
             dialogRef.afterClosed().subscribe(item => {
@@ -85,6 +93,9 @@ export class ItemService {
                         observable.next(undefined);
                         observable.complete();
                     });
+                } else {
+                    observable.next(undefined);
+                    observable.complete();
                 }
             });
         });
@@ -99,6 +110,8 @@ export class ItemService {
     openEditItemDialog(listID: number, item: ListItem): Observable<ShoppingList> {
         this.dialogConfig.data.update = true;
         this.dialogConfig.data.item = item;
+        this.dialogConfig.data.categories = this.categories;
+        this.dialogConfig.data.listID = listID;
         return new Observable((observable) => {
             let dialogRef = this.dialog.open(ItemDialogComponent, this.dialogConfig);
             dialogRef.afterClosed().subscribe(item => {
@@ -128,4 +141,20 @@ export class ItemService {
         return this.api.postObject<ShoppingList>(environment.item_url + `/${listID}/add`, item)
     }
 
+    /**
+     * Load all categories with localised name and sort by name
+     */
+    loadCategoriesWithLocalName() {
+        this.categories = [];
+        Object.values(Category).map(value => {
+            return this.translate.get(value.toString()).subscribe(name => {
+                this.categories.push({
+                    category: value,
+                    name: name
+                });
+            }, undefined, () => {
+                this.categories.sort((a, b) => a.name.localeCompare(b.name))
+            })
+        });
+    }
 }

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {NGXLogger} from "ngx-logger";
 import {ApiService} from "./api.service";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {environment} from "../../environments/environment";
 import {ShoppingList} from "../model/ShoppingList";
 import {AvatarService} from "./avatar.service";
@@ -19,6 +19,9 @@ import {CategoryPreset} from "../model/CategoryPreset";
 })
 export class ListService {
 
+    private emitListSource = new Subject<any>();
+    listEmiter = this.emitListSource.asObservable();
+    listId: number;
     currentAccount: Account;
     dialogConfig: MatDialogConfig = {
         disableClose: true,
@@ -26,7 +29,6 @@ export class ListService {
         width: '500px',
         panelClass: 'shopper-modal'
     };
-
 
     constructor(private logger: NGXLogger,
                 private api: ApiService,
@@ -62,8 +64,10 @@ export class ListService {
      * @param listID list id
      */
     getListByID(listID: number): Observable<ShoppingList> {
+        this.listId = listID;
         return this.api.getObject<ShoppingList>(environment.list_url + `/${listID}`).map(list => {
             list.isOwner = this.isOwner(list);
+            this.emitListSource.next(list);//tell any other subscriber that there was list loaded
             return list;
         })
     }
@@ -77,6 +81,10 @@ export class ListService {
         return lists
     }
 
+    /**
+     * Checks if currently logged in account is owner of list
+     * @param list list for which owner will be checked
+     */
     isOwner(list: ShoppingList): boolean {
         return list.ownerId === this.currentAccount.id
     }
@@ -89,6 +97,7 @@ export class ListService {
             this.loadUserSortingPresets().subscribe(presets => {
                 this.dialogConfig.data = {
                     presets: presets,
+                    currentAccount : this.currentAccount
                 };
                 let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
                 dialogRef.afterClosed().subscribe(form => {
@@ -123,7 +132,8 @@ export class ListService {
                 this.dialogConfig.data = {
                     presets: presets,
                     list: list,
-                    update: true
+                    update: true,
+                    currentAccount : this.currentAccount
                 };
                 let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
                 dialogRef.afterClosed().subscribe(form => {
@@ -207,19 +217,33 @@ export class ListService {
         return this.api.postObject<ShoppingList>(environment.list_url + `/${listID}/cleanup`, undefined);
     }
 
+    /**
+     * Load all sorting presets for current user
+     */
     loadUserSortingPresets(): Observable<CategoryPreset[]> {
         return this.api.getObject<AppSettings>(`${environment.list_url}/presets`);
     }
 
 
+    /**
+     * Save category preset
+     * @param preset preset to be updated/saved
+     */
     saveCategoryPreset(preset: CategoryPreset): Observable<CategoryPreset> {
         return this.api.postObject(`${environment.list_url}/presets/update`, preset);
     }
 
+    /**
+     * Delete category preset. API will determine if user is just leaving that preset or it should be deleted completely
+     * @param preset preset to be deleted/left
+     */
     deleteCategoryPreset(preset: CategoryPreset): Observable<CategoryPreset> {
         return this.api.postObject(`${environment.list_url}/presets/delete`, preset);
     }
 
+    /**
+     * Get default sorting of categories . Determined from api from application property
+     */
     getDefaultCategoriesSorting(): Observable<string> {
         return this.api.getObject<AppSettings>(`${environment.config_url}/categories/defaults`);
     }

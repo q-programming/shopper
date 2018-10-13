@@ -5,90 +5,18 @@
 </ng-progress>
 <alert></alert>
 <!--TOOLBAR-->
-<mat-toolbar color="primary" class="fixed-top">
-    <button mat-button routerLink="/" class="mat-toolbar-button">
-        <img src="assets/images/logo_white.svg" height="30" class="d-inline-block align-top" alt="">
-        Shopper
-    </button>
-    <span class="fill-remaining-space"></span>
-    <!--MOBILE BUTTON MENU-->
-    <div fxShow="true" fxHide.gt-sm="true" *ngIf="loggedIn()">
-        <button mat-icon-button (click)="sidenav.toggle()">
-            <mat-icon>menu</mat-icon>
-        </button>
-    </div>
-    <!--DESKTOP MENU-->
-    <div fxShow="true" fxHide.lt-md="true" *ngIf="loggedIn()">
-        <button mat-button class="mat-toolbar-button" routerLink="/" matTooltip="{{'app.shopping.all' | translate}}">
-            <!--<mat-icon class="ml-2">list_alt</mat-icon>-->
-            <img src="assets/images/list.svg" height="26">
-        </button>
-        <button mat-button class="mat-toolbar-button" [routerLink]="['/']" [queryParams]="{archived:true}"
-                matTooltip="{{'app.shopping.archived' | translate}} {{'app.shopping.list' | translate}} ">
-            <img src="assets/images/list_archive.svg" height="26">
-            <!--<mat-icon class="ml-2">archived</mat-icon>-->
-        </button>
-
-        <!--MESSAGES-->
-        <!--<button mat-button class="mat-toolbar-button" routerLink="/">-->
-        <!--<mat-icon class="ml-2" matBadge="{{message_count.count}}" matBadgePosition="before" matBadgeColor="accent">-->
-        <!--message-->
-        <!--</mat-icon>-->
-        <!--</button>-->
-        <button mat-button class="mat-toolbar-button" (click)="sidenav.toggle()">
-            <img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>
-            <img *ngIf="!account.avatar" src="assets/images/avatar-placeholder.png" class="avatar nav-avatar"/>
-            <mat-icon>more_vert</mat-icon>
-        </button>
-    </div>
-</mat-toolbar>
+<menu-toolbar (sidenav)="handleSideNav($event)" [account]="account" [onListView]="onListView"
+              [loggedIn]="loggedIn"></menu-toolbar>
 <!--SIDE POPUP MENU-->
 <mat-sidenav-container fxFlexFill class="side-navigation">
     <mat-sidenav color="primary" #sidenav fxLayout="column" mode="over" position="end" hasBackdrop="false"
-                 *ngIf="loggedIn()">
-        <div fxLayout="column">
-            <img *ngIf="account.avatar" [src]="account.avatar" class="avatar large"/>
-            <img *ngIf="!account.avatar" src="assets/images/avatar-placeholder.png" class="avatar large"/>
-            <span class="mt-4">{{account.name}} {{account.surname}}</span>
-        </div>
-        <mat-divider class="mt-2"></mat-divider>
-        <div fxLayout="column">
-            <button mat-button (click)="openNewListDialog()">
-                <img src="assets/images/plus.svg" height="20" class="mr-1">
-                <!--<mat-icon class="text-white mr-2">add_circle_outline</mat-icon>-->
-                {{'app.shopping.create'|translate}}
-            </button>
-            <button mat-button routerLink="/">
-                <img src="assets/images/list.svg" height="26">
-                {{'app.menu.lists'| translate}}
-            </button>
-            <div *ngFor="let list of lists">
-                <button mat-button [routerLink]="['list', list.id]">
-                    <mat-icon>arrow_right</mat-icon>
-                    {{list.name}}
-                </button>
-            </div>
-            <button mat-button [routerLink]="['/']" [queryParams]="{archived:true}">
-                <img src="assets/images/list_archive.svg" height="26">
-                {{'app.shopping.archived' | translate}}
-            </button>
-        </div>
-        <mat-divider class="mt-2"></mat-divider>
-        <div fxLayout="column">
-            <!--MESSAGES-->
-            <!--<button mat-button routerLink="/messages">-->
-            <!--<mat-icon class="mr-2">message</mat-icon>-->
-            <!--{{'app.menu.messages'|translate:message_count}}-->
-            <!--</button>-->
-            <button mat-button routerLink="/settings">
-                <mat-icon class="mr-2">settings</mat-icon>
-                {{'app.menu.settings'|translate}}
-            </button>
-            <button mat-button (click)="logout();">
-                <mat-icon class="mr-2">exit_to_app</mat-icon>
-                {{'app.menu.logout'|translate}}
-            </button>
-        </div>
+                 *ngIf="loggedIn">
+        <menu-sidenav
+                [list]="list"
+                [lists]="lists"
+                (sidenav)="handleSideNav($event)"
+                (newList)="openNewListDialog()">
+        </menu-sidenav>
     </mat-sidenav>
     <mat-sidenav-content fxFlexFill>
         <main class="container" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%"

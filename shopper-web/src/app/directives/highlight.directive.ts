@@ -13,11 +13,13 @@ export class HighlightDirective implements PipeTransform {
             pattern = pattern.split(' ').filter((t) => {
                 return t.length > 0;
             }).join('|');
-            text = text.replace(/\ /g, '&nbsp;');
+            let textParts = text.split(/\ /g);
             let regex = new RegExp(pattern, 'gi');
-            return this.sanitizer.bypassSecurityTrustHtml(search ? text.replace(regex, (match) => `<b>${match}</b>`) : text);
+            for (let i = 0; i < textParts.length; i++) {
+                textParts[i] = textParts[i].replace(regex, (match) => `<b>${match}</b>`);
+            }
+            return this.sanitizer.bypassSecurityTrustHtml(textParts.join(" "));
         }
         return text;
     }
-
 }

@@ -4,18 +4,16 @@ import {environment} from "../../environments/environment";
 import {Account, Role} from "../model/Account";
 import * as _ from 'lodash';
 import {AvatarService} from "./avatar.service";
-import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
+import {TranslateService} from "@ngx-translate/core";
 import {AlertService} from "./alert.service";
 import {NGXLogger} from "ngx-logger";
-import {HttpHeaders} from "@angular/common/http";
-import {CookieService} from "ngx-cookie-service";
 
 @Injectable()
 export class AuthenticationService {
 
     currentAccount: Account;
 
-    constructor(private apiService: ApiService, private avatarSrv: AvatarService, private translate: TranslateService, private alertSrv: AlertService, private logger: NGXLogger, private cookieSrv: CookieService) {
+    constructor(private apiService: ApiService, private avatarSrv: AvatarService, private translate: TranslateService, private alertSrv: AlertService, private logger: NGXLogger) {
     }
 
     /**

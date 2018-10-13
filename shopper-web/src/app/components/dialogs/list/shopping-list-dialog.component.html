@@ -21,6 +21,9 @@
                             formControlName="preset" [compareWith]="comparePresets">
                     <mat-option *ngFor="let userPreset of presets" [value]="userPreset">
                         {{userPreset.name?userPreset.name:('app.settings.products.category.default'|translate)}}
+                        <span *ngIf="userPreset.ownerId && currentAccount.id!==userPreset.ownerId">
+                        ({{'app.settings.products.category.by'|translate}}{{userPreset.ownername}})
+                    </span>
                     </mat-option>
                 </mat-select>
             </mat-form-field>
