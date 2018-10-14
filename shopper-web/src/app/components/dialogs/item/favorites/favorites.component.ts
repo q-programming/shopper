@@ -8,7 +8,8 @@ import {ShoppingList} from "../../../../model/ShoppingList";
 import {ListItem} from "../../../../model/ListItem";
 import {Observable} from "rxjs";
 import {FormControl} from "@angular/forms";
-import {map, startWith} from "rxjs/operators";
+import {map} from "rxjs/operators";
+import {MenuAction, MenuActionsService} from "../../../../services/menu-actions.service";
 
 @Component({
     selector: 'item-favorites',
@@ -23,7 +24,7 @@ export class FavoritesComponent implements OnInit {
     filterControl: FormControl;
     filter: string;
 
-    constructor(private api: ApiService, private alertSrv: AlertService) {
+    constructor(private api: ApiService, private alertSrv: AlertService, private menuSrv: MenuActionsService,) {
     }
 
     ngOnInit() {
@@ -51,6 +52,7 @@ export class FavoritesComponent implements OnInit {
         this.api.postObject<ShoppingList>(environment.item_url + `/${this.listID}/add`, item).subscribe(result => {
             if (result) {
                 this.alertSrv.success("app.item.add.named.success", {name: product.name});
+                this.menuSrv.emmitAction(MenuAction.REFRESH);
             }
         })
     }

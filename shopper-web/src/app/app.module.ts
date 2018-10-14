@@ -51,9 +51,10 @@ import {NgProgressModule} from "ngx-progressbar";
 import {HelpComponent} from './components/help/help.component';
 import {MenuToolbarComponent} from './components/menu/toolbar/menu-toolbar.component';
 import {MenuSideNavComponent} from './components/menu/sidenav/menu-side-nav.component';
-import { FavoritesComponent } from './components/dialogs/item/favorites/favorites.component';
-import { ItemDetailsComponent } from './components/dialogs/item/item-details/item-details.component';
-import {TrimDirective } from './directives/trim.directive';
+import {FavoritesComponent} from './components/dialogs/item/favorites/favorites.component';
+import {ItemDetailsComponent} from './components/dialogs/item/item-details/item-details.component';
+import {TrimDirective} from './directives/trim.directive';
+import {environment} from "../environments/environment";
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -110,7 +111,7 @@ export function initUserFactory(authService: AuthenticationService) {
         FlexLayoutModule,
         DndModule.forRoot(),
         LoggerModule.forRoot({
-            level: NgxLoggerLevel.DEBUG,
+            level: environment.logging,
             serverLogLevel: NgxLoggerLevel.ERROR
         }),
         ImageCropperModule,

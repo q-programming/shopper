@@ -3,14 +3,20 @@ import {ListService} from "../../services/list.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ShoppingList} from "../../model/ShoppingList";
 import {ListItem} from "../../model/ListItem";
+import {Account} from "../../model/Account";
+import * as Stomp from 'stompjs';
+import * as SockJS from 'sockjs-client';
 import * as _ from 'lodash';
 import {AlertService} from "../../services/alert.service";
 import {Category} from "../../model/Category";
 import {CategoryOption} from "../../model/CategoryOption";
 import {TranslateService} from "@ngx-translate/core";
-import {Observable, Subscription} from "rxjs";
 import {MenuAction, MenuActionsService} from "../../services/menu-actions.service";
 import {ItemService} from "../../services/item.service";
+import {WSAction, WSActionType} from "../../model/WSAction";
+import {AuthenticationService} from "../../services/authentication.service";
+import {NGXLogger} from "ngx-logger";
+import {environment} from "../../../environments/environment";
 
 
 @Component({
@@ -29,24 +35,26 @@ export class ListComponent implements OnInit, OnDestroy {
     listName: string;
     edit: boolean;
     sharedCount = 0;
-    sub: Subscription;
-    inProgress: boolean;
+    refreshPending: boolean;
+    currentAccount: Account;
+    stompClient;
 
 
-    constructor(private listSrv: ListService,
+    constructor(private logger: NGXLogger,
+                private listSrv: ListService,
                 private itemSrv: ItemService,
                 private router: Router,
                 private activatedRoute: ActivatedRoute,
                 private alertSrv: AlertService,
                 private menuSrv: MenuActionsService,
+                private authSrv: AuthenticationService,
                 private translate: TranslateService) {
+        this.currentAccount = this.authSrv.currentAccount;
         //handle menu srv actions
         this.menuSrv.actionEmitted.subscribe(action => {
             switch (action) {
                 case MenuAction.REFRESH:
-                    //Action usually comes from current user so disable any potential notifications
-                    this.inProgress = true;
-                    this.loadItems();
+                    this.refreshPending = true;
                     break;
                 case MenuAction.SHARE:
                     this.shareListOpenDialog();
@@ -82,25 +90,11 @@ export class ListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.stopListWatcher();
-    }
-
-
-    private startListWatcher() {
-        if (this.list.shared.length > 0 && !this.list.archived) {
-            this.stopListWatcher();
-            this.sub = Observable.interval(10000)
-                .subscribe((val) => {
-                    this.loadItems();
-                });
+        if (this.stompClient) {
+            this.stompClient.disconnect();
         }
     }
 
-    private stopListWatcher() {
-        if (this.sub) {
-            this.sub.unsubscribe();
-        }
-    }
 
     private getSharedButtonTootlip() {
         if (this.sharedCount > 0) {
@@ -120,6 +114,7 @@ export class ListComponent implements OnInit, OnDestroy {
                 if (result) {
                     _.find(this.list.items, i => i.id === result.id).done = result.done;
                     this.sortDoneNotDone();
+                    this.sendWSRefresh();
                 }
             })
         }
@@ -129,16 +124,17 @@ export class ListComponent implements OnInit, OnDestroy {
      * Open new item dialog
      */
     openNewItemDialog() {
-        this.stopListWatcher();
         this.itemSrv.openNewItemDialog(this.listID).subscribe(list => {
             if (list) {
                 this.assignListWithSorting(list);
                 this.alertSrv.success("app.item.add.success");
+                this.sendWSAdd();
             } else {
-                this.inProgress = true;
                 this.loadItems();
+                if (this.refreshPending) {
+                    this.sendWSAdd();
+                }
             }
-            this.startListWatcher();
         })
     }
 
@@ -151,6 +147,7 @@ export class ListComponent implements OnInit, OnDestroy {
             if (list) {
                 this.assignListWithSorting(list);
                 this.alertSrv.success("app.item.update.success");
+                this.sendWSRefresh();
             } else {
                 this.alertSrv.error("app.item.update.fail");
             }
@@ -169,6 +166,7 @@ export class ListComponent implements OnInit, OnDestroy {
                 if (list) {
                     this.alertSrv.success("app.item.category.updated");
                     this.assignListWithSorting(list);
+                    this.sendWSRefresh();
                 }
             }, () => {
                 this.alertSrv.success("app.item.category.fail");
@@ -181,20 +179,16 @@ export class ListComponent implements OnInit, OnDestroy {
      * @param item item to be deleted after undoable timer
      */
     deleteItem(item: ListItem) {
-        this.stopListWatcher();
         _.remove(this.items, (i) => {
             return i.id === item.id
         });
-        this.inProgress = true;
+        this.refreshPending = true;
         this.alertSrv.undoable("app.item.delete.success", {name: item.product.name}).subscribe(undo => {
             if (undo !== undefined && !undo) {
                 this.itemSrv.deleteItem(this.listID, item).subscribe((list) => {
                     if (list) {
-                        if (!this.inProgress) {
-                            this.assignListWithSorting(list);
-                        }
-                        this.inProgress = true;
-                        this.startListWatcher();
+                        this.sendWSRemove();
+                        this.assignListWithSorting(list);
                     }
                 });
             } else if (undo !== undefined && undo) {
@@ -223,6 +217,7 @@ export class ListComponent implements OnInit, OnDestroy {
         this.listSrv.openEditListDialog(this.list).subscribe(reply => {
             if (reply) {
                 this.alertSrv.success('app.shopping.update.success');
+                this.sendWSRefresh();
                 this.loadItems();
             }
         }, error => {
@@ -232,25 +227,13 @@ export class ListComponent implements OnInit, OnDestroy {
 
     private loadItems() {
         this.listSrv.getListByID(this.listID).subscribe(list => {
-            if (this.list && !this.inProgress) {
-                this.wereItemsChangedByShared(list);
-            }
-            this.inProgress = false;//clear any potential cleanup flag
             this.listName = list.name;
             this.assignListWithSorting(list);
-            this.startListWatcher();
+            //if list is shared with at least one account, init websocket
+            if (this.sharedCount > 0 && !this.stompClient) {
+                this.initializeWebSocketConnection();
+            }
         });
-    }
-
-    private wereItemsChangedByShared(list) {
-        let itemsDiff = this.list.items.length - list.items.length;
-        if (itemsDiff == -1) {
-            this.alertSrv.info('app.item.new.one');
-        } else if (itemsDiff < -1) {
-            this.alertSrv.info('app.item.new.many', {count: Math.abs(itemsDiff)});
-        } else if (itemsDiff > 0) {
-            this.alertSrv.info('app.item.removed.many', {count: Math.abs(itemsDiff)});
-        }
     }
 
     /**
@@ -261,6 +244,7 @@ export class ListComponent implements OnInit, OnDestroy {
     quickAdd(list: ShoppingList) {
         this.assignListWithSorting(list);
         this.alertSrv.success("app.item.add.success");
+        this.sendWSAdd();
     }
 
     private assignListWithSorting(list: ShoppingList) {
@@ -293,6 +277,7 @@ export class ListComponent implements OnInit, OnDestroy {
             this.listSrv.updateList(this.list).subscribe(list => {
                 this.alertSrv.success('app.shopping.name.success');
                 this.list.name = list.name;
+                this.sendWSRefresh();
             }, error => {
                 this.alertSrv.error('app.shopping.name.fail')
             })
@@ -305,11 +290,11 @@ export class ListComponent implements OnInit, OnDestroy {
      * @param archived is current list archived already ?
      */
     archiveToggle(archived?: boolean) {
-        this.stopListWatcher();
         this.listSrv.archive(this.list).subscribe(res => {
             if (res) {
                 let msgKey = archived ? 'app.shopping.unarchive.success' : 'app.shopping.archive.success';
                 this.alertSrv.success(msgKey);
+                this.sendWSRefresh();
             }
         }, error => {
             let msgKey = archived ? 'app.shopping.unarchive.fail' : 'app.shopping.archive.fail';
@@ -340,8 +325,7 @@ export class ListComponent implements OnInit, OnDestroy {
      * Cleanup all done items. Actual cleanup API call is performed after undoable timeout (or alert dismiss )
      */
     cleanup() {
-        this.stopListWatcher();
-        this.inProgress = true;
+        this.refreshPending = true;
         this.done = [];
         this.list.done = 0;
         this.list.items = this.items;
@@ -350,8 +334,8 @@ export class ListComponent implements OnInit, OnDestroy {
                 if (!undo) {
                     this.listSrv.cleanup(this.listID).subscribe((list) => {
                         if (list) {
+                            this.sendWSRemove();
                             this.assignListWithSorting(list);
-                            this.startListWatcher();
                         }
                     });
                 } else {
@@ -364,6 +348,58 @@ export class ListComponent implements OnInit, OnDestroy {
     get percentage() {
         let percentage = this.list.items.length > 0 ? (this.done.length / this.list.items.length) * 100 : 0;
         return parseFloat(`${percentage}`).toFixed(2);
+    }
+
+    sendWSRefresh() {
+        if (this.stompClient) {
+            this.logger.debug(`Sending refresh for list :${this.listID}`);
+            this.stompClient.send(environment.ws_send_url + `${this.listID}/refresh`);
+            this.refreshPending = false;
+        }
+    }
+
+    sendWSAdd() {
+        if (this.stompClient) {
+            this.logger.debug(`Sending add for list :${this.listID}`);
+            this.stompClient.send(environment.ws_send_url + `${this.listID}/add`);
+        }
+    }
+
+    sendWSRemove() {
+        if (this.stompClient) {
+            this.logger.debug(`Sending remove for list :${this.listID}`);
+            this.stompClient.send(environment.ws_send_url + `${this.listID}/remove`);
+        }
+    }
+
+
+    initializeWebSocketConnection() {
+        let ws = new SockJS(environment.context + environment.ws_ur);
+        this.stompClient = Stomp.over(ws);
+        this.stompClient.debug = (msg) => {
+            this.logger.debug(msg);
+        };
+        let that = this;
+        this.stompClient.connect({}, function (frame) {
+            that.stompClient.subscribe(`/actions/${that.listID}`, (action) => {
+                let wsaction = JSON.parse(action.body) as WSAction;
+                if (wsaction.user !== that.currentAccount.id) {
+                    switch (wsaction.action) {
+                        case WSActionType.ADD:
+                            that.loadItems();
+                            that.alertSrv.info('app.item.new.one');
+                            break;
+                        case WSActionType.REFRESH:
+                            that.loadItems();
+                            break;
+                        case WSActionType.REMOVE:
+                            that.alertSrv.info('app.item.removed.many');
+                            that.loadItems();
+                            break;
+                    }
+                }
+            });
+        });
     }
 
 }

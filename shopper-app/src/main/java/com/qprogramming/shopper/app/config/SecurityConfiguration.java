@@ -97,7 +97,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //@formatter:off
-        http.csrf().ignoringAntMatchers("/login")
+        http.csrf()
+                .ignoringAntMatchers("/login","/ws/**")
                     .csrfTokenRepository(getCsrfTokenRepository())
                 .and().sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -117,6 +118,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                     .addFilterBefore(basicRestAuthenticationFilter(),BasicAuthenticationFilter.class)
                     .authorizeRequests()
+                .and()
+                    .headers()
+                    .frameOptions()
+                    .disable()
+                //ws - uncomment for local external angular app with proxy
+//                .and().antMatcher("/ws").authorizeRequests().anyRequest().authenticated()
                 //login redirect
                 .and().formLogin()
                     .loginPage("/login")
