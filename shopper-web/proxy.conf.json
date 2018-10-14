@@ -34,14 +34,5 @@
     "pathRewrite": {
       "^/shopper/ws": ""
     }
-  },
-  "/shopper/app": {
-    "target": "http://localhost:8080/shopper/app",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true,
-    "pathRewrite": {
-      "^/shopper/ap": ""
-    }
   }
 }

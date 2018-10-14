@@ -1,12 +1,5 @@
 package com.qprogramming.shopper.app.config;
 
-import com.qprogramming.shopper.app.account.Account;
-import com.qprogramming.shopper.app.account.AccountPasswordEncoder;
-import com.qprogramming.shopper.app.account.AccountService;
-import com.qprogramming.shopper.app.login.token.TokenService;
-import com.qprogramming.shopper.app.support.Utils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -24,8 +17,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import java.security.Principal;
-
 /**
  * Created by Jakub Romaniszyn on 2018-10-12
  */
@@ -33,16 +24,6 @@ import java.security.Principal;
 @EnableWebSocketMessageBroker
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
-
-    @Value("${jwt.cookie}")
-    private String TOKEN_COOKIE;
-
-
-    @Autowired
-    private AccountService accountService;
-    @Autowired
-    private TokenService tokenService;
-
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -54,7 +35,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/ws")
-                .enableSimpleBroker("/refresh");
+                .enableSimpleBroker("/actions");
     }
 
     @Override
@@ -67,8 +48,6 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                     accessor.setUser(authentication);
-//                    Authentication user = ...; // access authentication header(s)
-//                    accessor.setUser(user);
                 }
                 return message;
             }

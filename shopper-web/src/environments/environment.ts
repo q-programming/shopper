@@ -3,8 +3,11 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
+import {NgxLoggerLevel} from "ngx-logger";
+
 export const environment = {
     production: false,
+    logging: NgxLoggerLevel.DEBUG,
     context: '/shopper',
     api_url: '/api',
     refresh_token_url: '/api/refresh',
@@ -18,7 +21,9 @@ export const environment = {
     avatar_upload_url: '/avatar-upload',
     language_url: '/settings/language',
     list_url: '/api/list',
-    item_url:'/api/item',
-    product_url:'/api/product',
+    item_url: '/api/item',
+    product_url: '/api/product',
     config_url: '/api/config',
+    ws_ur: '/ws',
+    ws_send_url: '/ws/send/'
 };

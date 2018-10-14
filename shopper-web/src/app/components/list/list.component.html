@@ -85,7 +85,6 @@
                           value="{{percentage}}"></mat-progress-bar>
     </div>
 </div>
-<button mat-raised-button (click)="sendRefresh()">Send refresh</button>
 <!--QUICK ADD AND REGULAR ADD-->
 <mat-card fxLayout="row" class="new-item" *ngIf="list && !list.archived">
     <app-quickadd fxFlex="80" [(listID)]="listID" (created)="quickAdd($event)"></app-quickadd>
