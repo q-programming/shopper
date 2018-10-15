@@ -37,7 +37,7 @@ export class FavoritesComponent implements OnInit {
     private fetchFavorites() {
         let url = environment.item_url;
         if (this.listID && !this.settings) {
-            url += `/${this.listID}/favorites`;
+            url += `/favorites/list/${this.listID}`;
         } else {
             url += `/favorites`;
         }

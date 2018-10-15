@@ -91,10 +91,11 @@ public class ItemRestController {
             ShoppingList list = _listService.findByID(id);
             ListItem updatedItem = _listItemService.findById(item.getId());
             Product updatedProduct = item.getProduct();
-            if (!updatedProduct.equals(updatedItem.getProduct())) {//there was product change, delete product and create new
-                _listItemService.replaceProduct(updatedProduct, updatedItem, list, item);
+            if (updatedProduct.equals(updatedItem.getProduct()) ||
+                    updatedProduct.getName().equalsIgnoreCase(updatedItem.getProduct().getName())) {//there was product change, delete product and create new
+                item = _listItemService.update(item);
             } else {
-                _listItemService.update(item);
+                _listItemService.replaceProduct(updatedProduct, updatedItem, list, item);
             }
             _listService.sortItems(list);
             return ResponseEntity.ok(_listService.save(list));
@@ -174,7 +175,14 @@ public class ItemRestController {
         }
     }
 
-    @RequestMapping(value = "/{id}/favorites", method = RequestMethod.GET)
+    /**
+     * Get all favorites for currently logged in account but filtered, not to show products that are already on that list,
+     * and limited to top 50 most used ones
+     *
+     * @param id list id
+     * @return list of favorite products
+     */
+    @RequestMapping(value = "/favorites/list/{id}", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<List<Product>> getFavorites(@PathVariable Long id) {
         try {
@@ -189,12 +197,23 @@ public class ItemRestController {
         }
     }
 
+    /**
+     * Get all favorite products for currently logged in account
+     *
+     * @return Set of favorite products
+     */
     @RequestMapping(value = "/favorites", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Set<Product>> getAllFavorites() {
         return ResponseEntity.ok(_listItemService.getAllFavoritesProducts());
     }
 
+    /**
+     * Remove favorite product from account list
+     *
+     * @param product product to be removed
+     * @return list of all favorite products
+     */
     @RequestMapping(value = "/favorites/remove", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Set<Product>> removeFromFavorites(@RequestBody Product product) {
