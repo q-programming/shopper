@@ -16,9 +16,10 @@
         {{'app.item.add.favorites.onlist'|translate}}
     </div>
     <div *ngFor="let fav of filteredProducts | async" fxFlex="calc(50%-5px)" class="mt-1">
-        <button mat-raised-button class="full-width-button" (click)="addItem(fav)">
+        <button mat-raised-button class="full-width-button" (click)="operation(fav)"
+                matTooltip="{{settings?('app.item.remove.favorites'|translate:{name:fav.name}):('app.item.add.favorites.tolist'|translate:{name:fav.name})}}">
             <div fxLayout="row">
-                <mat-icon fxFlex="15" class="mt-1 pull-left">add</mat-icon>
+                <mat-icon fxFlex="15" class="mt-1 pull-left">{{settings?'remove':'add'}}</mat-icon>
                 <span [innerHtml]="(fav.name) | highlight:filter"
                       class="font-weight-normal text-left wrapped-text mt-2"
                       fxFlex>

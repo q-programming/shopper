@@ -161,6 +161,17 @@ public class ListItemService {
         return p -> list.contains(p) || list.stream().anyMatch(pr -> pr.getName().equalsIgnoreCase(p.getName()));
     }
 
+    /**
+     * Replace product on shopping list with new one
+     *
+     * @param updatedProduct product to be updated
+     * @param updatedItem    item to be updated
+     * @param list           list where replace will be happening
+     * @param item           database item which is affected
+     * @throws ProductNotFoundException If product has id and was not found in database
+     * @throws BadProductNameException  If product name is empty
+     * @throws AccountNotFoundException If account was not found
+     */
     public void replaceProduct(Product updatedProduct, ListItem updatedItem, ShoppingList list, ListItem item) throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
         updatedItem.setCategory(item.getCategory());
         Optional<ListItem> itemOptional = list.getItems().stream().filter(sameProduct(updatedProduct)).findFirst();
@@ -170,7 +181,7 @@ public class ListItemService {
             list.getItems().remove(updatedItem);
             deleteListItem(updatedItem);
         } else {
-            updatedItem.setDescription(item.getDescription());;
+            updatedItem.setDescription(item.getDescription());
             updatedItem.setQuantity(item.getQuantity());
             updatedItem.setUnit(item.getUnit());
             updatedItem.setProduct(getProductOrCreate(updatedProduct));
@@ -196,6 +207,11 @@ public class ListItemService {
             return new FavoriteProducts(currentAccountId);
         }
         return optionalFavorites.get();
+    }
+
+    public Set<Product> getAllFavoritesProducts() {
+        FavoriteProducts favoriteProductsForAccount = getFavoriteProductsForAccount();
+        return sortByValue(favoriteProductsForAccount.getFavorites()).keySet();
     }
 
     /**
@@ -225,5 +241,16 @@ public class ListItemService {
                         (e1, e2) -> e1,
                         LinkedHashMap::new
                 ));
+    }
+
+    /**
+     * Removes passed product from favorites
+     *
+     * @param product product to be removed from favorites
+     */
+    public void removeFromFavorites(Product product) {
+        FavoriteProducts favoriteProducts = getFavoriteProductsForAccount();
+        favoriteProducts.getFavorites().remove(product);
+        _favoritesRepository.save(favoriteProducts);
     }
 }

@@ -10,11 +10,11 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {Account} from "../../../model/Account";
 
 @Component({
-    selector: 'settings-products',
-    templateUrl: './products-settings.component.html',
-    styleUrls: ["./products-settings.component.css"]
+    selector: 'settings-category-sorting',
+    templateUrl: './category-sorting-settings.component.html',
+    styleUrls: ["./category-sorting-settings.component.css"]
 })
-export class ProductsSettingsComponent implements OnInit {
+export class CategorySortingSettingsComponent implements OnInit {
     @ViewChild('orderingName') orderingNameInput;
     categoryPresetControl: FormControl;
     presets: CategoryPreset[];

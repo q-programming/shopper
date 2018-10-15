@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.qprogramming.shopper.app.exceptions.AccountNotFoundException.ACCOUNT_WITH_ID_WAS_NOT_FOUND;
 import static com.qprogramming.shopper.app.exceptions.BadProductNameException.BAD_PRODUCT_NAME;
@@ -186,6 +187,19 @@ public class ItemRestController {
             LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    @RequestMapping(value = "/favorites", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Set<Product>> getAllFavorites() {
+        return ResponseEntity.ok(_listItemService.getAllFavoritesProducts());
+    }
+
+    @RequestMapping(value = "/favorites/remove", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Set<Product>> removeFromFavorites(@RequestBody Product product) {
+        _listItemService.removeFromFavorites(product);
+        return ResponseEntity.ok(_listItemService.getAllFavoritesProducts());
     }
 
 }
