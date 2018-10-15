@@ -84,7 +84,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         account.setName(facebookUser.getFirstName());
         account.setSurname(facebookUser.getLastName());
         account.setEmail(facebookUser.getEmail());
-        String locale = facebookUser.getLocale().getLanguage();
+        String locale = _propertyService.getDefaultLang();
         setLocale(account, locale);
         account = _accountService.createOAuthAcount(account);
         byte[] userProfileImage = facebook.userOperations().getUserProfileImage();
