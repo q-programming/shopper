@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card class="pt-0">
     <mat-tab-group mat-stretch-tabs>
         <mat-tab>
             <ng-template mat-tab-label>
@@ -11,11 +11,20 @@
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
-                <mat-icon>local_offer</mat-icon>
-                <span fxShow.xs="false" class="ml-1">{{'app.settings.products'|translate}}</span>
+                <mat-icon>sort</mat-icon>
+                <span fxShow.xs="false" class="ml-1">{{'app.settings.products.category.title'|translate}}</span>
             </ng-template>
             <ng-template matTabContent>
-                <settings-products></settings-products>
+                <settings-category-sorting></settings-category-sorting>
+            </ng-template>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon>local_offer</mat-icon>
+                <span fxShow.xs="false" class="ml-1">{{'app.item.add.favorites'|translate}}</span>
+            </ng-template>
+            <ng-template matTabContent>
+                <item-favorites [settings]="true"></item-favorites>
             </ng-template>
         </mat-tab>
         <mat-tab *ngIf="admin">
