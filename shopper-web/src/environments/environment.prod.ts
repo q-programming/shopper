@@ -1,5 +1,8 @@
+import {NgxLoggerLevel} from "ngx-logger";
+
 export const environment = {
     production: true,
+    logging: NgxLoggerLevel.OFF,
     context: '/shopper',
     api_url: '/api',
     refresh_token_url: '/api/refresh',
@@ -16,4 +19,6 @@ export const environment = {
     item_url: '/api/item',
     product_url: '/api/product',
     config_url: '/api/config',
+    ws_ur: '/ws',
+    ws_send_url: '/ws/send/'
 };

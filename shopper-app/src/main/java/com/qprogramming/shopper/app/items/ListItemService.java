@@ -124,15 +124,21 @@ public class ListItemService {
     }
 
     /**
-     * Update of item from shopping list. If there was product change, whole item will be deleted and readded to list to eliminate any issues with category,product etc.
+     * Update of item from shopping list. If there was product change replace product  will be triggered instead.
      * In case it was just product category change, change it and update score
+     * If there in fact was some product change, but for the same product ( but by result eliminating id of product )
+     * re-add proper product from database
      *
      * @param item item to be updated
      * @return updated ListItem
      * @throws ItemNotFoundException if item was not found in database
+     * @see #replaceProduct(Product, ListItem, ShoppingList, ListItem)
      */
     public ListItem update(ListItem item) throws ItemNotFoundException {
         ListItem listItem = this.findById(item.getId());
+        if (item.getProduct().getId() == null) {
+            item.setProduct(getProductByNameOrCreate(item.getProduct()));
+        }
         Category updatedCategory = item.getCategory();
         if (!listItem.getCategory().equals(updatedCategory)) {//there was category change, increase score for that category and this product
             Product product = listItem.getProduct();
@@ -147,20 +153,51 @@ public class ListItemService {
         return _productRepository.save(product);
     }
 
+    /**
+     * Toggle item as done/not done
+     *
+     * @param item item to be toggled
+     * @return Updated item
+     */
     public ListItem toggleItem(ListItem item) {
         item.setDone(!item.isDone());
         return _listItemRepository.save(item);
     }
 
-
+    /**
+     * Predicate to check if passed ListItem#Product is same as the one passed as param
+     *
+     * @param product product to be checked
+     * @return true if product and {@link ListItem#getProduct()} is same
+     */
     public Predicate<ListItem> sameProduct(Product product) {
         return i -> i.getProduct().equals(product) || StringUtils.equalsIgnoreCase(product.getName(), i.getProduct().getName());
     }
 
+    /**
+     * Checks if passed Product is already on passed list
+     *
+     * @param list list which items will be searched
+     * @return true if {@link ShoppingList#getItems()} contains passed product
+     */
     public Predicate<Product> onList(Set<Product> list) {
         return p -> list.contains(p) || list.stream().anyMatch(pr -> pr.getName().equalsIgnoreCase(p.getName()));
     }
 
+    /**
+     * Replace product on shopping list with new one
+     * First it's evaluated if there is already same product existing on that shopping list
+     * If yes , it's being updated with description, unit etc. and it's quantity is increased
+     * If no,  replace item with new data, and product
+     *
+     * @param updatedProduct product to be updated
+     * @param updatedItem    item to be updated
+     * @param list           list where replace will be happening
+     * @param item           database item which is affected
+     * @throws ProductNotFoundException If product has id and was not found in database
+     * @throws BadProductNameException  If product name is empty
+     * @throws AccountNotFoundException If account was not found
+     */
     public void replaceProduct(Product updatedProduct, ListItem updatedItem, ShoppingList list, ListItem item) throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
         updatedItem.setCategory(item.getCategory());
         Optional<ListItem> itemOptional = list.getItems().stream().filter(sameProduct(updatedProduct)).findFirst();
@@ -199,6 +236,16 @@ public class ListItemService {
     }
 
     /**
+     * Return all favorites products for account
+     *
+     * @return set of favorite products for current account
+     */
+    public Set<Product> getAllFavoritesProducts() {
+        FavoriteProducts favoriteProductsForAccount = getFavoriteProductsForAccount();
+        return sortByValue(favoriteProductsForAccount.getFavorites()).keySet();
+    }
+
+    /**
      * Return all favorite products for current account which are not yet on list
      *
      * @return favorite products
@@ -225,5 +272,16 @@ public class ListItemService {
                         (e1, e2) -> e1,
                         LinkedHashMap::new
                 ));
+    }
+
+    /**
+     * Removes passed product from favorites
+     *
+     * @param product product to be removed from favorites
+     */
+    public void removeFromFavorites(Product product) {
+        FavoriteProducts favoriteProducts = getFavoriteProductsForAccount();
+        favoriteProducts.getFavorites().remove(product);
+        _favoritesRepository.save(favoriteProducts);
     }
 }

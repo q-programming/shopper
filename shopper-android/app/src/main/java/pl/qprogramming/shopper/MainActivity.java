@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -39,6 +40,16 @@ public class MainActivity extends AppCompatActivity {
             cookieManager.setAcceptThirdPartyCookies(webView, true);
         }
         webView.loadUrl("https://q-programming.pl/shopper");
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webView.isFocused() && webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+            finish();
+        }
     }
 
     @Override

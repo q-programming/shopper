@@ -41,7 +41,7 @@ import {
     AccountSettingsComponent,
     AvatarUploadComponent
 } from './components/settings/account/account-settings.component';
-import {ProductsSettingsComponent} from './components/settings/products/products-settings.component';
+import {CategorySortingSettingsComponent} from './components/settings/category/category-sorting-settings.component';
 import {NotificationsSettingsComponent} from './components/settings/notifications/notifications-settings.component';
 import {AppSettingsComponent} from "./components/settings/app/app-settings.component";
 import {SharedWithComponent} from './components/dialogs/share/shared-with/shared-with.component';
@@ -51,9 +51,10 @@ import {NgProgressModule} from "ngx-progressbar";
 import {HelpComponent} from './components/help/help.component';
 import {MenuToolbarComponent} from './components/menu/toolbar/menu-toolbar.component';
 import {MenuSideNavComponent} from './components/menu/sidenav/menu-side-nav.component';
-import { FavoritesComponent } from './components/dialogs/item/favorites/favorites.component';
-import { ItemDetailsComponent } from './components/dialogs/item/item-details/item-details.component';
-import {TrimDirective } from './directives/trim.directive';
+import {FavoritesComponent} from './components/favorites/favorites.component';
+import {ItemDetailsComponent} from './components/dialogs/item/item-details/item-details.component';
+import {TrimDirective} from './directives/trim.directive';
+import {environment} from "../environments/environment";
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -78,7 +79,7 @@ export function initUserFactory(authService: AuthenticationService) {
         ShareComponent,
         EmailSettingsComponent,
         AccountSettingsComponent,
-        ProductsSettingsComponent,
+        CategorySortingSettingsComponent,
         NotificationsSettingsComponent,
         AppSettingsComponent,
         SharedWithComponent,
@@ -88,7 +89,7 @@ export function initUserFactory(authService: AuthenticationService) {
         MenuSideNavComponent,
         FavoritesComponent,
         ItemDetailsComponent,
-        TrimDirective
+        TrimDirective,
     ],
     entryComponents: [
         AvatarUploadComponent,
@@ -110,7 +111,7 @@ export function initUserFactory(authService: AuthenticationService) {
         FlexLayoutModule,
         DndModule.forRoot(),
         LoggerModule.forRoot({
-            level: NgxLoggerLevel.DEBUG,
+            level: environment.logging,
             serverLogLevel: NgxLoggerLevel.ERROR
         }),
         ImageCropperModule,
