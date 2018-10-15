@@ -49,7 +49,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     private static final String ITEM_UPDATE = "/update";
     private static final String ITEM_DELETE = "/delete";
     private static final String ITEM_TOGGLE = "/toggle";
-    private static final String FAVORITES = "/favorites";
+    private static final String FAVORITES_LIST = "favorites/list/";
 
     @Mock
     private ShoppingListRepository listRepositoryMock;
@@ -148,7 +148,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isNotFound());
-        this.mvc.perform(get(API_ITEM_URL + 1 + FAVORITES))
+        this.mvc.perform(get(API_ITEM_URL + 1 + FAVORITES_LIST))
                 .andExpect(status().isNotFound());
     }
 
@@ -175,7 +175,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isForbidden());
-        this.mvc.perform(get(API_ITEM_URL + 1 + FAVORITES))
+        this.mvc.perform(get(API_ITEM_URL + FAVORITES_LIST + 1))
                 .andExpect(status().isForbidden());
 
     }
@@ -295,7 +295,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         list.getItems().add(listItem);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(favoritesRepositoryMock.findById(testAccount.getId())).thenReturn(Optional.empty());
-        MvcResult mvcResult = this.mvc.perform(get(API_ITEM_URL + list.getId() + FAVORITES))
+        MvcResult mvcResult = this.mvc.perform(get(API_ITEM_URL + FAVORITES_LIST + list.getId()))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
@@ -320,7 +320,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         list.getItems().add(listItem);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(favoritesRepositoryMock.findById(testAccount.getId())).thenReturn(Optional.of(fav));
-        MvcResult mvcResult = this.mvc.perform(get(API_ITEM_URL + list.getId() + FAVORITES))
+        MvcResult mvcResult = this.mvc.perform(get(API_ITEM_URL + FAVORITES_LIST + list.getId()))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
