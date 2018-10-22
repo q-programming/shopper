@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {map, startWith} from "rxjs/operators";
-import {ApiService} from "../../../../services/api.service";
-import {ListItem} from "../../../../model/ListItem";
-import {CategoryOption} from "../../../../model/CategoryOption";
+import {ApiService} from "@services/api.service";
+import {ListItem} from "@model/ListItem";
+import {CategoryOption} from "@model/CategoryOption";
 import {Observable} from "rxjs";
-import {Product} from "../../../../model/Product";
-import {environment} from "../../../../../environments/environment";
+import {Product} from "@model/Product";
+import {environment} from "@env/environment";
 import * as _ from 'lodash';
 
 @Component({

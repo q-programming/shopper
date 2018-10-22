@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Message, MessageType} from "../model/Message";
+import {Message, MessageType} from "@model/Message";
 import {Observable} from "rxjs/Observable";
 import {TranslateService} from "@ngx-translate/core";
 import * as _ from 'lodash';

@@ -2,17 +2,17 @@ import {Injectable} from '@angular/core';
 import {NGXLogger} from "ngx-logger";
 import {ApiService} from "./api.service";
 import {Observable, Subject} from "rxjs";
-import {environment} from "../../environments/environment";
-import {ShoppingList} from "../model/ShoppingList";
+import {environment} from "@env/environment";
+import {ShoppingList} from "@model/ShoppingList";
 import {AvatarService} from "./avatar.service";
 import {AuthenticationService} from "./authentication.service";
-import {Account} from "../model/Account";
+import {Account} from "@model/Account";
 import * as _ from 'lodash';
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ShoppingListDialogComponent} from "../components/dialogs/list/shopping-list-dialog.component";
 import {ShareComponent} from "../components/dialogs/share/share.component";
-import {AppSettings} from "../model/AppSettings";
-import {CategoryPreset} from "../model/CategoryPreset";
+import {AppSettings} from "@model/AppSettings";
+import {CategoryPreset} from "@model/CategoryPreset";
 
 @Injectable({
     providedIn: 'root'

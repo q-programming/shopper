@@ -4,7 +4,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 import 'rxjs/add/observable/throw';
 import {serialize} from "../utils/serialize";
-import {environment} from "../../environments/environment";
+import {environment} from "@env/environment";
 import {AlertService} from "./alert.service";
 import {NgProgress} from "ngx-progressbar";
 

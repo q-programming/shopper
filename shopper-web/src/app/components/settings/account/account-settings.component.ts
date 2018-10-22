@@ -1,17 +1,17 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {Account} from "../../../model/Account";
+import {Account} from "@model/Account";
 import {languages} from "../../../../assets/i18n/languages";
 import {MAT_DIALOG_DATA, MatDialog} from "@angular/material";
-import {AuthenticationService} from "../../../services/authentication.service";
-import {ApiService} from "../../../services/api.service";
+import {AuthenticationService} from "@services/authentication.service";
+import {ApiService} from "@services/api.service";
 import {NGXLogger} from "ngx-logger";
-import {AlertService} from "../../../services/alert.service";
-import {AvatarService} from "../../../services/avatar.service";
+import {AlertService} from "@services/alert.service";
+import {AvatarService} from "@services/avatar.service";
 import {TranslateService} from "@ngx-translate/core";
 import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
-import {environment} from "../../../../environments/environment";
+import {environment} from "@env/environment";
 import {getBase64Image} from "../../../utils/utils";
-import {ItemService} from "../../../services/item.service";
+import {ItemService} from "@services/item.service";
 
 @Component({
     selector: 'settings-account',

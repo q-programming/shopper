@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ShoppingList} from "../../../model/ShoppingList";
-import {Account} from "../../../model/Account";
-import {AuthenticationService} from "../../../services/authentication.service";
+import {ShoppingList} from "@model/ShoppingList";
+import {Account} from "@model/Account";
+import {AuthenticationService} from "@services/authentication.service";
 import {Router} from "@angular/router";
-import {MenuAction, MenuActionsService} from "../../../services/menu-actions.service";
+import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
 
 @Component({
     selector: 'menu-sidenav',
@@ -54,6 +54,11 @@ export class MenuSideNavComponent implements OnInit {
     leaveShared() {
         this.sidenav.emit(SideNavAction.CLOSE);
         this.menuSrv.emmitAction(MenuAction.LEAVE);
+    }
+
+    refreshList() {
+        this.sidenav.emit(SideNavAction.CLOSE);
+        this.menuSrv.emmitAction(MenuAction.REFRESH);
     }
 
     logout() {

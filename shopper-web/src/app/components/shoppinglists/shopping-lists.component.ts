@@ -1,14 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {ListService} from "../../services/list.service";
+import {ListService} from "@services/list.service";
+import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
+import {AuthenticationService} from "@services/authentication.service";
+import {AlertService} from "@services/alert.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {ShoppingList} from "../../model/ShoppingList";
-import {AuthenticationService} from "../../services/authentication.service";
-import {Account} from "../../model/Account";
-import {AlertService} from "../../services/alert.service";
+import {ShoppingList} from "@model/ShoppingList";
+import {Account} from "@model/Account";
 import {NGXLogger} from "ngx-logger";
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ConfirmDialog, ConfirmDialogComponent} from "../dialogs/confirm/confirm-dialog.component";
-import {MenuAction, MenuActionsService} from "../../services/menu-actions.service";
 
 
 @Component({

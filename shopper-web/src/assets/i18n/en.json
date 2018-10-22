@@ -5,6 +5,7 @@
   "app.general.save": "Save",
   "app.general.saveChanges": "Save changes",
   "app.general.edit": "Edit",
+  "app.general.refresh": "Refresh",
   "app.general.delete": "Delete",
   "app.general.test": "Test",
   "app.general.name": "Name",

@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {AuthenticationService} from "../../../services/authentication.service";
-import {ListService} from "../../../services/list.service";
+import {AuthenticationService} from "@services/authentication.service";
+import {ListService} from "@services/list.service";
 import {SideNavAction} from "../sidenav/menu-side-nav.component";
-import {MenuAction, MenuActionsService} from "../../../services/menu-actions.service";
+import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
 
 @Component({
     selector: 'menu-toolbar',

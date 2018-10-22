@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {AccountService} from "../../../../services/account.service";
-import {Account} from "../../../../model/Account";
-import {AuthenticationService} from "../../../../services/authentication.service";
+import {AccountService} from "@services/account.service";
+import {Account} from "@model/Account";
+import {AuthenticationService} from "@services/authentication.service";
 import * as _ from 'lodash';
-import {ApiService} from "../../../../services/api.service";
-import {AlertService} from "../../../../services/alert.service";
-import {ShoppingList} from "../../../../model/ShoppingList";
-import {environment} from "../../../../../environments/environment";
+import {ApiService} from "@services/api.service";
+import {AlertService} from "@services/alert.service";
+import {ShoppingList} from "@model/ShoppingList";
+import {environment} from "@env/environment";
 import {NGXLogger} from "ngx-logger";
 
 @Component({
