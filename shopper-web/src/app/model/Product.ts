@@ -2,10 +2,10 @@ import {Category} from "./Category";
 
 export class Product {
     id?: number;
-    name: String;
+    name: string;
     topCategory?: Category;
 
-    constructor(name:String){
+    constructor(name:string){
         this.name = name;
     }
 }
