@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {AlertService} from "../../../services/alert.service";
-import {ApiService} from "../../../services/api.service";
+import {AlertService} from "@services/alert.service";
+import {ApiService} from "@services/api.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AppSettings} from "../../../model/AppSettings";
-import {environment} from "../../../../environments/environment";
+import {AppSettings} from "@model/AppSettings";
+import {environment} from "@env/environment";
 
 @Component({
     selector: 'settings-email',

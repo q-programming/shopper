@@ -245,4 +245,37 @@ public class ShoppingListService {
         });
         _listRepository.saveAll(shoppingLists);
     }
+
+    /**
+     * Transfer ownership of shared list to first available user, and remove that user from shared list ( as he is now an owner)
+     *
+     * @param account account for which all lists ownership will be transfered
+     */
+    public void transferSharedListOwnership(Account account) {
+        Set<ShoppingList> accountLists = _listRepository.findAllByOwnerIdOrSharedIn(account.getId(), Collections.singleton(account.getId()));
+        accountLists.forEach(shoppingList -> {
+            if (shoppingList.getShared().size() > 0) {
+                shoppingList.getShared().remove(account.getId());
+                processOwnershipTransfer(account, shoppingList);
+            }
+        });
+        _listRepository.saveAll(accountLists);
+    }
+
+    private void processOwnershipTransfer(Account account, ShoppingList shoppingList) {
+        if (shoppingList.getOwnerId().equals(account.getId())) {
+            shoppingList.setOwnerId(shoppingList.getShared().iterator().next());
+            shoppingList.getShared().remove(shoppingList.getOwnerId());
+        }
+    }
+
+    /**
+     * Removes all list associated with passed account
+     *
+     * @param account account for which all lists will be removed
+     */
+    public void deleteUserLists(Account account) {
+        List<ShoppingList> allAccountLists = _listRepository.findAllByOwnerId(account.getId());
+        _listRepository.deleteAll(allAccountLists);
+    }
 }

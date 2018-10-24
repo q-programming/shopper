@@ -2,17 +2,17 @@ import {Injectable} from '@angular/core';
 import {NGXLogger} from "ngx-logger";
 import {ApiService} from "./api.service";
 import {Observable, Subject} from "rxjs";
-import {environment} from "../../environments/environment";
-import {ShoppingList} from "../model/ShoppingList";
+import {environment} from "@env/environment";
+import {ShoppingList} from "@model/ShoppingList";
 import {AvatarService} from "./avatar.service";
 import {AuthenticationService} from "./authentication.service";
-import {Account} from "../model/Account";
+import {Account} from "@model/Account";
 import * as _ from 'lodash';
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ShoppingListDialogComponent} from "../components/dialogs/list/shopping-list-dialog.component";
 import {ShareComponent} from "../components/dialogs/share/share.component";
-import {AppSettings} from "../model/AppSettings";
-import {CategoryPreset} from "../model/CategoryPreset";
+import {AppSettings} from "@model/AppSettings";
+import {CategoryPreset} from "@model/CategoryPreset";
 
 @Injectable({
     providedIn: 'root'
@@ -73,10 +73,11 @@ export class ListService {
     }
 
     private processList(lists: ShoppingList[]): ShoppingList[] {
-        let filtered = _.filter(lists, list => !this.isOwner(list));
-        filtered.forEach(list => {
-            list.isOwner = false;
-            this.avatarSrv.getUserAvatarById(list.ownerId).subscribe(avatar => list.ownerAvatar = avatar);
+        lists.forEach(list => {
+            list.isOwner = this.isOwner(list);
+            if (!list.isOwner) {
+                this.avatarSrv.getUserAvatarById(list.ownerId).subscribe(avatar => list.ownerAvatar = avatar);
+            }
         });
         return lists
     }
@@ -97,7 +98,7 @@ export class ListService {
             this.loadUserSortingPresets().subscribe(presets => {
                 this.dialogConfig.data = {
                     presets: presets,
-                    currentAccount : this.currentAccount
+                    currentAccount: this.currentAccount
                 };
                 let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
                 dialogRef.afterClosed().subscribe(form => {
@@ -133,7 +134,7 @@ export class ListService {
                     presets: presets,
                     list: list,
                     update: true,
-                    currentAccount : this.currentAccount
+                    currentAccount: this.currentAccount
                 };
                 let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
                 dialogRef.afterClosed().subscribe(form => {

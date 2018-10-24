@@ -16,6 +16,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.qprogramming.shopper.app.TestUtil.ADMIN_RANDOM_ID;
+import static com.qprogramming.shopper.app.TestUtil.ADMIN_USERNAME;
+import static com.qprogramming.shopper.app.TestUtil.USER_RANDOM_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -93,6 +96,27 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
         listService.addToListIfPending(testAccount);
         verify(listRepository, times(1)).saveAll(shoppingLists);
 
+    }
+
+
+    @Test
+    public void transferSharedListOwnershipTest() throws Exception {
+        ShoppingList list1 = createList(NAME, 1L);
+        ShoppingList list2 = createList(NAME, 2L);
+        ShoppingList list3 = createList(NAME, 3L);
+        list1.setOwnerId(ADMIN_RANDOM_ID);
+        list1.getShared().add(USER_RANDOM_ID);
+        list2.setOwnerId(USER_RANDOM_ID);
+        list2.getShared().add(ADMIN_RANDOM_ID);
+        list3.setOwnerId(USER_RANDOM_ID);
+        Set<ShoppingList> expected = Stream.of(list1, list2, list3).collect(Collectors.toSet());
+        when(listRepository.findAllByOwnerIdOrSharedIn(USER_RANDOM_ID, Collections.singleton(USER_RANDOM_ID))).thenReturn(expected);
+        listService.transferSharedListOwnership(testAccount);
+        verify(listRepository, times(1)).saveAll(anySet());
+        assertThat(list1.getShared().size()).isEqualTo(0);
+        assertThat(list2.getShared().size()).isEqualTo(0);
+        assertThat(list1.getOwnerId()).isNotEqualTo(USER_RANDOM_ID);
+        assertThat(list2.getOwnerId()).isNotEqualTo(USER_RANDOM_ID);
     }
 
 

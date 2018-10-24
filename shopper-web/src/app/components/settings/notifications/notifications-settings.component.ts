@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {AlertService} from "../../../services/alert.service";
-import {ApiService} from "../../../services/api.service";
+import {AlertService} from "@services/alert.service";
+import {ApiService} from "@services/api.service";
 
 @Component({
   selector: 'settings-notifications',

@@ -43,19 +43,19 @@ public class AccountService implements UserDetailsService {
     private static final String API_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
 
     private static final Logger LOG = LoggerFactory.getLogger(AccountService.class);
-    private PropertyService propertyService;
-    private AccountRepository accountRepository;
-    private AvatarRepository avatarRepository;
-    private AuthorityService authorityService;
-    private AccountPasswordEncoder accountPasswordEncoder;
+    private PropertyService _propertyService;
+    private AccountRepository _accountRepository;
+    private AvatarRepository _avatarRepository;
+    private AuthorityService _authorityService;
+    private AccountPasswordEncoder _accountPasswordEncoder;
 
     @Autowired
     public AccountService(PropertyService propertyService, AccountRepository accountRepository, AvatarRepository avatarRepository, AuthorityService authorityService, AccountPasswordEncoder accountPasswordEncoder) {
-        this.propertyService = propertyService;
-        this.accountRepository = accountRepository;
-        this.avatarRepository = avatarRepository;
-        this.authorityService = authorityService;
-        this.accountPasswordEncoder = accountPasswordEncoder;
+        this._propertyService = propertyService;
+        this._accountRepository = accountRepository;
+        this._avatarRepository = avatarRepository;
+        this._authorityService = authorityService;
+        this._accountPasswordEncoder = accountPasswordEncoder;
     }
 
     public void signin(Account account) {
@@ -67,7 +67,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public Account findById(String id) throws AccountNotFoundException {
-        Optional<Account> optionalAccount = accountRepository.findOneById(id);
+        Optional<Account> optionalAccount = _accountRepository.findOneById(id);
         if (!optionalAccount.isPresent()) {
             throw new AccountNotFoundException();
         }
@@ -76,10 +76,10 @@ public class AccountService implements UserDetailsService {
 
     public Account createOAuthAcount(Account account) {
         List<Authority> auths = new ArrayList<>();
-        Authority role = authorityService.findByRole(Role.ROLE_USER);
+        Authority role = _authorityService.findByRole(Role.ROLE_USER);
         auths.add(role);
-        if (accountRepository.findAll().size() == 0) {
-            Authority admin = authorityService.findByRole(Role.ROLE_ADMIN);
+        if (_accountRepository.findAll().size() == 0) {
+            Authority admin = _authorityService.findByRole(Role.ROLE_ADMIN);
             auths.add(admin);
         }
         account.setAuthorities(auths);
@@ -88,7 +88,7 @@ public class AccountService implements UserDetailsService {
         }
         //generate api key
         generatePassword(account);
-        return accountRepository.save(account);
+        return _accountRepository.save(account);
     }
 
     private void generatePassword(Account account) {
@@ -101,29 +101,29 @@ public class AccountService implements UserDetailsService {
 
     public String generateID() {
         String uuid = UUID.randomUUID().toString();
-        while (accountRepository.findOneById(uuid).isPresent()) {
+        while (_accountRepository.findOneById(uuid).isPresent()) {
             uuid = UUID.randomUUID().toString();
         }
         return uuid;
     }
 
     private void setDefaultLocale(Account account) {
-        String defaultLanguage = propertyService.getDefaultLang();
+        String defaultLanguage = _propertyService.getDefaultLang();
         account.setLanguage(defaultLanguage);
     }
 
     public Optional<Account> findByEmail(String email) {
-        return accountRepository.findOneByEmail(email);
+        return _accountRepository.findOneByEmail(email);
     }
 
     @Override
     public Account loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account;
-        Optional<Account> optionalAccount = accountRepository.findOneByEmail(username);
+        Optional<Account> optionalAccount = _accountRepository.findOneByEmail(username);
         if (optionalAccount.isPresent()) {
             account = optionalAccount.get();
         } else {
-            account = accountRepository.findOneByUsername(username);
+            account = _accountRepository.findOneByUsername(username);
             if (account == null) {
                 throw new UsernameNotFoundException("user not found");
             }
@@ -131,25 +131,25 @@ public class AccountService implements UserDetailsService {
         //TODO remove later on
         if (StringUtils.isEmpty(account.getPassword())) {
             generatePassword(account);
-            account = accountRepository.save(account);
+            account = _accountRepository.save(account);
         }
         return account;
     }
 
     public Account findByUsername(String username) {
-        return accountRepository.findOneByUsername(username);
+        return _accountRepository.findOneByUsername(username);
     }
 
     public List<Account> findAll() {
-        return accountRepository.findAll();
+        return _accountRepository.findAll();
     }
 
     public String encode(String string) {
-        return accountPasswordEncoder.encode(string);
+        return _accountPasswordEncoder.encode(string);
     }
 
     public boolean matches(String raw, String encoded) {
-        return accountPasswordEncoder.matches(raw, encoded);
+        return _accountPasswordEncoder.matches(raw, encoded);
     }
 
     /**
@@ -159,7 +159,7 @@ public class AccountService implements UserDetailsService {
      * @return updated account
      */
     public Account update(Account account) {
-        return accountRepository.save(account);
+        return _accountRepository.save(account);
     }
 
     /**
@@ -185,7 +185,7 @@ public class AccountService implements UserDetailsService {
     //User avatar handling
 
     public Avatar getAccountAvatar(Account account) {
-        return avatarRepository.findOneById(account.getId());
+        return _avatarRepository.findOneById(account.getId());
     }
 
     /**
@@ -197,12 +197,12 @@ public class AccountService implements UserDetailsService {
      * @param bytes   image bytes
      */
     public void updateAvatar(Account account, byte[] bytes) {
-        Avatar avatar = avatarRepository.findOneById(account.getId());
+        Avatar avatar = _avatarRepository.findOneById(account.getId());
         if (avatar == null) {
             createAvatar(account, bytes);
         } else {
             setAvatarTypeAndBytes(bytes, avatar);
-            avatarRepository.save(avatar);
+            _avatarRepository.save(avatar);
         }
     }
 
@@ -234,7 +234,7 @@ public class AccountService implements UserDetailsService {
         Avatar avatar = new Avatar();
         avatar.setId(account.getId());
         setAvatarTypeAndBytes(bytes, avatar);
-        return avatarRepository.save(avatar);
+        return _avatarRepository.save(avatar);
     }
 
     private void setAvatarTypeAndBytes(byte[] bytes, Avatar avatar) {
@@ -249,5 +249,9 @@ public class AccountService implements UserDetailsService {
             type = MediaType.IMAGE_JPEG_VALUE;
         }
         avatar.setType(type);
+    }
+
+    public void delete(Account account) {
+        _accountRepository.delete(account);
     }
 }

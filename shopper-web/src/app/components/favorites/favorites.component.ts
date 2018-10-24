@@ -1,15 +1,15 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ApiService} from "../../services/api.service";
-import {Product} from "../../model/Product";
-import {environment} from "../../../environments/environment";
+import {ApiService} from "@services/api.service";
+import {Product} from "@model/Product";
+import {environment} from "@env/environment";
 import * as _ from "lodash"
-import {AlertService} from "../../services/alert.service";
-import {ShoppingList} from "../../model/ShoppingList";
-import {ListItem} from "../../model/ListItem";
+import {AlertService} from "@services/alert.service";
+import {ShoppingList} from "@model/ShoppingList";
+import {ListItem} from "@model/ListItem";
 import {Observable} from "rxjs";
 import {FormControl} from "@angular/forms";
 import {map} from "rxjs/operators";
-import {MenuAction, MenuActionsService} from "../../services/menu-actions.service";
+import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
 
 @Component({
     selector: 'item-favorites',
@@ -86,7 +86,7 @@ export class FavoritesComponent implements OnInit {
         this.api.postObject<ShoppingList>(environment.item_url + `/${this.listID}/add`, item).subscribe(result => {
             if (result) {
                 this.alertSrv.success("app.item.add.named.success", {name: product.name});
-                this.menuSrv.emmitAction(MenuAction.REFRESH);
+                this.menuSrv.emmitAction(MenuAction.PENDING_REFRESH);
             }
         })
     }

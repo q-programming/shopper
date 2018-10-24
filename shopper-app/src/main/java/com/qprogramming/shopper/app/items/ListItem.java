@@ -20,6 +20,9 @@ public class ListItem {
     @ManyToOne
     private Product product;
 
+    @Column
+    private String name;
+
     @Column(length = 1000)
     private String description;
 
@@ -117,5 +120,13 @@ public class ListItem {
     @Override
     public int hashCode() {
         return Objects.hash(id, product, unit);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

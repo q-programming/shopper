@@ -24,5 +24,5 @@ export class MenuActionsService {
 }
 
 export enum MenuAction {
-    REFRESH, EDIT, SHARE, CLEANUP, LEAVE, ARCHIVE, ADD_ITEM
+    REFRESH, EDIT, SHARE, CLEANUP, LEAVE, ARCHIVE, ADD_ITEM, PENDING_REFRESH
 }

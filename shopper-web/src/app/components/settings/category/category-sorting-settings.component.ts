@@ -1,13 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {AlertService} from "../../../services/alert.service";
-import {ApiService} from "../../../services/api.service";
-import {Category} from "../../../model/Category";
-import {CategoryPreset} from "../../../model/CategoryPreset";
+import {AlertService} from "@services/alert.service";
+import {ApiService} from "@services/api.service";
+import {Category} from "@model/Category";
+import {CategoryPreset} from "@model/CategoryPreset";
 import {FormControl, Validators} from "@angular/forms";
-import {ListService} from "../../../services/list.service";
+import {ListService} from "@services/list.service";
 import * as _ from "lodash"
-import {AuthenticationService} from "../../../services/authentication.service";
-import {Account} from "../../../model/Account";
+import {AuthenticationService} from "@services/authentication.service";
+import {Account} from "@model/Account";
 
 @Component({
     selector: 'settings-category-sorting',

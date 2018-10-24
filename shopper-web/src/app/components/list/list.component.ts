@@ -1,22 +1,22 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ListService} from "../../services/list.service";
+import {ListService} from "@services/list.service";
+import {AlertService} from "@services/alert.service";
+import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
+import {ItemService} from "@services/item.service";
+import {AuthenticationService} from "@services/authentication.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {ShoppingList} from "../../model/ShoppingList";
-import {ListItem} from "../../model/ListItem";
-import {Account} from "../../model/Account";
+import {ShoppingList} from "@model/ShoppingList";
+import {ListItem} from "@model/ListItem";
+import {Account} from "@model/Account";
+import {Category} from "@model/Category";
+import {CategoryOption} from "@model/CategoryOption";
+import {WSAction, WSActionType} from "@model/WSAction";
+import {environment} from "@env/environment";
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import * as _ from 'lodash';
-import {AlertService} from "../../services/alert.service";
-import {Category} from "../../model/Category";
-import {CategoryOption} from "../../model/CategoryOption";
 import {TranslateService} from "@ngx-translate/core";
-import {MenuAction, MenuActionsService} from "../../services/menu-actions.service";
-import {ItemService} from "../../services/item.service";
-import {WSAction, WSActionType} from "../../model/WSAction";
-import {AuthenticationService} from "../../services/authentication.service";
 import {NGXLogger} from "ngx-logger";
-import {environment} from "../../../environments/environment";
 
 
 @Component({
@@ -36,6 +36,7 @@ export class ListComponent implements OnInit, OnDestroy {
     edit: boolean;
     sharedCount = 0;
     refreshPending: boolean;
+    isInProgress: boolean = false;
     currentAccount: Account;
     stompClient;
 
@@ -53,8 +54,11 @@ export class ListComponent implements OnInit, OnDestroy {
         //handle menu srv actions
         this.menuSrv.actionEmitted.subscribe(action => {
             switch (action) {
-                case MenuAction.REFRESH:
+                case MenuAction.PENDING_REFRESH:
                     this.refreshPending = true;
+                    break;
+                case MenuAction.REFRESH:
+                    this.loadItems();
                     break;
                 case MenuAction.SHARE:
                     this.shareListOpenDialog();
@@ -228,7 +232,7 @@ export class ListComponent implements OnInit, OnDestroy {
     private loadItems() {
         this.listSrv.getListByID(this.listID).subscribe(list => {
             this.listName = list.name;
-            this.assignListWithSorting(list);
+            this.assignListWithSorting(list as ShoppingList);
             //if list is shared with at least one account, init websocket
             if (this.sharedCount > 0 && !this.stompClient) {
                 this.initializeWebSocketConnection();
@@ -400,6 +404,16 @@ export class ListComponent implements OnInit, OnDestroy {
                 }
             });
         });
+    }
+
+    displayName(item:ListItem): string {
+        return item.name ? item.name : item.product.name;
+    }
+
+
+    onPull() {
+        console.log("Refresh me!");
+        this.isInProgress = true;
     }
 
 }

@@ -4,6 +4,7 @@ import {Category} from "./Category";
 export class ListItem {
     id?: number;
     product: Product;
+    name?: string;
     description?: string;
     quantity?: number;
     unit?: string;

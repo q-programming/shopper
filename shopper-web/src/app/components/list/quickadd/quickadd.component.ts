@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormGroup} from "@angular/forms";
-import {ApiService} from "../../../services/api.service";
-import {ItemService} from "../../../services/item.service";
-import {ShoppingList} from "../../../model/ShoppingList";
+import {ApiService} from "@services/api.service";
+import {ItemService} from "@services/item.service";
+import {ShoppingList} from "@model/ShoppingList";
 
 @Component({
     selector: 'app-quickadd',

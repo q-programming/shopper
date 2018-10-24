@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormControl, Validators} from "@angular/forms";
-import {ShoppingList} from "../../../../model/ShoppingList";
-import {environment} from "../../../../../environments/environment";
-import {ApiService} from "../../../../services/api.service";
-import {AlertService} from "../../../../services/alert.service";
+import {ShoppingList} from "@model/ShoppingList";
+import {environment} from "@env/environment";
+import {ApiService} from "@services/api.service";
+import {AlertService} from "@services/alert.service";
 import {MatDialogRef} from "@angular/material";
 import {ShareComponent} from "../share.component";
 

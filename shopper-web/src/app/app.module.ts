@@ -6,15 +6,15 @@ import {routing} from "./app.routing";
 import {AppComponent} from './app.component';
 import {LoginComponent} from './components/login/login.component';
 import {HomeComponent} from './components/home/home.component';
-import {AuthenticationService} from "./services/authentication.service";
+import {AuthenticationService} from "@services/authentication.service";
 import {AuthInterceptor} from "./guards/auth.interceptor";
 import {AlertComponent} from './components/alert/alert.component';
-import {AlertService} from "./services/alert.service";
+import {AlertService} from "@services/alert.service";
 import {AuthGuard} from "./guards/auth.guard";
-import {ApiService} from "./services/api.service";
+import {ApiService} from "@services/api.service";
 import {LoggerModule, NgxLoggerLevel} from 'ngx-logger';
-import {AvatarService} from "./services/avatar.service";
-import {AccountService} from "./services/account.service";
+import {AvatarService} from "@services/avatar.service";
+import {AccountService} from "@services/account.service";
 import {SettingsComponent} from './components/settings/settings.component';
 import {ImageCropperModule} from "ngx-img-cropper";
 import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
@@ -25,13 +25,13 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {LayoutModule} from '@angular/cdk/layout';
 import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule} from '@angular/material';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
-import {ListService} from "./services/list.service";
+import {ListService} from "@services/list.service";
 import {ListComponent} from './components/list/list.component';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ShoppingListDialogComponent} from "./components/dialogs/list/shopping-list-dialog.component";
 import {ShoppingListsComponent} from "./components/shoppinglists/shopping-lists.component";
 import {ConfirmDialogComponent} from './components/dialogs/confirm/confirm-dialog.component';
-import {ItemService} from "./services/item.service";
+import {ItemService} from "@services/item.service";
 import {ItemDialogComponent} from "./components/dialogs/item/item-dialog.component";
 import {HighlightDirective} from './directives/highlight.directive';
 import {QuickaddComponent} from './components/list/quickadd/quickadd.component';
@@ -54,7 +54,8 @@ import {MenuSideNavComponent} from './components/menu/sidenav/menu-side-nav.comp
 import {FavoritesComponent} from './components/favorites/favorites.component';
 import {ItemDetailsComponent} from './components/dialogs/item/item-details/item-details.component';
 import {TrimDirective} from './directives/trim.directive';
-import {environment} from "../environments/environment";
+import {environment} from "@env/environment";
+import { PullToRefreshComponent } from './components/pull-to-refresh/pull-to-refresh.component';
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -90,6 +91,7 @@ export function initUserFactory(authService: AuthenticationService) {
         FavoritesComponent,
         ItemDetailsComponent,
         TrimDirective,
+        PullToRefreshComponent,
     ],
     entryComponents: [
         AvatarUploadComponent,

@@ -17,12 +17,16 @@
             "tsConfig": "src/tsconfig.app.json",
             "polyfills": "src/polyfills.ts",
             "assets": [
+              "src/environments",
+              "src/app/services",
+              "src/app/model",
               "src/assets",
               "src/favicon.ico"
             ],
             "styles": [
               "src/styles.css",
-              "node_modules/font-awesome/css/font-awesome.css"
+              "node_modules/font-awesome/css/font-awesome.css",
+              "src/material-theme.scss"
             ],
             "scripts": [
               "node_modules/chart.js/dist/Chart.js",

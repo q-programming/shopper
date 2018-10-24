@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {map, startWith} from "rxjs/operators";
-import {ApiService} from "../../../../services/api.service";
-import {ListItem} from "../../../../model/ListItem";
-import {CategoryOption} from "../../../../model/CategoryOption";
+import {ApiService} from "@services/api.service";
+import {ListItem} from "@model/ListItem";
+import {CategoryOption} from "@model/CategoryOption";
 import {Observable} from "rxjs";
-import {Product} from "../../../../model/Product";
-import {environment} from "../../../../../environments/environment";
+import {Product} from "@model/Product";
+import {environment} from "@env/environment";
 import * as _ from 'lodash';
 
 @Component({
@@ -37,7 +37,7 @@ export class ItemDetailsComponent implements OnInit {
             this.item = new ListItem();
         }
         this.form = this.formBuilder.group({
-            product: [this.item.product ? this.item.product.name : '', Validators.required],
+            product: [this.item.product ? this.item.name : '', Validators.required],
             category: [this.item.category, Validators.required],
             quantity: this.item.quantity,
             unit: this.item.unit,

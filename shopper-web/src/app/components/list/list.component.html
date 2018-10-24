@@ -5,8 +5,10 @@
     <!--LIST NAME EDIT-->
     <h2 *ngIf="edit">
         <mat-form-field fxFlex="80" class="list-name-input" color="warn">
-            <input matInput cdkFocusRegionstart placeholder="{{'app.shopping.name' | translate}}" [(ngModel)]="listName"
-                   (keydown.enter)="editListName()" autocomplete="off" #listNameInput autofocus (blur)="editListName()">
+            <input matInput cdkFocusRegionstart placeholder="{{'app.shopping.name' | translate}}"
+                   [(ngModel)]="listName"
+                   (keydown.enter)="editListName()" autocomplete="off" #listNameInput autofocus
+                   (blur)="editListName()">
         </mat-form-field>
     </h2>
     <!--LIST HEADER -->
@@ -27,7 +29,8 @@
                     {{list.name}}
             </span>
         </span>
-        <span *ngIf="list.preset" matTooltip="{{'app.settings.products.category.preset'|translate}}" fxShow.xs="false"
+        <span *ngIf="list.preset" matTooltip="{{'app.settings.products.category.preset'|translate}}"
+              fxShow.xs="false"
               class="category-preset">
                 ({{list.preset.name}})
         </span>
@@ -41,6 +44,10 @@
                 <button mat-menu-item (click)="openEditListDialog()">
                     <mat-icon>edit</mat-icon>
                     <span>{{'app.general.edit'|translate}}</span>
+                </button>
+                <button mat-menu-item (click)="loadItems()">
+                    <mat-icon>refresh</mat-icon>
+                    <span>{{'app.general.refresh'|translate}}</span>
                 </button>
                 <button mat-menu-item (click)="shareListOpenDialog(list)">
                     <mat-icon>person</mat-icon>
@@ -99,7 +106,7 @@
         <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"
                       [disabled]="list.archived"></mat-checkbox>
         <mat-card-title-group class="ml-2">
-            <mat-card-title>{{item.product.name}}
+            <mat-card-title>{{displayName(item)}}
             </mat-card-title>
             <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
         </mat-card-title-group>

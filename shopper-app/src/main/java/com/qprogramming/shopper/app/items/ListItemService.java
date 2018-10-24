@@ -57,7 +57,10 @@ public class ListItemService {
      * @throws ProductNotFoundException if product was not found in database ( when ID was passed )
      * @throws BadProductNameException  if product was not passed at all , or it's name was empty
      */
-    public ListItem createListItem(ListItem item) throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
+    public ListItem createListItem(ListItem item) throws ProductNotFoundException, BadProductNameException {
+        if (item.getProduct() != null) {
+            item.setName(item.getProduct().getName());
+        }
         Product product = getProductOrCreate(item.getProduct());
         updateProductCategoryFromItem(item, product, item.getCategory());
         item.setProduct(product);
@@ -136,6 +139,7 @@ public class ListItemService {
      */
     public ListItem update(ListItem item) throws ItemNotFoundException {
         ListItem listItem = this.findById(item.getId());
+        item.setName(item.getProduct().getName());
         if (item.getProduct().getId() == null) {
             item.setProduct(getProductByNameOrCreate(item.getProduct()));
         }
@@ -207,6 +211,7 @@ public class ListItemService {
             list.getItems().remove(updatedItem);
             deleteListItem(updatedItem);
         } else {
+            updatedItem.setName(item.getProduct().getName());
             updatedItem.setDescription(item.getDescription());
             updatedItem.setQuantity(item.getQuantity());
             updatedItem.setUnit(item.getUnit());

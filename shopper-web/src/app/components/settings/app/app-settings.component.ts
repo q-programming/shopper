@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {AlertService} from "../../../services/alert.service";
-import {ApiService} from "../../../services/api.service";
+import {AlertService} from "@services/alert.service";
+import {ApiService} from "@services/api.service";
 import {languages} from "../../../../assets/i18n/languages";
-import {AppSettings} from "../../../model/AppSettings";
-import {environment} from "../../../../environments/environment";
+import {AppSettings} from "@model/AppSettings";
+import {environment} from "@env/environment";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {DOCUMENT} from "@angular/common";
 

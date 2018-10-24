@@ -1,16 +1,16 @@
 import {Injectable} from "@angular/core";
-import {Account} from "../model/Account";
+import {Account} from "@model/Account";
 import {NGXLogger} from "ngx-logger";
 import {ApiService} from "./api.service";
 import {AuthenticationService} from "./authentication.service";
 import {MatDialog, MatDialogConfig} from "@angular/material";
-import {ListItem} from "../model/ListItem";
-import {environment} from "../../environments/environment";
+import {ListItem} from "@model/ListItem";
+import {environment} from "@env/environment";
 import {Observable} from "rxjs";
 import {ItemDialogComponent} from "../components/dialogs/item/item-dialog.component";
-import {ShoppingList} from "../model/ShoppingList";
-import {CategoryOption} from "../model/CategoryOption";
-import {Category} from "../model/Category";
+import {ShoppingList} from "@model/ShoppingList";
+import {CategoryOption} from "@model/CategoryOption";
+import {Category} from "@model/Category";
 import {TranslateService} from "@ngx-translate/core";
 
 @Injectable({

@@ -20,6 +20,10 @@
             <mat-icon class="mr-2">edit</mat-icon>
             <span>{{'app.general.edit'|translate}}</span>
         </button>
+        <button mat-button (click)="refreshList()">
+            <mat-icon class="mr-2">refresh</mat-icon>
+            <span>{{'app.general.refresh'|translate}}</span>
+        </button>
         <button mat-button (click)="shareListOpenDialog()">
             <mat-icon matBadge="{{list.shared.length}}" matBadgePosition="below before"
                       [matBadgeHidden]="list.shared.length==0" class="mr-2">

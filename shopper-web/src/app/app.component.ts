@@ -1,11 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {AuthenticationService} from "./services/authentication.service";
-import {Account} from "./model/Account";
+import {AuthenticationService} from "@services/authentication.service";
+import {Account} from "@model/Account";
 import {MatSidenav} from "@angular/material";
-import {ListService} from "./services/list.service";
-import {ShoppingList} from "./model/ShoppingList";
-import {AlertService} from "./services/alert.service";
+import {ListService} from "@services/list.service";
+import {ShoppingList} from "@model/ShoppingList";
+import {AlertService} from "@services/alert.service";
 import {SideNavAction} from "./components/menu/sidenav/menu-side-nav.component";
 
 @Component({
@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
     message_count = {count: ""};
     lists: ShoppingList[];
     list: ShoppingList;
+    isInProgress: boolean = false;
     @ViewChild("sidenav")
     private sidenav: MatSidenav;
 
@@ -84,6 +85,11 @@ export class AppComponent implements OnInit {
                 this.sidenav.open();
                 break;
         }
+    }
+
+    onPull() {
+        console.log("Refresh me!");
+        this.isInProgress = true;
     }
 }
 
