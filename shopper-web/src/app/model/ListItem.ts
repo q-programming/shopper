@@ -10,9 +10,5 @@ export class ListItem {
     unit?: string;
     category?: Category;
     done?: boolean;
-
-    get Name(): string {
-        return name ? name : this.product.name;
-    }
 }
 

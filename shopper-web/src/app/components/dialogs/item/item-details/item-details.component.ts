@@ -37,7 +37,7 @@ export class ItemDetailsComponent implements OnInit {
             this.item = new ListItem();
         }
         this.form = this.formBuilder.group({
-            product: [this.item.product ? this.item.product.name : '', Validators.required],
+            product: [this.item.product ? this.item.name : '', Validators.required],
             category: [this.item.category, Validators.required],
             quantity: this.item.quantity,
             unit: this.item.unit,

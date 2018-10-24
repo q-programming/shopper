@@ -1,0 +1,109 @@
+@import '~@angular/material/theming';
+
+@include mat-core();
+$primary: mat-palette($mat-indigo, 500);
+$accent: mat-palette($mat-blue, 900);
+$theme: mat-light-theme($primary, $accent);
+@include angular-material-theme($theme);
+
+.btn-fb {
+  background-color: #3b5998 !important;
+  color: #fff !important;
+}
+
+.btn-gplus {
+  background-color: #dd4b39 !important;
+  color: #fff !important;
+}
+
+.mat-drawer.mat-drawer-side {
+  z-index: 1 !important;
+}
+
+.mat-drawer:not(.mat-drawer-side) {
+  box-shadow: none !important;
+}
+
+.mat-drawer-content {
+  z-index: auto !important;
+}
+
+.mat-drawer-container {
+  background-color: #fff;
+  z-index: auto !important;
+}
+
+.mat-sidenav-content {
+  background: #2c5aa0;
+  height: 100vh !important;
+}
+
+.mat-sidenav {
+  padding: 10px 60px;
+  z-index: 1031 !important;
+  background: #2c5aa0;
+  color: white;
+}
+
+.modal-header {
+  background: #2c5aa0;
+  color: white;
+  padding: 20px;
+  margin-top: 0;
+}
+
+.modal-header.warn {
+  background: #f44336;
+}
+
+.shopper-modal > mat-dialog-container {
+  padding: 0 0 24px 0;
+}
+
+.shopper-modal > mat-dialog-content.mat-dialog-content {
+  margin: 0;
+}
+
+.mat-form-field-full-width {
+  width: 100%;
+}
+
+.modal-header > mat-icon {
+  float: left;
+  font-size: 30px;
+}
+
+.success-button {
+  background: #43b05c;
+  color: white;
+}
+
+.underlined {
+  border-bottom: 1px solid;
+}
+
+.mat-card {
+  border-radius: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .shopper-modal-normal {
+    max-width: 100% !important;
+  }
+
+  .shopper-modal {
+    max-width: 100% !important;
+  }
+
+  .mat-card {
+    margin: 0 5px;
+  }
+
+  .m-plr-5 {
+    padding: 0 5px;
+  }
+}
+
+.mat-progress-spinner circle, .mat-spinner circle {
+  stroke: #ffffff;
+}

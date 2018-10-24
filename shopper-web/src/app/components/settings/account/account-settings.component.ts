@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {Account} from "@model/Account";
 import {languages} from "../../../../assets/i18n/languages";
-import {MAT_DIALOG_DATA, MatDialog} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig} from "@angular/material";
 import {AuthenticationService} from "@services/authentication.service";
 import {ApiService} from "@services/api.service";
 import {NGXLogger} from "ngx-logger";
@@ -12,11 +12,13 @@ import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
 import {environment} from "@env/environment";
 import {getBase64Image} from "../../../utils/utils";
 import {ItemService} from "@services/item.service";
+import {ConfirmDialog, ConfirmDialogComponent} from "../../dialogs/confirm/confirm-dialog.component";
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'settings-account',
     templateUrl: './account-settings.component.html',
-    styles: []
+    styleUrls: ['./account-settings.component.css']
 })
 export class AccountSettingsComponent implements OnInit {
 
@@ -31,7 +33,8 @@ export class AccountSettingsComponent implements OnInit {
                 private alertSrv: AlertService,
                 private avatarSrv: AvatarService,
                 private itemSrv: ItemService,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                private router: Router) {
     }
 
     ngOnInit() {
@@ -71,6 +74,30 @@ export class AccountSettingsComponent implements OnInit {
         });
     }
 
+    deleteAccount() {
+        const data: ConfirmDialog = {
+            title_key: 'app.settings.account.delete.confirm',
+            message_key: 'app.settings.account.delete.confirm.msg',
+            action_key: 'app.general.delete',
+            action_class: 'warn'
+        };
+        const dialogConfig: MatDialogConfig = {
+            disableClose: true,
+            panelClass: 'shopper-modal',
+            data: data
+        };
+        let dialogRef = this.dialog.open(ConfirmDialogComponent, dialogConfig);
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.api.post(`${environment.account_url}/delete`, this.authSrv.currentAccount).subscribe(() => {
+                    this.alertSrv.success('app.settings.account.delete.confirm.success');
+                    this.authSrv.currentAccount = null;
+                    this.router.navigate(['/login'])
+
+                })
+            }
+        })
+    }
 }
 
 @Component({

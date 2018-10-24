@@ -94,6 +94,9 @@ public class ShoppingList implements Serializable, Comparable<ShoppingList> {
     }
 
     public Set<String> getShared() {
+        if (shared == null) {
+            shared = new HashSet<>();
+        }
         return shared;
     }
 

@@ -58,7 +58,9 @@ public class ListItemService {
      * @throws BadProductNameException  if product was not passed at all , or it's name was empty
      */
     public ListItem createListItem(ListItem item) throws ProductNotFoundException, BadProductNameException {
-        item.setName(item.getProduct().getName());
+        if (item.getProduct() != null) {
+            item.setName(item.getProduct().getName());
+        }
         Product product = getProductOrCreate(item.getProduct());
         updateProductCategoryFromItem(item, product, item.getCategory());
         item.setProduct(product);

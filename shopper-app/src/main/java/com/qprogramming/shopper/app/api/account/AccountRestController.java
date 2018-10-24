@@ -4,6 +4,7 @@ import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.account.DisplayAccount;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -13,9 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -26,11 +30,15 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/account")
 public class AccountRestController {
     private static final Logger LOG = LoggerFactory.getLogger(AccountRestController.class);
-    private AccountService accountService;
+    private AccountService _accountService;
+    private ShoppingListService _listService;
+    private LogoutHandler _logoutHandler;
 
     @Autowired
-    public AccountRestController(AccountService accountService) {
-        this.accountService = accountService;
+    public AccountRestController(AccountService accountService, ShoppingListService listService, LogoutHandler logoutHandler) {
+        this._accountService = accountService;
+        this._listService = listService;
+        this._logoutHandler = logoutHandler;
     }
 
     /**
@@ -52,7 +60,7 @@ public class AccountRestController {
     @RequestMapping("/all")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<Account> allUsers() {
-        return accountService.findAll();
+        return _accountService.findAll();
     }
 
     /**
@@ -66,8 +74,8 @@ public class AccountRestController {
     @RequestMapping(value = "/{id}/avatar", method = RequestMethod.GET)
     public ResponseEntity<?> userAvatar(@PathVariable(value = "id") String id) {
         try {
-            Account account = accountService.findById(id);
-            return ResponseEntity.ok(accountService.getAccountAvatar(account));
+            Account account = _accountService.findById(id);
+            return ResponseEntity.ok(_accountService.getAccountAvatar(account));
         } catch (AccountNotFoundException e) {
             e.printStackTrace();
             return ResponseEntity.notFound().build();
@@ -86,7 +94,7 @@ public class AccountRestController {
     public ResponseEntity<Set<DisplayAccount>> getUsers(@RequestBody String[] ids) {
         Set<DisplayAccount> displayAccounts = Arrays.stream(ids).map(s -> {
             try {
-                return new DisplayAccount(accountService.findById(s));
+                return new DisplayAccount(_accountService.findById(s));
             } catch (AccountNotFoundException e) {
                 LOG.error("Account with id {} was not found");
                 return null;
@@ -110,7 +118,7 @@ public class AccountRestController {
             return ResponseEntity.notFound().build();
         }
         byte[] data = Base64.decodeBase64(avatarStream);
-        accountService.updateAvatar(account, data);
+        _accountService.updateAvatar(account, data);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -126,7 +134,21 @@ public class AccountRestController {
     public ResponseEntity<?> changeLanguage(@RequestBody String lang) {
         Account currentAccount = Utils.getCurrentAccount();
         currentAccount.setLanguage(lang);
-        accountService.update(currentAccount);
+        _accountService.update(currentAccount);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Transactional
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> deleteAccount(HttpServletRequest requ, HttpServletResponse resp, @RequestBody Account account) {
+        if (!account.equals(Utils.getCurrentAccount())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        _listService.transferSharedListOwnership(account);
+        _listService.deleteUserLists(account);
+        _logoutHandler.logout(requ, resp, SecurityContextHolder.getContext().getAuthentication());
+        _accountService.delete(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

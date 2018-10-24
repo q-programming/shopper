@@ -73,10 +73,11 @@ export class ListService {
     }
 
     private processList(lists: ShoppingList[]): ShoppingList[] {
-        let filtered = _.filter(lists, list => !this.isOwner(list));
-        filtered.forEach(list => {
-            list.isOwner = false;
-            this.avatarSrv.getUserAvatarById(list.ownerId).subscribe(avatar => list.ownerAvatar = avatar);
+        lists.forEach(list => {
+            list.isOwner = this.isOwner(list);
+            if (!list.isOwner) {
+                this.avatarSrv.getUserAvatarById(list.ownerId).subscribe(avatar => list.ownerAvatar = avatar);
+            }
         });
         return lists
     }
@@ -97,7 +98,7 @@ export class ListService {
             this.loadUserSortingPresets().subscribe(presets => {
                 this.dialogConfig.data = {
                     presets: presets,
-                    currentAccount : this.currentAccount
+                    currentAccount: this.currentAccount
                 };
                 let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
                 dialogRef.afterClosed().subscribe(form => {
@@ -133,7 +134,7 @@ export class ListService {
                     presets: presets,
                     list: list,
                     update: true,
-                    currentAccount : this.currentAccount
+                    currentAccount: this.currentAccount
                 };
                 let dialogRef = this.dialog.open(ShoppingListDialogComponent, this.dialogConfig);
                 dialogRef.afterClosed().subscribe(form => {

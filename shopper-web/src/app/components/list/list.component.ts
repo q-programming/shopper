@@ -232,7 +232,7 @@ export class ListComponent implements OnInit, OnDestroy {
     private loadItems() {
         this.listSrv.getListByID(this.listID).subscribe(list => {
             this.listName = list.name;
-            this.assignListWithSorting(list);
+            this.assignListWithSorting(list as ShoppingList);
             //if list is shared with at least one account, init websocket
             if (this.sharedCount > 0 && !this.stompClient) {
                 this.initializeWebSocketConnection();
@@ -405,6 +405,11 @@ export class ListComponent implements OnInit, OnDestroy {
             });
         });
     }
+
+    displayName(item:ListItem): string {
+        return item.name ? item.name : item.product.name;
+    }
+
 
     onPull() {
         console.log("Refresh me!");

@@ -35,3 +35,10 @@
         </mat-form-field>
     </div>
 </div>
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center" class="delete-account-div">
+        <button mat-flat-button color="warn" (click)="deleteAccount()">
+            {{'app.settings.account.delete'|translate}}
+        </button>
+    </div>
+</div>

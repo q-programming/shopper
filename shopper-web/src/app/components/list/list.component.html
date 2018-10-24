@@ -106,7 +106,7 @@
         <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"
                       [disabled]="list.archived"></mat-checkbox>
         <mat-card-title-group class="ml-2">
-            <mat-card-title>{{item.product.name}}
+            <mat-card-title>{{displayName(item)}}
             </mat-card-title>
             <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
         </mat-card-title-group>
