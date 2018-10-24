@@ -1,5 +1,10 @@
+import {ListItem} from "@model/ListItem";
+
 export function getBase64Image(data: String): String {
     return data.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
+}
+export function itemDisplayName(item:ListItem): string {
+    return item.name ? item.name : item.product.name;
 }
 
 export function Debounce(delay: number = 300): MethodDecorator {

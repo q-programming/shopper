@@ -10,5 +10,9 @@ export class ListItem {
     unit?: string;
     category?: Category;
     done?: boolean;
+
+    displayName() {
+        return this.name ? this.name : this.product.name;
+    }
 }
 

@@ -8,6 +8,7 @@ import {Observable} from "rxjs";
 import {Product} from "@model/Product";
 import {environment} from "@env/environment";
 import * as _ from 'lodash';
+import {itemDisplayName} from "../../../../utils/utils";
 
 @Component({
     selector: 'item-details',
@@ -37,7 +38,7 @@ export class ItemDetailsComponent implements OnInit {
             this.item = new ListItem();
         }
         this.form = this.formBuilder.group({
-            product: [this.item.product ? this.item.name : '', Validators.required],
+            product: [this.item.product ? itemDisplayName(this.item) : '', Validators.required],
             category: [this.item.category, Validators.required],
             quantity: this.item.quantity,
             unit: this.item.unit,

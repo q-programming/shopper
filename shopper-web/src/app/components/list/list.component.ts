@@ -17,6 +17,7 @@ import * as SockJS from 'sockjs-client';
 import * as _ from 'lodash';
 import {TranslateService} from "@ngx-translate/core";
 import {NGXLogger} from "ngx-logger";
+import {itemDisplayName} from "../../utils/utils";
 
 
 @Component({
@@ -406,8 +407,8 @@ export class ListComponent implements OnInit, OnDestroy {
         });
     }
 
-    displayName(item:ListItem): string {
-        return item.name ? item.name : item.product.name;
+    displayName(item: ListItem): string {
+        return itemDisplayName(item)
     }
 
 
