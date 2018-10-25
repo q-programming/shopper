@@ -26,11 +26,13 @@ export class QuickaddComponent implements OnInit {
     }
 
     createItem() {
-        this.itemSrv.createNewItem(this.listID, {product: {name: this.productName}}).subscribe(list => {
-            if (list) {
-                this.productName = '';
-                this.created.emit(list);
-            }
-        })
+        if (this.productName) {
+            this.itemSrv.createNewItem(this.listID, {product: {name: this.productName}}).subscribe(list => {
+                if (list) {
+                    this.productName = '';
+                    this.created.emit(list);
+                }
+            });
+        }
     }
 }

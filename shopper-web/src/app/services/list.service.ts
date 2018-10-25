@@ -121,6 +121,8 @@ export class ListService {
                     });
                 });
             });
+        } else {
+            return Observable.empty();
         }
     }
 
@@ -158,6 +160,8 @@ export class ListService {
                     });
                 });
             });
+        } else {
+            return Observable.empty();
         }
     }
 
@@ -184,6 +188,8 @@ export class ListService {
                     observable.complete();
                 });
             });
+        } else {
+            return Observable.empty();
         }
     }
 
