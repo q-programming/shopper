@@ -1,0 +1,587 @@
+<div class="help-body">
+    <h3 class="underlined shopper-font" id="about">
+        <img src="assets/images/logo.svg" height="25px" class="ml-2">
+        O Aplikacji</h3>
+    <p>
+        Shopper to aplikacja do tworzenia, śledzenia i dzielenia się listami zakupowymi ( i nie tylko ) z rodziną i
+        przyjaciółmi
+    </p>
+    <p>
+        Jeżeli potrzebujesz coś szybok dodać, otwórz stronę/aplikację i dodaj. Wszyscy użytkownicy dzielonej listy
+        automatycznie będą mieli aktualną wersję.
+    </p>
+    <p class="text-center">
+        W przypadku problemów lub sugesti skontaktuj się ze mną :
+        <mat-icon>email</mat-icon>
+        <a href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
+    </p>
+    <!--LISTS-->
+    <div>
+        <h3 class="underlined help-title" id="shoppinglist">
+            <img src="assets/images/list.svg" height="26" class="mr-2">
+            Listy zakupów
+        </h3>
+        <p>
+            Główny ekran ze swoimi wszystkimi listami zakupów, który każdy użytkownik widzi tuż po zalogowaniu się.<br>
+            Na tym ekranie prezentowane są wszystkie listy, które należą do użytkownika, lub którą są dla niego/niej
+            współdzielone.
+        </p>
+        <p>
+            Po stworzeniu konta w aplikacji, zazwyczaj nie ma żadnych list (chyba że użytkownik został zaproszony do
+            aplikacji przez współdzielenie listy),
+            aby stworzyć nową listę wystarczy kliknąć guzik
+            <button mat-icon-button class="mr-1 "
+                    matTooltip="{{'app.shopping.create' | translate}}">
+                <img src="assets/images/plus.svg" class="add-list-icon mr-2" height="25">
+            </button>
+            . Na oknie dialogowym należy zdefinować nazwę oraz <a class="help-cursor" routerLink="."
+                                                                  fragment="settings-categories">sorter kategorii</a>
+        </p>
+        <p>
+            Każda lista posiada podręczne menu. Przykładowa lista wyglada jak poniżej. Sample list will look like this.
+            You can view all available options in card
+            below. Naciśnij menu podręczne aby dowiedzieć o wszystkich możliwych operacjach . Niektóre z nich widoczne
+            są zależnie czy lista jest archiwizowana, lub współdzielona
+        </p>
+        <p>
+            Najedź kursorem myszki na elementy listy poniżej aby wyświetlić pomoc do poszczególnych elementów. Kliknij w
+            guziki akcji aby dowiedzieć się więcej o niej.
+        </p>
+        <p>
+            <mat-card fxLayout="column" class="list z-depth">
+                <mat-card-header>
+            <span>
+                <mat-card-title matTooltip="Nazwa listy zakupów"
+                                class="help-cursor shopper-font">Moja lista zakupów</mat-card-title>
+                <mat-card-subtitle class="help-cursor"
+                                   matTooltip="Listy którą są z tobą współdzielone, mają dodatkowo pokazanę imię właściciela oraz jesgo awatar">
+                    <img class="avatar small" src="assets/images/avatar-placeholder.png">
+                    Jan Kowalski
+                </mat-card-subtitle>
+            </span>
+                    <span class="fill-remaining-space"></span>
+                    <span class="list-count help-cursor"
+                          matTooltip="Ten licznik wskazuje ile produktów z listy jest już zakończonych , oraz ile jest ich w sumie">0/23</span>
+                    <button mat-icon-button [matMenuTriggerFor]="shoppinglist_menu" class="clickable"
+                            matTooltip="Pod tym guzikiem ukryte jest menu akcji. Kliknij aby pokazać wszystkie dostępne operacje">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <!--LIST MENU-->
+                    <mat-menu #shoppinglist_menu="matMenu">
+                        <!--NORMAL LIST-->
+                        <button mat-menu-item matTooltip="Edytuj nazwę listy oraz sorter kategorii"
+                                routerLink="." fragment="shoppinglist-edit">
+                            <mat-icon>edit</mat-icon>
+                            <span>{{'app.general.edit'|translate}}</span>
+                        </button>
+                        <button mat-menu-item routerLink="." fragment="shoppinglist-sharing"
+                                matTooltip="Otwórz dialog współdzielenia listy">
+                            <mat-icon>share</mat-icon>
+                            <span>{{'app.shopping.share'|translate}}</span>
+                        </button>
+                        <button mat-menu-item routerLink="." fragment="shoppinglist-archive"
+                                matTooltip="Archiwizuj listę">
+                            <mat-icon>archive</mat-icon>
+                            <span>{{'app.shopping.archive'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Jeżeli lista jest z tobą współdzielona, możesz ją opuścić."
+                                routerLink="." fragment="shoppinglist-share-leave">
+                            <mat-icon>clear</mat-icon>
+                            <span>{{'app.shopping.share.leave'|translate}}</span>
+                        </button>
+                        <button mat-menu-item routerLink="." fragment="shoppinglist-archive"
+                                matTooltip="Przywróć listę zakupów z archiwizowanych">
+                            <mat-icon>unarchive</mat-icon>
+                            <span>{{'app.shopping.unarchive'|translate}}</span>
+                        </button>
+                        <button mat-menu-item routerLink="." fragment="shoppinglist-archive"
+                                matTooltip="Jeżeli lista jest zarchiwizowana, możną ją permametnie usunąć z aplikacji poprzez kliknięcie tą opcję">
+                            <mat-icon>delete</mat-icon>
+                            <span>{{'app.general.delete'|translate}}</span>
+                        </button>
+                    </mat-menu>
+                </mat-card-header>
+                <mat-card-content class="pb-1 help-cursor"
+                                  matTooltip="Pasek postępu pokazujący ile produktów jest gotowych">
+                    <mat-progress-bar mode="determinate" value="33"></mat-progress-bar>
+                </mat-card-content>
+            </mat-card>
+        </p>
+    </div>
+    <!--Edit list-->
+    <div>
+        <mat-icon class="help-title-icon">edit</mat-icon>
+        <h3 class="underlined help-title" id="shoppinglist-edit">
+            Edycja listy
+        </h3>
+        <p>
+            Po stworzeniu listy, jej nazwa oraz sorter kategorii może być bez problemu zmieniony. Aby to uczynić,
+            kliknij Edytuj listę z menu akcji , lub z bocznego menu aplikacji będąc na widoku listyside menu while
+            beeing on that list.
+            <br>Aby dowiedzieć się więcej o sortowaniu przejdz do sekcji
+            <a routerLink="." fragment="category-sorting">"Sortery kategorii"</a>
+        </p>
+    </div>
+    <!--Archived lists-->
+    <div>
+        <h3 class="underlined help-title" id="shoppinglist-archive">
+            <img src="assets/images/list_archive.svg" height="26" class="mr-2">
+            Archiwizowanie / usuwanie list.
+        </h3>
+        <p>
+            Kiedy wszystko z listy zostało zrealizowane, albo już nie potrzebujesz listy, można ją zarchiwizować.<br>
+            Jeżeli lista jest zarchiwizowana, żadne nowe przedmioty nie mogą być dodawana, a obecnych nie można edytować
+            lub oznaczać jako gotowe<br>
+            Widok list zarchiwizowanych jest sfego rodzaju koszem na śmieci - gdzie listy czekają na permametne
+            usunięcie.
+        </p>
+        <p>Jeżeli lista ma być przywrócona, kliknij na opcję "Przywróć listę"</p>
+        <p>Jeżeli jesteś pewien, że nie potrzebujesz tej listy, usuń ją. Wszystkie dodane tam produkty zostaną
+            usunięte</p>
+        <p>Miej proszę na uwadzę, że ten operacji nie da się cofnąć</p>
+    </div>
+    <!--SHARING LIST-->
+    <div>
+        <mat-icon class="help-title-icon">person</mat-icon>
+        <h3 class="underlined help-title" id="shoppinglist-sharing">
+            Dzielenię się listą
+        </h3>
+        <p>
+            Każda lista może być współdzielona przez innych użytkowników aplikacji. Każdy użytkownik może dowolnie
+            dodawać, usuwać lub oznaczać produkty jako gotowe<br>
+            Aby współdzielić, wprowadz adres email osoby, której chcesz współdzielić listę. <br>
+            Jeżeli użytkownik posiada konto w aplikacji, lista będzie dla niego widoczna. <br>
+            Jeżeli własciciel adresu nie posiada jeszcze konta w
+            aplikacji, zostanie poproszony o rejestrację, a lista zostanie dla niego udostępniona jak tylko się aktywuje
+        </p>
+        <p>Jeżeli otworzymy listę, która jest współdzielona przynajmniej z jednym użytkownikiem, przegladarka/aplikacja
+            rozpocznie nasłuchiwać jakichkolwiek zmian przez współdzielonych uzytkowników.<br>
+            Jak tylko zmiana zostanie dokonana przez któregoś użytkownika, wszyscy pozostali użytkownicy otrzymają tą
+            zmianę i ich lista zostanie odświeżona<br>
+            W przypadku dodania lub usunięcia produktu, zostanie dodatkowo wyświetlona wiadomość o tym w formie
+            komunikatu<br>
+            Jeżeli nie jesteś pewien , czy lista jest aktualna , zawsze można manualnie ją odświeżyc klikająć w opcję
+            <button mat-button routerLink="." fragment="list-refresh">
+                <mat-icon class="mr-2">refresh</mat-icon>
+                <span>{{'app.general.refresh'|translate}}</span>
+            </button>
+        </p>
+        <h4 id="shoppinglist-share-leave" class="shopper-font">Opuszczanie dzielonej listy, usuwanie współdzielonych
+            uzytkowników</h4>
+        <p>
+            Jeżeli uzytkownik nie chce być częscią współdzielonej listy, może ją opuścić klikająć w opcję
+            <button mat-button>
+                <mat-icon class="mr-2">clear</mat-icon>
+                <span>{{'app.shopping.share.leave'|translate}}</span>
+            </button>
+            . Sama lista zostanie nie zmieniona, obecny uzytkownik po prostu nie będzie już jej częscią
+        </p>
+        <p>Jeżeli obecnie zalogowany uzytkownik jest właścicielem listy, może kogoś usunąc z tej listy, poprzez otwarcie
+            dialogu współdzielenia, przechodząc na zakładkę
+            <span class="help-title"><mat-icon>person</mat-icon>&nbsp;{{'app.shopping.share.with.header'|translate}}</span>
+            i klikająć w znak minus obok konta do usunięcia ze współdzielonej listy.
+        </p>
+    </div>
+    <!--SHOPPING LIST-->
+    <div>
+        <h3 class="underlined help-title" id="list">
+            <img src="assets/images/list.svg" height="26" class="mr-2">
+            Lista
+        </h3>
+        <p>
+            Każda lista zakupów posiada w środku listę produktów, które były do niej dodane. Każdy może być łatwo
+            oznaczony jako gotowy, edytowany, usunięty lub jego kategoria może być zmieniona.<br>
+            Poniżej jak wygląda przykładowy nagłówek listy
+        </p>
+        <p>
+            Najedź kursorem myszki nad elementami poniżej aby zobaczyć pomoc dot. tego elementu. Kliknij na pozycje
+            menu,
+            aby dowiedzieć się więcej.
+        </p>
+        <mat-card class="help-example-blue-bg">
+            <div>
+                <h2 class="text-white">
+                    <button mat-icon-button>
+                        <mat-icon class="text-white help-cursor" matTooltip="Press to go back to shopping lists list">
+                            arrow_back_ios
+                        </mat-icon>
+                    </button>
+                    <span matTooltip="Nazwa listy zakupów, kliknij aby edytować"
+                          class="help-cursor shopper-font">Moja lista zakupów</span>
+                    <span matTooltip="{{'app.settings.products.category.preset'|translate}}"
+                          class="category-preset help-cursor">
+                (mój sklepik)
+            </span>
+                    <button mat-icon-button class="pull-right" [matMenuTriggerFor]="list_menu"
+                            matTooltip="Klknij aby zobaczyć opcje">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #list_menu="matMenu">
+                        <button mat-menu-item matTooltip="Edytuj listę" routerLink="." fragment="shoppinglist-edit">
+                            <mat-icon>edit</mat-icon>
+                            <span>{{'app.general.edit'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Odśwież produkty na liście zakupów">
+                            <mat-icon>refresh</mat-icon>
+                            <span>{{'app.general.refresh'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Otwórz dialog współdzielenia" routerLink="."
+                                fragment="shoppinglist-sharing">
+                            <mat-icon>person</mat-icon>
+                            <span>{{'app.shopping.share'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Wyczyść kupione produkty" routerLink="."
+                                fragment="list-cleanup">
+                            <mat-icon>delete_forever</mat-icon>
+                            <span>{{'app.shopping.clear'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Archiwizuj listę" routerLink="."
+                                fragment="shoppinglist-archive">
+                            <mat-icon>archive</mat-icon>
+                            <span>{{'app.shopping.archive'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Opuść dzieloną listę" routerLink="."
+                                fragment="shoppinglist-share-leave">
+                            <mat-icon>clear</mat-icon>
+                            <span>{{'app.shopping.share.leave'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Przywróć zarchiwizowaną listę" routerLink="."
+                                fragment="shoppinglist-archive">
+                            <mat-icon>unarchive</mat-icon>
+                            <span>{{'app.shopping.unarchive'|translate}}</span>
+                        </button>
+                    </mat-menu>
+                    <button mat-icon-button class="pull-right" routerLink="." fragment="shoppinglist-sharing">
+                        <mat-icon matBadge="2" matBadgePosition="below before"
+                                  matTooltip="Otwiera okno dialogowe dzielenia listy i pokazuje z iloma innymi uzytkownikami lista jest dzielona">
+                            person
+                        </mat-icon>
+                    </button>
+                    <span class="pull-right mr-2 help-cursor"
+                          matTooltip="Licznik pokazujący ile przedmiotów zostało zrealizowanych i ile jest w sumie na liście">0/23</span>
+                </h2>
+            </div>
+            <div class="m-plr-5">
+                <mat-progress-bar mode="determinate" matTooltip="34 %" matTooltipPosition="above"
+                                  value="34"></mat-progress-bar>
+            </div>
+            <mat-card fxLayout="row" class="new-item">
+                <app-quickadd fxFlex="80" [demo]="true"
+                              matTooltip="Szybko dodaj nowy przedmiot, wpisująć jego nazwę i potwierdzająć klawiszem enter, lub klikając mała ikonę + , która pojawi sie po wprowadzeniu nazwy produktu"></app-quickadd>
+                <span class="fill-remaining-space"></span>
+                <button mat-icon-button class="mt-3" matTooltip="Otwórz okno wprowadzania nowego produktu"
+                        routerLink="."
+                        fragment="item-new">
+                    <mat-icon class="new-item-button">add_circle_outline</mat-icon>
+                </button>
+            </mat-card>
+        </mat-card>
+    </div>
+    <!--Adding items-->
+    <div>
+        <mat-icon class="help-title-icon">add</mat-icon>
+        <h3 class="underlined help-title" id="item-new">
+            Dodawanie produktów do listy
+        </h3>
+        <p>
+            Produkty można dodać do listy na trzy sposoby:
+        </p>
+        <ul>
+            <li>
+                <a routerLink="." fragment="item-new-dialog" class="help-cursor">Dodawania poprzez dialog nowych
+                    produktów</a>
+            </li>
+            <li>
+                <a routerLink="." fragment="item-quickadd">Szybkie dodawanie</a>
+            </li>
+            <li>
+                <a class="help-cursor" routerLink="."
+                   fragment="item-new-dialog-favorites">Dodawanie poprzez dialog nowych produktów zakładkę ulubione</a>
+            </li>
+        </ul>
+        <!--Add new item dialog-->
+        <h4 id="item-new-dialog" class="shopper-font">Dodawania poprzez dialog nowych produktówg</h4>
+        <p>
+            Najbardziej popularny sposób dodawania nowych produktów do listy, dający najwięcej kontroli nad nazwą,
+            kategorią, ilością , jednostką oraz opisem.<br>
+        </p>
+        <!--Quick add-->
+        <h4 id="item-quickadd" class="shopper-font">Szybkie dodawanie</h4>
+        <p>
+            Jeżeli użytkownik chce szybko dodać kilka produktów, może dodać jeden za durgim wpisując nazwę w w pole
+            szybkiego dodawania i zatwierdzanie enterem ( lub potwierdzająć małym guzikiem + który pojawi się po
+            wprowadzeniu nazwy produktu)<br>
+            Dla tak wprowadzonych produktów aplikacja postara się dopasować automatycznie kategorię według <a
+                class="help-cursor" routerLink="." fragment="item-category">reguł przewidywania kategorii</a> , lub nada
+            standardową kategorię "Inne"
+        </p>
+        <!--Favorites-->
+        <h4 id="item-new-dialog-favorites" class="shopper-font">Dodawanie poprzez dialog nowych produktów zakładkę
+            ulubione</h4>
+        <p>
+            Za każdym razem kiedy użytkownik doda jakiś produkt do listy zakupów , aplikacja zapamięta ten wybór i doda
+            ten produkt do ulubionych.
+            Inwidualnie dla każdego konta, przechowuje informację jaki produkt i ile razy został przez niego/nią dodany
+            <br>
+            Podczas dodawania przedmiotu do listy poprzez okno dialogowe "Nowego przedmiotu" , uzytkownik może zobaczyć
+            wszystkie swoje ulubione produkty ( bez obecnie juz dodanych do listy ) na zakładce
+            <button mat-button>
+            <span class="shopper-font"><mat-icon>favorite</mat-icon>
+            <span>&nbsp;{{'app.item.add.favorites'|translate}}</span></span>
+            </button>
+            ( produkty posortowane są po popularności )<br>
+            Aby dodać produkt , wystarczy kliknąc na wybrany produkt
+        </p>
+        <p>
+            Aby usunąc produkt z ulubionych , odwiedź <a class="help-cursor" routerLink="." fragment="settings">Ustawienia</a>\<a
+                class="help-cursor" routerLink="." fragment="settings-favorite">Ulubione produkty</a>
+        </p>
+    </div>
+    <!--List items-->
+    <div>
+        <mat-icon class="help-title-icon">check_box_outline_blank</mat-icon>
+        <h3 class="underlined help-title" id="items">
+            Produkty na liście
+        </h3>
+        <p>
+            Główny cel aplikacji to oczywiście produkty na liście. Po dodaniu produktów, można śledzić na liście ile
+            jest już gotowych a ile jeszcze należy zakupić.
+            Jeżeli chcemy, możemy produkty zaktualizować, zmienić jego kategorię lub usunąć go </p>
+        <p>
+            Najedź kursorem nad produktem z listy ponizej aby zobaczyć podpowiedzi do każdgo z elementu. Klknij w guziki
+            akcji aby dowiedzieć się o nich więcej
+        </p>
+        <mat-card fxLayout="row" class="item">
+            <mat-checkbox color="primary" matTooltip="Kliknij aby oznaczyć produkt jako gotowy"
+                          class="help-cursor"></mat-checkbox>
+            <mat-card-title-group class="ml-2">
+                <mat-card-title matTooltip="Nazwa produktu" class="help-cursor">Pomidor</mat-card-title>
+                <mat-card-subtitle matTooltip="Opis produktu dodany przez użytkownika" class="help-cursor">Ma być świeży
+                    i czerwony :)
+                </mat-card-subtitle>
+            </mat-card-title-group>
+            <span class="fill-remaining-space"></span>
+            <!--CARD MENU-->
+            <span class="card-menu">
+                    <button mat-icon-button routerLink="." fragment="item-edit">
+                        <mat-icon class="card-menu" matTooltip="Kliknij aby edytować ten produkt">edit</mat-icon>
+                    </button>
+                    <button mat-icon-button routerLink="." fragment="item-delete">
+                        <mat-icon class="card-menu" matTooltip="Kliknij aby usunąc produkt">delete</mat-icon>
+                </button>
+            </span>
+            <mat-card-subtitle class="mt-2 help-cursor" matTooltip="Ilość oraz jednostka produktu"><span>1.5</span>
+                kg
+            </mat-card-subtitle>
+            <button mat-icon-button [matMenuTriggerFor]="categories_menu"
+                    matTooltip="Obecna kategoria produktu, kliknij aby zobaczyć wszystie dostępne. Wybranie nowej kategorii zedytuje produkt ( zwiększy też wynik kategorii)">
+                <img [src]='"assets/images/categories/FRUIT_VEGETABLES.png"' class="category">
+            </button>
+            <mat-menu #categories_menu="matMenu">
+                <button *ngFor="let cat of categories" mat-menu-item>
+                    <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category">
+                    {{cat.name}}
+                </button>
+            </mat-menu>
+        </mat-card>
+        <!--Editing items-->
+        <h4 id="item-edit" class="shopper-font">Edycja produktu na liście</h4>
+        <p>
+            Aby edytować produkt, najedź kursorem myszki nad kartę produktu i kliknij w guzik
+            <mat-icon>edit</mat-icon>
+            .<br>
+            Zostanie pokazane okno dialogowe, pozwalające na zmianę detali produktu.<br>
+            Kategorię można zmienić w tym oknie, lub bezpośrednio z widoku listy
+        </p>
+        <h4 id="item-delete" class="shopper-font">Usuwanie produktów z listy</h4>
+        <p>
+            Aby usunąc produkt z listy, najedź kursorem na kartę produktu i kliknij w guzik
+            <mat-icon>delete</mat-icon>
+            .<br>
+            Usunie to produkt z listy dająć 5 sekund na cofnięcie operacji<br>
+            (Technicznie rzecz biorąc, operacja usunięcia z bazdy danych zostanie wywołana dopiero po tych 5 sekundach)
+        </p>
+        <!--List cleanup-->
+        <h4 id="list-cleanup" class="shopper-font">Czyszczenie gotowych produktów</h4>
+        <p>
+            Po pewnym czasie pracy z listą, wiele produktów będzie oznaczonych jako gotowych.<br>
+            Aby posprzątać na liście, usuwająć gotowe produkty wybierz opcję
+            <button mat-button>
+                <mat-icon>delete_forever</mat-icon>
+                <span>{{'app.shopping.clear'|translate}}</span></button>
+            <br>
+            Ta operacja usunie wszystkie gotowe produkty z listy ( dająć 5 sekund na cofnięcie operacji)
+        </p>
+    </div>
+    <!--Categories-->
+    <div>
+        <h3 class="underlined help-title" id="item-category">
+            <img [src]='"assets/images/categories/FRUIT_VEGETABLES.png"' height="25" class="mr-1">
+            Kategorie produktów</h3>
+        <p>
+            Ilekroć produkt jest wprowadzany przez użytkownika, aplikacja spróbuje dopasować go do tych już istniejących
+            w bazie danych (ignorując wielkość liter)
+            Jeżeli produkt zostanie znaleziony, zostanie zaproponowana dla niego kategoria. Zaproponowaną kategorię
+            oczywiście można dowolnie zmieniać.
+        </p>
+        <p>
+            Za każdym razem kiedy przypisano kategorię do produktu ( włączając w to edycję kategorii, czy nawet dodanie
+            produktu z zaproponowaną kategorią), aplikacja zapisze tą informację, zwiększająć wynik kategori dla tego
+            produktu.
+            Na przykład:<br><br>
+            Produkt: <i>Pomidor</i><br>
+            Kategorie: <i>{{'FRUIT_VEGETABLES'|translate}}</i> - wynik 10, {{'FROZEN'|translate}} - wynik 2 <br>
+            Zaproponowna kategoria: <img [src]='"assets/images/categories/FRUIT_VEGETABLES.png"'
+                                         class="category mr-1"><i>{{'FRUIT_VEGETABLES'|translate}}</i>
+        </p>
+        <p>
+            Jeżeli użytkownik doda ten produkt z kategorią "{{'FRUIT_VEGETABLES'|translate}}", wynik kategorii zostanie
+            zwiększony do 11, aby następnym razem podczas dodawania jeszcze dokłądniej przewidzieć kategorię<br>
+            Wyniki kategorii są zależne od użytkowników i może powodować złe wyniki w przypadku nieprawidłowego uzywania
+            aplikacji.
+        </p>
+        <p>Użytkownik może też zdefiniować kolejność, w której pokazywane są produktu w kategoriach poprzez
+            <a routerLink="." fragment="settings-categories" class="help-cursor">definiowanie sorterów
+                kategorii</a> w ustawieniach aplikacji</p>
+    </div>
+    <div>
+        <mat-icon class="help-title-icon">settings</mat-icon>
+        <h3 class="underlined help-title" id="settings">
+            Ustawienia
+        </h3>
+        <p>
+            Na tym ekranie użytkownik może zmenić ustawienia swojego konta takie jak awatar i język wyświetlania, lub
+            zdefiniować sortery kategorii
+        </p>
+        <mat-icon class="help-title-icon">person</mat-icon>
+        <h4 id="settings-account" class="shopper-font">
+            Ustawienia konta
+        </h4>
+        <p>
+            Kiedy użytkownik założy konto używająć portali społecznościowych, aplikacja postara się pobrać awatar i
+            ustawić język wyświetlania (
+            język tylko w przypadku google).Te ustawienia mogą być zmienione w każdym momencie.
+        </p>
+        <p>
+            Aby zmienić awatar , naciśnij guzik
+            <button mat-raised-button>{{'app.settings.account.avatar'|translate}}</button>
+            i wrzuć nowy obrazek. Po wrzuceniu go, przytnij odpowiednio i potwierdź. Wszystkie awatary przechowywane są
+            w bazie danych i trzymane w pamięci podręcznej przeglądarki.
+            Zmiana awatara odświezy pamięc podręczną , ale stary awatar nadal może być widoczny przez jakiś czas u
+            pozostałych użytkowników aplikacji.
+        </p>
+        <p>
+            Aby zmienić język wyświetlania aplikacji, wybierz jeden z dostępnych z listy. Cała aplikacja od tego momentu
+            od razu zacznie się wyświetlać w tym języku (nie jest wymagane przeładowanie przeglądarki)<br>
+            Administrator aplikacji, może zdefiniować domyślny język aplikacji, któy będzie używany dla nowych
+            użytkowników i zaproszeń email.<br>
+            Obecnie język angielski i polski jest wspierany.
+        </p>
+        <p id="settings-account-delete">Jeżeli chcesz usunąc konto z aplikacji, można to zrobić z poziomu ustawień
+            konta.
+            Naciśnij duży czerwony guzik :
+            <button mat-raised-button color="warn">{{'app.settings.account.delete'|translate}}</button>
+            i potwierdz operację. Usunie to całe konto, ulubione produkty oraz wszysttkie twoje listy zakupów.
+            Jeżeli uzytkownik był włascicielem listy, aplikacja postara się przekazać własność do pierwszego
+            współdzielonego użytkownika, jeżeli żadnego nie znajdzie, lista zostanie usunięta
+        </p>
+        <p><strong>Uwaga: tej operacji nie da się cofnąć i jest permamenta</strong></p>
+        <mat-icon class="help-title-icon">sort</mat-icon>
+        <h4 class="shopper-font" id="settings-categories">
+            {{'app.settings.products.category.title'|translate}}
+        </h4>
+        <p>
+            Każdy sklep jest unikalny, z różnym układem alejek. Czasem pierkania jest pierwsa, potem owoce....czasem
+            piekarnia jest na saym końcu.
+            Każdy użytkownik może zdefiniowac własne sortery kategorii - sposób w jaki kateogrie będa sortowane na
+            liście zakupów. <br>
+            Wystarczy stworzyć sorter kategori, i przeciągać i upuszczać kategorie w nowej kolejności. Następnie podczas
+            tworzenia nowej listy, lub edycji, można wybrać sorteraby przedmioty w kategoriach były odpowiednio
+            posortowane.<br>
+            Jeżeli lista zostanie podzielona, sorter kategorii zostanie również współdzielony (z dodatkowym przyrostkiem
+            na przykład: Auchan od Jakub )
+        </p>
+        <p>
+            Aby dowiedzieć się więcej o kateogriach , przejdz proszę do <a class="help-cursor" routerLink="."
+                                                                           fragment="item-category">Kateogrie
+            produktów</a>
+        </p>
+        <mat-icon class="help-title-icon">local_offer</mat-icon>
+        <h4 class="shopper-font" id="settings-favorite">
+            {{'app.item.add.favorites'|translate}}
+        </h4>
+        <p>
+            Za każdym razem kiedy produkt jest dodany do listy, aplikacja zachowa wybór dla obecnego użytkownika.
+            Wybrany produkt zostanie dodany do ulubionych z licznikiem ile razy był użyty.
+            Następnym razem razem jak produkt zostanie użyty , licznik ten zostanie zwiększony.<br>
+            Kiedy dodawany jest nowy produkt , uzytkownik może
+            <a class="help-cursor" routerLink="." fragment="item-new-dialog-favorites">Dodać poprzez dialog nowych
+                produktów, zakładkę ulubione</a>
+            , gdzie pokazane są wszystkie ulubione produkty ( pierwsze 50 , sortowane po liczniku )
+        </p>
+        <p>
+            Produkt może być usunięty z ulubionych poprzez kliknięcie nazwy produktu z tego ekranu.
+        </p>
+        <!--ADMIN SECTION-->
+        <ng-container *ngIf="isAdmin">
+            <mat-icon class="help-title-icon">build</mat-icon>
+            <h3 class="shopper-font underlined" id="settings-admin">
+                Administracja aplikacją
+            </h3>
+            Jeżeli obecnie zalogowazny uzytkownik jest administratorem ( i w zasadzie widzi tą sekcję pomocy) ma
+            dostępne dwie dodatkowe zakłądki w ustawieniach
+            <mat-icon class="help-title-icon">email</mat-icon>
+            <h4 class="shopper-font">
+                {{'app.settings.email'|translate}}
+            </h4>
+            <p>
+                Na tej zakłądce , administrator może ustawić zmienić ustawienia serwera email SMTP.
+                Wprowadz adres url serwera , użytkownika i hasło. Wprowadz również adres emnil, który będzie widoczny
+                jako nadawca.<br>
+                Proszę mieć na uwadze , że jeżeli adres ten będzie z innej domeny, lub sam serwer nie ma zweryfikowanego
+                adresu, , wiadomości email mogą trafiać do folderu spam przez filtry antyspamowe.<br>
+                Podczas zapisywania ustawień, aplikacja zweryfikuje czy ustawienia są poprawne, testując połączenie i w
+                przypadku błedu ustawienia nie zostaną zapisane. Administrator zostanie poproszony o poprawienie
+                konfiguracji.
+            </p>
+            <mat-icon class="help-title-icon">settings</mat-icon>
+            <h4 class="shopper-font">
+                {{'app.settings.app'|translate}}
+            </h4>
+            <p>
+                W tej zakładce administrator może ustawić domyślny język aplikacji. Język ten będzie używany dla
+                wszystkich nowych użytkownikó aplikacji zapisujących się poprzez facebookai uzywany do wysyłania
+                zaproszeń do aplikacji
+            </p>
+            <p>
+                Istotne jest również ustawienie adresu url aplikacji, który będize używany do wysyłania różnych
+                komunikatów email.<br>
+                Należy wprowadzić go ręcznie lub użyć guzik
+                <button mat-icon-button matTooltip="{{'app.settings.app.appURL.get'|translate}}">
+                    <mat-icon>
+                        link
+                    </mat-icon>
+                </button>
+                aby pobrać obecny adres widoczny w przeglądarce
+            </p>
+        </ng-container>
+    </div>
+    <div>
+        <h3 class="underlined help-title" id="licence">
+            Licencja
+        </h3>
+        Aplikacja została stworzona tylko przezemnie, jeżeli chciałbyś dokonać jakiś zmian , proszę o informację. Z
+        wielką chęcią chciałbym to zobaczyć :)
+        <p>
+            Aplikacja jest pod licencją GNU GPL License i uzywa niektórych komponentów na bazie licencji Apache License
+        </p>
+        <p>
+            Ikony kategorii stworozne przez
+            <a href="https://www.flaticon.com/authors/smashicons" target="_blank"
+               title="Smashicons">Smashicons</a> z <a href="https://www.flaticon.com/" target="_blank"
+                                                      title="Flaticon">www.flaticon.com</a>
+            i są pod licencją <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
+                                 target="_blank">CC 3.0 BY</a>
+        </p>
+    </div>
+</div>

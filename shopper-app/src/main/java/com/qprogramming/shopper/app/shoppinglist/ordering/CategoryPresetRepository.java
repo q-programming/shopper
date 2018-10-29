@@ -12,11 +12,11 @@ import java.util.Set;
 @Repository
 public interface CategoryPresetRepository extends JpaRepository<CategoryPreset, Long> {
 
-    List<CategoryPreset> findAllByOwnername(String owner);
+    Set<CategoryPreset> findAllByOwnername(String owner);
 
-    List<CategoryPreset> findAllByOwners(String owner);
+    Set<CategoryPreset> findAllByOwners(String owner);
 
-    List<CategoryPreset> findAllByOwnerIdOrOwnersIn(String owener, Set<String> owners);
+    Set<CategoryPreset> findAllByOwnerIdOrOwnersIn(String owener, Set<String> owners);
 
 
 }

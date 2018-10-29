@@ -1,6 +1,6 @@
 <div fxLayout="row">
     <div>
-        <h2 class="text-white">
+        <h2 class="text-white shopper-font">
             <img src="assets/images/list_archive.svg" *ngIf="archived" height="32" class="ml-1">
             <img src="assets/images/list.svg" *ngIf="!archived" height="32" class="ml-1">
             <span *ngIf="archived">
@@ -20,12 +20,12 @@
 <!--NO LISTS-->
 <div *ngIf="lists && lists.length===0">
     <mat-card class="text-center" *ngIf="!archived">
-        <h2>{{'app.home.nolist'|translate}}</h2>
+        <h2 class="shopper-font">{{'app.home.nolist'|translate}}</h2>
         <img src="assets/images/start_adding.svg" height="200">
         <img src="assets/images/arrow_up.svg" height="80" class="stick-right">
     </mat-card>
     <mat-card class="text-center" *ngIf="archived">
-        <h2>{{'app.home.archived.nolist'|translate}}</h2>
+        <h2 class="shopper-font">{{'app.home.archived.nolist'|translate}}</h2>
         <img src="assets/images/box.svg" height="80">
     </mat-card>
 </div>
@@ -34,7 +34,7 @@
     <mat-card fxLayout="column" *ngFor="let list of lists" class="list z-depth clickable">
         <mat-card-header>
             <span [routerLink]="['list', list.id]">
-                <mat-card-title>{{list.name}}</mat-card-title>
+                <mat-card-title class="shopper-font">{{list.name}}</mat-card-title>
                 <mat-card-subtitle *ngIf="list.ownerId !== account.id">
                     <img class="avatar small" [src]="list.ownerAvatar">
                     {{list.ownerName}}

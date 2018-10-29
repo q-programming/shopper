@@ -55,7 +55,11 @@ import {FavoritesComponent} from './components/favorites/favorites.component';
 import {ItemDetailsComponent} from './components/dialogs/item/item-details/item-details.component';
 import {TrimDirective} from './directives/trim.directive';
 import {environment} from "@env/environment";
-import { PullToRefreshComponent } from './components/pull-to-refresh/pull-to-refresh.component';
+import {PullToRefreshComponent} from './components/pull-to-refresh/pull-to-refresh.component';
+import {EnHelpComponent} from './components/help/en/en-help.component';
+import {PlHelpComponent} from './components/help/pl/pl-help.component';
+import {ScrollToModule} from "@nicky-lenaers/ngx-scroll-to";
+
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -92,6 +96,8 @@ export function initUserFactory(authService: AuthenticationService) {
         ItemDetailsComponent,
         TrimDirective,
         PullToRefreshComponent,
+        EnHelpComponent,
+        PlHelpComponent,
     ],
     entryComponents: [
         AvatarUploadComponent,
@@ -126,11 +132,7 @@ export function initUserFactory(authService: AuthenticationService) {
         }),
         LayoutModule,
         NgxMatSelectSearchModule,
-        MatToolbarModule,
-        MatButtonModule,
-        MatSidenavModule,
-        MatIconModule,
-        MatListModule
+        ScrollToModule.forRoot()
     ],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [

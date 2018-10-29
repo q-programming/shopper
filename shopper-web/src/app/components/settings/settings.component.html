@@ -27,15 +27,15 @@
                 <item-favorites [settings]="true"></item-favorites>
             </ng-template>
         </mat-tab>
-        <mat-tab *ngIf="admin">
-            <ng-template mat-tab-label>
-                <mat-icon>message</mat-icon>
-                <span fxShow.xs="false" class="ml-1">{{'app.settings.notifications'|translate}}</span>
-            </ng-template>
-            <ng-template matTabContent>
-                <settings-notifications></settings-notifications>
-            </ng-template>
-        </mat-tab>
+        <!--<mat-tab *ngIf="admin">-->
+            <!--<ng-template mat-tab-label>-->
+                <!--<mat-icon>message</mat-icon>-->
+                <!--<span fxShow.xs="false" class="ml-1">{{'app.settings.notifications'|translate}}</span>-->
+            <!--</ng-template>-->
+            <!--<ng-template matTabContent>-->
+                <!--<settings-notifications></settings-notifications>-->
+            <!--</ng-template>-->
+        <!--</mat-tab>-->
         <mat-tab *ngIf="admin">
             <ng-template mat-tab-label>
                 <mat-icon>email</mat-icon>

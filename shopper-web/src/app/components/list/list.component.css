@@ -2,10 +2,6 @@
     padding: 10px 24px 0 24px;
 }
 
-.new-item {
-    padding: 0 24px 0 24px;
-    margin-bottom: 5px;
-}
 
 .new-item-button {
     font-size: 40px;
@@ -60,11 +56,6 @@ mat-card .item.done {
 
 .mat-input-element {
     caret-color: white !important;
-}
-
-.category-preset {
-    font-size: initial;
-    font-weight: normal;
 }
 
 .list-title {

@@ -20,6 +20,7 @@ const appRoutes: Routes = [
 ];
 
 export const routing = RouterModule.forRoot(appRoutes, {
+    anchorScrolling: 'enabled',
     useHash: true,
     onSameUrlNavigation: 'reload'
 });

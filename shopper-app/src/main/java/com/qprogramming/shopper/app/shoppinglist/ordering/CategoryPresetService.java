@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by Jakub Romaniszyn on 2018-09-28
@@ -28,7 +29,7 @@ public class CategoryPresetService {
      * @param accountId id for which presets is owner
      * @return list of category presets
      */
-    public List<CategoryPreset> findAllByOwner(String accountId) {
+    public Set<CategoryPreset> findAllByOwner(String accountId) {
         return _presetRepository.findAllByOwnerIdOrOwnersIn(accountId, Collections.singleton(accountId));
     }
 

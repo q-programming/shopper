@@ -293,7 +293,7 @@ public class ShoppingListRestController {
 
     @RolesAllowed("ROLE_USER")
     @RequestMapping(value = "/presets", method = RequestMethod.GET)
-    public ResponseEntity<List<CategoryPreset>> getCategoryPresets() {
+    public ResponseEntity<Set<CategoryPreset>> getCategoryPresets() {
         return ResponseEntity.ok(_presetService.findAllByOwner(Utils.getCurrentAccountId()));
     }
 

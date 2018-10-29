@@ -491,7 +491,8 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
 
     @Test
     public void getUserPresetsTest() throws Exception {
-        when(presetRepositoryMock.findAllByOwnerIdOrOwnersIn(testAccount.getId(), Collections.singleton(testAccount.getId()))).thenReturn(Collections.singletonList(new CategoryPreset()));
+
+        when(presetRepositoryMock.findAllByOwnerIdOrOwnersIn(testAccount.getId(), Collections.singleton(testAccount.getId()))).thenReturn(Collections.singleton(new CategoryPreset()));
         MvcResult mvcResult = mvc.perform(get(API_LIST_URL + PRESETS)).andExpect(status().isOk()).andReturn();
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         List<CategoryPreset> result = TestUtil.convertJsonToList(jsonResponse, List.class, CategoryPreset.class);

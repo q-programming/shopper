@@ -1,0 +1,567 @@
+<div class="help-body">
+    <h3 class="underlined shopper-font" id="about">
+        <img src="assets/images/logo.svg" height="25px" class="ml-2">
+        About</h3>
+    <p>
+        Shopper is an application to create track and share shopping list with family and friends
+    </p>
+    <p>
+        If you quickly need to add something, open webpage or app add it, and it will automatically show on shared user
+        lists
+    </p>
+    <p class="text-center">
+        In case of any issues please write to :
+        <mat-icon>email</mat-icon>
+        <a href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
+    </p>
+    <!--LISTS-->
+    <div>
+        <h3 class="underlined help-title" id="shoppinglist">
+            <img src="assets/images/list.svg" height="26" class="mr-2">
+            Shopping lists
+        </h3>
+        <p>
+            The main screen that each user sees after login in is shopping lists.<br>
+            On this screen all lists where user is either owner or were shared with him/her.
+        </p>
+        <p>
+            After creating account in application there are no list (unless user was invited by other user to shared
+            list) ,
+            so user can quickly create new list by clicking
+            <button mat-icon-button class="mr-1 "
+                    matTooltip="{{'app.shopping.create' | translate}}">
+                <img src="assets/images/plus.svg" class="add-list-icon mr-2" height="25">
+            </button>
+            button. On that dialog , define name and <a class="help-cursor" routerLink="." fragment="settings-categories">category
+            sorting preset</a>
+        </p>
+        <p>
+            Each list has drop-down menu. Sample list will look like this. You can view all available options in card
+            below.
+            Some of options in drop-downu are dependent on if list is archived , and user is owner of it
+        </p>
+        <p>
+            Hover mouse cursor over below list card elements to see help tooltip about them, Click action menu to learn
+            more about it.
+        </p>
+        <p>
+            <mat-card fxLayout="column" class="list z-depth">
+                <mat-card-header>
+            <span>
+                <mat-card-title matTooltip="Shopping list name"
+                                class="help-cursor shopper-font">My shopping list</mat-card-title>
+                <mat-card-subtitle class="help-cursor"
+                                   matTooltip="List that are shared with you will have additionally have owner displayed with their avatar and name">
+                    <img class="avatar small" src="assets/images/avatar-placeholder.png">
+                    Jan Kowalski
+                </mat-card-subtitle>
+            </span>
+                    <span class="fill-remaining-space"></span>
+                    <span class="list-count help-cursor"
+                          matTooltip="This counter shows how many items are marked as done, and how many in total are there">0/23</span>
+                    <button mat-icon-button [matMenuTriggerFor]="shoppinglist_menu" class="clickable"
+                            matTooltip="List menu is hidden under this button. Click to show all available menu actions">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <!--LIST MENU-->
+                    <mat-menu #shoppinglist_menu="matMenu">
+                        <!--NORMAL LIST-->
+                        <button mat-menu-item matTooltip="Edit list name, and category sorting preset"
+                                routerLink="." fragment="shoppinglist-edit">
+                            <mat-icon>edit</mat-icon>
+                            <span>{{'app.general.edit'|translate}}</span>
+                        </button>
+                        <button mat-menu-item routerLink="." fragment="shoppinglist-sharing"
+                                matTooltip="Open share dialog">
+                            <mat-icon>share</mat-icon>
+                            <span>{{'app.shopping.share'|translate}}</span>
+                        </button>
+                        <button mat-menu-item routerLink="." fragment="shoppinglist-archive"
+                                matTooltip="Archive list">
+                            <mat-icon>archive</mat-icon>
+                            <span>{{'app.shopping.archive'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="If list is shared with you , you can leave it."
+                                routerLink="." fragment="shoppinglist-share-leave">
+                            <mat-icon>clear</mat-icon>
+                            <span>{{'app.shopping.share.leave'|translate}}</span>
+                        </button>
+                        <button mat-menu-item routerLink="." fragment="shoppinglist-archive"
+                                matTooltip="Unarchive list ">
+                            <mat-icon>unarchive</mat-icon>
+                            <span>{{'app.shopping.unarchive'|translate}}</span>
+                        </button>
+                        <button mat-menu-item routerLink="." fragment="shoppinglist-archive"
+                                matTooltip="If list is archived, by clicking this action , it will remove it permanently from application">
+                            <mat-icon>delete</mat-icon>
+                            <span>{{'app.general.delete'|translate}}</span>
+                        </button>
+                    </mat-menu>
+                </mat-card-header>
+                <mat-card-content class="pb-1 help-cursor"
+                                  matTooltip="Progress bar showing how many items are done on that list">
+                    <mat-progress-bar mode="determinate" value="33"></mat-progress-bar>
+                </mat-card-content>
+            </mat-card>
+        </p>
+    </div>
+    <!--Edit list-->
+    <div>
+        <mat-icon class="help-title-icon">edit</mat-icon>
+        <h3 class="underlined help-title" id="shoppinglist-edit">
+            Edit list
+        </h3>
+        <p>
+            After list was created, it's name and category sorting preset can be altered. To do so , click edit aciton
+            from shopping lists menu , or from side menu while beeing on that list.
+            To learn more about sorting presets click go to
+            <a routerLink="." fragment="category-sorting">"Category
+                sorting presets"</a> sections
+        </p>
+    </div>
+    <!--Archived lists-->
+    <div>
+        <h3 class="underlined help-title" id="shoppinglist-archive">
+            <img src="assets/images/list_archive.svg" height="26" class="mr-2">
+            Archiving /deleting shopping lists
+        </h3>
+        <p>
+            After there is nothing left on list , or you just don't need that list anymore , you can move it to archived
+            lists<br>
+            If list is archived, no new items can be added, and current items cannot be marked as done /not done.<br>
+            Archived list view is a trash bin - where items can wait until deleted.
+        </p>
+        <p>If you would like to restore list status as normal one, click unarchive option</p>
+        <p>If you are sure you don't need that lists , you can delete it. All items on it will
+            be
+            deleted as well</p>
+        <p>Please note this operation cannot be undone</p>
+    </div>
+    <!--SHARING LIST-->
+    <div>
+        <mat-icon class="help-title-icon">person</mat-icon>
+        <h3 class="underlined help-title" id="shoppinglist-sharing">
+            List sharing
+        </h3>
+        <p>
+            Each list can be shared with other application users, so that items can be added/removed/edited or marked as
+            done.<br>
+            To share, just enter their email address in Share dialog. If user
+            already has application account , he will be added to list shared accounts and receive email with short
+            information about it.<br>
+            Otherwise, user will receive initiation email and asked to create new
+            account.<br>
+            If newly invited will in fact create new account he will have shared list added to his account
+        </p>
+        <p>If user visit list page , and list is shared with at least one user, browser/app will start listening to
+            any changes incoming from other users.<br>
+            As soon as somebody makes some change on that list , user will be instantly notified and items on opened
+            list
+            refreshed. In case of adding/delting items, there will be extra alert message about it<br> If you are not
+            sure if you have up-to-date item lists, you can always press
+            <button mat-button routerLink="." fragment="list-refresh">
+                <mat-icon class="mr-2">refresh</mat-icon>
+                <span>{{'app.general.refresh'|translate}}</span>
+            </button>
+            button , to manually fetch all shopping lists items
+        </p>
+        <h4 id="shoppinglist-share-leave" class="shopper-font">Leaving lists, removing shared users</h4>
+        <p>
+            If user don't wish to be part of shared lists, he/she can always leave it by pressing
+            <button mat-button>
+                <mat-icon class="mr-2">clear</mat-icon>
+                <span>{{'app.shopping.share.leave'|translate}}</span>
+            </button>
+            button. List itself
+            won't be affected, current user simply won't be part of their users anymore.
+        </p>
+        <p>If current user is list owner, and would like to remove somebody account from shared list, it can be done by
+            opening
+            share dialog, switching to tab :
+            <span class="help-title"><mat-icon>person</mat-icon>&nbsp;{{'app.shopping.share.with.header'|translate}}</span>
+            and clik minus sign next to his/hers account.
+
+        </p>
+    </div>
+    <!--SHOPPING LIST-->
+    <div>
+        <h3 class="underlined help-title" id="list">
+            <img src="assets/images/list.svg" height="26" class="mr-2">
+            List
+        </h3>
+        <p>
+            Each shopping list have all product items listed that were added to it. They can be easily edited , marked
+            as
+            done, removed, category changed etc.
+            Below sample shopping list header
+        </p>
+        <p>
+            Hover mouse cursor over below list card elements to see help tooltip about them, Click action menu to learn
+            more about it.
+        </p>
+        <mat-card class="help-example-blue-bg">
+            <div>
+                <h2 class="text-white">
+                    <button mat-icon-button>
+                        <mat-icon class="text-white help-cursor" matTooltip="Press to go back to shopping lists list">
+                            arrow_back_ios
+                        </mat-icon>
+                    </button>
+                    <span matTooltip="Shopping list name, click to start editing"
+                          class="help-cursor shopper-font">My shopping list</span>
+                    <span matTooltip="{{'app.settings.products.category.preset'|translate}}"
+                          class="category-preset help-cursor">
+                (Local shop)
+            </span>
+                    <button mat-icon-button class="pull-right" [matMenuTriggerFor]="list_menu"
+                            matTooltip="Click to open list actions menu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #list_menu="matMenu">
+                        <button mat-menu-item matTooltip="Edit list" routerLink="." fragment="shoppinglist-edit">
+                            <mat-icon>edit</mat-icon>
+                            <span>{{'app.general.edit'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Reload current shopping list items">
+                            <mat-icon>refresh</mat-icon>
+                            <span>{{'app.general.refresh'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Open share with dialog" routerLink="."
+                                fragment="shoppinglist-sharing">
+                            <mat-icon>person</mat-icon>
+                            <span>{{'app.shopping.share'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Clean all bouight/done items" routerLink="."
+                                fragment="list-cleanup">
+                            <mat-icon>delete_forever</mat-icon>
+                            <span>{{'app.shopping.clear'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Archive list" routerLink="." fragment="shoppinglist-archive">
+                            <mat-icon>archive</mat-icon>
+                            <span>{{'app.shopping.archive'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Leave shared list" routerLink="."
+                                fragment="shoppinglist-share-leave">
+                            <mat-icon>clear</mat-icon>
+                            <span>{{'app.shopping.share.leave'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="Unarchive list" routerLink="."
+                                fragment="shoppinglist-archive">
+                            <mat-icon>unarchive</mat-icon>
+                            <span>{{'app.shopping.unarchive'|translate}}</span>
+                        </button>
+                    </mat-menu>
+                    <button mat-icon-button class="pull-right" routerLink="." fragment="shoppinglist-sharing">
+                        <mat-icon matBadge="2" matBadgePosition="below before"
+                                  matTooltip="Opens share dialog and shows with how many users this list is shared with">
+                            person
+                        </mat-icon>
+                    </button>
+                    <span class="pull-right mr-2 help-cursor"
+                          matTooltip="This counter shows how many items are marked as done, and how many in total are there">0/23</span>
+                </h2>
+            </div>
+            <div class="m-plr-5">
+                <mat-progress-bar mode="determinate" matTooltip="34 %" matTooltipPosition="above"
+                                  value="34"></mat-progress-bar>
+            </div>
+            <mat-card fxLayout="row" class="new-item">
+                <app-quickadd fxFlex="80" [demo]="true"
+                              matTooltip="Quickly add new items, by just typing in product name, and confirming with enter or clicking small + icon that will appear when there is product name"></app-quickadd>
+                <span class="fill-remaining-space"></span>
+                <button mat-icon-button class="mt-3" matTooltip="Open new item dialog" routerLink="."
+                        fragment="item-new">
+                    <mat-icon class="new-item-button">add_circle_outline</mat-icon>
+                </button>
+            </mat-card>
+        </mat-card>
+    </div>
+    <!--Adding items-->
+    <div>
+        <mat-icon class="help-title-icon">add</mat-icon>
+        <h3 class="underlined help-title" id="item-new">
+            Adding new items to list
+        </h3>
+        <p>
+            There are three ways of adding new items to shopping list :
+        </p>
+        <ul>
+            <li>
+                <a routerLink="." fragment="item-new-dialog" class="help-cursor">add through add dialog</a>
+            </li>
+            <li>
+                <a routerLink="." fragment="item-quickadd">quick add</a> and
+            </li>
+            <li>
+                <a class="help-cursor" routerLink="."
+                   fragment="item-new-dialog-favorites">add
+                    through add dialog-favorites</a>
+            </li>
+        </ul>
+        <!--Add new item dialog-->
+        <h4 id="item-new-dialog" class="shopper-font">Adding through add dialog</h4>
+        <p>
+            This is most popular way of adding products, giving the most control of process of adding them.<br>
+            When dialog is opened, we are presented with form where name, and category are mandatory fields.
+        </p>
+        <!--Quick add-->
+        <h4 id="item-quickadd" class="shopper-font">Quick add product</h4>
+        <p>
+            If user woukld like to quickly add couple products , it can be done through quick add field. Entering
+            product name there , and pressing enter ( or clicking inline form +sign)
+            Will quickly create new shopping list item , and propose category for it (Standard
+            <a class="help-cursor" routerLink="." fragment="item-category">category prediction rules</a> apply)
+        </p>
+        <!--Favorites-->
+        <h4 id="item-new-dialog-favorites" class="shopper-font">Add through add dialog , using favorites</h4>
+        <p>
+            Every time product is added to shopping list, application stores that choice individually for each account,
+            storing information how many times that product was added.<br>
+            Afterwards when adding new item to shopping list using "New item dialog", user can click
+            <button mat-button>
+            <span class="shopper-font"><mat-icon>favorite</mat-icon>
+            <span>&nbsp;{{'app.item.add.favorites'|translate}}</span></span>
+            </button>
+            tab, and see all his/hers favorite products ( sorted by popularity/score)<br>
+            To add favorite product, just click on it , and it will be quickly added to list.
+        </p>
+        <p>
+            To remove some products from favorites , visit <a class="help-cursor" routerLink="." fragment="settings">Settings</a>\<a
+                class="help-cursor" routerLink="." fragment="settings-favorite">Favorite products</a>
+        </p>
+    </div>
+    <!--List items-->
+    <div>
+        <mat-icon class="help-title-icon">check_box_outline_blank</mat-icon>
+        <h3 class="underlined help-title" id="items">
+            List items
+        </h3>
+        <p>
+            The main goal of this application is of course shopping list items. Once added we want to track how many
+            items we finished, and how many are there left. Also product edition, category updates and deletion
+        </p>
+        <p>
+            Hover mouse cursor over below list item card elements to see help tooltip about them, Click action to learn
+            more about it.
+        </p>
+        <mat-card fxLayout="row" class="item">
+            <mat-checkbox color="primary" matTooltip="Click to mark item as done" class="help-cursor"></mat-checkbox>
+            <mat-card-title-group class="ml-2">
+                <mat-card-title matTooltip="Item name" class="help-cursor">Tomato</mat-card-title>
+                <mat-card-subtitle matTooltip="Custom user item description" class="help-cursor">Must be nice fresh and
+                    red :)
+                </mat-card-subtitle>
+            </mat-card-title-group>
+            <span class="fill-remaining-space"></span>
+            <!--CARD MENU-->
+            <span class="card-menu">
+                    <button mat-icon-button routerLink="." fragment="item-edit">
+                        <mat-icon class="card-menu" matTooltip="Click to edit this item">edit</mat-icon>
+                    </button>
+                    <button mat-icon-button routerLink="." fragment="item-delete">
+                        <mat-icon class="card-menu" matTooltip="Click to delete item from list">delete</mat-icon>
+                </button>
+            </span>
+            <mat-card-subtitle class="mt-2 help-cursor" matTooltip="Item quantity and unit"><span>1.5</span>
+                kg
+            </mat-card-subtitle>
+            <button mat-icon-button [matMenuTriggerFor]="categories_menu"
+                    matTooltip="Current item category, click to see all available categories. Editing this category will trigger update ( including category score)">
+                <img [src]='"assets/images/categories/FRUIT_VEGETABLES.png"' class="category">
+            </button>
+            <mat-menu #categories_menu="matMenu">
+                <button *ngFor="let cat of categories" mat-menu-item>
+                    <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category">
+                    {{cat.name}}
+                </button>
+            </mat-menu>
+        </mat-card>
+        <!--Editing items-->
+        <h4 id="item-edit" class="shopper-font">Editing shopping item</h4>
+        <p>
+            To edit list item , hover mouse cursor over list item card , and click
+            <mat-icon>edit</mat-icon>
+            button.<br> Dialog will popup, allowing to change all item details.<br>
+            Category can be changed from that
+            dialog, or directly from list items view
+        </p>
+        <h4 id="item-delete" class="shopper-font">Deleting shopping items</h4>
+        <p>
+            To delete, hover mouse cursor over list item card , and click
+            <mat-icon>delete</mat-icon>
+            button.<br>This will remove item from list, giving 5 seconds to undo that operation.
+            <br>
+            (Technically speaking the item will be in fact deleted from database only after those 5 seconds)
+        </p>
+        <!--List cleanup-->
+        <h4 id="list-cleanup" class="shopper-font">Clear done items</h4>
+        <p>
+            After a while of working with shopping list , there will be many items marked as done.<br>User can quickly
+            cleanup
+            list by removing all done items.<br>To do so, choose
+            <button mat-button>
+                <mat-icon>delete_forever</mat-icon>
+                <span>{{'app.shopping.clear'|translate}}</span></button>
+            option.<br>
+            This will clear all bought/done items ( giving 5 seconds to undo operation )
+        </p>
+    </div>
+    <!--Categories-->
+    <div>
+        <h3 class="underlined help-title" id="item-category">
+            <img [src]='"assets/images/categories/FRUIT_VEGETABLES.png"' height="25" class="mr-1">
+            Product categories</h3>
+        <p>
+            Whenever product is entered by user, application will try to match it to ones already existing in database
+            (ignoring case).
+            If found , category will be proposed for it. That category can be of course changed freely by user
+        </p>
+        <p>
+            Everytime category is assigned to product (including item category edit) , application stores that
+            information, increasing category score for it.
+            For example:<br><br>
+            Product: <i>Tomato</i><br>
+            Categories: <i>{{'FRUIT_VEGETABLES'|translate}}</i> - score 10, {{'FROZEN'|translate}} - score 2 <br>
+            Proposed category: <img [src]='"assets/images/categories/FRUIT_VEGETABLES.png"' class="category mr-1"><i>{{'FRUIT_VEGETABLES'|translate}}</i>
+        </p>
+        <p>
+            If user will add this product choosing category "{{'FRUIT_VEGETABLES'|translate}}", category score will be
+            increased to
+            11, so that next time when adding score should be more accurate.<br>
+            Scoring is dependant on user, and if miss used , can produce bad category predictions.
+        </p>
+        <p>User can additionally define order of categories in each shopping list by defining
+            <a routerLink="." fragment="settings-categories" class="help-cursor">Category
+                sorting presets</a> in application settings </p>
+    </div>
+    <div>
+        <mat-icon class="help-title-icon">settings</mat-icon>
+        <h3 class="underlined help-title" id="settings">
+            Settings
+        </h3>
+        <p>
+            In here user can change his account settings, like avatar and display language.
+        </p>
+        <mat-icon class="help-title-icon">person</mat-icon>
+        <h4 id="settings-account" class="shopper-font">
+            Account settings
+        </h4>
+        <p>
+            When user signs up using social media, application will try to fetch avatar , and set display language (
+            only google ).This can be changed anytime, by entering account settings.
+        </p>
+        <p>
+            To change account avatar, simply press
+            <button mat-raised-button>{{'app.settings.account.avatar'|translate}}</button>
+            button and upload new picture. After uploading, trim it and confirm. All avatars are persisted in database,
+            and stored in local cache. Changing avatar refreshes your avatar , but old avatar can be still visible for
+            some other application users
+        </p>
+        <p>
+            To change application display language , just choose new language from dropdown list. Whole application from
+            that moment will be using new language, and no reload is required as it will happen instantly.<br>
+            Application administrator can set the default application language, which will be used for all new accounts,
+            and default application emails ( like invite )
+            <br> Currently english and polish languages are supported
+        </p>
+        <p id="settings-account-delete">If you wish to delete your account, you can do this by entering settings page.
+            Press te big red
+            <button mat-raised-button color="warn">{{'app.settings.account.delete'|translate}}</button>
+            button to remove your account ( which includes all favorite products, shopping lists etc.).
+            If deleted user was shopping list owner, application will try to pass ownership to first shared user, and if
+            not found, list will be deleted
+        </p>
+        <p><strong>Please note this action cannot be undone, and is permanent</strong></p>
+        <mat-icon class="help-title-icon">sort</mat-icon>
+        <h4 class="shopper-font" id="settings-categories">
+            {{'app.settings.products.category.title'|translate}}
+        </h4>
+        <p>
+            Each shop has unique way of product alleys. Sometime bakery is first, then fruits...sometimes bakery
+            can be last. Each user can define category sorting presets. This means order of how categories will be
+            sorted on shopping
+            lists. Simply create new sorting preset, and drag and drop categories in new order. Afterwards, when
+            creating new list, or when editing, choose that preset so that items will be sorted in that category sorting
+            preset.<br>
+            If somebody shares shopping list, preset for that list will also be shared ( with extra name suffix , for
+            example :
+            Auchan by Jakub )
+        </p>
+        <p>
+            To learn more about categories , please go to <a class="help-cursor" routerLink="." fragment="item-category">product categories</a>
+        </p>
+        <mat-icon class="help-title-icon">local_offer</mat-icon>
+        <h4 class="shopper-font" id="settings-favorite">
+            {{'app.item.add.favorites'|translate}}
+        </h4>
+        <p>
+            Everytime product is added to list, application will try to store that preference for each user. Chosen
+            product will be added to favorites , with counter how many times it was used.
+            Next time if user decides to add this product to his/hers shopping list, that counter will be increased.<br>
+            When adding new item, user can <a class="help-cursor" routerLink="." fragment="item-new-dialog-favorites">Add
+            through add dialog
+            , using favorites</a> where all favorite products are shown ( sorted by mentioned counter, limited to first
+            50)
+        </p>
+        <p>
+            Product can be removed from favorites from this screen , by just clicking it's name.
+        </p>
+        <!--ADMIN SECTION-->
+        <ng-container *ngIf="isAdmin">
+            <mat-icon class="help-title-icon">build</mat-icon>
+            <h3 class="shopper-font underlined" id="settings-admin">
+                Application administration
+            </h3>
+            If current user is application admin ( and in fact can view this section ) there are extra two tabs visible
+            in settings
+            <mat-icon class="help-title-icon">email</mat-icon>
+            <h4 class="shopper-font">
+                {{'app.settings.email'|translate}}
+            </h4>
+            <p>
+                In this tab administrator can setup SMTP email server.
+                Enter server url, username , password. Also enter email address which will be visible as email
+                sender.<br>Please not that if sender won't be matched with domain, or SMTP server is not authorized,
+                mails will be categorised by spam by most filters.<br>
+                Save your changes, and application will verify if server is valid , by testing that connection. if error
+                will happen , settings will be discarded , and administrator will be asked to correct them
+            </p>
+            <mat-icon class="help-title-icon">settings</mat-icon>
+            <h4 class="shopper-font">
+                {{'app.settings.app'|translate}}
+            </h4>
+            <p>
+                In this section administrator can setup default application language. It will be used for all new users
+                coming from facebook , or registering with username and password, and used for sending email invites
+            </p>
+            <p>
+                it's also imporant to setup application url , which will be used when seding various email messaes.<br>
+                Either manually enter it , or press
+                <button mat-icon-button matTooltip="{{'app.settings.app.appURL.get'|translate}}">
+                    <mat-icon>
+                        link
+                    </mat-icon>
+                </button>
+                button to fetch current url visible in browser
+            </p>
+        </ng-container>
+    </div>
+    <div>
+        <h3 class="underlined help-title">
+            License
+        </h3>
+        This application was created only be me , if you would like to change something , please notify me. I would love
+        to see it :)
+        <p>
+            All application is under GNU GPL License and uses some components under Apache License
+        </p>
+        <p>
+            Category icons made by
+            <a href="https://www.flaticon.com/authors/smashicons" target="_blank"
+               title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" target="_blank"
+                                                         title="Flaticon">www.flaticon.com</a>
+            is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
+                              target="_blank">CC 3.0 BY</a>
+        </p>
+    </div>
+</div>
