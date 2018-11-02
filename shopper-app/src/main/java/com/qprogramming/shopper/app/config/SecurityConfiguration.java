@@ -106,7 +106,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         //@formatter:off
         http
                 .csrf()
-                .ignoringAntMatchers("/auth","/ws/**","/api/config/default-language")
+                .ignoringAntMatchers("/auth/**","/ws/**","/api/config/default-language")
                     .csrfTokenRepository(getCsrfTokenRepository())
                 .and().sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -79,7 +79,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
         when(authorityServiceMock.findByRole(Role.ROLE_ADMIN)).thenReturn(TestUtil.createAdminAuthority());
         when(accountRepositoryMock.findAll()).thenReturn(Collections.emptyList());
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
-        Account result = accountService.createOAuthAcount(account);
+        Account result = accountService.createAcount(account);
         assertThat(result.getIsAdmin()).isTrue();
         verify(accountRepositoryMock, times(1)).save(any(Account.class));
     }
@@ -90,7 +90,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
         when(accountRepositoryMock.findAll()).thenReturn(Collections.singletonList(testAccount));
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
         when(authorityServiceMock.findByRole(Role.ROLE_USER)).thenReturn(TestUtil.createUserAuthority());
-        Account result = accountService.createOAuthAcount(account);
+        Account result = accountService.createAcount(account);
         assertThat(result.getIsUser()).isTrue();
         verify(accountRepositoryMock, times(1)).save(any(Account.class));
     }

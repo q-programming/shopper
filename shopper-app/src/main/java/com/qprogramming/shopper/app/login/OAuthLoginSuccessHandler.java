@@ -86,7 +86,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         account.setEmail(facebookUser.getEmail());
         String locale = _propertyService.getDefaultLang();
         setLocale(account, locale);
-        account = _accountService.createOAuthAcount(account);
+        account = _accountService.createAcount(account);
         byte[] userProfileImage = facebook.userOperations().getUserProfileImage();
         _accountService.createAvatar(account, userProfileImage);
         LOG.debug("Facebook account has been created with id:{} and username{}", account.getId(), account.getUsername());
@@ -108,7 +108,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         account.setEmail(details.get(EMAIL));
         String locale = details.get(LOCALE);
         setLocale(account, locale);
-        account = _accountService.createOAuthAcount(account);
+        account = _accountService.createAcount(account);
         try {
             _accountService.createAvatar(account, details.get(G.PICTURE));
         } catch (MalformedURLException e) {

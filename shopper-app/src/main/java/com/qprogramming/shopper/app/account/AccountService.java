@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -74,7 +75,7 @@ public class AccountService implements UserDetailsService {
         return optionalAccount.get();
     }
 
-    public Account createOAuthAcount(Account account) {
+    public Account createAcount(Account account) {
         List<Authority> auths = new ArrayList<>();
         Authority role = _authorityService.findByRole(Role.ROLE_USER);
         auths.add(role);
@@ -86,17 +87,19 @@ public class AccountService implements UserDetailsService {
         if (StringUtils.isEmpty(account.getLanguage())) {
             setDefaultLocale(account);
         }
-        //generate api key
+        //generate password if needed
         generatePassword(account);
         return _accountRepository.save(account);
     }
 
     private void generatePassword(Account account) {
-        char[] possibleCharacters = API_CHARS.toCharArray();
-        String password = RandomStringUtils.random(32, 0, possibleCharacters.length - 1, false, false, possibleCharacters, new SecureRandom());
-        //TODO remove afterwards
-        LOG.info("******Generated new password for " + account.getEmail() + ". Password is : \"" + password + "\" ******");
-        account.setPassword(encode(password));
+        if (StringUtils.isBlank(account.getPassword())) {
+            char[] possibleCharacters = API_CHARS.toCharArray();
+            String password = RandomStringUtils.random(32, 0, possibleCharacters.length - 1, false, false, possibleCharacters, new SecureRandom());
+            //TODO remove afterwards
+            LOG.info("******Generated new password for " + account.getEmail() + ". Password is : \"" + password + "\" ******");
+            account.setPassword(encode(password));
+        }
     }
 
     public String generateID() {
@@ -254,4 +257,13 @@ public class AccountService implements UserDetailsService {
     public void delete(Account account) {
         _accountRepository.delete(account);
     }
+
+
+    @Transactional
+    public Account createLocalAccount(Account account) {
+        account.setId(generateID());
+        account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
+        return createAcount(account);
+    }
+
 }

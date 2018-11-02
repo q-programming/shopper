@@ -1,6 +1,8 @@
 package com.qprogramming.shopper.app.api;
 
 import com.qprogramming.shopper.app.account.Account;
+import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.login.RegisterForm;
 import com.qprogramming.shopper.app.login.token.JwtAuthenticationRequest;
 import com.qprogramming.shopper.app.login.token.TokenService;
 import com.qprogramming.shopper.app.login.token.UserTokenState;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Created by Jakub Romaniszyn on 20.07.2018.
@@ -36,32 +39,49 @@ public class AuthenticationController {
 
     private AuthenticationManager _authenticationManager;
 
+    private AccountService _accountService;
+
     @Value("${jwt.expires_in}")
     private int EXPIRES_IN;
 
     @Autowired
-    public AuthenticationController(TokenService tokenService, AuthenticationManager authenticationManager) {
+    public AuthenticationController(TokenService tokenService, AuthenticationManager authenticationManager, AccountService accountService) {
         this._tokenService = tokenService;
         this._authenticationManager = authenticationManager;
+        _accountService = accountService;
     }
 
     @RequestMapping(value = "/auth", method = RequestMethod.POST)
     public ResponseEntity createAuthenticationToken(
-            @RequestBody JwtAuthenticationRequest authenticationRequest,
-            HttpServletResponse response
-    ) throws AuthenticationException, IOException {
-        // Perform the security
+            @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) throws AuthenticationException, IOException {
         final Authentication authentication = _authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authenticationRequest.getUsername(),
                         authenticationRequest.getPassword()
                 )
         );
-        // Inject into security context
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        // token creation
         Account account = (Account) authentication.getPrincipal();
         _tokenService.createTokenCookies(response, account);
+        return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(value = "/auth/register", method = RequestMethod.POST)
+    public ResponseEntity register(
+            @RequestBody RegisterForm form) throws AuthenticationException {
+        Optional<Account> byEmail = _accountService.findByEmail(form.getEmail());
+        if (byEmail.isPresent()) {
+            return ResponseEntity.badRequest().body("email");
+        }
+        if (!form.getPassword().equals(form.getConfirmPassword())) {
+            return ResponseEntity.badRequest().body("passwords");
+        }
+        if (form.getPassword().length() < 8) {
+            return ResponseEntity.badRequest().body("weak");
+        }
+        Account account = form.createAccount();
+        _accountService.createLocalAccount(account);
+        //TODO send confirm mail
         return ResponseEntity.ok().build();
     }
 

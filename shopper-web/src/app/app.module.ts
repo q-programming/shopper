@@ -59,6 +59,7 @@ import {EnHelpComponent} from './components/help/en/en-help.component';
 import {PlHelpComponent} from './components/help/pl/pl-help.component';
 import {ScrollToModule} from "@nicky-lenaers/ngx-scroll-to";
 import {RegisterComponent} from './components/register/register.component';
+import {PasswordStrengthBarModule} from "ng2-password-strength-bar";
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -133,7 +134,8 @@ export function initUserFactory(authService: AuthenticationService) {
         }),
         LayoutModule,
         NgxMatSelectSearchModule,
-        ScrollToModule.forRoot()
+        ScrollToModule.forRoot(),
+        PasswordStrengthBarModule
     ],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [
