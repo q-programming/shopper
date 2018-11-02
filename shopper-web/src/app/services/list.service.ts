@@ -46,6 +46,7 @@ export class ListService {
      * @param archived (optional) returned lists archived or not
      */
     getUserList(userID?: string, items?: boolean, archived?: boolean): Observable<ShoppingList[]> {
+        this.currentAccount = this.authSrv.currentAccount;
         if (userID) {
             return this.api.getObject<ShoppingList[]>(environment.list_url + `/user/${userID}`, {
                 archived: archived,
@@ -59,11 +60,23 @@ export class ListService {
     }
 
     /**
+     * Quickly gets all currently logged in user lists, without items, without avatars etc.
+     */
+    getMyLists() {
+        this.currentAccount = this.authSrv.currentAccount;
+        return this.api.getObject<ShoppingList[]>(environment.list_url + '/mine', {
+            archived: false,
+            items: false,
+        }).map(res => this.processList(res, true))
+    }
+
+    /**
      * Return list with given id
      *
      * @param listID list id
      */
     getListByID(listID: number): Observable<ShoppingList> {
+        this.currentAccount = this.authSrv.currentAccount;
         this.listId = listID;
         return this.api.getObject<ShoppingList>(environment.list_url + `/${listID}`).map(list => {
             list.isOwner = this.isOwner(list);
@@ -72,10 +85,10 @@ export class ListService {
         })
     }
 
-    private processList(lists: ShoppingList[]): ShoppingList[] {
+    private processList(lists: ShoppingList[], noAvatars?: boolean): ShoppingList[] {
         lists.forEach(list => {
             list.isOwner = this.isOwner(list);
-            if (!list.isOwner) {
+            if (!list.isOwner && !noAvatars) {
                 this.avatarSrv.getUserAvatarById(list.ownerId).subscribe(avatar => list.ownerAvatar = avatar);
             }
         });

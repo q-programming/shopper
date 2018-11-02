@@ -23,7 +23,6 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AppMaterialModules} from "./material.module";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {LayoutModule} from '@angular/cdk/layout';
-import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule} from '@angular/material';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {ListService} from "@services/list.service";
 import {ListComponent} from './components/list/list.component';
@@ -59,6 +58,7 @@ import {PullToRefreshComponent} from './components/pull-to-refresh/pull-to-refre
 import {EnHelpComponent} from './components/help/en/en-help.component';
 import {PlHelpComponent} from './components/help/pl/pl-help.component';
 import {ScrollToModule} from "@nicky-lenaers/ngx-scroll-to";
+import {RegisterComponent} from './components/register/register.component';
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -98,6 +98,7 @@ export function initUserFactory(authService: AuthenticationService) {
         PullToRefreshComponent,
         EnHelpComponent,
         PlHelpComponent,
+        RegisterComponent,
     ],
     entryComponents: [
         AvatarUploadComponent,

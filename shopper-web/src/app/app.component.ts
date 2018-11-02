@@ -28,10 +28,13 @@ export class AppComponent implements OnInit {
                 private authSrv: AuthenticationService,
                 private listSrv: ListService,
                 private alertSrv: AlertService) {
+
+
         router.events.subscribe(() => {
             if (this.sidenav && this.sidenav.opened) {
                 this.sidenav.close();
             }
+            this.account = this.authSrv.currentAccount;
         });
         this.listSrv.listEmiter.subscribe(list => {
             this.list = list;
@@ -47,7 +50,7 @@ export class AppComponent implements OnInit {
     }
 
     private getUserLists() {
-        this.listSrv.getUserList().subscribe(lists => this.lists = lists.splice(0, 4));
+        this.listSrv.getMyLists().subscribe(lists => this.lists = lists.splice(0, 4));
     }
 
     openNewListDialog() {
@@ -79,6 +82,9 @@ export class AppComponent implements OnInit {
                 this.sidenav.close();
                 break;
             case SideNavAction.TOGGLE:
+                if (!this.sidenav.opened) {
+                    this.getUserLists();
+                }
                 this.sidenav.toggle();
                 break;
             case SideNavAction.OPEN:

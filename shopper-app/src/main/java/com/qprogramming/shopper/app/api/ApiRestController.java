@@ -17,7 +17,7 @@ import java.util.UUID;
 public class ApiRestController {
 
 
-    @RequestMapping(value = "/resource",method = RequestMethod.GET)
+    @RequestMapping(value = "/resource", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
     public Map<String, Object> home() {
         Map<String, Object> model = new HashMap<>();
@@ -25,6 +25,4 @@ public class ApiRestController {
         model.put("content", "Hello World");
         return model;
     }
-
-
 }

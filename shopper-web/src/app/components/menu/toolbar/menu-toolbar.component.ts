@@ -3,6 +3,7 @@ import {AuthenticationService} from "@services/authentication.service";
 import {ListService} from "@services/list.service";
 import {SideNavAction} from "../sidenav/menu-side-nav.component";
 import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
+import {Account} from "@model/Account";
 
 @Component({
     selector: 'menu-toolbar',
@@ -31,6 +32,4 @@ export class MenuToolbarComponent implements OnInit {
     toggleSideNav() {
         this.sidenav.emit(SideNavAction.TOGGLE);
     }
-
-
 }

@@ -20,6 +20,8 @@ import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.qprogramming.shopper.app.settings.Settings.*;
 
@@ -116,5 +118,12 @@ public class ConfigRestController {
     @RequestMapping(value = "/categories/defaults", method = RequestMethod.GET)
     public ResponseEntity getDefaultSorting() {
         return ResponseEntity.ok(Collections.singleton(propertyService.getProperty(APP_CATEGORY_ORDER)));
+    }
+
+    @RequestMapping(value = "/default-language", method = RequestMethod.GET)
+    public ResponseEntity getDefaultLanguage() {
+        Map<String, Object> model = new HashMap<>();
+        model.put("language", propertyService.getDefaultLang());
+        return ResponseEntity.ok(model);
     }
 }

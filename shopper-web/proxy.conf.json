@@ -17,6 +17,15 @@
       "^/shopper/login": ""
     }
   },
+  "/shopper/auth": {
+    "target": "http://localhost:8080/shopper/auth",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/shopper/auth": ""
+    }
+  },
   "/shopper/logout": {
     "target": "http://localhost:8080/shopper/logout",
     "secure": false,

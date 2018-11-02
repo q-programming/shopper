@@ -31,7 +31,7 @@
         <!--message-->
         <!--</mat-icon>-->
         <!--</button>-->
-        <button mat-button class="mat-toolbar-button" (click)="toggleSideNav()">
+        <button mat-button class="mat-toolbar-button" (click)="toggleSideNav()" *ngIf="account">
             <img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>
             <img *ngIf="!account.avatar" src="assets/images/avatar-placeholder.png" class="avatar nav-avatar"/>
             <mat-icon>more_vert</mat-icon>

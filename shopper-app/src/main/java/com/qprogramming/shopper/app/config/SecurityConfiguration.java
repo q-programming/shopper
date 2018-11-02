@@ -17,6 +17,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -88,6 +89,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new BasicRestAuthenticationFilter(accountService, tokenService);
     }
 
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -97,8 +104,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //@formatter:off
-        http.csrf()
-                .ignoringAntMatchers("/login","/ws/**")
+        http
+                .csrf()
+                .ignoringAntMatchers("/auth","/ws/**","/api/config/default-language")
                     .csrfTokenRepository(getCsrfTokenRepository())
                 .and().sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -124,10 +132,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .disable()
                 //ws - uncomment for local external angular app with proxy
 //                .and().antMatcher("/ws").authorizeRequests().anyRequest().authenticated()
-                //login redirect
-                .and().formLogin()
-                    .loginPage("/login")
-                    .successHandler(authenticationSuccessHandler).failureHandler(authenticationFailureHandler)
                 .and().logout()
                     .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                     .logoutSuccessHandler(logoutSuccess).deleteCookies(TOKEN_COOKIE);
