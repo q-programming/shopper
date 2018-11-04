@@ -15,6 +15,7 @@ $general-typography: mat-typography-config(
 @include mat-core($general-typography);
 
 body {
+  font-family: 'Kalam', cursive;
   font-weight: 300;
   min-height: 100vh;
   margin: 0;
