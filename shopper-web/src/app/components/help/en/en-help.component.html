@@ -2,14 +2,22 @@
     <h3 class="underlined shopper-font" id="about">
         <img src="assets/images/logo.svg" height="25px" class="ml-2">
         About</h3>
-    <p>
+    <p class="text-center">
         Shopper is an application to create track and share shopping list with family and friends
     </p>
-    <p>
+    <p class="text-center">
         If you quickly need to add something, open webpage or app add it, and it will automatically show on shared user
         lists
     </p>
     <p class="text-center">
+        You can download companion android app from:
+        <a mat-flat-button href="https://q-programming.pl/apps/shopper-0.5.0.apk">
+            <mat-icon>cloud_download</mat-icon>
+            shopper-0.5.0.apk
+        </a>
+        and install it ( you have to enable installing from unknown sources)
+    </p>
+    <p class="text-center mt-2">
         In case of any issues please write to :
         <mat-icon>email</mat-icon>
         <a href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
@@ -32,7 +40,8 @@
                     matTooltip="{{'app.shopping.create' | translate}}">
                 <img src="assets/images/plus.svg" class="add-list-icon mr-2" height="25">
             </button>
-            button. On that dialog , define name and <a class="help-cursor" routerLink="." fragment="settings-categories">category
+            button. On that dialog , define name and <a class="help-cursor" routerLink="."
+                                                        fragment="settings-categories">category
             sorting preset</a>
         </p>
         <p>
@@ -422,7 +431,8 @@
             For example:<br><br>
             Product: <i>Tomato</i><br>
             Categories: <i>{{'FRUIT_VEGETABLES'|translate}}</i> - score 10, {{'FROZEN'|translate}} - score 2 <br>
-            Proposed category: <img [src]='"assets/images/categories/FRUIT_VEGETABLES.png"' class="category mr-1"><i>{{'FRUIT_VEGETABLES'|translate}}</i>
+            Proposed category: <img [src]='"assets/images/categories/FRUIT_VEGETABLES.png"'
+                                    class="category mr-1"><i>{{'FRUIT_VEGETABLES'|translate}}</i>
         </p>
         <p>
             If user will add this product choosing category "{{'FRUIT_VEGETABLES'|translate}}", category score will be
@@ -488,7 +498,8 @@
             Auchan by Jakub )
         </p>
         <p>
-            To learn more about categories , please go to <a class="help-cursor" routerLink="." fragment="item-category">product categories</a>
+            To learn more about categories , please go to <a class="help-cursor" routerLink="."
+                                                             fragment="item-category">product categories</a>
         </p>
         <mat-icon class="help-title-icon">local_offer</mat-icon>
         <h4 class="shopper-font" id="settings-favorite">
@@ -547,7 +558,7 @@
         </ng-container>
     </div>
     <div>
-        <h3 class="underlined help-title">
+        <h3 class="underlined help-title" id="license">
             License
         </h3>
         This application was created only be me , if you would like to change something , please notify me. I would love

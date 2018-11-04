@@ -1,3 +1,12 @@
 .favorites {
     height: 65vh;
 }
+.fav-button{
+    width: 90% !important;
+}
+
+@media (max-width: 768px) {
+    .fav-button{
+        width: 80% !important;
+    }
+}

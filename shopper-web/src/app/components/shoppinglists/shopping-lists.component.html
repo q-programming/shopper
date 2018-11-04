@@ -23,6 +23,12 @@
         <h2 class="shopper-font">{{'app.home.nolist'|translate}}</h2>
         <img src="assets/images/start_adding.svg" height="200">
         <img src="assets/images/arrow_up.svg" height="80" class="stick-right">
+        <h2 class="shopper-font">{{'app.home.archived.nolist.help'|translate}}
+            <a routerLink="/help">
+                <mat-icon>help</mat-icon>
+                {{'app.menu.help'|translate}}
+            </a>
+        </h2>
     </mat-card>
     <mat-card class="text-center" *ngIf="archived">
         <h2 class="shopper-font">{{'app.home.archived.nolist'|translate}}</h2>

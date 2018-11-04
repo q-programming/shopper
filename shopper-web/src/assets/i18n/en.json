@@ -23,6 +23,7 @@
   "app.home.admin": "As you are admin here is a list of all registered users:",
   "app.home.nolist": "There is nothing here yet, start adding your lists!",
   "app.home.archived.nolist": "There is nothing here yet",
+  "app.home.archived.nolist.help": "Don't know what to do? Visit page: ",
   "app.menu.logout": "Logout",
   "app.menu.settings": "Settings",
   "app.menu.messages": "Messages({{count}})",

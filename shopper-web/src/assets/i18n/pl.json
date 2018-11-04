@@ -23,6 +23,7 @@
   "app.home.admin": "Ponieważ jesteś administratorem , poniżej lista wszystkich użytkowników:",
   "app.home.nolist": "Jeszcze nic tutaj nie ma , zacznij dodawac swoje listy!",
   "app.home.archived.nolist": "Jeszcze nic tutaj nie ma",
+  "app.home.archived.nolist.help": "Nie wiesz co zrobić? Odwiedź stronę: ",
   "app.menu.logout": "Wyloguj się",
   "app.menu.settings": "Ustawienia",
   "app.menu.messages": "Wiadomości ({{count}})",
