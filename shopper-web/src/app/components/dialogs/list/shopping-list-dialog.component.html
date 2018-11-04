@@ -1,6 +1,6 @@
 <h2 mat-dialog-title class="modal-header">
-    <mat-icon class="text-white mr-2">{{update?'edit':'add_circle_outline'}}</mat-icon>
-    {{update?('app.shopping.update'|translate):('app.shopping.create'|translate)}}
+    <mat-icon class="text-white mr-2">{{update ? 'edit' : 'add_circle_outline'}}</mat-icon>
+    {{update ? ('app.shopping.update'|translate) : ('app.shopping.create'|translate)}}
     <button mat-icon-button mat-dialog-close class="pull-right">
         <mat-icon>close</mat-icon>
     </button>
@@ -20,7 +20,7 @@
                 <mat-select placeholder="{{'app.settings.products.category.preset'|translate}}"
                             formControlName="preset" [compareWith]="comparePresets">
                     <mat-option *ngFor="let userPreset of presets" [value]="userPreset">
-                        {{userPreset.name?userPreset.name:('app.settings.products.category.default'|translate)}}
+                        {{userPreset.name ? userPreset.name : ('app.settings.products.category.default'|translate)}}
                         <span *ngIf="userPreset.ownerId && currentAccount.id!==userPreset.ownerId">
                         ({{'app.settings.products.category.by'|translate}}{{userPreset.ownername}})
                     </span>
@@ -33,6 +33,6 @@
 <mat-dialog-actions align="end" class="pr-2 pl-2">
     <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
     <button mat-raised-button class="success-button" (click)="commitList()" [disabled]="form.invalid">
-        {{update?('app.general.edit'|translate):('app.general.create'|translate)}}
+        {{update ? ('app.general.edit'|translate) : ('app.general.create'|translate)}}
     </button>
 </mat-dialog-actions>

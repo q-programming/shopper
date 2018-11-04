@@ -150,7 +150,7 @@
   "app.login.logpass.login": "Zaloguj się",
   "app.login.register.here": "Zarejestruj się tutaj",
   "app.login.social": "Zaloguj się używająć:",
-  "app.login.social.register": "Jeżeli nie posiadasz jeszcze konta, zostanie ono dla Ciebie automatycznie stworzone",
+  "app.login.social.register": "Jeżeli nie posiadasz jeszcze konta,<br>zostanie ono dla Ciebie automatycznie stworzone",
   "app.help.contents": "Spis treści:",
   "ALCOHOL": "alkohole",
   "BABY": "dziecięce",
@@ -183,5 +183,6 @@
   "SNACKS": "przekąski",
   "SPICES": "przyprawy sosy i dodatki",
   "GARDEN": "art. ogrodnicze",
+  "BUILDING": "art. budowlane",
   "OTHER": "inne"
 }

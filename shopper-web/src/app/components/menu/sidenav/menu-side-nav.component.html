@@ -1,7 +1,7 @@
 <div fxLayout="column" class="text-center">
     <img *ngIf="account.avatar" [src]="account.avatar" class="avatar large"/>
     <img *ngIf="!account.avatar" src="assets/images/avatar-placeholder.png" class="avatar large"/>
-    <span class="mt-4">{{account.name}} {{account.surname}}</span>
+    <span class="mt-4 shopper-font font-larger">{{account.name}} {{account.surname}}</span>
 </div>
 <mat-divider class="mt-2"></mat-divider>
 <button mat-button (click)="openNewListDialog()" *ngIf="!onListView">

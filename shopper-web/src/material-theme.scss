@@ -15,11 +15,9 @@ $general-typography: mat-typography-config(
 @include mat-core($general-typography);
 
 body {
-  font-family: 'Kalam', cursive;
   font-weight: 300;
   min-height: 100vh;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Kalam", "Segoe UI", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 1rem;
   line-height: 1.5;
   color: #212529;

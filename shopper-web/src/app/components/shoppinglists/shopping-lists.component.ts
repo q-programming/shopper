@@ -31,8 +31,13 @@ export class ShoppingListsComponent implements OnInit {
                 private menuSrv: MenuActionsService,
                 private dialog: MatDialog) {
         this.menuSrv.actionEmitted.subscribe(action => {
-            if (action && action === MenuAction.REFRESH) {
-                this.loadUserLists();
+            switch (action) {
+                case MenuAction.REFRESH:
+                    this.loadUserLists();
+                    break;
+                case MenuAction.ADD:
+                    this.newListOpenDialog();
+                    break;
             }
         })
     }

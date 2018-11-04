@@ -150,7 +150,7 @@
   "app.login.logpass.noaccount": "Don't have account yet?",
   "app.login.register.here": "Register here",
   "app.login.social": "Login using :",
-  "app.login.social.register": "If you don't have account, it will be automatically created for you",
+  "app.login.social.register": "If you don't have account,<br>it will be automatically created for you",
   "app.help.contents": "Help contents:",
   "ALCOHOL": "Alcohol",
   "BABY": "Baby",
@@ -183,5 +183,6 @@
   "SNACKS": "Snacks",
   "SPICES": "Spices, sauces and condiments",
   "GARDEN": "Garden supplies",
+  "BUILDING": "Building supplies",
   "OTHER": "Other"
 }

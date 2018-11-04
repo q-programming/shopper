@@ -1,18 +1,19 @@
 .username-form {
+    text-align: left;
+}
+
+
+.social-form {
     border-right: 1px solid gray;
     text-align: right;
 }
 
 @media (max-width: 768px) {
-    .username-form {
+    .social-form {
         border-right: none;
         border-bottom: 1px solid gray;
         padding-bottom: 20px;
     }
-}
-
-.social-form {
-    text-align: left;
 }
 
 .btn-social {

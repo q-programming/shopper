@@ -3,7 +3,7 @@ app:
   default:
     lang: en
   category:
-    order: FRUIT_VEGETABLES,BAKERY,BABY,CANNED,CAR,CLOTHES,COFFEE_TEA,COSMETICS,DIARY,DIET,ELECTRONICAL,FISH,FROZEN,GRAINS_PASTA,HOME_KITCHEN,HOME_BAKING,CLEANING,MEAT,NEWSPAPERS,OFFICE_SUPPLIES,OILS,HYGIENE,PET,PHARMACY,PRESERVES,READY_MEALS,SNACKS,SPICES,BEVERAGES,ALCOHOL,GARDEN,OTHER
+    order: FRUIT_VEGETABLES,BAKERY,BABY,CANNED,CAR,CLOTHES,COFFEE_TEA,COSMETICS,DIARY,DIET,ELECTRONICAL,FISH,FROZEN,GRAINS_PASTA,HOME_KITCHEN,HOME_BAKING,CLEANING,MEAT,NEWSPAPERS,OFFICE_SUPPLIES,OILS,HYGIENE,PET,PHARMACY,PRESERVES,READY_MEALS,SNACKS,SPICES,BEVERAGES,ALCOHOL,GARDEN,BUILDING,OTHER
   newsletter:
     schedule: 0 0 20-22 * * MON
 security:
@@ -44,7 +44,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-#    show-sql: true
+  #    show-sql: true
   social:
     facebook:
       app-id: 1750703375258695
@@ -69,9 +69,9 @@ google:
     userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
     clientAuthenticationScheme: form
     scope:
-    - openid
-    - email
-    - profile
+      - openid
+      - email
+      - profile
   resource:
     userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
     preferTokenInfo: true
