@@ -71,11 +71,7 @@ public class ConfigRestController {
     }
 
     private String setDefaultAPPURL(HttpServletRequest request) {
-        String uri = request.getScheme() + "://" +
-                request.getServerName() +
-                ("http".equals(request.getScheme()) && request.getServerPort() == 80 || "https".equals(request.getScheme()) && request.getServerPort() == 443 ? "" : ":" + request.getServerPort()) +
-                request.getContextPath();
-        return (String) propertyService.update(APP_URL, uri).getValue();
+        return (String) propertyService.update(APP_URL, Utils.getFullPathFromRequest(request)).getValue();
     }
 
     @RolesAllowed("ROLE_ADMIN")

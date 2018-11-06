@@ -5,90 +5,87 @@
             Shopper
         </h4>
     </mat-card-title>
-    <div class="text-center">
-        <p>I'm sorry but registration using username and password is currently disabled</p>
-        <p>Please use sign in using
-            <a mat-raised-button class="btn-social facebook" href="{{login_url}}/facebook">
-                <i class="fa fa-facebook mr-2"></i>
-                Facebook
-            </a> or
-            <a mat-raised-button class="btn-social google" href="{{login_url}}/google">
-                <i class="fa fa-google-plus mr-2"></i>
-                Google +
-            </a>
-        </p>
-    </div>
-    <hr>
     <div>
         <form [formGroup]="baseForm">
-            <div fxLayout="row" fxLayoutAlign="center center">
+            <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
                 <mat-form-field fxFlex="40%">
-                    <input matInput placeholder="Name" formControlName="name" required>
-                    <mat-hint>Please enter your name</mat-hint>
+                    <input matInput placeholder="{{'app.register.name'|translate}}" formControlName="name" required>
+                    <mat-hint>{{'app.register.name.enter'|translate}}</mat-hint>
                 </mat-form-field>
             </div>
-            <div fxLayout="row" fxLayoutAlign="center center">
+            <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
                 <mat-form-field fxFlex="40%">
-                    <input matInput placeholder="Surname" formControlName="surname" required>
-                    <mat-hint>Please enter your surname</mat-hint>
+                    <input matInput placeholder="{{'app.register.surname'|translate}}" formControlName="surname"
+                           required>
+                    <mat-hint>{{'app.register.surname.enter'|translate}}</mat-hint>
                 </mat-form-field>
             </div>
-            <div fxLayout="row" fxLayoutAlign="center center">
+            <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
                 <mat-form-field fxFlex="40%">
                     <input matInput placeholder="Email" formControlName="email">
-                    <mat-hint>Please enter your email</mat-hint>
+                    <mat-hint> {{'app.register.email'|translate}}</mat-hint>
                     <mat-error *ngIf="baseForm.controls.email.hasError('email')">
-                        Please enter a valid email address
+                        {{'app.register.email.valid.error'|translate}}
                     </mat-error>
                     <mat-error *ngIf="baseForm.hasError('required')">
-                        Email is <strong>required</strong>
+                        {{'app.register.email.required.error'|translate}}
+                    </mat-error>
+                    <mat-error *ngIf="baseForm.controls.email.hasError('duplicated')">
+                        {{'app.register.email.duplicate.error'|translate}}
                     </mat-error>
                 </mat-form-field>
             </div>
         </form>
         <form [formGroup]="passwordForm">
-            <div fxLayout="row" fxLayoutAlign="center center">
+            <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
                 <mat-form-field fxFlex="40%">
-                    <input matInput placeholder="Password" formControlName="password" required type="password">
-                    <mat-hint>Enter password</mat-hint>
-                    <mat-error *ngIf="passwordForm.hasError('required', 'password')">
-                        Please enter your new password
+                    <input matInput placeholder="{{'app.login.logpass.password'|translate}}"
+                           formControlName="password" required type="password">
+                    <mat-hint>{{'app.register.password.hint'|translate}}</mat-hint>
+                    <mat-error *ngIf="passwordForm.hasError('required', ['password'])">
+                        {{'app.register.password.required.error'|translate}}
+                    </mat-error>
+                    <mat-error *ngIf="passwordForm.hasError('minlength', ['password'])">
+                        {{'app.register.password.lenght.error'|translate}}
                     </mat-error>
                 </mat-form-field>
             </div>
-            <div fxLayout="row" fxLayoutAlign="center center">
+            <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
                 <mat-form-field fxFlex="40%">
-                    <input matInput placeholder="Confirm password" formControlName="confirmPassword" required
+                    <input matInput placeholder="{{'app.register.password.confirm'|translate}}"
+                           formControlName="confirmPassword" required
                            [errorStateMatcher]="matcher"
                            type="password">
-                    <mat-hint>Confirm password</mat-hint>
+                    <mat-hint>{{'app.register.password.confirm'|translate}}</mat-hint>
                     <mat-error *ngIf="passwordForm.hasError('notSame')">
-                        Passwords do not match
+                        {{'app.register.password.confirm.error'|translate}}
                     </mat-error>
                 </mat-form-field>
             </div>
-            <div fxLayout="row" fxLayoutAlign="center center" class="text-left mt-2">
+            <div fxLayout="row" fxLayoutAlign="center center" class="text-left mt-3">
                 <div fxFlex="40%">
                     <div>
+                        <span fxShow.lt-sm="false">{{'app.register.password.strength'|translate}}</span>
                         <ng2-password-strength-bar
                                 [passwordToCheck]="currentPass"
-                                [barLabel]="('app.register.password.strength'|translate)"
                                 [barColors]="myColors">
                         </ng2-password-strength-bar>
 
                     </div>
                     <div>
-                        <!--<button mat-raised-button [disabled]="baseForm.invalid || passwordForm.invalid"-->
-                        <!--(click)="register()"-->
-                        <!--class="pull-right success-button">-->
-                        <!--Register-->
-                        <!--</button>-->
-                        <button mat-raised-button [disabled]="true"
+                        <button mat-raised-button [disabled]="baseForm.invalid || passwordForm.invalid"
+                                (click)="register()"
                                 class="pull-right success-button">
                             Register
                         </button>
                     </div>
                 </div>
+            </div>
+            <div>
+                {{'app.register.login'|translate}}
+                <a routerLink="/login">
+                    {{'app.login'|translate}}
+                </a>
             </div>
         </form>
     </div>

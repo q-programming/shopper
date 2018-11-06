@@ -2,8 +2,8 @@ package com.qprogramming.shopper.app.config.mail;
 
 
 import com.qprogramming.shopper.app.account.Account;
-import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.account.avatar.Avatar;
+import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.messages.MessagesService;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
@@ -51,7 +51,7 @@ public class MailService {
     private PropertyService propertyService;
     private Configuration freemarkerConfiguration;
     private MessagesService msgSrv;
-    private AccountService accountService;
+    private AvatarRepository _avatarRepository;
     private Map<Account, File> avatarBuffer;
     private String cron_scheduler;
 
@@ -60,12 +60,11 @@ public class MailService {
     public MailService(PropertyService propertyService,
                        @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration,
                        MessagesService msgSrv,
-                       AccountService accountService,
-                       @Value("${app.newsletter.schedule}") String cron) {
+                       AvatarRepository avatarRepository, @Value("${app.newsletter.schedule}") String cron) {
         this.propertyService = propertyService;
         this.freemarkerConfiguration = freemarkerConfiguration;
         this.msgSrv = msgSrv;
-        this.accountService = accountService;
+        _avatarRepository = avatarRepository;
         avatarBuffer = new HashMap<>();
         this.cron_scheduler = cron;
         initMailSender();
@@ -209,6 +208,20 @@ public class MailService {
         mailSender.send(mimeMessageHelper.getMimeMessage());
     }
 
+    public void sendConfirmMessage(Mail mail) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        Locale locale = getMailLocale(mail);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(APP_EMAIL_ENCODING));
+        mimeMessageHelper.setSubject(msgSrv.getMessage("app.register.confirm", new Object[]{}, "", locale));
+        mimeMessageHelper.setFrom(mail.getMailFrom());
+        mimeMessageHelper.setTo(mail.getMailTo());
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/confirm.ftl"));
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+        addAppLogo(mimeMessageHelper);
+        LOG.info("Sending email message to {}", mail.getMailTo());
+        mailSender.send(mimeMessageHelper.getMimeMessage());
+    }
+
     /**
      * Get resized user avatar and store it as temporary file deleted on server restart
      * Once retrieved it will be stored in avatar buffer for future usages
@@ -221,7 +234,7 @@ public class MailService {
         try {
             if (avatarTempFile == null) {
                 BufferedImage originalImage;
-                Avatar accountAvatar = accountService.getAccountAvatar(account);
+                Avatar accountAvatar = _avatarRepository.findOneById(account.getId());
                 if (accountAvatar != null) {
                     InputStream is = new ByteArrayInputStream(accountAvatar.getImage());
                     originalImage = ImageIO.read(is);

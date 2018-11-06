@@ -1,0 +1,22 @@
+<mat-card class="text-center">
+    <mat-card-title>
+        <img src="assets/images/logo.svg" height="150px" class="v-middle">
+        <div>
+            <mat-icon class="success pr-5">check_circle</mat-icon>
+            <span class="success-message">
+                {{message|translate}}
+            </span>
+        </div>
+    </mat-card-title>
+    <div class="mt-5">
+        <button mat-raised-button routerLink="/">
+            <mat-icon>
+                arrow_back_ios
+            </mat-icon>
+            <mat-icon>
+                home
+            </mat-icon>
+            {{'app.general.return'|translate}}
+        </button>
+    </div>
+</mat-card>

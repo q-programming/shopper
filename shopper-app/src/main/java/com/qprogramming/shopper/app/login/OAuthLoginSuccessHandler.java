@@ -84,6 +84,8 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         account.setName(facebookUser.getFirstName());
         account.setSurname(facebookUser.getLastName());
         account.setEmail(facebookUser.getEmail());
+        account.setEnabled(true);
+        account.setType(Account.AccountType.FACEBOOK);
         String locale = _propertyService.getDefaultLang();
         setLocale(account, locale);
         account = _accountService.createAcount(account);
@@ -106,6 +108,8 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         account.setName(details.get(G.GIVEN_NAME));
         account.setSurname(details.get(G.FAMILY_NAME));
         account.setEmail(details.get(EMAIL));
+        account.setEnabled(true);
+        account.setType(Account.AccountType.GOOGLE);
         String locale = details.get(LOCALE);
         setLocale(account, locale);
         account = _accountService.createAcount(account);

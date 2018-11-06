@@ -2,10 +2,15 @@ package com.qprogramming.shopper.app.api;
 
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.login.RegisterForm;
 import com.qprogramming.shopper.app.login.token.JwtAuthenticationRequest;
 import com.qprogramming.shopper.app.login.token.TokenService;
 import com.qprogramming.shopper.app.login.token.UserTokenState;
+import com.qprogramming.shopper.app.support.Utils;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -15,15 +20,18 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
+
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 /**
  * Created by Jakub Romaniszyn on 20.07.2018.
@@ -34,6 +42,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
     private TokenService _tokenService;
 
@@ -67,22 +77,52 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/auth/register", method = RequestMethod.POST)
+    @Transactional
     public ResponseEntity register(
             @RequestBody RegisterForm form) throws AuthenticationException {
         Optional<Account> byEmail = _accountService.findByEmail(form.getEmail());
         if (byEmail.isPresent()) {
-            return ResponseEntity.badRequest().body("email");
+            return ResponseEntity.status(CONFLICT).body("email");
         }
         if (!form.getPassword().equals(form.getConfirmPassword())) {
-            return ResponseEntity.badRequest().body("passwords");
+            return ResponseEntity.status(CONFLICT).body("passwords");
         }
         if (form.getPassword().length() < 8) {
-            return ResponseEntity.badRequest().body("weak");
+            return ResponseEntity.status(CONFLICT).body("weak");
         }
-        Account account = form.createAccount();
-        _accountService.createLocalAccount(account);
-        //TODO send confirm mail
+        try {
+            Account account = form.createAccount();
+            _accountService.createLocalAccount(account);
+            _accountService.sendConfirmEmail(account);
+        } catch (MessagingException e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("mailing");
+        }
         return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(value = "/auth/confirm", method = RequestMethod.GET)
+    public void confirmAccount(@RequestParam("token") String token, HttpServletRequest request, HttpServletResponse response) {
+        String uri = Utils.getFullPathFromRequest(request);
+        try {
+            try {
+                Account account = _accountService.findByUuid(token);
+                UUID uuid = UUID.fromString(account.getUuid());
+                DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
+                DateTime expireDate = date.plusHours(24);
+                if (date.isAfter(expireDate)) {
+                    _accountService.sendConfirmEmail(account);
+                    response.sendRedirect(uri + "/#/error?type=expired");
+                }
+                _accountService.confirm(account);
+                response.sendRedirect(uri + "/#/success?type=confirmed");
+            } catch (AccountNotFoundException e) {
+                response.sendRedirect(uri + "/#/error?type=account");
+            } catch (MessagingException e) {
+                LOG.error("Error while trying to send email{}", e);
+            }
+        } catch (IOException e) {
+            LOG.error("Error while trying to redirect {}", e);
+        }
     }
 
 

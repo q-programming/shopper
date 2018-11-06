@@ -52,6 +52,16 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Transient
     private String apikey;
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean enabled = false;
+
+    @Column
+    private String uuid;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private AccountType type;
+
     public String getId() {
         return id;
     }
@@ -118,6 +128,22 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.created = created;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public AccountType getType() {
+        return type;
+    }
+
+    public void setType(AccountType type) {
+        this.type = type;
+    }
+
     public void addAuthority(Authority authority) {
         List<Authority> auths = new ArrayList<>();
         auths.add(authority);
@@ -173,7 +199,11 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Override
     @JsonIgnore
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -203,4 +233,9 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     public String getFullname() {
         return getName() + " " + getSurname();
     }
+
+    public enum AccountType {
+        LOCAL, FACEBOOK, GOOGLE
+    }
+
 }

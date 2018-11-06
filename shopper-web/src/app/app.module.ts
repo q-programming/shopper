@@ -60,6 +60,8 @@ import {PlHelpComponent} from './components/help/pl/pl-help.component';
 import {ScrollToModule} from "@nicky-lenaers/ngx-scroll-to";
 import {RegisterComponent} from './components/register/register.component';
 import {PasswordStrengthBarModule} from "ng2-password-strength-bar";
+import {ErrorComponent} from './components/error/error.component';
+import {SuccessComponent} from "./components/success/success.component";
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -100,6 +102,8 @@ export function initUserFactory(authService: AuthenticationService) {
         EnHelpComponent,
         PlHelpComponent,
         RegisterComponent,
+        SuccessComponent,
+        ErrorComponent,
     ],
     entryComponents: [
         AvatarUploadComponent,

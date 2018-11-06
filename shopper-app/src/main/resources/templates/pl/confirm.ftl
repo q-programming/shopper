@@ -133,23 +133,20 @@
     <table class="main">
         <tbody>
         <tr>
-            <td valign="top" style="vertical-align: top; width:70px">
-                <img class="avatar" src='cid:userAvatar.png'>
-            </td>
             <td>
-            <#if name??>
-                <p>Hello ${name},</p>
-            </#if>
                 <div>
-                ${owner} wanted to share with you his shopping list in Shopper application
+                    <p>
+                        Witaj ${name},
+                    </p>
+                    Witamy w aplikacji Shopper
                 </div>
                 <div>
                     <p>
-                        As you don't have account yet, please feel free to create one by logging in using Google+ or
-                        facebook accounts
+                        Aby potwierdzić swoje konto , proszę kliknij link poniżej.<br>
+                        Jeżeli nie możesz przejśc bezpośrednio, kopiuj i wklej link do przeglądarki
                     </p>
                     <p>
-                        Application link : <a href="${application}">${application}</a>
+                        <a href="${confirmURL}">${confirmURL}</a>
                     </p>
                 </div>
             </td>
@@ -170,7 +167,7 @@
                     <tr>
                         <td align="center">
                             <p>
-                                This is automatic message sent from <a
+                                To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
                                     href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
                             </p>
                         </td>

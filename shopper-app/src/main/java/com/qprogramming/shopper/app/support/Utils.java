@@ -11,10 +11,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 /**
@@ -23,6 +25,7 @@ import java.util.function.Predicate;
 public class Utils {
     private static final String DATE_FORMAT = "dd-MM-yyyy";
     private static final String DATE_FORMAT_TIME = "dd-MM-yyyy HH:mm";
+    private static final long NUM_100NS_INTERVALS_SINCE_UUID_EPOCH = 0x01b21dd213814000L;
     public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername);
     public static final Comparator<ShoppingList> SHOPPING_LIST_COMPARATOR = Comparator.comparing(ShoppingList::getLastVisited).reversed()
             .thenComparing(ShoppingList::getName)
@@ -79,6 +82,14 @@ public class Utils {
         return mail;
     }
 
+    public static String getFullPathFromRequest(HttpServletRequest request) {
+        return request.getScheme() + "://" +
+                request.getServerName() +
+                ("http".equals(request.getScheme()) && request.getServerPort() == 80 || "https".equals(request.getScheme()) && request.getServerPort() == 443 ? "" : ":" + request.getServerPort()) +
+                request.getContextPath();
+    }
+
+
     public static Mail createMail(Account account) {
         return createMail(account, null);
     }
@@ -91,6 +102,16 @@ public class Utils {
      */
     public static String convertDateTimeToString(Date date) {
         return new SimpleDateFormat(DATE_FORMAT_TIME).format(date);
+    }
+
+    /**
+     * Returns milis for timestamp of given uuid
+     *
+     * @param uuid
+     * @return
+     */
+    public static long getTimeFromUUID(UUID uuid) {
+        return (uuid.timestamp() - NUM_100NS_INTERVALS_SINCE_UUID_EPOCH) / 10000;
     }
 
     public static <T> Predicate<T> not(Predicate<T> t) {

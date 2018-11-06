@@ -133,23 +133,17 @@
     <table class="main">
         <tbody>
         <tr>
-            <td valign="top" style="vertical-align: top; width:70px">
-                <img class="avatar" src='cid:userAvatar.png'>
-            </td>
             <td>
-            <#if name??>
-                <p>Hello ${name},</p>
-            </#if>
                 <div>
-                ${owner} wanted to share with you his shopping list in Shopper application
+                    Hello ${name}, welcome to Shopper application
                 </div>
                 <div>
                     <p>
-                        As you don't have account yet, please feel free to create one by logging in using Google+ or
-                        facebook accounts
+                        In order to confirm your account please click below<br>
+                        If you are unable to click, copy and paste link into your browser
                     </p>
                     <p>
-                        Application link : <a href="${application}">${application}</a>
+                        <a href="${confirmURL}">${confirmURL}</a>
                     </p>
                 </div>
             </td>
