@@ -9,20 +9,20 @@
         <form [formGroup]="baseForm">
             <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
                 <mat-form-field fxFlex="40%">
-                    <input matInput placeholder="{{'app.register.name'|translate}}" formControlName="name" required>
+                    <input matInput placeholder="{{'app.register.name'|translate}}" formControlName="name" required autocomplete="name">
                     <mat-hint>{{'app.register.name.enter'|translate}}</mat-hint>
                 </mat-form-field>
             </div>
             <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
                 <mat-form-field fxFlex="40%">
-                    <input matInput placeholder="{{'app.register.surname'|translate}}" formControlName="surname"
+                    <input matInput placeholder="{{'app.register.surname'|translate}}" formControlName="surname" autocomplete="surname"
                            required>
                     <mat-hint>{{'app.register.surname.enter'|translate}}</mat-hint>
                 </mat-form-field>
             </div>
             <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
                 <mat-form-field fxFlex="40%">
-                    <input matInput placeholder="Email" formControlName="email">
+                    <input matInput placeholder="Email" formControlName="email" autocomplete="email">
                     <mat-hint> {{'app.register.email'|translate}}</mat-hint>
                     <mat-error *ngIf="baseForm.controls.email.hasError('email')">
                         {{'app.register.email.valid.error'|translate}}
@@ -76,7 +76,7 @@
                         <button mat-raised-button [disabled]="baseForm.invalid || passwordForm.invalid"
                                 (click)="register()"
                                 class="pull-right success-button">
-                            Register
+                            {{'app.register'|translate}}
                         </button>
                     </div>
                 </div>
