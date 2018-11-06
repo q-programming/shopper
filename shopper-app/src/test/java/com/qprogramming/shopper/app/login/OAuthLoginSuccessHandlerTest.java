@@ -88,9 +88,9 @@ public class OAuthLoginSuccessHandlerTest {
         details.put(OAuthLoginSuccessHandler.EMAIL, TestUtil.EMAIL);
         details.put(OAuthLoginSuccessHandler.LOCALE, "en");
         details.put(OAuthLoginSuccessHandler.G.PICTURE, "link");
-        when(accSrvMock.createOAuthAcount(any(Account.class))).thenReturn(testAccount);
+        when(accSrvMock.createAcount(any(Account.class))).thenReturn(testAccount);
         handler.onAuthenticationSuccess(requestMock, responseMock, authMock);
-        verify(accSrvMock, times(1)).createOAuthAcount(any(Account.class));
+        verify(accSrvMock, times(1)).createAcount(any(Account.class));
         verify(accSrvMock, times(1)).signin(testAccount);
     }
 
@@ -125,7 +125,7 @@ public class OAuthLoginSuccessHandlerTest {
                 , testAccount.getName(), testAccount.getSurname()
                 , "Male", new Locale("fr")));
         when(oauthDetailsMock.getTokenValue()).thenReturn("RANDOM_TOKEN");
-        when(accSrvMock.createOAuthAcount(any(Account.class))).thenReturn(testAccount);
+        when(accSrvMock.createAcount(any(Account.class))).thenReturn(testAccount);
         when(fbUser.getEmail()).thenReturn(testAccount.getEmail());
 //        doReturn(testAccount.getEmail()).when(fbUser.getEmail());
         when(facebookTemplateMock.fetchObject(OAuthLoginSuccessHandler.FB.ME, User.class, fields)).thenReturn(fbUser);
@@ -134,7 +134,7 @@ public class OAuthLoginSuccessHandlerTest {
         when(accSrvMock.update(any(Account.class))).thenReturn(testAccount);
         when(propertyServiceMock.getDefaultLang()).thenReturn("en");
         handler.onAuthenticationSuccess(requestMock, responseMock, authMock);
-        verify(accSrvMock, times(1)).createOAuthAcount(any(Account.class));
+        verify(accSrvMock, times(1)).createAcount(any(Account.class));
         verify(accSrvMock, times(1)).signin(testAccount);
 
     }

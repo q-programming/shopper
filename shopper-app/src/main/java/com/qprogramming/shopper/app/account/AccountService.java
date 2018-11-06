@@ -1,11 +1,14 @@
 package com.qprogramming.shopper.app.account;
 
 
+import com.fasterxml.uuid.Generators;
 import com.qprogramming.shopper.app.account.authority.Authority;
 import com.qprogramming.shopper.app.account.authority.AuthorityService;
 import com.qprogramming.shopper.app.account.authority.Role;
 import com.qprogramming.shopper.app.account.avatar.Avatar;
 import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
+import com.qprogramming.shopper.app.config.mail.Mail;
+import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -20,7 +23,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,6 +38,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.qprogramming.shopper.app.settings.Settings.APP_EMAIL_FROM;
+import static com.qprogramming.shopper.app.settings.Settings.APP_URL;
 
 /**
  * Created by Jakub Romaniszyn on 20.07.2018.
@@ -48,14 +56,16 @@ public class AccountService implements UserDetailsService {
     private AvatarRepository _avatarRepository;
     private AuthorityService _authorityService;
     private AccountPasswordEncoder _accountPasswordEncoder;
+    private MailService _mailService;
 
     @Autowired
-    public AccountService(PropertyService propertyService, AccountRepository accountRepository, AvatarRepository avatarRepository, AuthorityService authorityService, AccountPasswordEncoder accountPasswordEncoder) {
+    public AccountService(PropertyService propertyService, AccountRepository accountRepository, AvatarRepository avatarRepository, AuthorityService authorityService, AccountPasswordEncoder accountPasswordEncoder, MailService mailService) {
         this._propertyService = propertyService;
         this._accountRepository = accountRepository;
         this._avatarRepository = avatarRepository;
         this._authorityService = authorityService;
         this._accountPasswordEncoder = accountPasswordEncoder;
+        this._mailService = mailService;
     }
 
     public void signin(Account account) {
@@ -74,7 +84,7 @@ public class AccountService implements UserDetailsService {
         return optionalAccount.get();
     }
 
-    public Account createOAuthAcount(Account account) {
+    public Account createAcount(Account account) {
         List<Authority> auths = new ArrayList<>();
         Authority role = _authorityService.findByRole(Role.ROLE_USER);
         auths.add(role);
@@ -86,17 +96,19 @@ public class AccountService implements UserDetailsService {
         if (StringUtils.isEmpty(account.getLanguage())) {
             setDefaultLocale(account);
         }
-        //generate api key
+        //generate password if needed
         generatePassword(account);
         return _accountRepository.save(account);
     }
 
     private void generatePassword(Account account) {
-        char[] possibleCharacters = API_CHARS.toCharArray();
-        String password = RandomStringUtils.random(32, 0, possibleCharacters.length - 1, false, false, possibleCharacters, new SecureRandom());
-        //TODO remove afterwards
-        LOG.info("******Generated new password for " + account.getEmail() + ". Password is : \"" + password + "\" ******");
-        account.setPassword(encode(password));
+        if (StringUtils.isBlank(account.getPassword())) {
+            char[] possibleCharacters = API_CHARS.toCharArray();
+            String password = RandomStringUtils.random(32, 0, possibleCharacters.length - 1, false, false, possibleCharacters, new SecureRandom());
+            //TODO remove afterwards
+            LOG.info("******Generated new password for " + account.getEmail() + ". Password is : \"" + password + "\" ******");
+            account.setPassword(encode(password));
+        }
     }
 
     public String generateID() {
@@ -253,5 +265,42 @@ public class AccountService implements UserDetailsService {
 
     public void delete(Account account) {
         _accountRepository.delete(account);
+    }
+
+
+    @Transactional
+    public Account createLocalAccount(Account account) {
+        account.setId(generateID());
+        account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
+        account.setUuid(Generators.timeBasedGenerator().generate().toString());
+        account.setType(Account.AccountType.LOCAL);
+        return createAcount(account);
+    }
+
+    public void sendConfirmEmail(Account account) throws MessagingException {
+        String application = _propertyService.getProperty(APP_URL);
+        Mail mail = new Mail();
+        mail.setMailTo(account.getEmail());
+        mail.setMailFrom(_propertyService.getProperty(APP_EMAIL_FROM));
+        mail.addToModel("name", account.getName());
+        mail.addToModel("application", application);
+        mail.addToModel("confirmURL", application + "/auth/confirm?token=" + account.getUuid());
+        mail.setLocale(account.getLanguage());
+        _mailService.sendConfirmMessage(mail);
+
+    }
+
+    public Account findByUuid(String uuid) throws AccountNotFoundException {
+        Optional<Account> optionalAccount = _accountRepository.findByUuid(uuid);
+        if (!optionalAccount.isPresent()) {
+            throw new AccountNotFoundException();
+        }
+        return optionalAccount.get();
+    }
+
+    public void confirm(Account account) {
+        account.setEnabled(true);
+        account.setUuid(null);
+        _accountRepository.save(account);
     }
 }

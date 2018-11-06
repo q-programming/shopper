@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.config.mail;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
 import com.qprogramming.shopper.app.config.MockSecurityContext;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.messages.MessagesService;
@@ -51,7 +52,7 @@ public class MailServiceTest {
     @Mock
     private MessagesService msgSrvMock;
     @Mock
-    private AccountService accountServiceMock;
+    private AvatarRepository avatarRepositoryMock;
     @Mock
     private Template templateMock;
     @Mock
@@ -78,7 +79,7 @@ public class MailServiceTest {
         when(authMock.getPrincipal()).thenReturn(testAccount);
         when(mailSenderMock.createMimeMessage()).thenReturn(new MimeMessage(Session.getInstance(props)));
         SecurityContextHolder.setContext(securityMock);
-        mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, accountServiceMock, CRON) {
+        mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, avatarRepositoryMock, CRON) {
             @Override
             public void initMailSender() {
                 this.mailSender = mailSenderMock;
@@ -92,7 +93,7 @@ public class MailServiceTest {
         when(propertyServiceMock.getProperty(APP_EMAIL_PORT)).thenReturn(UTF_8);
         when(propertyServiceMock.getProperty(APP_EMAIL_USERNAME)).thenReturn("user");
         when(propertyServiceMock.getProperty(APP_EMAIL_PASS)).thenReturn("pass");
-        mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, accountServiceMock, CRON);
+        mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, avatarRepositoryMock, CRON);
     }
 
     @Test

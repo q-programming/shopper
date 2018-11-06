@@ -1,14 +1,25 @@
-<mat-card>
-    <p>
-        Application to create and share shopping lists.<br>
-        Possible to login only using facebook or google (OAuth2)
-    </p>
-    <p>
-        This is still work in progress in version 0.4.0
-    </p>
-    <p>
-        In case of any issues please write to :
-        <mat-icon>email</mat-icon>
-        <a href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
-    </p>
+<mat-card id="top">
+    <div class="text-center shopper-font">
+        <h1 class="v-middle">
+            <img src="assets/images/logo.svg" height="50px" class="ml-2">
+            Shopper
+        </h1>
+        <strong>{{'app.general.version'|translate}} 0.5.0</strong>
+    </div>
+    <div *ngIf="toc">
+        <h2>{{'app.help.contents'|translate}}</h2>
+        <ng-container *ngFor="let el of toc">
+            <div>
+                <a routerLink="." [fragment]="el.id" [ngClass]="{'ml-4':el.tagName === 'H4'}">{{el.textContent}}</a>
+            </div>
+        </ng-container>
+    </div>
+    <hr>
+    <ng-container [ngSwitch]="lang">
+        <en-help *ngSwitchCase="'en'"></en-help>
+        <pl-help *ngSwitchCase="'pl'"></pl-help>
+    </ng-container>
 </mat-card>
+<div class="btt-btn" (click)="backToTop()" matTooltip="{{'app.general.btt'|translate}}">
+    <mat-icon>arrow_upward</mat-icon>
+</div>

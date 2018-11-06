@@ -23,7 +23,6 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AppMaterialModules} from "./material.module";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {LayoutModule} from '@angular/cdk/layout';
-import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule} from '@angular/material';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {ListService} from "@services/list.service";
 import {ListComponent} from './components/list/list.component';
@@ -55,7 +54,15 @@ import {FavoritesComponent} from './components/favorites/favorites.component';
 import {ItemDetailsComponent} from './components/dialogs/item/item-details/item-details.component';
 import {TrimDirective} from './directives/trim.directive';
 import {environment} from "@env/environment";
-import { PullToRefreshComponent } from './components/pull-to-refresh/pull-to-refresh.component';
+import {PullToRefreshComponent} from './components/pull-to-refresh/pull-to-refresh.component';
+import {EnHelpComponent} from './components/help/en/en-help.component';
+import {PlHelpComponent} from './components/help/pl/pl-help.component';
+import {ScrollToModule} from "@nicky-lenaers/ngx-scroll-to";
+import {RegisterComponent} from './components/register/register.component';
+import {PasswordStrengthBarModule} from "ng2-password-strength-bar";
+import {ErrorComponent} from './components/error/error.component';
+import {SuccessComponent} from "./components/success/success.component";
+
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -92,6 +99,11 @@ export function initUserFactory(authService: AuthenticationService) {
         ItemDetailsComponent,
         TrimDirective,
         PullToRefreshComponent,
+        EnHelpComponent,
+        PlHelpComponent,
+        RegisterComponent,
+        SuccessComponent,
+        ErrorComponent,
     ],
     entryComponents: [
         AvatarUploadComponent,
@@ -126,11 +138,8 @@ export function initUserFactory(authService: AuthenticationService) {
         }),
         LayoutModule,
         NgxMatSelectSearchModule,
-        MatToolbarModule,
-        MatButtonModule,
-        MatSidenavModule,
-        MatIconModule,
-        MatListModule
+        ScrollToModule.forRoot(),
+        PasswordStrengthBarModule
     ],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [

@@ -47,6 +47,7 @@ Messages
 }
 
 .message-text {
+    font-family: 'Kalam', cursive;
     word-wrap: break-word
 }
 

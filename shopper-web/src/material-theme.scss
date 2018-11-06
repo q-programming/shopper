@@ -1,4 +1,5 @@
 @import '~@angular/material/theming';
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Kalam');
 
 @include mat-core();
 $primary: mat-palette($mat-indigo, 500);
@@ -6,15 +7,29 @@ $accent: mat-palette($mat-blue, 900);
 $theme: mat-light-theme($primary, $accent);
 @include angular-material-theme($theme);
 
-.btn-fb {
-  background-color: #3b5998 !important;
-  color: #fff !important;
+$general-typography: mat-typography-config(
+        $font-family: '"Kalam", "Roboto", sans-serif',
+        $body-2: mat-typography-level(14px, 24px, 600)
+);
+
+@include mat-core($general-typography);
+
+body {
+  font-family: 'Kalam', cursive;
+  font-weight: 300;
+  min-height: 100vh;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #212529;
+  text-align: left;
+  background-color: #fff;
 }
 
-.btn-gplus {
-  background-color: #dd4b39 !important;
-  color: #fff !important;
+.shopper-font {
+  font-family: 'Kalam', cursive;
 }
+
 
 .mat-drawer.mat-drawer-side {
   z-index: 1 !important;
@@ -106,4 +121,12 @@ $theme: mat-light-theme($primary, $accent);
 
 .mat-progress-spinner circle, .mat-spinner circle {
   stroke: #ffffff;
+}
+
+.cdk-overlay-container {
+  z-index: 2000 !important;
+}
+
+.mat-tooltip {
+  font-size: 17px; // current default is 10px :-/
 }

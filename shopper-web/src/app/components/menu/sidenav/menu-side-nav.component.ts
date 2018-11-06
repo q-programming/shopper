@@ -26,6 +26,11 @@ export class MenuSideNavComponent implements OnInit {
         this.account = this.authSrv.currentAccount;
     }
 
+    openNewListDialog() {
+        this.sidenav.emit(SideNavAction.CLOSE);
+        this.menuSrv.emmitAction(MenuAction.ADD);
+    }
+
     openNewItemDialog() {
         this.sidenav.emit(SideNavAction.CLOSE);
         this.menuSrv.emmitAction(MenuAction.ADD_ITEM);

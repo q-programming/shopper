@@ -20,6 +20,8 @@ import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.qprogramming.shopper.app.settings.Settings.*;
 
@@ -69,11 +71,7 @@ public class ConfigRestController {
     }
 
     private String setDefaultAPPURL(HttpServletRequest request) {
-        String uri = request.getScheme() + "://" +
-                request.getServerName() +
-                ("http".equals(request.getScheme()) && request.getServerPort() == 80 || "https".equals(request.getScheme()) && request.getServerPort() == 443 ? "" : ":" + request.getServerPort()) +
-                request.getContextPath();
-        return (String) propertyService.update(APP_URL, uri).getValue();
+        return (String) propertyService.update(APP_URL, Utils.getFullPathFromRequest(request)).getValue();
     }
 
     @RolesAllowed("ROLE_ADMIN")
@@ -116,5 +114,12 @@ public class ConfigRestController {
     @RequestMapping(value = "/categories/defaults", method = RequestMethod.GET)
     public ResponseEntity getDefaultSorting() {
         return ResponseEntity.ok(Collections.singleton(propertyService.getProperty(APP_CATEGORY_ORDER)));
+    }
+
+    @RequestMapping(value = "/default-language", method = RequestMethod.GET)
+    public ResponseEntity getDefaultLanguage() {
+        Map<String, Object> model = new HashMap<>();
+        model.put("language", propertyService.getDefaultLang());
+        return ResponseEntity.ok(model);
     }
 }

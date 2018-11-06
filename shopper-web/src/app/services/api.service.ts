@@ -113,10 +113,6 @@ export class ApiService {
         }
         else if (error && error.status === 503) {
         }
-        else {
-            this.alertSrv.error('app.api.error.general');
-            // this.displayError(error);
-        }
         throw error;
     }
 

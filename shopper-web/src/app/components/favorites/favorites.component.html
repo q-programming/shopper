@@ -1,4 +1,4 @@
-<div fxLayout="row wrap" fxLayoutGap="5px" fxLayoutAlign="space-around start" class="m-1 favorites">
+<div fxLayout="row wrap" fxLayoutGap="5px" fxLayoutAlign="space-around start" class="mt-1 mb-1 mr-3 ml-3 favorites">
     <div fxFlex="100">
         <form>
             <mat-form-field class="mat-form-field-full-width mr-1 ml-1">
@@ -16,9 +16,9 @@
         {{'app.item.add.favorites.onlist'|translate}}
     </div>
     <div *ngFor="let fav of filteredProducts | async" fxFlex="calc(50%-5px)" class="mt-1">
-        <button mat-raised-button class="full-width-button" (click)="operation(fav)"
+        <button mat-raised-button class="fav-button" (click)="operation(fav)"
                 matTooltip="{{settings?('app.item.remove.favorites'|translate:{name:fav.name}):('app.item.add.favorites.tolist'|translate:{name:fav.name})}}">
-            <div fxLayout="row">
+            <div fxLayout="row" fxLayoutGap="5px">
                 <mat-icon fxFlex="15" class="mt-1 pull-left">{{settings?'remove':'add'}}</mat-icon>
                 <span [innerHtml]="(fav.name) | highlight:filter"
                       class="font-weight-normal text-left wrapped-text mt-2"

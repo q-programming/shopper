@@ -13,6 +13,8 @@ export class QuickaddComponent implements OnInit {
 
     @Input()
     listID: number;
+    @Input()
+    demo: boolean;
     @Output()
     created = new EventEmitter<ShoppingList>();
     form: FormGroup;
@@ -26,11 +28,13 @@ export class QuickaddComponent implements OnInit {
     }
 
     createItem() {
-        this.itemSrv.createNewItem(this.listID, {product: {name: this.productName}}).subscribe(list => {
-            if (list) {
-                this.productName = '';
-                this.created.emit(list);
-            }
-        })
+        if (this.productName && !this.demo) {
+            this.itemSrv.createNewItem(this.listID, {product: {name: this.productName}}).subscribe(list => {
+                if (list) {
+                    this.productName = '';
+                    this.created.emit(list);
+                }
+            });
+        }
     }
 }

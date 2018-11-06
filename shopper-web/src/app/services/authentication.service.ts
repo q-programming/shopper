@@ -7,6 +7,7 @@ import {AvatarService} from "./avatar.service";
 import {TranslateService} from "@ngx-translate/core";
 import {AlertService} from "./alert.service";
 import {NGXLogger} from "ngx-logger";
+import {Observable} from "rxjs";
 
 @Injectable()
 export class AuthenticationService {
@@ -26,15 +27,7 @@ export class AuthenticationService {
             .then(res => {
                 if (res.access_token !== null) {
                     // this.currentAccount = {token: res.access_token};
-                    return this.getMyInfo().toPromise()
-                        .then(resp => {
-                            this.currentAccount = resp as Account;
-                            this.avatarSrv.getUserAvatar(this.currentAccount).subscribe(avatar => {
-                                this.currentAccount.avatar = avatar;
-                            });
-                            // this.avatarSrv.getUserAvatar(this.currentAccount);
-                            this.translate.use(this.currentAccount.language);
-                        });
+                    return this.handleLogin();
                 }
             })
             .catch((err) => {
@@ -43,6 +36,18 @@ export class AuthenticationService {
                 return null
             });
         return promise;
+    }
+
+    private handleLogin() {
+        return this.getMyInfo().toPromise()
+            .then(resp => {
+                this.currentAccount = resp as Account;
+                this.avatarSrv.getUserAvatar(this.currentAccount).subscribe(avatar => {
+                    this.currentAccount.avatar = avatar;
+                });
+                // this.avatarSrv.getUserAvatar(this.currentAccount);
+                this.translate.use(this.currentAccount.language);
+            });
     }
 
     /**
@@ -70,5 +75,32 @@ export class AuthenticationService {
             return !!_.find(this.currentAccount.authorities, (o) => o.authority == Role.ROLE_ADMIN)
         }
         return false;
+    }
+
+    login(username: string, password: string): Observable<any> {
+        return new Observable((observable) => {
+            this.apiService.post(environment.auth_url, {
+                username: username,
+                password: password
+            }).subscribe((res) => {
+                if (res.access_token !== null) {
+                    this.getMyInfo().subscribe(user => {
+                        this.currentAccount = user as Account;
+                        this.avatarSrv.getUserAvatar(this.currentAccount).subscribe(avatar => {
+                            this.currentAccount.avatar = avatar;
+                            observable.next(this.currentAccount);
+                            observable.complete();
+                        });
+                        // this.avatarSrv.getUserAvatar(this.currentAccount);
+                        this.translate.use(this.currentAccount.language);
+                    })
+                }
+            }, err => {
+                this.alertSrv.error('app.login.error');
+                this.logger.error(err);
+                observable.next();
+                observable.complete();
+            });
+        });
     }
 }
