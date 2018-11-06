@@ -26,7 +26,6 @@ export class RegisterComponent implements OnInit {
     baseForm: FormGroup;
     passwordForm: FormGroup;
     myColors = ['#DD2C00', '#FF6D00', '#FFD600', '#AEEA00', '#00C853'];
-    login_url = environment.context + environment.login_url;
     matcher = new MyErrorStateMatcher();
     currentPass;
 
@@ -36,6 +35,13 @@ export class RegisterComponent implements OnInit {
                 private apiService: ApiService,
                 private alertSrv: AlertService,
                 private authSrv: AuthenticationService) {
+        this.apiService.get(environment.default_lang_url).subscribe(defaults => {
+            if (defaults) {
+                let lang = defaults.language;
+                this.translate.setDefaultLang(lang);
+                this.translate.use(lang)
+            }
+        })
     }
 
     ngOnInit() {
