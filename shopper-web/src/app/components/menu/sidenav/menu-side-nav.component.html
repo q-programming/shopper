@@ -53,6 +53,12 @@
             <span>{{'app.shopping.unarchive'|translate}}</span>
         </button>
     </ng-container>
+    <button mat-button (click)="copyList()">
+        <mat-icon class="mr-2">
+            file_copy
+        </mat-icon>
+        <span>{{'app.shopping.copy'|translate}}</span>
+    </button>
 </div>
 <mat-divider class="mt-2"></mat-divider>
 <div fxLayout="column">

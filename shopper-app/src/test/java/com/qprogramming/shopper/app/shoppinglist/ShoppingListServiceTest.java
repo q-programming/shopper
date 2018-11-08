@@ -6,22 +6,26 @@ import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.exceptions.ShoppingAccessException;
+import com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException;
+import com.qprogramming.shopper.app.items.ListItem;
+import com.qprogramming.shopper.app.messages.MessagesService;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.qprogramming.shopper.app.TestUtil.ADMIN_RANDOM_ID;
-import static com.qprogramming.shopper.app.TestUtil.ADMIN_USERNAME;
 import static com.qprogramming.shopper.app.TestUtil.USER_RANDOM_ID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,6 +45,10 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     private MailService mailServiceMock;
     @Mock
     private CategoryPresetRepository presetRepositoryMock;
+    @Mock
+    private MessagesService msgSrvMock;
+    @Mock
+    private EntityManager entityManagerMock;
 
     private ShoppingListService listService;
 
@@ -50,7 +58,12 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     public void setup() {
         super.setup();
         CategoryPresetService presetService = new CategoryPresetService(presetRepositoryMock);
-        listService = new ShoppingListService(listRepository, accountServiceMock, propertyServiceMock, mailServiceMock, presetService);
+        listService = new ShoppingListService(listRepository, accountServiceMock, propertyServiceMock, msgSrvMock, mailServiceMock, presetService) {
+            @Override
+            public EntityManager getEntityManager() {
+                return entityManagerMock;
+            }
+        };
     }
 
     @Test
@@ -117,6 +130,36 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
         assertThat(list2.getShared().size()).isEqualTo(0);
         assertThat(list1.getOwnerId()).isNotEqualTo(USER_RANDOM_ID);
         assertThat(list2.getOwnerId()).isNotEqualTo(USER_RANDOM_ID);
+    }
+
+    @Test
+    public void copyListTest() throws Exception {
+        ShoppingList list = createList(NAME, 1L);
+        list.setOwnerId(ADMIN_RANDOM_ID);
+        list.getShared().add(USER_RANDOM_ID);
+        ListItem listItem1 = TestUtil.createListItem(NAME);
+        listItem1.setId(1L);
+        ListItem listItem2 = TestUtil.createListItem(NAME);
+        listItem2.setId(2L);
+        list.setItems(Arrays.asList(listItem1, listItem2));
+        when(listRepository.findById(1L)).thenReturn(Optional.of(list));
+        when(listRepository.save(any(ShoppingList.class))).then(returnsFirstArg());
+        ShoppingList copyList = listService.copyList(1L);
+        verify(listRepository, times(1)).save(copyList);
+    }
+
+    @Test(expected = ShoppingAccessException.class)
+    public void copyListNoPermissionTest() throws Exception {
+        ShoppingList list = createList(NAME, 1L);
+        list.setOwnerId(ADMIN_RANDOM_ID);
+        when(listRepository.findById(1L)).thenReturn(Optional.of(list));
+        listService.copyList(1L);
+    }
+
+    @Test(expected = ShoppingNotFoundException.class)
+    public void copyListNoListTest() throws Exception {
+        when(listRepository.findById(1L)).thenReturn(Optional.empty());
+        listService.copyList(1L);
     }
 
 

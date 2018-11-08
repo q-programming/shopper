@@ -66,6 +66,11 @@ export class MenuSideNavComponent implements OnInit {
         this.menuSrv.emmitAction(MenuAction.REFRESH);
     }
 
+    copyList() {
+        this.sidenav.emit(SideNavAction.CLOSE);
+        this.menuSrv.emmitAction(MenuAction.COPY);
+    }
+
     logout() {
         this.authSrv.logout().subscribe(() => {
             this.router.navigate(['/login']);
