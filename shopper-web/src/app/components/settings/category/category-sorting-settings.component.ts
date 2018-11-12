@@ -8,6 +8,7 @@ import {ListService} from "@services/list.service";
 import * as _ from "lodash"
 import {AuthenticationService} from "@services/authentication.service";
 import {Account} from "@model/Account";
+import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 
 @Component({
     selector: 'settings-category-sorting',
@@ -22,14 +23,14 @@ export class CategorySortingSettingsComponent implements OnInit {
     defaultOrdering: Category[];
     currentOrdering: Category[];
     currentAccount: Account;
+    items = ['Zero', 'One', 'Two', 'Three'];
 
     constructor(private alertSrv: AlertService, private api: ApiService, private listSrv: ListService, private authSrv: AuthenticationService) {
         this.categoryPresetControl = new FormControl('', [Validators.required]);
         this.listSrv.getDefaultCategoriesSorting().subscribe(defaults => {
             if (defaults) {
                 this.defaultOrdering = defaults[0].split(",").map(value => Category[value]);
-            }
-            else {
+            } else {
                 this.defaultOrdering = Object.values(Category);
             }
         })
@@ -109,5 +110,21 @@ export class CategorySortingSettingsComponent implements OnInit {
                 }
             })
         }
+    }
+
+    onDrop2(event: CdkDragDrop<string[]>) {
+        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    }
+
+    onDrop(event: CdkDragDrop<string[]>) {
+        moveItemInArray(this.currentOrdering, event.previousIndex, event.currentIndex);
+    }
+
+    drop($event: CdkDragDrop<{ title: string, poster: string }[]>) {
+        moveItemInArray(
+            this.items,
+            $event.previousIndex,
+            $event.currentIndex
+        );
     }
 }
