@@ -234,6 +234,21 @@ public class ShoppingListRestController {
         }
     }
 
+    @RequestMapping(value = "/{id}/copy", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<ShoppingList> copyList(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(_listService.copyList(id));
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+
     /**
      * Delete list with id . If currently logged in user is not an owner , he/she will just remove himself from shares of that list
      *

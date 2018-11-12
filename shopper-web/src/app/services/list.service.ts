@@ -273,4 +273,8 @@ export class ListService {
     getDefaultCategoriesSorting(): Observable<string> {
         return this.api.getObject<AppSettings>(`${environment.config_url}/categories/defaults`);
     }
+
+    copyList(list: ShoppingList): Observable<ShoppingList> {
+        return this.api.postObject<ShoppingList>(`${environment.list_url}/${list.id}/copy`, {});
+    }
 }

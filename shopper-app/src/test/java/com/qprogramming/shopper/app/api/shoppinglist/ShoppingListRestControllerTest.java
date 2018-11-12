@@ -13,6 +13,7 @@ import com.qprogramming.shopper.app.items.ListItemService;
 import com.qprogramming.shopper.app.items.category.Category;
 import com.qprogramming.shopper.app.items.favorites.FavoriteProductsRepository;
 import com.qprogramming.shopper.app.items.product.ProductRepository;
+import com.qprogramming.shopper.app.messages.MessagesService;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
@@ -77,6 +78,9 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     private CategoryPresetRepository presetRepositoryMock;
     @Mock
     private FavoriteProductsRepository favoritesRepositoryMock;
+    @Mock
+    private MessagesService msgSrvMock;
+
 
 
     @Before
@@ -84,7 +88,7 @@ public class ShoppingListRestControllerTest extends MockedAccountTestBase {
     public void setup() {
         super.setup();
         CategoryPresetService presetService = new CategoryPresetService(presetRepositoryMock);
-        ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, mailServiceMock, presetService);
+        ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, msgSrvMock, mailServiceMock, presetService);
         ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock);
         ShoppingListRestController controller = new ShoppingListRestController(listService, listItemService, presetService);
         mvc = MockMvcBuilders.standaloneSetup(controller)

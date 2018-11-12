@@ -84,6 +84,11 @@
                         <span>{{'app.general.delete'|translate}}</span>
                     </button>
                 </ng-container>
+                <button mat-menu-item (click)="copyList(list)"
+                        matTooltip="{{'app.shopping.copy.hint'|translate}}">
+                    <mat-icon>file_copy</mat-icon>
+                    <span>{{'app.shopping.copy'|translate}}</span>
+                </button>
             </mat-menu>
         </mat-card-header>
         <mat-card-content class="pb-1" *ngIf="list.items.length>0">

@@ -107,6 +107,11 @@
                             <mat-icon>delete</mat-icon>
                             <span>{{'app.general.delete'|translate}}</span>
                         </button>
+                        <button mat-menu-item routerLink="." fragment="shoppinglist-copy"
+                                matTooltip="Stwórz kopię listy uwzględniająć wszystkie produkty oraz współdzielenia">
+                            <mat-icon>file-copy</mat-icon>
+                            <span>{{'app.shopping.copy'|translate}}</span>
+                        </button>
                     </mat-menu>
                 </mat-card-header>
                 <mat-card-content class="pb-1 help-cursor"
@@ -188,6 +193,24 @@
             dialogu współdzielenia, przechodząc na zakładkę
             <span class="help-title"><mat-icon>person</mat-icon>&nbsp;{{'app.shopping.share.with.header'|translate}}</span>
             i klikająć w znak minus obok konta do usunięcia ze współdzielonej listy.
+        </p>
+    </div>
+    <!--LIST COPY-->
+    <div>
+        <mat-icon class="help-title-icon">file_copy</mat-icon>
+        <h3 class="underlined help-title" id="shoppinglist-copy">Kopiowanie listy</h3>
+        <p>
+            Aby skopiować listę wystarczy wybrać opcję
+            <button mat-button>
+                <mat-icon class="mr-2">file_copy</mat-icon>
+                <span>{{'app.shopping.copy'|translate}}</span>
+            </button>
+            , która stworzy dokładną kopię listy. <br>
+            Obecnie zalogowany uzytkownik zostanie właścicielem listy, a wszystkie produkty zostaną skopiowane 1:1.<br>
+            Oznacza to , że jeżeli na oryginalnej liście produkt był zaznaczony jako gotowy , na nowej liscie również
+            będzie oznaczony jako gotowy.<br>
+            Do nowej listy można wtedy dodać współdzielonych użytkowników, dodawać prodykty , zmieniać kategorię etc.
+            bez zmian na oryginalnej liście.
         </p>
     </div>
     <!--SHOPPING LIST-->

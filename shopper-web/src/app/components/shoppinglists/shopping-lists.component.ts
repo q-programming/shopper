@@ -164,4 +164,17 @@ export class ShoppingListsComponent implements OnInit {
             this.logger.error(error);
         })
     }
+
+    private copyList(list: ShoppingList) {
+        this.listSrv.copyList(list).subscribe(result => {
+            if (result) {
+                this.alertSrv.success('app.shopping.copy.success', {name: list.name});
+                this.router.navigate(['/list', result.id]);
+            }
+        }, error => {
+            this.alertSrv.error('app,shopping.copy.error');
+            this.logger.error(error)
+        })
+    }
+
 }

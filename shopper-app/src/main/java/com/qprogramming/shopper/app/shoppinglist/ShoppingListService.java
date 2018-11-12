@@ -11,15 +11,19 @@ import com.qprogramming.shopper.app.exceptions.ShoppingAccessException;
 import com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException;
 import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.items.category.Category;
+import com.qprogramming.shopper.app.messages.MessagesService;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
-import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -38,15 +42,19 @@ public class ShoppingListService {
     private ShoppingListRepository _listRepository;
     private AccountService _accountService;
     private PropertyService _propertyService;
+    private MessagesService _msgSrv;
     private MailService _mailService;
     private CategoryPresetService _presetService;
+    @PersistenceContext
+    private EntityManager entityManager;
 
 
     @Autowired
-    public ShoppingListService(ShoppingListRepository listRepository, AccountService accountService, PropertyService propertyService, MailService mailService, CategoryPresetService presetService) {
+    public ShoppingListService(ShoppingListRepository listRepository, AccountService accountService, PropertyService propertyService, MessagesService msgSrv, MailService mailService, CategoryPresetService presetService) {
         this._listRepository = listRepository;
         this._accountService = accountService;
         this._propertyService = propertyService;
+        this._msgSrv = msgSrv;
         this._mailService = mailService;
         this._presetService = presetService;
     }
@@ -277,5 +285,37 @@ public class ShoppingListService {
     public void deleteUserLists(Account account) {
         List<ShoppingList> allAccountLists = _listRepository.findAllByOwnerId(account.getId());
         _listRepository.deleteAll(allAccountLists);
+    }
+
+    public ShoppingList copyList(Long id) throws ShoppingAccessException, ShoppingNotFoundException {
+        ShoppingList list = this.findByID(id);
+        ShoppingList copiedList = new ShoppingList();
+        Hibernate.initialize(list.getItems());
+        getEntityManager().detach(list);
+        createListCopy(list, copiedList);
+        return _listRepository.save(copiedList);
+    }
+
+    private void createListCopy(ShoppingList original, ShoppingList copy) {
+        Locale currentLocale = Utils.getCurrentLocale();
+        String copyTxt = _msgSrv.getMessage("app.shoppinglist.copy", null, "", currentLocale);
+        BeanUtils.copyProperties(original, copy, "id", "items", "shared", "pendingshares");
+        copy.setName(copyTxt + " " + original.getName());
+        copy.setOwnerId(Utils.getCurrentAccountId());
+        original.getItems().forEach(listItem -> {
+            getEntityManager().detach(listItem);
+            ListItem copiedItem = new ListItem();
+            BeanUtils.copyProperties(listItem, copiedItem, "id");
+            copy.getItems().add(copiedItem);
+        });
+    }
+
+    /**
+     * Visible for testing
+     *
+     * @return EntityManager
+     */
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 }

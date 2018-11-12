@@ -75,6 +75,10 @@
                     <span>{{'app.shopping.unarchive'|translate}}</span>
                 </button>
             </ng-container>
+            <button mat-menu-item (click)="copyList()">
+                <mat-icon>file_copy</mat-icon>
+                <span>{{'app.shopping.copy'|translate}}</span>
+            </button>
         </mat-menu>
         <!--SHARE-->
         <button *ngIf="!list.archived"

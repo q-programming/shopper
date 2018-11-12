@@ -51,13 +51,15 @@
         </div>
         <div class="text-center mt-2" [innerHTML]="'app.settings.products.category.sort.hint' | translate">
         </div>
-        <div dnd-sortable-container [sortableData]="currentOrdering" class="mt-2">
-            <mat-card *ngFor="let category of currentOrdering;let i = index" dnd-sortable [sortableIndex]="i"
-                      class="mat-list-compact">
-                <mat-icon matListIcon>more_vert</mat-icon>
-                <img [src]='"assets/images/categories/"+ category + ".png"' class="category mr-1">
-                {{category | translate}}
-            </mat-card>
+        <!--TODO drag and drop needed-->
+        <div class="mt-2">
+            <div cdkDropList (cdkDropListDropped)="onDrop($event)">
+                <mat-card *ngFor="let category of currentOrdering" class="mat-list-compact" cdkDrag>
+                    <mat-icon matListIcon>more_vert</mat-icon>
+                    <img [src]='"assets/images/categories/"+ category + ".png"' class="category mr-1">
+                    {{category | translate}}
+                </mat-card>
+            </div>
         </div>
     </div>
 </div>

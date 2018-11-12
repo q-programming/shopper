@@ -79,6 +79,9 @@ export class ListComponent implements OnInit, OnDestroy {
                 case MenuAction.LEAVE:
                     this.leaveShared();
                     break;
+                case MenuAction.COPY:
+                    this.copyList();
+                    break;
             }
         });
     }
@@ -417,4 +420,15 @@ export class ListComponent implements OnInit, OnDestroy {
         this.isInProgress = true;
     }
 
+    private copyList() {
+        this.listSrv.copyList(this.list).subscribe(result => {
+            if (result) {
+                this.alertSrv.success('app.shopping.copy.success', {name: this.list.name});
+                this.router.navigate(['/list', result.id]);
+            }
+        }, error => {
+            this.alertSrv.error('app,shopping.copy.error');
+            this.logger.error(error)
+        })
+    }
 }
