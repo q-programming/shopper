@@ -22,6 +22,7 @@ logging:
     org.hibernate.engine.jdbc.env.internal.LobCreatorBuilderImpl: ERROR
     org.springframework.security: ERROR
     org.springframework.web.filter.CommonsRequestLoggingFilter: ERROR
+    org.springframework.web.socket.config.WebSocketMessageBrokerStats: ERROR
 spring:
   mail:
     host: localhost
