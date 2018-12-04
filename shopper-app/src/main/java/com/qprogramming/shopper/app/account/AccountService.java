@@ -35,10 +35,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.qprogramming.shopper.app.settings.Settings.APP_EMAIL_FROM;
 import static com.qprogramming.shopper.app.settings.Settings.APP_URL;
@@ -308,5 +305,10 @@ public class AccountService implements UserDetailsService {
     public void addAccountToFriendList(Account account) throws AccountNotFoundException {
         Account currentAccount = findById(Utils.getCurrentAccountId());
         currentAccount.getFriends().add(account);
+    }
+
+    public Set<Account> getAllFriendList() throws AccountNotFoundException {
+        Account currentAccount = findById(Utils.getCurrentAccountId());
+        return currentAccount.getFriends();
     }
 }

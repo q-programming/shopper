@@ -6,15 +6,21 @@ import {ApiService} from "@services/api.service";
 import {AlertService} from "@services/alert.service";
 import {MatDialogRef} from "@angular/material";
 import {ShareComponent} from "../share.component";
+import {Account} from "@model/Account";
+import {debounceTime, finalize, switchMap, tap} from 'rxjs/operators';
+import {Observable} from "rxjs";
 
 @Component({
     selector: 'new-share',
     templateUrl: './new-share.component.html',
-    styles: []
+    styleUrls: ['./new-share.component.css']
 })
 export class NewShareComponent implements OnInit {
 
     emailControl: FormControl;
+    filteredAccounts: Account[];
+    isLoading = false;
+    term: string;
     @Input() list: ShoppingList;
     @Input() dialogRef: MatDialogRef<ShareComponent>;
     @Output()
@@ -25,6 +31,19 @@ export class NewShareComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.emailControl
+            .valueChanges
+            .pipe(
+                debounceTime(300),
+                tap(() => this.isLoading = true),
+                switchMap(value => this.getFriendList(value)
+                    .pipe(
+                        finalize(() => this.isLoading = false),
+                    )
+                )
+            )
+            .subscribe(users => this.filteredAccounts = users);
+
     }
 
     shareList() {
@@ -43,6 +62,17 @@ export class NewShareComponent implements OnInit {
             this.emailControl.setValue(undefined);
             this.dialogRef.close(true);
             this.done.emit(true);
+        }
+    }
+
+    getFriendList(value: string): Observable<Account[]> {
+        this.term = value;
+        return this.api.get(`${environment.account_url}/friends`, {term: value})
+    }
+
+    displayFn(email: string) {
+        if (email) {
+            return email;
         }
     }
 
