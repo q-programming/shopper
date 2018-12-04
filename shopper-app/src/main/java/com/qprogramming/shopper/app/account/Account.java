@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qprogramming.shopper.app.account.authority.Authority;
 import com.qprogramming.shopper.app.account.authority.Role;
+import com.qprogramming.shopper.app.items.ListItem;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -61,6 +62,10 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Column
     @Enumerated(EnumType.STRING)
     private AccountType type;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Account> friends = new HashSet<>();
 
     public String getId() {
         return id;
@@ -142,6 +147,17 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     public void setType(AccountType type) {
         this.type = type;
+    }
+
+    public Set<Account> getFriends() {
+        if (Collections.isEmpty(this.friends)) {
+            this.friends = new HashSet<>();
+        }
+        return friends;
+    }
+
+    public void setFriends(Set<Account> friends) {
+        this.friends = friends;
     }
 
     public void addAuthority(Authority authority) {

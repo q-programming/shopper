@@ -11,6 +11,7 @@ import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -302,5 +303,10 @@ public class AccountService implements UserDetailsService {
         account.setEnabled(true);
         account.setUuid(null);
         _accountRepository.save(account);
+    }
+
+    public void addAccountToFriendList(Account account) throws AccountNotFoundException {
+        Account currentAccount = findById(Utils.getCurrentAccountId());
+        currentAccount.getFriends().add(account);
     }
 }

@@ -41,7 +41,6 @@ export class ListComponent implements OnInit, OnDestroy {
     currentAccount: Account;
     stompClient;
 
-
     constructor(private logger: NGXLogger,
                 private listSrv: ListService,
                 private itemSrv: ItemService,
@@ -430,5 +429,8 @@ export class ListComponent implements OnInit, OnDestroy {
             this.alertSrv.error('app,shopping.copy.error');
             this.logger.error(error)
         })
+    }
+    trackByFn(index, item) {
+        return item.id;
     }
 }
