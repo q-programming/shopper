@@ -230,10 +230,10 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         Account account = (Account) o;
 
         if (!id.equals(account.id)) return false;
-        if (email != null ? !email.equals(account.email) : account.email != null) return false;
+        if (!Objects.equals(email, account.email)) return false;
         if (!name.equals(account.name)) return false;
         if (!surname.equals(account.surname)) return false;
-        return created != null ? created.equals(account.created) : account.created == null;
+        return Objects.equals(created, account.created);
     }
 
     @Override

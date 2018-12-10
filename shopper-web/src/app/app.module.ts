@@ -45,7 +45,6 @@ import {NotificationsSettingsComponent} from './components/settings/notification
 import {AppSettingsComponent} from "./components/settings/app/app-settings.component";
 import {SharedWithComponent} from './components/dialogs/share/shared-with/shared-with.component';
 import {NewShareComponent} from './components/dialogs/share/new-share/new-share.component';
-import {NgProgressModule} from "ngx-progressbar";
 import {HelpComponent} from './components/help/help.component';
 import {MenuToolbarComponent} from './components/menu/toolbar/menu-toolbar.component';
 import {MenuSideNavComponent} from './components/menu/sidenav/menu-side-nav.component';
@@ -62,6 +61,8 @@ import {PasswordStrengthBarModule} from "ng2-password-strength-bar";
 import {ErrorComponent} from './components/error/error.component';
 import {SuccessComponent} from "./components/success/success.component";
 import {DragDropModule} from "@angular/cdk/drag-drop";
+import {NgProgressRouterModule} from "@ngx-progressbar/router";
+import {NgProgressModule} from "@ngx-progressbar/core";
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -121,7 +122,8 @@ export function initUserFactory(authService: AuthenticationService) {
         HttpClientModule,
         routing,
         AppMaterialModules,
-        NgProgressModule,
+        NgProgressModule.forRoot(),
+        NgProgressRouterModule.forRoot(),
         FlexLayoutModule,
         DragDropModule,
         LoggerModule.forRoot({
