@@ -8,7 +8,7 @@ import {Observable} from "rxjs";
 import {Product} from "@model/Product";
 import {environment} from "@env/environment";
 import * as _ from 'lodash';
-import {itemDisplayName} from "../../../../utils/utils";
+import {isNumber, itemDisplayName} from "../../../../utils/utils";
 
 @Component({
     selector: 'item-details',
@@ -47,7 +47,7 @@ export class ItemDetailsComponent implements OnInit {
         });
         //product
         this.form.controls.product.valueChanges
-            .debounceTime(400)
+            .debounceTime(600)
             .distinctUntilChanged()
             .subscribe(value => {
                 this.productTerm = value;
@@ -93,4 +93,23 @@ export class ItemDetailsComponent implements OnInit {
     }
 
 
+    tryToGetQuantity(): string {
+        let result = <string>this.form.controls.product.value;
+        let parts = result.split(' ').filter(i => i);
+        const wordCounts = parts.length;
+        if (wordCounts > 1) {
+            let b = parts[0].replace(',','.');
+            let e = parts[wordCounts - 1].replace(',','.');
+            if (isNumber(b) && !isNumber(e)) {
+                this.form.controls.quantity.setValue(Number(b));
+                result = parts.slice(1).join(" ");
+                this.form.controls.product.setValue(result)
+            } else if (isNumber(e)) {
+                this.form.controls.quantity.setValue(Number(e));
+                result = parts.slice(0, wordCounts - 1).join(" ");
+                this.form.controls.product.setValue(result)
+            }
+        }
+        return result;
+    }
 }

@@ -14,6 +14,7 @@ import org.mockito.Mock;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -79,5 +80,58 @@ public class ListItemServiceTest extends MockedAccountTestBase {
         when(productRepositoryMock.findById(1L)).thenReturn(Optional.of(item.getProduct()));
         listItemService.createListItem(item);
         verify(listItemRepositoryMock, times(1)).save(item);
+    }
+
+    @Test
+    public void setQuantityFromName() {
+        ListItem item = TestUtil.createListItem(NAME);
+        item.setQuantity(0f);
+        item.getProduct().setName("Name with quantity 2");
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isEqualTo(2f);
+        assertThat(item.getProduct().getName()).isEqualTo("Name with quantity");
+
+        item.setQuantity(0f);
+        item.getProduct().setName("Name with no number 2%");
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isEqualTo(0f);
+
+        item.setQuantity(0f);
+        item.getProduct().setName("Name with no number");
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isEqualTo(0f);
+
+        item.setQuantity(0f);
+        item.getProduct().setName("16 items");
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isEqualTo(16f);
+        assertThat(item.getProduct().getName()).isEqualTo("items");
+
+        item.setQuantity(0f);
+        item.getProduct().setName("10 items 16");
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isEqualTo(16f);
+        assertThat(item.getProduct().getName()).isEqualTo("10 items");
+
+        item.setQuantity(0f);
+        item.getProduct().setName("Name");
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isEqualTo(0f);
+
+        item.setQuantity(0f);
+        item.getProduct().setName("water 1.5");
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isEqualTo(1.5f);
+        assertThat(item.getProduct().getName()).isEqualTo("water");
+
+        testAccount.setLanguage("pl");
+        item.setQuantity(0f);
+        item.getProduct().setName("water 1,5");
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isEqualTo(1.5f);
+        assertThat(item.getProduct().getName()).isEqualTo("water");
+
+
+
     }
 }

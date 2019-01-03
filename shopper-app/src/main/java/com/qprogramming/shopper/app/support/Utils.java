@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
@@ -116,5 +118,20 @@ public class Utils {
 
     public static <T> Predicate<T> not(Predicate<T> t) {
         return t.negate();
+    }
+
+    /**
+     * Check if passed text is number, by trying to parse it to float
+     *
+     * @param text text to be checked
+     * @return true if passed text is number
+     */
+    public static boolean isNumeric(String text) {
+        try {
+            Float.valueOf(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

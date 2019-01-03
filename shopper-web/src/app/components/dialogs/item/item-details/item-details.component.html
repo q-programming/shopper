@@ -4,7 +4,7 @@
             <mat-form-field class="" fxFlex="70">
                 <img [src]='"assets/images/spacer.png"' class="mr-2" matPrefix>
                 <input id="product" matInput placeholder="{{'app.item.product'|translate}}"
-                       cdkFocusRegionstart formControlName="product" required>
+                       cdkFocusRegionstart formControlName="product" required (blur)="tryToGetQuantity()">
                 <!--<mat-error *ngIf="form.value.listName.invalid"></mat-error>-->
                 <!--<mat-autocomplete #productsAuto="matAutocomplete" [autoActiveFirstOption]-->
                 <!--[displayWith]="productDisplay" (optionSelected)="setProduct($event)">-->
