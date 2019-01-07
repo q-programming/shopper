@@ -18,6 +18,7 @@ import * as _ from 'lodash';
 import {TranslateService} from "@ngx-translate/core";
 import {NGXLogger} from "ngx-logger";
 import {itemDisplayName} from "../../utils/utils";
+import {Subscription} from "rxjs";
 
 
 @Component({
@@ -40,6 +41,7 @@ export class ListComponent implements OnInit, OnDestroy {
     isInProgress: boolean = false;
     currentAccount: Account;
     stompClient;
+    menuSub: Subscription;
 
     constructor(private logger: NGXLogger,
                 private listSrv: ListService,
@@ -52,7 +54,10 @@ export class ListComponent implements OnInit, OnDestroy {
                 private translate: TranslateService) {
         this.currentAccount = this.authSrv.currentAccount;
         //handle menu srv actions
-        this.menuSrv.actionEmitted.subscribe(action => {
+    }
+
+    ngOnInit() {
+        this.menuSub = this.menuSrv.actionEmitted.subscribe(action => {
             switch (action) {
                 case MenuAction.PENDING_REFRESH:
                     this.refreshPending = true;
@@ -83,9 +88,6 @@ export class ListComponent implements OnInit, OnDestroy {
                     break;
             }
         });
-    }
-
-    ngOnInit() {
         this.categories = this.itemSrv.categories;
         this.activatedRoute.params.subscribe(params => {
             this.listID = params['listid'];
@@ -100,6 +102,7 @@ export class ListComponent implements OnInit, OnDestroy {
         if (this.stompClient) {
             this.stompClient.disconnect();
         }
+        this.menuSub.unsubscribe();
     }
 
 
@@ -430,6 +433,7 @@ export class ListComponent implements OnInit, OnDestroy {
             this.logger.error(error)
         })
     }
+
     trackByFn(index, item) {
         return item.id;
     }

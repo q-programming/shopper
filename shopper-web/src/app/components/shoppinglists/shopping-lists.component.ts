@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ListService} from "@services/list.service";
 import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
 import {AuthenticationService} from "@services/authentication.service";
@@ -9,6 +9,7 @@ import {Account} from "@model/Account";
 import {NGXLogger} from "ngx-logger";
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ConfirmDialog, ConfirmDialogComponent} from "../dialogs/confirm/confirm-dialog.component";
+import {Subscription} from "rxjs";
 
 
 @Component({
@@ -16,11 +17,12 @@ import {ConfirmDialog, ConfirmDialogComponent} from "../dialogs/confirm/confirm-
     templateUrl: './shopping-lists.component.html',
     styleUrls: ['./shopping-lists.component.css']
 })
-export class ShoppingListsComponent implements OnInit {
+export class ShoppingListsComponent implements OnInit, OnDestroy {
     userID: string;
     lists: ShoppingList[];
     account: Account;
     archived: boolean;
+    menuSub: Subscription;
 
     constructor(private logger: NGXLogger,
                 private listSrv: ListService,
@@ -30,7 +32,10 @@ export class ShoppingListsComponent implements OnInit {
                 private alertSrv: AlertService,
                 private menuSrv: MenuActionsService,
                 private dialog: MatDialog) {
-        this.menuSrv.actionEmitted.subscribe(action => {
+    }
+
+    ngOnInit() {
+        this.menuSub = this.menuSrv.actionEmitted.subscribe(action => {
             switch (action) {
                 case MenuAction.REFRESH:
                     this.loadUserLists();
@@ -39,10 +44,7 @@ export class ShoppingListsComponent implements OnInit {
                     this.newListOpenDialog();
                     break;
             }
-        })
-    }
-
-    ngOnInit() {
+        });
         this.account = this.authSrv.currentAccount;
         this.activatedRoute.params.subscribe(params => {
             this.userID = params['userid'];
@@ -52,6 +54,11 @@ export class ShoppingListsComponent implements OnInit {
             this.loadUserLists();
         })
     }
+
+    ngOnDestroy(): void {
+        this.menuSub.unsubscribe();
+    }
+
 
     private loadUserLists() {
         this.listSrv.getUserList(this.userID, true, this.archived).subscribe(lists => {
