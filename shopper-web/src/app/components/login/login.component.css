@@ -1,11 +1,13 @@
 .username-form {
     text-align: left;
+    margin-left: 3rem !important
 }
 
 
 .social-form {
     border-right: 1px solid gray;
     text-align: right;
+    padding-right: 3rem
 }
 
 @media (max-width: 768px) {
@@ -13,19 +15,42 @@
         border-right: none;
         border-bottom: 1px solid gray;
         padding-bottom: 20px;
+        padding-right: 0;
+        text-align: center;
+    }
+
+    .username-form {
+        text-align: center;
+        margin-left: 0;
     }
 }
 
 .btn-social {
-    width: 250px;
+    display: inline-block;
+    width: 240px;
+    border: thin solid #888;
+    box-shadow: 1px 1px 1px grey;
+    white-space: nowrap;
+    border-radius: 0;
+    padding: 5px 20px 5px 10px;
+    font-weight: bold;
+    text-align: left;
+    text-decoration: none;
+    font-size: 14px;
 }
 
+.btn-social img {
+    margin-right: 10px;
+    vertical-align: bottom;
+}
+
+
 .btn-social.facebook {
-    background-color: #3b5998 !important;
+    background-color: #4267b2 !important;
     color: #fff !important;
 }
 
 .btn-social.google {
-    background-color: #dd4b39 !important;
-    color: #fff !important;
+    background: white;
+    color: #444;
 }
