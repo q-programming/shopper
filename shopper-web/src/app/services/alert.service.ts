@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Message, MessageType} from "@model/Message";
 import {Observable} from "rxjs/Observable";
 import {TranslateService} from "@ngx-translate/core";
+import { timer } from 'rxjs/observable/timer';
 import * as _ from 'lodash';
 import {Subscriber} from "rxjs";
 
@@ -146,7 +147,7 @@ export class AlertService {
         let message = new Message(text, type, observable);
         if (!this.exists(message)) {
             this.messages.push(message);
-            Observable.timer(timeout).subscribe(() => {
+            timer(timeout).subscribe(() => {
                 this.dismiss(message)
             });
         }

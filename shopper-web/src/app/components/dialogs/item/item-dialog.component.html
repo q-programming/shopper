@@ -1,8 +1,11 @@
 <h2 mat-dialog-title class="modal-header mb-0">
     <mat-icon class="text-white mr-2">{{update ? 'edit' : 'add'}}</mat-icon>
     {{(update ? 'app.item.update' : 'app.item.add')|translate}}
-    <button mat-icon-button mat-dialog-close class="pull-right">
+    <button mat-icon-button mat-dialog-close class="pull-right header-button">
         <mat-icon>close</mat-icon>
+    </button>
+    <button mat-icon-button class="pull-right header-button" *ngIf="formValid" [fxShow.gt-sm]="false" (click)="emitCommit()">
+        <mat-icon>check</mat-icon>
     </button>
 </h2>
 <div *ngIf="update">
@@ -11,6 +14,7 @@
                   [update]="update"
                   [categories]="categories"
                   (commit)="commitItem($event)"
+                  (valid)="formValid=$event"
     >
     </item-details>
 </div>
@@ -18,7 +22,7 @@
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon>add</mat-icon>
-            <span fxShow.xs="false">
+            <span [fxShow.xs]="false">
             &nbsp;{{'app.item.add'|translate}}
             </span>
         </ng-template>
@@ -29,13 +33,14 @@
                     [categories]="categories"
                     [update]="update"
                     (commit)="commitItem($event)"
+                    (valid)="formValid=$event"
             ></item-details>
         </div>
     </mat-tab>
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon>favorite</mat-icon>
-            <span fxShow.xs="false">&nbsp;{{'app.item.add.favorites'|translate}}</span>
+            <span [fxShow.xs]="false">&nbsp;{{'app.item.add.favorites'|translate}}</span>
         </ng-template>
         <ng-template matTabContent>
             <div mat-dialog-content>

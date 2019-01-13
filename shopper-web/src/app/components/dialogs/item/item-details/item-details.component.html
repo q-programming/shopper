@@ -56,7 +56,7 @@
 </div>
 <div class="p-2 button-panel pull-right">
     <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
-    <button mat-raised-button class="success-button" (click)="commitItem()" [disabled]="form.invalid">
+    <button mat-raised-button class="success-button" (click)="commitItem()" [disabled]="!formValid">
         {{(update?'app.general.edit':'app.general.add') |translate}}
     </button>
 </div>

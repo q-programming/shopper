@@ -1,21 +1,22 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {map, startWith} from "rxjs/operators";
 import {ApiService} from "@services/api.service";
 import {ListItem} from "@model/ListItem";
 import {CategoryOption} from "@model/CategoryOption";
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 import {Product} from "@model/Product";
 import {environment} from "@env/environment";
 import * as _ from 'lodash';
 import {isNumber, itemDisplayName} from "../../../../utils/utils";
+import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
 
 @Component({
     selector: 'item-details',
     templateUrl: './item-details.component.html',
     styles: []
 })
-export class ItemDetailsComponent implements OnInit {
+export class ItemDetailsComponent implements OnInit, OnDestroy {
 
     form: FormGroup;
     @Input() item: ListItem;
@@ -24,13 +25,16 @@ export class ItemDetailsComponent implements OnInit {
     @Output() itemChange: EventEmitter<ListItem> = new EventEmitter<ListItem>();
     @Input() categories: CategoryOption[];
     @Output() commit: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() valid: EventEmitter<boolean> = new EventEmitter<boolean>();
+    formValid: boolean;
     filteredCategories: Observable<CategoryOption[]>;
     productTerm: String = '';
     categoryTerm: String = '';
+    menuSub: Subscription;
 
 
     constructor(private formBuilder: FormBuilder,
-                private api: ApiService) {
+                private api: ApiService, private menuSrv: MenuActionsService) {
     }
 
     ngOnInit() {
@@ -65,6 +69,21 @@ export class ItemDetailsComponent implements OnInit {
         this.form.controls.unit.valueChanges.subscribe(value => this.item.unit = value);
         this.form.controls.quantity.valueChanges.subscribe(value => this.item.quantity = value);
         this.form.controls.description.valueChanges.subscribe(value => this.item.description = value);
+        this.form.valueChanges.subscribe(() => {
+            if (this.formValid !== this.form.valid) {
+                this.formValid = this.form.valid;
+                this.valid.emit(this.formValid);
+            }
+        });
+        this.menuSub = this.menuSrv.actionEmitted.subscribe(action => {
+            if (action === MenuAction.COMMIT) {
+                this.commitItem()
+            }
+        })
+    }
+
+    ngOnDestroy() {
+        this.menuSub.unsubscribe();
     }
 
     private handleProductValueChange(value) {
@@ -98,8 +117,8 @@ export class ItemDetailsComponent implements OnInit {
         let parts = result.split(' ').filter(i => i);
         const wordCounts = parts.length;
         if (wordCounts > 1) {
-            let b = parts[0].replace(',','.');
-            let e = parts[wordCounts - 1].replace(',','.');
+            let b = parts[0].replace(',', '.');
+            let e = parts[wordCounts - 1].replace(',', '.');
             if (isNumber(b) && !isNumber(e)) {
                 this.form.controls.quantity.setValue(Number(b));
                 result = parts.slice(1).join(" ");
