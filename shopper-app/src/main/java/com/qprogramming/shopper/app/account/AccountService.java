@@ -11,6 +11,7 @@ import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,10 +35,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.qprogramming.shopper.app.settings.Settings.APP_EMAIL_FROM;
 import static com.qprogramming.shopper.app.settings.Settings.APP_URL;
@@ -302,5 +300,15 @@ public class AccountService implements UserDetailsService {
         account.setEnabled(true);
         account.setUuid(null);
         _accountRepository.save(account);
+    }
+
+    public void addAccountToFriendList(Account account) throws AccountNotFoundException {
+        Account currentAccount = findById(Utils.getCurrentAccountId());
+        currentAccount.getFriends().add(account);
+    }
+
+    public Set<Account> getAllFriendList() throws AccountNotFoundException {
+        Account currentAccount = findById(Utils.getCurrentAccountId());
+        return currentAccount.getFriends();
     }
 }

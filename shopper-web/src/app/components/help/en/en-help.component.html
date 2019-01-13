@@ -331,6 +331,11 @@
             This is most popular way of adding products, giving the most control of process of adding them.<br>
             When dialog is opened, we are presented with form where name, and category are mandatory fields.
         </p>
+        <p>
+            If in product name we enter also quantity and we switch to next field ( or just click someplace else )
+            , application will try to set item quantity using same rules as described in
+            <a routerLink="." fragment="item-name-quantity">Setting quantity in product name</a>
+        </p>
         <!--Quick add-->
         <h4 id="item-quickadd" class="shopper-font">Quick add product</h4>
         <p>
@@ -338,6 +343,10 @@
             product name there , and pressing enter ( or clicking inline form +sign)
             Will quickly create new shopping list item , and propose category for it (Standard
             <a class="help-cursor" routerLink="." fragment="item-category">category prediction rules</a> apply)
+        </p>
+        <p>
+            During quick adding of product, it's also possible to set quantity using same mechanism described in
+            <a routerLink="." fragment="item-name-quantity">Setting quantity in product name</a>
         </p>
         <!--Favorites-->
         <h4 id="item-new-dialog-favorites" class="shopper-font">Add through add dialog , using favorites</h4>
@@ -355,6 +364,35 @@
         <p>
             To remove some products from favorites , visit <a class="help-cursor" routerLink="." fragment="settings">Settings</a>\<a
                 class="help-cursor" routerLink="." fragment="settings-favorite">Favorite products</a>
+        </p>
+        <!--Product name quantity-->
+        <h4 id="item-name-quantity" class="shopper-font">Setting quantity in product name</h4>
+        <p>
+            If at the beginning or at the end of product name we put number ( just number, no extra chars), application
+            will treat it as a quantity and will set it as new/edited product quantity.
+            <br>
+            For example:
+        </p>
+        <ul class="list-unstyled">
+            <li>
+                if we enter <code class="font-larger">egs 6</code>, application will add <code
+                    class="font-larger">jajka</code> with quantity 6
+            </li>
+            <li>
+                if we enter <code class="font-larger">10 tomatoes</code>, application will add <code
+                    class="font-larger">tomatoes</code> with quantity 10
+            </li>
+            <li>
+                if we enter <code class="font-larger">water 1.5</code>, application will add <code
+                    class="font-larger">water</code> with quantity 1.5
+            </li>
+            <li>
+                if we enter <code class="font-larger">cream 18%</code> , application will add<code
+                    class="font-larger">cream 18%</code>
+            </li>
+        </ul>
+        <p>
+            If we give number on both beginning and end ,only number from end will be used<br>
         </p>
     </div>
     <!--List items-->

@@ -1,5 +1,9 @@
-.category.inline{
+.category.inline {
     position: absolute;
     left: 0;
     margin-top: -5px
+}
+
+.header-button {
+    margin-top: -5px;
 }

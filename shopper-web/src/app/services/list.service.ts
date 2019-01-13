@@ -7,7 +7,6 @@ import {ShoppingList} from "@model/ShoppingList";
 import {AvatarService} from "./avatar.service";
 import {AuthenticationService} from "./authentication.service";
 import {Account} from "@model/Account";
-import * as _ from 'lodash';
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ShoppingListDialogComponent} from "../components/dialogs/list/shopping-list-dialog.component";
 import {ShareComponent} from "../components/dialogs/share/share.component";

@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qprogramming.shopper.app.account.authority.Authority;
 import com.qprogramming.shopper.app.account.authority.Role;
+import com.qprogramming.shopper.app.items.ListItem;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -61,6 +62,10 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Column
     @Enumerated(EnumType.STRING)
     private AccountType type;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Account> friends = new HashSet<>();
 
     public String getId() {
         return id;
@@ -144,6 +149,17 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.type = type;
     }
 
+    public Set<Account> getFriends() {
+        if (Collections.isEmpty(this.friends)) {
+            this.friends = new HashSet<>();
+        }
+        return friends;
+    }
+
+    public void setFriends(Set<Account> friends) {
+        this.friends = friends;
+    }
+
     public void addAuthority(Authority authority) {
         List<Authority> auths = new ArrayList<>();
         auths.add(authority);
@@ -214,10 +230,10 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         Account account = (Account) o;
 
         if (!id.equals(account.id)) return false;
-        if (email != null ? !email.equals(account.email) : account.email != null) return false;
+        if (!Objects.equals(email, account.email)) return false;
         if (!name.equals(account.name)) return false;
         if (!surname.equals(account.surname)) return false;
-        return created != null ? created.equals(account.created) : account.created == null;
+        return Objects.equals(created, account.created);
     }
 
     @Override

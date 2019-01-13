@@ -106,7 +106,7 @@
 </mat-card>
 <div>
     <!--ITEMS-->
-    <mat-card fxLayout="row" *ngFor="let item of items" class="item">
+    <mat-card fxLayout="row" *ngFor="let item of items;trackBy: trackByFn" class="item">
         <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"
                       [disabled]="list.archived"></mat-checkbox>
         <mat-card-title-group class="ml-2">
@@ -138,7 +138,7 @@
         </mat-menu>
     </mat-card>
     <!--DONE-->
-    <mat-card fxLayout="row" *ngFor="let item of done" class="item done" style="background: #e8e8e8bf!important;">
+    <mat-card fxLayout="row" *ngFor="let item of done;trackBy: trackByFn" class="item done" style="background: #e8e8e8bf!important;">
         <button mat-icon-button (click)="toggleItem(item)" class="done-checkbox">
             <mat-icon>check</mat-icon>
         </button>

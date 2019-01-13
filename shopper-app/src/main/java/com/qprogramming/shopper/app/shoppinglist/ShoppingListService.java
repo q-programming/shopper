@@ -136,7 +136,7 @@ public class ShoppingListService {
      * @return shared shopping list
      * @throws MessagingException if there was error while sending email
      */
-    public ShoppingList shareList(ShoppingList list, String email) throws MessagingException {
+    public ShoppingList shareList(ShoppingList list, String email) throws MessagingException, AccountNotFoundException {
         Optional<Account> optionalAccount = _accountService.findByEmail(email);
         Mail mail = new Mail();
         mail.setMailTo(email);
@@ -144,6 +144,7 @@ public class ShoppingListService {
         mail.addToModel("owner", Utils.getCurrentAccount().getFullname());
         if (optionalAccount.isPresent()) {
             Account account = optionalAccount.get();
+            _accountService.addAccountToFriendList(account);
             mail.addToModel("name", account.getName());
             mail.setLocale(account.getLanguage());
             list.getShared().add(account.getId());
