@@ -1,7 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
-
 import {routing} from "./app.routing";
 import {AppComponent} from './app.component';
 import {LoginComponent} from './components/login/login.component';
@@ -122,8 +121,8 @@ export function initUserFactory(authService: AuthenticationService) {
         HttpClientModule,
         routing,
         AppMaterialModules,
-        NgProgressModule.forRoot(),
-        NgProgressRouterModule.forRoot(),
+        NgProgressModule,
+        NgProgressRouterModule,
         FlexLayoutModule,
         DragDropModule,
         LoggerModule.forRoot({
