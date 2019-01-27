@@ -57,9 +57,6 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     private boolean enabled = false;
 
     @Column
-    private String uuid;
-
-    @Column
     @Enumerated(EnumType.STRING)
     private AccountType type;
 
@@ -131,14 +128,6 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     public void setCreated(Date created) {
         this.created = created;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 
     public AccountType getType() {

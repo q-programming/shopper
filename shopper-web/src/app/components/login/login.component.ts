@@ -3,8 +3,6 @@ import {environment} from "@env/environment";
 import {AuthenticationService} from "@services/authentication.service";
 import {Router} from "@angular/router";
 import {FormControl, Validators} from "@angular/forms";
-import {TranslateService} from "@ngx-translate/core";
-import {ApiService} from "@services/api.service";
 
 @Component({
     selector: 'app-login',
@@ -17,14 +15,8 @@ export class LoginComponent implements OnInit {
     usernameCtrl = new FormControl('', Validators.required);
     passwordCtrl = new FormControl('', Validators.required);
 
-    constructor(private authSrv: AuthenticationService, private router: Router, private translate: TranslateService, private apiService: ApiService) {
-        this.apiService.get(environment.default_lang_url).subscribe(defaults => {
-            if (defaults) {
-                let lang = defaults.language;
-                this.translate.setDefaultLang(lang);
-                this.translate.use(lang)
-            }
-        })
+    constructor(private authSrv: AuthenticationService, private router: Router) {
+        this.authSrv.setLanguage();
     }
 
     ngOnInit() {

@@ -55,13 +55,16 @@ import {PullToRefreshComponent} from './components/pull-to-refresh/pull-to-refre
 import {EnHelpComponent} from './components/help/en/en-help.component';
 import {PlHelpComponent} from './components/help/pl/pl-help.component';
 import {ScrollToModule} from "@nicky-lenaers/ngx-scroll-to";
-import {RegisterComponent} from './components/register/register.component';
+import {RegisterComponent} from './components/login/register/register.component';
 import {PasswordStrengthBarModule} from "ng2-password-strength-bar";
 import {ErrorComponent} from './components/error/error.component';
 import {SuccessComponent} from "./components/success/success.component";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {NgProgressRouterModule} from "@ngx-progressbar/router";
 import {NgProgressModule} from "@ngx-progressbar/core";
+import {ResetPasswordComponent} from './components/login/reset-password/reset-password.component';
+import {ChangePasswordComponent} from "./components/login/change-password/change-password.component";
+import {ConfirmComponent} from "./components/confirm/confirm.component";
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -104,6 +107,9 @@ export function initUserFactory(authService: AuthenticationService) {
         RegisterComponent,
         SuccessComponent,
         ErrorComponent,
+        ResetPasswordComponent,
+        ChangePasswordComponent,
+        ConfirmComponent
     ],
     entryComponents: [
         AvatarUploadComponent,

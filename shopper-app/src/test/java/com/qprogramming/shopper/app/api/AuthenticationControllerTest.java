@@ -5,6 +5,7 @@ import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.account.event.AccountEvent;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.login.RegisterForm;
 import com.qprogramming.shopper.app.login.token.JwtAuthenticationRequest;
@@ -32,6 +33,7 @@ import java.util.Optional;
 
 import static com.qprogramming.shopper.app.filters.BasicRestAuthenticationFilter.AUTHENTICATION_SCHEME;
 import static com.qprogramming.shopper.app.filters.BasicRestAuthenticationFilter.AUTHORIZATION;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -199,40 +201,19 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         form.setEmail(testAccount.getEmail());
         form.setPassword(TestUtil.PASSWORD + 1);
         form.setConfirmPassword(TestUtil.PASSWORD + 1);
+        AccountEvent event = new AccountEvent();
+
         testAccount.setId(TestUtil.USER_RANDOM_ID);
         when(accountServiceMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.empty());
+        when(accountServiceMock.createLocalAccount(any(Account.class))).then(returnsFirstArg());
+        when(accountServiceMock.createConfirmEvent(any(Account.class))).thenReturn(event);
         this.standaloneMvc.perform(post("/auth/register")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isOk());
         verify(accountServiceMock, times(1)).createLocalAccount(any(Account.class));
-        verify(accountServiceMock, times(1)).sendConfirmEmail(any(Account.class));
+        verify(accountServiceMock, times(1)).sendConfirmEmail(any(Account.class), any(AccountEvent.class));
     }
-
-    @Test
-    public void testConfirmSuccess() throws Exception {
-        initMocked();
-        String uuid = Generators.timeBasedGenerator().generate().toString();
-        testAccount.setUuid(uuid);
-        testAccount.setId(TestUtil.USER_RANDOM_ID);
-        when(accountServiceMock.findByUuid(uuid)).thenReturn(testAccount);
-        this.standaloneMvc.perform(get("/auth/confirm").param("token", uuid))
-                .andExpect(status().is3xxRedirection());
-        verify(accountServiceMock, times(1)).confirm(any(Account.class));
-    }
-
-    @Test
-    public void testConfirmError() throws Exception {
-        initMocked();
-        String uuid = Generators.timeBasedGenerator().generate().toString();
-        testAccount.setUuid(uuid);
-        testAccount.setId(TestUtil.USER_RANDOM_ID);
-        when(accountServiceMock.findByUuid(uuid)).thenThrow(new AccountNotFoundException());
-        this.standaloneMvc.perform(get("/auth/confirm").param("token", uuid))
-                .andExpect(status().is3xxRedirection());
-        verify(accountServiceMock, times(0)).confirm(any(Account.class));
-    }
-
 
     private void initMocked() {
         super.setup();

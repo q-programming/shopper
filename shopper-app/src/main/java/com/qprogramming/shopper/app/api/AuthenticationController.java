@@ -2,6 +2,8 @@ package com.qprogramming.shopper.app.api;
 
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.account.event.AccountEvent;
+import com.qprogramming.shopper.app.account.event.AccountEventType;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.login.RegisterForm;
 import com.qprogramming.shopper.app.login.token.JwtAuthenticationRequest;
@@ -13,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +30,7 @@ import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -92,39 +96,14 @@ public class AuthenticationController {
         }
         try {
             Account account = form.createAccount();
-            _accountService.createLocalAccount(account);
-            _accountService.sendConfirmEmail(account);
+            account = _accountService.createLocalAccount(account);
+            AccountEvent event = _accountService.createConfirmEvent(account);
+            _accountService.sendConfirmEmail(account, event);
         } catch (MessagingException e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("mailing");
         }
         return ResponseEntity.ok().build();
     }
-
-    @RequestMapping(value = "/auth/confirm", method = RequestMethod.GET)
-    public void confirmAccount(@RequestParam("token") String token, HttpServletRequest request, HttpServletResponse response) {
-        String uri = Utils.getFullPathFromRequest(request);
-        try {
-            try {
-                Account account = _accountService.findByUuid(token);
-                UUID uuid = UUID.fromString(account.getUuid());
-                DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
-                DateTime expireDate = date.plusHours(24);
-                if (date.isAfter(expireDate)) {
-                    _accountService.sendConfirmEmail(account);
-                    response.sendRedirect(uri + "/#/error?type=expired");
-                }
-                _accountService.confirm(account);
-                response.sendRedirect(uri + "/#/success?type=confirmed");
-            } catch (AccountNotFoundException e) {
-                response.sendRedirect(uri + "/#/error?type=account");
-            } catch (MessagingException e) {
-                LOG.error("Error while trying to send email{}", e);
-            }
-        } catch (IOException e) {
-            LOG.error("Error while trying to redirect {}", e);
-        }
-    }
-
 
     /**
      * Refreshes token (if it can be refreshed ) passed in request and returns back the token
@@ -147,5 +126,40 @@ public class AuthenticationController {
             UserTokenState userTokenState = new UserTokenState();
             return ResponseEntity.accepted().body(userTokenState);
         }
+    }
+
+
+    @RequestMapping(value = "/auth/confirm", method = RequestMethod.POST)
+    public ResponseEntity confirmOperation(@RequestBody() String token) {
+        UUID uuid = UUID.fromString(token);
+        Optional<AccountEvent> eventOptional = _accountService.findEvent(token);
+        if (!eventOptional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        AccountEvent event = eventOptional.get();
+        DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
+        DateTime expireDate = date.plusHours(24);
+        if (date.isAfter(expireDate)) {
+            _accountService.removeEvent(event);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
+        }
+        if (!event.getType().equals(AccountEventType.ACCOUNT_CONFIRM) && !event.getAccount().equals(Utils.getCurrentAccount())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        HashMap<String, String> model = new HashMap<>();
+        switch (event.getType()) {
+            case ACCOUNT_CONFIRM:
+                _accountService.confirm(event.getAccount());
+                model.put("result", "confirmed");
+                break;
+            case PASSWORD_RESET:
+                if (new DateTime().isAfter(date.plusHours(12))) {
+                    _accountService.removeEvent(event);
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
+                }
+                break;
+        }
+        return ResponseEntity.ok(model);
+
     }
 }

@@ -103,4 +103,18 @@ export class AuthenticationService {
             });
         });
     }
+
+    setLanguage(){
+        if(this.currentAccount){
+            this.translate.use(this.currentAccount.language);
+        }else{
+            this.apiService.get(environment.default_lang_url).subscribe(defaults => {
+                if (defaults) {
+                    let lang = defaults.language;
+                    this.translate.setDefaultLang(lang);
+                    this.translate.use(lang)
+                }
+            })
+        }
+    }
 }
