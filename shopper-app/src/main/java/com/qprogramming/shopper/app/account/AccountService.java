@@ -276,7 +276,7 @@ public class AccountService implements UserDetailsService {
     @Transactional
     public Account createLocalAccount(Account account) {
         account.setId(generateID());
-        account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
+        encodePassword(account);
         account.setType(Account.AccountType.LOCAL);
         return createAcount(account);
     }
@@ -288,9 +288,16 @@ public class AccountService implements UserDetailsService {
         mail.setMailFrom(_propertyService.getProperty(APP_EMAIL_FROM));
         mail.addToModel("name", account.getName());
         mail.addToModel("application", application);
-        mail.addToModel("confirmURL", application + "#/confirm/" + event.getToken());
+        switch (event.getType()) {
+            case PASSWORD_RESET:
+                mail.addToModel("confirmURL", application + "#/password-change/" + event.getToken());
+                break;
+            case ACCOUNT_CONFIRM:
+                mail.addToModel("confirmURL", application + "#/confirm/" + event.getToken());
+                break;
+        }
         mail.setLocale(account.getLanguage());
-        _mailService.sendConfirmMessage(mail);
+        _mailService.sendConfirmMessage(mail,event);
 
     }
 
@@ -323,7 +330,18 @@ public class AccountService implements UserDetailsService {
         event.setType(AccountEventType.ACCOUNT_CONFIRM);
         event.setToken(generateToken());
         return _accountEventRepository.save(event);
+    }
 
+    public AccountEvent createPasswordResetEvent(Account newAccount) {
+        AccountEvent event = new AccountEvent();
+        event.setAccount(newAccount);
+        event.setType(AccountEventType.PASSWORD_RESET);
+        event.setToken(generateToken());
+        return _accountEventRepository.save(event);
+    }
+
+    public void eventConfirmed(AccountEvent event) {
+        _accountEventRepository.delete(event);
     }
 
     public String generateToken() {
@@ -332,5 +350,14 @@ public class AccountService implements UserDetailsService {
             token = Generators.timeBasedGenerator().generate().toString();
         }
         return token;
+    }
+
+    /**
+     * Encodes password passed in plain text in Account
+     *
+     * @param account Account for which password will be encoded
+     */
+    public void encodePassword(Account account) {
+        account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
     }
 }

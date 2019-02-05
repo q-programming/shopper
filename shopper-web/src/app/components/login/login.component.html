@@ -39,7 +39,7 @@
                 <div>
                     <mat-form-field>
                         <input matInput type="password" placeholder="{{'app.login.logpass.password'|translate}}"
-                               name="password"
+                               name="password" (keydown.enter)="login()"
                                [formControl]="passwordCtrl">
                         <mat-icon matPrefix>vpn_key</mat-icon>
                     </mat-form-field>

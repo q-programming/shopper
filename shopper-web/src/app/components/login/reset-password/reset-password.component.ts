@@ -31,11 +31,18 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   reset() {
-    this.apiSrv.post(`${environment.account_url}/password-reset`, this.emailResetCtrl.value).subscribe(() => {
+    this.apiSrv.post(`${environment.auth_url}/password-reset`, this.emailResetCtrl.value).subscribe(() => {
       this.alertSrv.success('app.password.reset.sent');
       this.router.navigate(['/']);
     }, error1 => {
       this.alertSrv.error('app.password.reset.error.mailSrv');
     })
   }
+
+    keyDownFunction(event) {
+        if(event.keyCode == 13) {
+            alert('you just clicked enter');
+            // rest of your code
+        }
+    }
 }
