@@ -201,7 +201,9 @@ public class ShoppingListService {
         Map<Category, Integer> categoriesOrdered = getCategoriesOrdered(list);
         Comparator<ListItem> listComparator = Comparator
                 .nullsLast(
-                        Comparator.comparing((ListItem l) -> categoriesOrdered.get(l.getCategory()))
+                        Comparator
+                                .comparing(ListItem::isDone)
+                                .thenComparing(listItem -> categoriesOrdered.get(listItem.getCategory()))
                                 .thenComparing(listItem -> listItem.getProduct().getName().toLowerCase()));
         list.getItems().sort(listComparator);
     }
