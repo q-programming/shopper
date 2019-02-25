@@ -107,8 +107,16 @@
 <div>
     <!--ITEMS-->
     <mat-card fxLayout="row" *ngFor="let item of items;trackBy: trackByFn" class="item">
-        <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"
-                      [disabled]="list.archived"></mat-checkbox>
+        <ng-container *ngIf="isMobile">
+            <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"
+                          [disabled]="list.archived" *ngIf="!currentAccount.righcheckbox">
+            </mat-checkbox>
+        </ng-container>
+        <ng-container *ngIf="!isMobile">
+            <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"
+                          [disabled]="list.archived">
+            </mat-checkbox>
+        </ng-container>
         <mat-card-title-group class="ml-2">
             <mat-card-title>{{displayName(item)}}
             </mat-card-title>
@@ -130,6 +138,9 @@
         <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="{{item.category | translate}}">
             <img [src]='"assets/images/categories/"+ item.category + ".png"' class="category">
         </button>
+        <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"
+                      [disabled]="list.archived" *ngIf="currentAccount.righcheckbox && isMobile" class="ml-2">
+        </mat-checkbox>
         <mat-menu #menu="matMenu">
             <button *ngFor="let cat of categories" mat-menu-item (click)="updateCategory(item,cat.category)">
                 <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category">
@@ -138,10 +149,19 @@
         </mat-menu>
     </mat-card>
     <!--DONE-->
-    <mat-card fxLayout="row" *ngFor="let item of done;trackBy: trackByFn" class="item done" style="background: #e8e8e8bf!important;">
-        <button mat-icon-button (click)="toggleItem(item)" class="done-checkbox">
-            <mat-icon>check</mat-icon>
-        </button>
+    <mat-card fxLayout="row" *ngFor="let item of done;trackBy: trackByFn" class="item done"
+              style="background: #e8e8e8bf!important;">
+        <ng-container *ngIf="isMobile">
+            <button mat-icon-button (click)="toggleItem(item)" class="done-checkbox"
+                    *ngIf="!currentAccount.righcheckbox">
+                <mat-icon>check</mat-icon>
+            </button>
+        </ng-container>
+        <ng-container *ngIf="!isMobile">
+            <button mat-icon-button (click)="toggleItem(item)" class="done-checkbox">
+                <mat-icon>check</mat-icon>
+            </button>
+        </ng-container>
         <mat-card-title-group class="ml-2">
             <mat-card-title>{{item.product.name}}</mat-card-title>
             <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
@@ -153,6 +173,10 @@
         </mat-card-subtitle>
         <button mat-icon-button>
             <img [src]='"assets/images/categories/"+ item.category + ".png"' class="category">
+        </button>
+        <button mat-icon-button (click)="toggleItem(item)" class="done-checkbox"
+                *ngIf="isMobile && currentAccount.righcheckbox">
+            <mat-icon>check</mat-icon>
         </button>
     </mat-card>
 </div>

@@ -19,6 +19,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {NGXLogger} from "ngx-logger";
 import {itemDisplayName} from "../../utils/utils";
 import {Subscription} from "rxjs";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 
 @Component({
@@ -42,6 +43,7 @@ export class ListComponent implements OnInit, OnDestroy {
     currentAccount: Account;
     stompClient;
     menuSub: Subscription;
+    isMobile: boolean;
 
     constructor(private logger: NGXLogger,
                 private listSrv: ListService,
@@ -51,9 +53,10 @@ export class ListComponent implements OnInit, OnDestroy {
                 private alertSrv: AlertService,
                 private menuSrv: MenuActionsService,
                 private authSrv: AuthenticationService,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                private deviceService: DeviceDetectorService) {
         this.currentAccount = this.authSrv.currentAccount;
-        //handle menu srv actions
+        this.isMobile = deviceService.isMobile();
     }
 
     ngOnInit() {

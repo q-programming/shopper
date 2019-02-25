@@ -16,6 +16,7 @@ export const environment = {
     all_users_url: '/api/account/all',
     avatar_upload_url: '/avatar-upload',
     language_url: '/settings/language',
+    rightmode_url: '/settings/rightmode',
     account_url: '/api/account',
     avatar_url: '/avatar',
     list_url: '/api/list',

@@ -3,7 +3,6 @@ package com.qprogramming.shopper.app.account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qprogramming.shopper.app.account.authority.Authority;
 import com.qprogramming.shopper.app.account.authority.Role;
-import com.qprogramming.shopper.app.items.ListItem;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -63,6 +62,9 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Account> friends = new HashSet<>();
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean righcheckbox = false;
 
     public String getId() {
         return id;
@@ -176,6 +178,14 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @JsonIgnore
     public boolean getIsAdmin() {
         return this.authorities.stream().map(Authority::getName).anyMatch(Role.ROLE_ADMIN::equals);
+    }
+
+    public boolean isRighcheckbox() {
+        return righcheckbox;
+    }
+
+    public void setRighcheckbox(boolean righcheckbox) {
+        this.righcheckbox = righcheckbox;
     }
 
     @Override

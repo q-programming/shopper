@@ -141,6 +141,22 @@ public class AccountRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Sets right mode - checkboxes will be rendered on right side for better mobile experience
+     * @param rightmode boolean
+     * @return {@link HttpStatus#OK} if upload was successful
+     */
+    @Transactional
+    @RequestMapping(value = "/settings/rightmode", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> changeRightMode(@RequestBody boolean rightmode) {
+        Account currentAccount = Utils.getCurrentAccount();
+        currentAccount.setRighcheckbox(rightmode);
+        _accountService.update(currentAccount);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
     @Transactional
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")

@@ -65,6 +65,7 @@ import {NgProgressModule} from "@ngx-progressbar/core";
 import {ResetPasswordComponent} from './components/login/reset-password/reset-password.component';
 import {ChangePasswordComponent} from "./components/login/change-password/change-password.component";
 import {ConfirmComponent} from "./components/confirm/confirm.component";
+import {DeviceDetectorModule} from "ngx-device-detector";
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -146,7 +147,8 @@ export function initUserFactory(authService: AuthenticationService) {
         LayoutModule,
         NgxMatSelectSearchModule,
         ScrollToModule.forRoot(),
-        PasswordStrengthBarModule
+        PasswordStrengthBarModule,
+        DeviceDetectorModule.forRoot()
     ],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [
