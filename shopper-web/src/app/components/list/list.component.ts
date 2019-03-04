@@ -128,6 +128,7 @@ export class ListComponent implements OnInit, OnDestroy {
                     _.find(this.list.items, i => i.id === result.id).done = result.done;
                     this.sortDoneNotDone();
                     this.sendWSRefresh();
+                    this.listSrv.emitList(this.list);
                 }
             })
         }
@@ -269,7 +270,8 @@ export class ListComponent implements OnInit, OnDestroy {
 
     private sortDoneNotDone() {
         this.done = _.filter(this.list.items, item => item.done);
-        this.items = _.difference(this.list.items, this.done)
+        this.items = _.difference(this.list.items, this.done);
+        this.list.done = this.done.length;
     }
 
     /**

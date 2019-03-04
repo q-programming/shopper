@@ -79,9 +79,13 @@ export class ListService {
         this.listId = listID;
         return this.api.getObject<ShoppingList>(environment.list_url + `/${listID}`).map(list => {
             list.isOwner = this.isOwner(list);
-            this.emitListSource.next(list);//tell any other subscriber that there was list loaded
+            this.emitList(list);
             return list;
         })
+    }
+
+    emitList(list:ShoppingList){
+        this.emitListSource.next(list);//tell any other subscriber that there was list loaded
     }
 
     private processList(lists: ShoppingList[], noAvatars?: boolean): ShoppingList[] {

@@ -10,6 +10,10 @@
                 matTooltip="{{'app.item.add'|translate}}">
             <mat-icon>add_circle_outline</mat-icon>
         </button>
+        <button *ngIf="onListView" mat-icon-button (click)="refreshList()"
+                matTooltip="{{'app.general.refresh'|translate}}">
+            <mat-icon>refresh</mat-icon>
+        </button>
         <button mat-icon-button (click)="toggleSideNav()">
             <mat-icon>menu</mat-icon>
         </button>
