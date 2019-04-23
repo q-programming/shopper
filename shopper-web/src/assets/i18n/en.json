@@ -217,7 +217,7 @@
   "GRAINS_PASTA": "Grains and pasta",
   "HOME_KITCHEN": "Home and Kitchen",
   "HOME_BAKING": "Home baking",
-  "CLEANING": "Household cleaning",
+  "CLEANING": "Household cleaning and washing",
   "MEAT": "Meat and sausages",
   "NEWSPAPERS": "Newspapers and books",
   "OFFICE_SUPPLIES": "Office supplies",
@@ -232,5 +232,7 @@
   "SPICES": "Spices, sauces and condiments",
   "GARDEN": "Garden supplies",
   "BUILDING": "Building supplies",
+  "BREAKFAST": "Breakfast",
+  "TOYS": "Toys",
   "OTHER": "Other"
 }

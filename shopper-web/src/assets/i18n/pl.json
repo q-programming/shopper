@@ -217,7 +217,7 @@
   "GRAINS_PASTA": "art. sypkie i makarony",
   "HOME_KITCHEN": "art. domowe",
   "HOME_BAKING": "dodatki do ciast",
-  "CLEANING": "sprzątanie",
+  "CLEANING": "sprzątanie i pranie",
   "MEAT": "mięsa i wędliny",
   "NEWSPAPERS": "gazety i książki",
   "OFFICE_SUPPLIES": "art. biurowe",
@@ -232,5 +232,7 @@
   "SPICES": "przyprawy sosy i dodatki",
   "GARDEN": "art. ogrodnicze",
   "BUILDING": "art. budowlane",
+  "BREAKFAST": "art. śniadaniowe",
+  "TOYS": "zabawki",
   "OTHER": "inne"
 }
