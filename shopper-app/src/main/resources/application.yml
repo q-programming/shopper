@@ -1,86 +1,91 @@
-app:
-  name: Shopper
-  default:
-    lang: en
-  category:
-    order: FRUIT_VEGETABLES,BAKERY,BREAKFAST,BABY,CANNED,CAR,CLOTHES,COFFEE_TEA,COSMETICS,DIARY,DIET,ELECTRONICAL,FISH,FROZEN,GRAINS_PASTA,HOME_KITCHEN,HOME_BAKING,CLEANING,MEAT,NEWSPAPERS,OFFICE_SUPPLIES,OILS,HYGIENE,PET,PHARMACY,PRESERVES,READY_MEALS,SNACKS,SPICES,BEVERAGES,ALCOHOL,GARDEN,BUILDING,TOYS,OTHER
-  newsletter:
-    schedule: 0 0 20-22 * * MON
-security:
-  #  user:
-  #    password: password
-  oauth2:
-    client:
-      client-id: shopper
-      client-secret: 205a973f43d75da1524f133d14456ba1
-      scope: read,write
-      auto-approve-scopes: '.*'
-    resource:
-      userInfoUri: "*"
-logging:
-  level:
-    org.hibernate.engine.jdbc.env.internal.LobCreatorBuilderImpl: ERROR
-    org.springframework.security: DEBUG
-    org.springframework.web.filter.CommonsRequestLoggingFilter: ERROR
-    org.springframework.web.socket.config.WebSocketMessageBrokerStats: ERROR
 spring:
-  mail:
-    host: localhost
-    port: 25
-    protocol: smtp
-    from: shopper@q-programming.pl
-    username: us
-    password: ps
-    default-encoding: UTF-8
-  datasource:
-    #    url: jdbc:h2:./db/shopperH2databaseFile;AUTO_SERVER=TRUE
-    #    username: sa
-    #    password:
-    url: jdbc:postgresql://localhost:5432/shopper
-    username: shopper
-    password: cZmYpQWeJXSaWEUHSp3V
-  mvc:
-    favicon:
-      enabled: false
   jpa:
     hibernate:
       ddl-auto: update
   #    show-sql: true
-  social:
-    facebook:
-      app-id: 1750703375258695
-      app-secret: fb3c3e7ed3b5ffa7db0586c659198424
-facebook:
-  client:
-    clientId: 1085784114929242
-    clientSecret: b7704a518a9db12f2a7511bcd2522541
-    accessTokenUri: https://graph.facebook.com/oauth/access_token
-    userAuthorizationUri: https://www.facebook.com/dialog/oauth
-    tokenName: oauth_token
-    scope: email,public_profile
-    authenticationScheme: query
-    clientAuthenticationScheme: form
-  resource:
-    userInfoUri: https://graph.facebook.com/me?fields=email,name,locale
-google:
-  client:
-    clientId: 940247594127-qqsrtbils54hjkf7h0u30sijdov4va1k.apps.googleusercontent.com
-    clientSecret: Tyh5U1mMob6d_q4Ie2jCIKYn
-    accessTokenUri: https://www.googleapis.com/oauth2/v4/token
-    userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
-    clientAuthenticationScheme: form
-    scope:
-      - openid
-      - email
-      - profile
-  resource:
-    userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
-    preferTokenInfo: true
-jwt:
-  header: Authorization
-  expires_in: 604800 # week
-  secret: f3d5b3b563588950d76197756b73a022822c347bd7da934fb171cf6458e94b3e
-  cookie: COOKIE-AUTH-TOKEN
-  xsrf: XSRF-TOKEN
-  jsessionid: JSESSIONID
-  user_cookie: c_user
+  mvc:
+    favicon:
+      enabled: false
+logging:
+  level:
+    org.hibernate.engine.jdbc.env.internal.LobCreatorBuilderImpl: ERROR
+    org.springframework.security: ERROR
+    org.springframework.web.filter.CommonsRequestLoggingFilter: ERROR
+    org.springframework.web.socket.config.WebSocketMessageBrokerStats: ERROR
+app:
+  name: Shopper
+
+###############################################################################################
+# Below more properties which should be set via external file , and provided via              #
+# - context param : shopper.properties.path                                                   #
+# - System property : properties.location                                                     #
+###############################################################################################
+
+#app:
+#  category:
+#    order: FRUIT_VEGETABLES,BAKERY,BREAKFAST,BABY,CANNED,CAR,CLOTHES,COFFEE_TEA,COSMETICS,DIARY,DIET,ELECTRONICAL,FISH,FROZEN,GRAINS_PASTA,HOME_KITCHEN,HOME_BAKING,CLEANING,MEAT,NEWSPAPERS,OFFICE_SUPPLIES,OILS,HYGIENE,PET,PHARMACY,PRESERVES,READY_MEALS,SNACKS,SPICES,BEVERAGES,ALCOHOL,GARDEN,BUILDING,TOYS,OTHER
+#  newsletter:
+#    schedule: 0 0 20-22 * * MON
+#security:
+#  oauth2:
+#    client:
+#      client-id: shopper
+#      client-secret: 205a973f43d75da1524f133d14456ba1
+#      scope: read,write
+#      auto-approve-scopes: '.*'
+#    resource:
+#      userInfoUri: "*"
+#spring:
+#  mail:
+#    host: localhost
+#    port: 25
+#    protocol: smtp
+#    from: shopper@q-programming.pl
+#    username: us
+#    password: ps
+#    default-encoding: UTF-8
+#  datasource:
+#    #    url: jdbc:h2:./db/shopperH2databaseFile;AUTO_SERVER=TRUE
+#    #    username: sa
+#    #    password:
+#    url: jdbc:postgresql://localhost:5432/shopper
+#    username: shopper
+#    password: cZmYpQWeJXSaWEUHSp3V
+#  social:
+#    facebook:
+#      app-id: 1750703375258695
+#      app-secret: fb3c3e7ed3b5ffa7db0586c659198424
+#facebook:
+#  client:
+#    clientId: 1085784114929242
+#    clientSecret: b7704a518a9db12f2a7511bcd2522541
+#    accessTokenUri: https://graph.facebook.com/oauth/access_token
+#    userAuthorizationUri: https://www.facebook.com/dialog/oauth
+#    tokenName: oauth_token
+#    scope: email,public_profile
+#    authenticationScheme: query
+#    clientAuthenticationScheme: form
+#  resource:
+#    userInfoUri: https://graph.facebook.com/me?fields=email,name,locale
+#google:
+#  client:
+#    clientId: 940247594127-qqsrtbils54hjkf7h0u30sijdov4va1k.apps.googleusercontent.com
+#    clientSecret: Tyh5U1mMob6d_q4Ie2jCIKYn
+#    accessTokenUri: https://www.googleapis.com/oauth2/v4/token
+#    userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
+#    clientAuthenticationScheme: form
+#    scope:
+#      - openid
+#      - email
+#      - profile
+#  resource:
+#    userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
+#    preferTokenInfo: true
+#jwt:
+#  header: Authorization
+#  expires_in: 604800 # week
+#  secret: f3d5b3b563588950d76197756b73a022822c347bd7da934fb171cf6458e94b3e
+#  cookie: COOKIE-AUTH-TOKEN
+#  xsrf: XSRF-TOKEN
+#  jsessionid: JSESSIONID
+#  user_cookie: c_user

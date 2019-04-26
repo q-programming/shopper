@@ -6,9 +6,11 @@ import com.qprogramming.shopper.app.filters.BasicRestAuthenticationFilter;
 import com.qprogramming.shopper.app.filters.TokenAuthenticationFilter;
 import com.qprogramming.shopper.app.login.*;
 import com.qprogramming.shopper.app.login.token.TokenService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
@@ -16,7 +18,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -194,6 +200,24 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @ConfigurationProperties("google.resource")
     public ResourceServerProperties googleResource() {
         return new ResourceServerProperties();
+    }
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcePlaceholderConfigurer(Environment environment) {
+        PropertySourcesPlaceholderConfigurer ppc = new PropertySourcesPlaceholderConfigurer();
+        String propertyLocation = System.getProperty("properties.location");
+        String contextPropertyLocation = environment.getProperty("shopper.properties.path");
+        YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
+        if (StringUtils.isNotBlank(propertyLocation)) {
+            yaml.setResources(new FileSystemResource(propertyLocation));
+        } else if (StringUtils.isNotBlank(contextPropertyLocation)) {
+            yaml.setResources(new FileSystemResource(contextPropertyLocation));
+        } else {
+            ppc.setLocations(new ClassPathResource("/application.yml"));
+        }
+        ppc.setProperties(yaml.getObject());
+        ppc.setIgnoreUnresolvablePlaceholders(true);
+        return ppc;
     }
 }
 
