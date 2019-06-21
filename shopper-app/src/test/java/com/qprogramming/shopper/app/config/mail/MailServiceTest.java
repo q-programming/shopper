@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -80,9 +81,10 @@ public class MailServiceTest {
         when(mailSenderMock.createMimeMessage()).thenReturn(new MimeMessage(Session.getInstance(props)));
         SecurityContextHolder.setContext(securityMock);
         mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, avatarRepositoryMock, CRON) {
+
             @Override
-            public void initMailSender() {
-                this.mailSender = mailSenderMock;
+            public JavaMailSender getMailSender() {
+                return mailSenderMock;
             }
         };
     }

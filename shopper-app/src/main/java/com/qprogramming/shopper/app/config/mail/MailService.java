@@ -48,11 +48,13 @@ public class MailService {
     private static final String PNG = "png";
     private static final String LIST_LINK = "listLink";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
-    JavaMailSender mailSender;
-    private PropertyService propertyService;
-    private Configuration freemarkerConfiguration;
-    private MessagesService msgSrv;
+
+    private JavaMailSender _mailSender;
+    private PropertyService _propertyService;
+    private Configuration _freemarkerConfiguration;
+    private MessagesService _msgSrv;
     private AvatarRepository _avatarRepository;
+
     private Map<Account, File> avatarBuffer;
     private String cron_scheduler;
 
@@ -62,32 +64,43 @@ public class MailService {
                        @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration,
                        MessagesService msgSrv,
                        AvatarRepository avatarRepository, @Value("${app.newsletter.schedule}") String cron) {
-        this.propertyService = propertyService;
-        this.freemarkerConfiguration = freemarkerConfiguration;
-        this.msgSrv = msgSrv;
+        this._propertyService = propertyService;
+        this._freemarkerConfiguration = freemarkerConfiguration;
+        this._msgSrv = msgSrv;
         _avatarRepository = avatarRepository;
         avatarBuffer = new HashMap<>();
         this.cron_scheduler = cron;
-        initMailSender();
         schedulerLookup();
+    }
+
+    /**
+     * Return mail sender, init it first time it's needed.
+     * This is to overcome database property source initialized  later in app life cycle
+     * @return instance of JavaMailSenderImpl
+     */
+    public JavaMailSender getMailSender() {
+        if (this._mailSender == null) {
+            initMailSender();
+        }
+        return this._mailSender;
     }
 
     public void initMailSender() {
         JavaMailSenderImpl jmsi = new JavaMailSenderImpl();
-        jmsi.setHost(propertyService.getProperty(APP_EMAIL_HOST));
+        jmsi.setHost(_propertyService.getProperty(APP_EMAIL_HOST));
         try {
-            jmsi.setPort(Integer.parseInt(propertyService.getProperty(APP_EMAIL_PORT)));
+            jmsi.setPort(Integer.parseInt(_propertyService.getProperty(APP_EMAIL_PORT)));
         } catch (NumberFormatException e) {
             LOG.warn("Failed to set port from properties. Default 25 used");
             jmsi.setPort(25);
         }
-        jmsi.setUsername(propertyService.getProperty(APP_EMAIL_USERNAME));
-        jmsi.setPassword(propertyService.getProperty(APP_EMAIL_PASS));
+        jmsi.setUsername(_propertyService.getProperty(APP_EMAIL_USERNAME));
+        jmsi.setPassword(_propertyService.getProperty(APP_EMAIL_PASS));
         Properties javaMailProperties = new Properties();
         javaMailProperties.setProperty("mail.smtp.auth", "true");
         javaMailProperties.setProperty("mail.smtp.starttls.enable", "true");
         jmsi.setJavaMailProperties(javaMailProperties);
-        mailSender = jmsi;
+        this._mailSender = jmsi;
     }
 
     private void schedulerLookup() {
@@ -122,10 +135,11 @@ public class MailService {
      * @return true if everything is ok, false if connection is down
      */
     public boolean testConnection() {
+        JavaMailSenderImpl mailSender = (JavaMailSenderImpl) getMailSender();
         try {
-            ((JavaMailSenderImpl) mailSender).testConnection();
+            mailSender.testConnection();
         } catch (MessagingException e) {
-            LOG.error("SMTP server {}:{} is not responding", ((JavaMailSenderImpl) mailSender).getHost(), ((JavaMailSenderImpl) mailSender).getPort());
+            LOG.error("SMTP server {}:{} is not responding", mailSender.getHost(), mailSender.getPort());
             return false;
         }
         return true;
@@ -156,7 +170,7 @@ public class MailService {
     //TODO to be removed
     @Deprecated
     public void sendEmail(Mail mail) {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessage mimeMessage = getMailSender().createMimeMessage();
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
             mimeMessageHelper.setSubject(mail.getMailSubject());
@@ -164,7 +178,7 @@ public class MailService {
             mimeMessageHelper.setTo(mail.getMailTo());
             mail.setMailContent(geContentFromTemplate(mail.getModel(), "emailTemplate.ftl"));
             mimeMessageHelper.setText(mail.getMailContent(), true);
-            mailSender.send(mimeMessageHelper.getMimeMessage());
+            getMailSender().send(mimeMessageHelper.getMimeMessage());
         } catch (MessagingException e) {
             LOG.error("Error while sending email: {}", e);
         }
@@ -174,7 +188,7 @@ public class MailService {
         StringBuilder content = new StringBuilder();
         try {
             content.append(FreeMarkerTemplateUtils
-                    .processTemplateIntoString(freemarkerConfiguration.getTemplate(emailTemplate), model));
+                    .processTemplateIntoString(_freemarkerConfiguration.getTemplate(emailTemplate), model));
         } catch (Exception e) {
             LOG.error("Error while getting template for {}.{}", emailTemplate, e);
         }
@@ -190,12 +204,12 @@ public class MailService {
      */
 
     public void sendShareMessage(Mail mail, ShoppingList list, boolean invite) throws MessagingException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        String application = propertyService.getProperty(APP_URL);
+        MimeMessage mimeMessage = getMailSender().createMimeMessage();
+        String application = _propertyService.getProperty(APP_URL);
         String listLink = application + "#/list/" + list.getId();
         Locale locale = getMailLocale(mail);
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(APP_EMAIL_ENCODING));
-        mimeMessageHelper.setSubject(msgSrv.getMessage("app.share.subject", new Object[]{Utils.getCurrentAccount().getFullname()}, "", locale));
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, _propertyService.getProperty(APP_EMAIL_ENCODING));
+        mimeMessageHelper.setSubject(_msgSrv.getMessage("app.share.subject", new Object[]{Utils.getCurrentAccount().getFullname()}, "", locale));
         mimeMessageHelper.setFrom(mail.getMailFrom());
         mimeMessageHelper.setTo(mail.getMailTo());
         mail.addToModel(LIST_LINK, listLink);
@@ -206,14 +220,14 @@ public class MailService {
         File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
         mimeMessageHelper.addInline(USER_AVATAR_PNG, avatarTempFile);
         LOG.info("Sending email message to {}", mail.getMailTo());
-        mailSender.send(mimeMessageHelper.getMimeMessage());
+        getMailSender().send(mimeMessageHelper.getMimeMessage());
     }
 
     public void sendConfirmMessage(Mail mail, AccountEvent event) throws MessagingException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessage mimeMessage = getMailSender().createMimeMessage();
         Locale locale = getMailLocale(mail);
-        String application = propertyService.getProperty(APP_URL);
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(APP_EMAIL_ENCODING));
+        String application = _propertyService.getProperty(APP_URL);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, _propertyService.getProperty(APP_EMAIL_ENCODING));
         mimeMessageHelper.setFrom(mail.getMailFrom());
         mimeMessageHelper.setTo(mail.getMailTo());
         mail.addToModel(APPLICATION, application);
@@ -222,19 +236,19 @@ public class MailService {
                 templatePasswordReset(mail, mimeMessageHelper, event);
                 break;
             case ACCOUNT_CONFIRM:
-                mimeMessageHelper.setSubject(msgSrv.getMessage("app.register.confirm", new Object[]{}, "", locale));
+                mimeMessageHelper.setSubject(_msgSrv.getMessage("app.register.confirm", new Object[]{}, "", locale));
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/confirm.ftl"));
                 mimeMessageHelper.setText(mail.getMailContent(), true);
                 break;
         }
         addAppLogo(mimeMessageHelper);
         LOG.info("Sending email message to {}", mail.getMailTo());
-        mailSender.send(mimeMessageHelper.getMimeMessage());
+        getMailSender().send(mimeMessageHelper.getMimeMessage());
     }
 
     private void templatePasswordReset(Mail mail, MimeMessageHelper mimeMessageHelper, AccountEvent event) throws MessagingException {
         Locale locale = getMailLocale(mail);
-        mimeMessageHelper.setSubject(msgSrv.getMessage("app.password.reset", new Object[]{}, "", locale));
+        mimeMessageHelper.setSubject(_msgSrv.getMessage("app.password.reset", new Object[]{}, "", locale));
         mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/passwordReset.ftl"));
         if (event.getAccount().getType().equals(Account.AccountType.GOOGLE)) {
             mail.addToModel("linkGoogle", mail.getModel().get(APPLICATION) + "login/google");
@@ -284,7 +298,7 @@ public class MailService {
     }
 
     private Locale getMailLocale(Mail mail) {
-        return mail.getLocale() != null ? new Locale(mail.getLocale()) : new Locale(propertyService.getProperty(APP_DEFAULT_LANG));
+        return mail.getLocale() != null ? new Locale(mail.getLocale()) : new Locale(_propertyService.getProperty(APP_DEFAULT_LANG));
     }
 
 
