@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
     lists: ShoppingList[];
     list: ShoppingList;
     isInProgress: boolean = false;
-    @ViewChild("sidenav")
+    @ViewChild("sidenav", {static:false})
     private sidenav: MatSidenav;
 
     constructor(private router: Router,

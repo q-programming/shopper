@@ -118,7 +118,7 @@ export class AccountSettingsComponent implements OnInit {
 })
 export class AvatarUploadComponent implements OnInit {
 
-    @ViewChild('cropper', undefined)
+    @ViewChild('cropper', {static:true})
     cropper: ImageCropperComponent;
     cropperSettings: CropperSettings;
     account: Account;
