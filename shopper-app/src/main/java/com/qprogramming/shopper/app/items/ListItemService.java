@@ -133,7 +133,7 @@ public class ListItemService {
     }
 
     private Product getProductByNameOrCreate(Product product) {
-        Optional<Product> optionalProduct = _productRepository.findByNameIgnoreCase(product.getName().trim());
+        Optional<Product> optionalProduct = _productRepository.findByNameIgnoreCase(product.getName());
         return optionalProduct.orElseGet(() -> saveProduct(product));
     }
 

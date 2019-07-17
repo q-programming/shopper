@@ -91,6 +91,7 @@ public class ItemRestController {
             ShoppingList list = _listService.findByID(id);
             ListItem updatedItem = _listItemService.findById(item.getId());
             Product updatedProduct = item.getProduct();
+            updatedProduct.setName(updatedProduct.getName().trim());
             if (updatedProduct.equals(updatedItem.getProduct()) ||
                     updatedProduct.getName().equalsIgnoreCase(updatedItem.getProduct().getName())) {//there was product change, delete product and create new
                 item = _listItemService.update(item);
@@ -200,9 +201,6 @@ public class ItemRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
-
-
 
 
     /**

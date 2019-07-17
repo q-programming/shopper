@@ -2,6 +2,7 @@ package com.qprogramming.shopper.app.items;
 
 import com.qprogramming.shopper.app.items.category.Category;
 import com.qprogramming.shopper.app.items.product.Product;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -123,7 +124,7 @@ public class ListItem {
     }
 
     public String getName() {
-        return name;
+        return StringUtils.isNotBlank(name) ? name.trim() : name;
     }
 
     public void setName(String name) {
