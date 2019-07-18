@@ -96,4 +96,8 @@ export class FavoritesComponent implements OnInit {
         return value ? _.filter(this.favorites, prod => prod.name.toLowerCase().includes(filterValue)) : this.favorites;
     }
 
+    trackByFn(index, item) {
+        return item.id;
+    }
+
 }

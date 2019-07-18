@@ -9,6 +9,7 @@ export class Account {
     avatar?: any;
     token: string;
     fullname?: string;
+    righcheckbox?: boolean;
 }
 
 export class Authority {

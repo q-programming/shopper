@@ -106,9 +106,23 @@
 </mat-card>
 <div>
     <!--ITEMS-->
-    <mat-card fxLayout="row" *ngFor="let item of items" class="item">
-        <mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"
-                      [disabled]="list.archived"></mat-checkbox>
+    <mat-card fxLayout="row" *ngFor="let item of items;trackBy: trackByFn" class="item">
+        <ng-container *ngIf="isMobile">
+            <button mat-icon-button class="item-checkbox" *ngIf="!currentAccount.righcheckbox" (click)="toggleItem(item)" [disabled]="list.archived">
+                <mat-icon class="item-checkbox-icon">check_box_outline_blank</mat-icon>
+            </button>
+            <!--<mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"-->
+                          <!--[disabled]="list.archived" *ngIf="!currentAccount.righcheckbox">-->
+            <!--</mat-checkbox>-->
+        </ng-container>
+        <ng-container *ngIf="!isMobile">
+            <button mat-icon-button class="item-checkbox" (click)="toggleItem(item)" [disabled]="list.archived">
+                <mat-icon class="item-checkbox-icon">check_box_outline_blank</mat-icon>
+            </button>
+            <!--<mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"-->
+                          <!--[disabled]="list.archived">-->
+            <!--</mat-checkbox>-->
+        </ng-container>
         <mat-card-title-group class="ml-2">
             <mat-card-title>{{displayName(item)}}
             </mat-card-title>
@@ -127,8 +141,15 @@
         <mat-card-subtitle class="mt-2"><span *ngIf="item.quantity !== 0">{{item.quantity}}</span>
             {{item.unit}}
         </mat-card-subtitle>
-        <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="{{item.category | translate}}">
+        <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="{{item.category | translate}}" [disabled]="list.archived">
             <img [src]='"assets/images/categories/"+ item.category + ".png"' class="category">
+        </button>
+        <!--<mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"-->
+                      <!--[disabled]="list.archived" *ngIf="currentAccount.righcheckbox && isMobile" class="ml-2">-->
+        <!--</mat-checkbox>-->
+        <button mat-icon-button class="item-checkbox" *ngIf="currentAccount.righcheckbox && isMobile"
+                (click)="toggleItem(item)" [disabled]="list.archived">
+            <mat-icon class="item-checkbox-icon">check_box_outline_blank</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
             <button *ngFor="let cat of categories" mat-menu-item (click)="updateCategory(item,cat.category)">
@@ -138,10 +159,19 @@
         </mat-menu>
     </mat-card>
     <!--DONE-->
-    <mat-card fxLayout="row" *ngFor="let item of done" class="item done" style="background: #e8e8e8bf!important;">
-        <button mat-icon-button (click)="toggleItem(item)" class="done-checkbox">
-            <mat-icon>check</mat-icon>
-        </button>
+    <mat-card fxLayout="row" *ngFor="let item of done;trackBy: trackByFn" class="item done"
+              style="background: #e8e8e8bf!important;">
+        <ng-container *ngIf="isMobile">
+            <button mat-icon-button (click)="toggleItem(item)" class="item-checkbox-icon"
+                    *ngIf="!currentAccount.righcheckbox" [disabled]="list.archived">
+                <mat-icon class="large-icon">check</mat-icon>
+            </button>
+        </ng-container>
+        <ng-container *ngIf="!isMobile">
+            <button mat-icon-button (click)="toggleItem(item)" class="item-checkbox" [disabled]="list.archived">
+                <mat-icon>check</mat-icon>
+            </button>
+        </ng-container>
         <mat-card-title-group class="ml-2">
             <mat-card-title>{{item.product.name}}</mat-card-title>
             <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
@@ -151,8 +181,12 @@
             <span *ngIf="item.quantity!==0">{{item.quantity}}</span>
             {{item.unit}}
         </mat-card-subtitle>
-        <button mat-icon-button>
+        <button mat-icon-button [disabled]="list.archived">
             <img [src]='"assets/images/categories/"+ item.category + ".png"' class="category">
+        </button>
+        <button mat-icon-button (click)="toggleItem(item)" class="item-checkbox-icon"
+                *ngIf="isMobile && currentAccount.righcheckbox" [disabled]="list.archived">
+            <mat-icon class="large-icon">check</mat-icon>
         </button>
     </mat-card>
 </div>

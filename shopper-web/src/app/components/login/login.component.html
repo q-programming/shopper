@@ -9,24 +9,24 @@
         <span>{{'app.login.welcome.sub'|translate}}</span>
     </mat-card-subtitle>
     <div fxLayout="row wrap" fxLayoutAlign="center start">
-        <div fxFlex.xs="100%" fxFlex.gt-xs class="social-form pr-5">
+        <div fxFlex.xs="100%" fxFlex.gt-xs class="social-form">
             <h4 class="mb-5">{{'app.login.social'|translate}}</h4>
             <div>
-                <a mat-raised-button class="btn-social facebook" href="{{login_url}}/facebook">
-                    <i class="fa fa-facebook mr-2"></i>
-                    Facebook
+                <a class="btn-social facebook" href="{{login_url}}/facebook">
+                    <img src="assets/images/btn_facebook.svg" height="25px">
+                    {{'app.login.social.facebook'|translate}}
                 </a>
             </div>
             <div class="mt-1">
-                <a mat-raised-button class="btn-social google" href="{{login_url}}/google">
-                    <i class="fa fa-google-plus mr-2"></i>
-                    Google +
+                <a class="btn-social google" href="{{login_url}}/google">
+                    <img src="assets/images/btn_google.svg" height="25px">
+                    {{'app.login.social.google'|translate}}
                 </a>
             </div>
             <div class="mt-5" [innerHTML]="'app.login.social.register'|translate">
             </div>
         </div>
-        <div fxFlex.xs="100%" fxFlex.gt-xs class="username-form ml-5">
+        <div fxFlex.xs="100%" fxFlex.gt-xs class="username-form">
             <h4>{{'app.login.logpass'|translate}}</h4>
             <form>
                 <div>
@@ -39,7 +39,7 @@
                 <div>
                     <mat-form-field>
                         <input matInput type="password" placeholder="{{'app.login.logpass.password'|translate}}"
-                               name="password"
+                               name="password" (keydown.enter)="login()"
                                [formControl]="passwordCtrl">
                         <mat-icon matPrefix>vpn_key</mat-icon>
                     </mat-form-field>
@@ -52,6 +52,12 @@
             <div class="mt-2">
                 {{'app.login.logpass.noaccount'|translate}}<a
                     routerLink="/register">{{'app.login.register.here'|translate}}</a>
+            </div>
+            <div class="mt-2">
+                {{'app.login.logpass.forgot'|translate}}
+                <a routerLink="/reset">
+                    {{'app.login.logpass.forgot.here'|translate}}
+                </a>
             </div>
         </div>
 

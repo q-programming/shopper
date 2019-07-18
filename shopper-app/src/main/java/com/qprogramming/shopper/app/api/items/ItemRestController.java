@@ -91,6 +91,7 @@ public class ItemRestController {
             ShoppingList list = _listService.findByID(id);
             ListItem updatedItem = _listItemService.findById(item.getId());
             Product updatedProduct = item.getProduct();
+            updatedProduct.setName(updatedProduct.getName().trim());
             if (updatedProduct.equals(updatedItem.getProduct()) ||
                     updatedProduct.getName().equalsIgnoreCase(updatedItem.getProduct().getName())) {//there was product change, delete product and create new
                 item = _listItemService.update(item);
@@ -174,6 +175,33 @@ public class ItemRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    /**
+     * delete list item from list with id .
+     *
+     * @param id shopping lis id
+     * @return updated shopping list if operation was successful
+     */
+    @RequestMapping(value = "/{id}/toggle/{itemId}", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
+    public ResponseEntity<ListItem> toggleItemByID(@PathVariable Long id, @PathVariable Long itemId) {
+        try {
+            ShoppingList list = _listService.findByID(id);//just verify that list exists and user has access
+            ListItem item = _listItemService.findById(itemId);
+            return ResponseEntity.ok(_listItemService.toggleItem(item));
+        } catch (ShoppingAccessException e) {
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ItemNotFoundException e) {
+            LOG.error(ITEM_NOT_FOUND, id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
 
     /**
      * Get all favorites for currently logged in account but filtered, not to show products that are already on that list,

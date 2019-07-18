@@ -1,6 +1,7 @@
 package com.qprogramming.shopper.app.items.product;
 
 import com.qprogramming.shopper.app.items.category.Category;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import javax.persistence.*;
@@ -38,7 +39,7 @@ public class Product {
     }
 
     public String getName() {
-        return name;
+        return StringUtils.isNotBlank(name) ? name.trim() : name;
     }
 
     public void setName(String name) {

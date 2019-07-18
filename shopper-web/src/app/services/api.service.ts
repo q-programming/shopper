@@ -6,7 +6,7 @@ import 'rxjs/add/observable/throw';
 import {serialize} from "../utils/serialize";
 import {environment} from "@env/environment";
 import {AlertService} from "./alert.service";
-import {NgProgress} from "ngx-progressbar";
+import {NgProgress, NgProgressRef} from "@ngx-progressbar/core";
 
 export enum RequestMethod {
     Get = 'GET',
@@ -21,12 +21,14 @@ export enum RequestMethod {
 @Injectable()
 export class ApiService {
 
+    progress: NgProgressRef;
     headers = new HttpHeaders({
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     });
 
     constructor(private http: HttpClient, private alertSrv: AlertService, public ngProgress: NgProgress) {
+        this.progress = ngProgress.ref();
     }
 
     get(path: string, args?: any): Observable<any> {
@@ -84,7 +86,7 @@ export class ApiService {
     }
 
     private request(path: string, body: any, method = RequestMethod.Post, custemHeaders?: HttpHeaders): Observable<any> {
-        this.ngProgress.start();
+        this.progress.start();
         path = environment.context + path;
         const req = new HttpRequest(method, path, body, {
             headers: custemHeaders || this.headers,
@@ -94,10 +96,13 @@ export class ApiService {
         return this.http.request(req)
             .filter(response => response instanceof HttpResponse)
             .map((response: HttpResponse<any>) => {
-                this.ngProgress.done();
+                this.progress.complete();
                 return response.body
             })
-            .catch(error => this.checkError(error));
+            .catch(error => {
+                this.progress.complete();
+                return this.checkError(error)
+            });
     }
 
     // Display error if logged in, otherwise redirect to IDP
@@ -110,8 +115,7 @@ export class ApiService {
         } else if (error && error.status === 403) {
             this.alertSrv.error('app.api.error.unauthorized');
             //TODO redirect to login?
-        }
-        else if (error && error.status === 503) {
+        } else if (error && error.status === 503) {
         }
         throw error;
     }

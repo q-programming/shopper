@@ -13,10 +13,15 @@ mat-card .item.done {
     box-shadow: none !important;
 }
 
-.done-checkbox {
+.item-checkbox {
+    width: 50px;
     margin-left: -10px;
-    margin-right: -10px;
+    margin-right: -5px;
     margin-top: -5px !important;
+}
+
+.item-checkbox-icon {
+    margin-left: -5px;
 }
 
 .mat-card-title {

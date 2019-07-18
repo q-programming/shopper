@@ -6,6 +6,7 @@ import com.qprogramming.shopper.app.account.authority.AuthorityService;
 import com.qprogramming.shopper.app.account.authority.Role;
 import com.qprogramming.shopper.app.account.avatar.Avatar;
 import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
+import com.qprogramming.shopper.app.account.event.AccountEventRepository;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import org.apache.commons.io.IOUtils;
@@ -48,6 +49,8 @@ public class AccountServiceTest extends MockedAccountTestBase {
     private HttpServletResponse responseMock;
     @Mock
     private MailService mailServiceMock;
+    @Mock
+    private AccountEventRepository accountEventRepositoryMock;
 
     private AccountService accountService;
 
@@ -60,7 +63,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
 
     @Before
     public void setUp() throws Exception {
-        accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock, mailServiceMock) {
+        accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock, accountEventRepositoryMock, mailServiceMock) {
             @Override
             protected byte[] downloadFromUrl(URL url) {
                 ClassLoader loader = getClass().getClassLoader();

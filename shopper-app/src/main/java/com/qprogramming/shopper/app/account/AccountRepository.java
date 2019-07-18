@@ -3,7 +3,6 @@ package com.qprogramming.shopper.app.account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,8 +16,4 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Account findOneByUsername(String username);
 
     Optional<Account> findOneById(String id);
-
-    List<Account> findByIdIn(List<String> list);
-
-    Optional<Account> findByUuid(String uuid);
 }

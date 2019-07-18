@@ -18,6 +18,8 @@ import * as _ from 'lodash';
 import {TranslateService} from "@ngx-translate/core";
 import {NGXLogger} from "ngx-logger";
 import {itemDisplayName} from "../../utils/utils";
+import {Subscription} from "rxjs";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 
 @Component({
@@ -40,7 +42,8 @@ export class ListComponent implements OnInit, OnDestroy {
     isInProgress: boolean = false;
     currentAccount: Account;
     stompClient;
-
+    menuSub: Subscription;
+    isMobile: boolean;
 
     constructor(private logger: NGXLogger,
                 private listSrv: ListService,
@@ -50,10 +53,14 @@ export class ListComponent implements OnInit, OnDestroy {
                 private alertSrv: AlertService,
                 private menuSrv: MenuActionsService,
                 private authSrv: AuthenticationService,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                private deviceService: DeviceDetectorService) {
         this.currentAccount = this.authSrv.currentAccount;
-        //handle menu srv actions
-        this.menuSrv.actionEmitted.subscribe(action => {
+        this.isMobile = deviceService.isMobile();
+    }
+
+    ngOnInit() {
+        this.menuSub = this.menuSrv.actionEmitted.subscribe(action => {
             switch (action) {
                 case MenuAction.PENDING_REFRESH:
                     this.refreshPending = true;
@@ -84,9 +91,6 @@ export class ListComponent implements OnInit, OnDestroy {
                     break;
             }
         });
-    }
-
-    ngOnInit() {
         this.categories = this.itemSrv.categories;
         this.activatedRoute.params.subscribe(params => {
             this.listID = params['listid'];
@@ -101,6 +105,7 @@ export class ListComponent implements OnInit, OnDestroy {
         if (this.stompClient) {
             this.stompClient.disconnect();
         }
+        this.menuSub.unsubscribe();
     }
 
 
@@ -123,6 +128,7 @@ export class ListComponent implements OnInit, OnDestroy {
                     _.find(this.list.items, i => i.id === result.id).done = result.done;
                     this.sortDoneNotDone();
                     this.sendWSRefresh();
+                    this.listSrv.emitList(this.list);
                 }
             })
         }
@@ -264,7 +270,8 @@ export class ListComponent implements OnInit, OnDestroy {
 
     private sortDoneNotDone() {
         this.done = _.filter(this.list.items, item => item.done);
-        this.items = _.difference(this.list.items, this.done)
+        this.items = _.difference(this.list.items, this.done);
+        this.list.done = this.done.length;
     }
 
     /**
@@ -430,5 +437,9 @@ export class ListComponent implements OnInit, OnDestroy {
             this.alertSrv.error('app,shopping.copy.error');
             this.logger.error(error)
         })
+    }
+
+    trackByFn(index, item) {
+        return item.id;
     }
 }

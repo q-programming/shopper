@@ -2,7 +2,11 @@ package com.qprogramming.shopper.app.api;
 
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
-import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.account.PasswordForm;
+import com.qprogramming.shopper.app.account.event.AccountEvent;
+import com.qprogramming.shopper.app.account.event.AccountEventType;
+import com.qprogramming.shopper.app.config.mail.Mail;
+import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.login.RegisterForm;
 import com.qprogramming.shopper.app.login.token.JwtAuthenticationRequest;
 import com.qprogramming.shopper.app.login.token.TokenService;
@@ -13,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,11 +32,11 @@ import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.*;
 
 /**
  * Created by Jakub Romaniszyn on 20.07.2018.
@@ -46,9 +51,7 @@ public class AuthenticationController {
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
     private TokenService _tokenService;
-
     private AuthenticationManager _authenticationManager;
-
     private AccountService _accountService;
 
     @Value("${jwt.expires_in}")
@@ -58,7 +61,7 @@ public class AuthenticationController {
     public AuthenticationController(TokenService tokenService, AuthenticationManager authenticationManager, AccountService accountService) {
         this._tokenService = tokenService;
         this._authenticationManager = authenticationManager;
-        _accountService = accountService;
+        this._accountService = accountService;
     }
 
     @RequestMapping(value = "/auth", method = RequestMethod.POST)
@@ -92,39 +95,14 @@ public class AuthenticationController {
         }
         try {
             Account account = form.createAccount();
-            _accountService.createLocalAccount(account);
-            _accountService.sendConfirmEmail(account);
+            account = _accountService.createLocalAccount(account);
+            AccountEvent event = _accountService.createConfirmEvent(account);
+            _accountService.sendConfirmEmail(account, event);
         } catch (MessagingException e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("mailing");
         }
         return ResponseEntity.ok().build();
     }
-
-    @RequestMapping(value = "/auth/confirm", method = RequestMethod.GET)
-    public void confirmAccount(@RequestParam("token") String token, HttpServletRequest request, HttpServletResponse response) {
-        String uri = Utils.getFullPathFromRequest(request);
-        try {
-            try {
-                Account account = _accountService.findByUuid(token);
-                UUID uuid = UUID.fromString(account.getUuid());
-                DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
-                DateTime expireDate = date.plusHours(24);
-                if (date.isAfter(expireDate)) {
-                    _accountService.sendConfirmEmail(account);
-                    response.sendRedirect(uri + "/#/error?type=expired");
-                }
-                _accountService.confirm(account);
-                response.sendRedirect(uri + "/#/success?type=confirmed");
-            } catch (AccountNotFoundException e) {
-                response.sendRedirect(uri + "/#/error?type=account");
-            } catch (MessagingException e) {
-                LOG.error("Error while trying to send email{}", e);
-            }
-        } catch (IOException e) {
-            LOG.error("Error while trying to redirect {}", e);
-        }
-    }
-
 
     /**
      * Refreshes token (if it can be refreshed ) passed in request and returns back the token
@@ -147,5 +125,79 @@ public class AuthenticationController {
             UserTokenState userTokenState = new UserTokenState();
             return ResponseEntity.accepted().body(userTokenState);
         }
+    }
+
+
+    @RequestMapping(value = "/auth/confirm", method = RequestMethod.POST)
+    public ResponseEntity confirmOperation(@RequestBody() String token) {
+        UUID uuid = UUID.fromString(token);
+        Optional<AccountEvent> eventOptional = _accountService.findEvent(token);
+        if (!eventOptional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        AccountEvent event = eventOptional.get();
+        DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
+        DateTime expireDate = date.plusHours(24);
+        if (date.isAfter(expireDate)) {
+            _accountService.removeEvent(event);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
+        }
+        if (!event.getType().equals(AccountEventType.ACCOUNT_CONFIRM) && !event.getAccount().equals(Utils.getCurrentAccount())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        HashMap<String, String> model = new HashMap<>();
+        switch (event.getType()) {
+            case ACCOUNT_CONFIRM:
+                _accountService.confirm(event.getAccount());
+                model.put("result", "confirmed");
+                break;
+            case PASSWORD_RESET:
+                if (new DateTime().isAfter(date.plusHours(12))) {
+                    _accountService.removeEvent(event);
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
+                }
+                break;
+        }
+        return ResponseEntity.ok(model);
+
+    }
+    @Transactional
+    @RequestMapping(value = "/auth/password-reset", method = RequestMethod.POST)
+    public ResponseEntity<?> passwordReset(@RequestBody String email) {
+        Optional<Account> optionalAccount = _accountService.findByEmail(email);
+        if (optionalAccount.isPresent()) {
+            Account account = optionalAccount.get();
+            AccountEvent event = _accountService.createPasswordResetEvent(account);
+            try {
+                _accountService.sendConfirmEmail(account, event);
+            } catch (MessagingException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @Transactional
+    @RequestMapping(value = "/auth/password-change", method = RequestMethod.POST)
+    public ResponseEntity<?> changePassword(@RequestBody PasswordForm form) {
+        UUID uuid = UUID.fromString(form.getToken());
+        Optional<AccountEvent> eventOptional = _accountService.findEvent(form.getToken());
+        if (!eventOptional.isPresent()) {
+            return ResponseEntity.status(NOT_FOUND).build();
+        }
+        AccountEvent event = eventOptional.get();
+        DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
+        if (new DateTime().isAfter(date.plusHours(12))) {
+            _accountService.removeEvent(event);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
+        }
+        Account account = event.getAccount();
+        account.setPassword(form.getPassword());
+        _accountService.encodePassword(account);
+        _accountService.update(account);
+        _accountService.eventConfirmed(event);
+        HashMap<String, String> model = new HashMap<>();
+        model.put("result", "changed");
+        return ResponseEntity.ok(model);
     }
 }

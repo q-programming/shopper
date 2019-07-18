@@ -4,7 +4,7 @@
     <groupId>com.qprogramming.shopper</groupId>
     <artifactId>shopper</artifactId>
     <packaging>pom</packaging>
-    <version>0.6.2</version>
+    <version>0.8.0</version>
     <name>Shopper</name>
     <url>http://maven.apache.org</url>
     <properties>

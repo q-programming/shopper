@@ -32,4 +32,8 @@ export class MenuToolbarComponent implements OnInit {
     toggleSideNav() {
         this.sidenav.emit(SideNavAction.TOGGLE);
     }
+
+    refreshList() {
+        this.menuSrv.emmitAction(MenuAction.REFRESH);
+    }
 }

@@ -4,7 +4,7 @@
             <mat-form-field class="" fxFlex="70">
                 <img [src]='"assets/images/spacer.png"' class="mr-2" matPrefix>
                 <input id="product" matInput placeholder="{{'app.item.product'|translate}}"
-                       cdkFocusRegionstart formControlName="product" required>
+                       cdkFocusRegionstart formControlName="product" required (blur)="tryToGetQuantity()">
                 <!--<mat-error *ngIf="form.value.listName.invalid"></mat-error>-->
                 <!--<mat-autocomplete #productsAuto="matAutocomplete" [autoActiveFirstOption]-->
                 <!--[displayWith]="productDisplay" (optionSelected)="setProduct($event)">-->
@@ -56,7 +56,7 @@
 </div>
 <div class="p-2 button-panel pull-right">
     <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
-    <button mat-raised-button class="success-button" (click)="commitItem()" [disabled]="form.invalid">
+    <button mat-raised-button class="success-button" (click)="commitItem()" [disabled]="!formValid">
         {{(update?'app.general.edit':'app.general.add') |translate}}
     </button>
 </div>

@@ -76,8 +76,12 @@ body {
 }
 
 .shopper-modal > mat-dialog-content.mat-dialog-content {
-  margin: 0;
+  margin: 0!important;
 }
+.shopper-modal.mat-dialog-content {
+  margin: 0!important;
+}
+
 
 .mat-form-field-full-width {
   width: 100%;

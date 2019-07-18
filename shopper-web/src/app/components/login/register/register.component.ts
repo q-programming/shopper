@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {environment} from "@env/environment";
+import {environment} from "../../../../environments/environment";
 import {
     AbstractControl,
     FormBuilder,
@@ -35,13 +35,7 @@ export class RegisterComponent implements OnInit {
                 private apiService: ApiService,
                 private alertSrv: AlertService,
                 private authSrv: AuthenticationService) {
-        this.apiService.get(environment.default_lang_url).subscribe(defaults => {
-            if (defaults) {
-                let lang = defaults.language;
-                this.translate.setDefaultLang(lang);
-                this.translate.use(lang)
-            }
-        })
+        this.authSrv.setLanguage()
     }
 
     ngOnInit() {

@@ -165,8 +165,10 @@ public class ShoppingListRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (MessagingException e) {
             LOG.error("There was internal error with mailer when trying to send an email: {}", e);
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (AccountNotFoundException e) {
+            LOG.error("Account was not found when searching for friends: {}", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 

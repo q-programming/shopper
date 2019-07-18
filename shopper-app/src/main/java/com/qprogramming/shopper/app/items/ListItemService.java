@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.qprogramming.shopper.app.support.Utils.isNumeric;
 import static com.qprogramming.shopper.app.support.Utils.not;
 
 /**
@@ -78,6 +79,7 @@ public class ListItemService {
 
     public void addItemToList(ShoppingList list, ListItem item) throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
         ListItem listItem;
+        setQuantityFromName(item);
         Optional<ListItem> itemOptional = list.getItems().stream().filter(sameProduct(item.getProduct())).findFirst();
         if (itemOptional.isPresent()) {
             listItem = itemOptional.get();
@@ -86,6 +88,26 @@ public class ListItemService {
         } else {
             listItem = createListItem(item);
             list.getItems().add(listItem);
+        }
+    }
+
+    public void setQuantityFromName(ListItem item) {
+        if (StringUtils.isBlank(item.getProduct().getName())) {
+            return;
+        }
+        String[] parts = item.getProduct().getName().split("\\s+");
+        int wordsCount = parts.length;
+        if (wordsCount > 1) {
+            //check if first and last is number
+            String b = parts[0].replace(',', '.');
+            String e = parts[wordsCount - 1].replace(',', '.');
+            if (isNumeric(b) && !isNumeric(e)) {
+                item.setQuantity(Float.valueOf(b));
+                item.getProduct().setName(StringUtils.join(parts, " ", 1, wordsCount));
+            } else if (isNumeric(e)) {
+                item.setQuantity(Float.valueOf(e));
+                item.getProduct().setName(StringUtils.join(parts, " ", 0, wordsCount - 1));
+            }
         }
     }
 
@@ -111,7 +133,7 @@ public class ListItemService {
     }
 
     private Product getProductByNameOrCreate(Product product) {
-        Optional<Product> optionalProduct = _productRepository.findByNameIgnoreCase(product.getName().trim());
+        Optional<Product> optionalProduct = _productRepository.findByNameIgnoreCase(product.getName());
         return optionalProduct.orElseGet(() -> saveProduct(product));
     }
 

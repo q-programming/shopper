@@ -7,10 +7,14 @@ import com.qprogramming.shopper.app.account.authority.AuthorityService;
 import com.qprogramming.shopper.app.account.authority.Role;
 import com.qprogramming.shopper.app.account.avatar.Avatar;
 import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
+import com.qprogramming.shopper.app.account.event.AccountEvent;
+import com.qprogramming.shopper.app.account.event.AccountEventRepository;
+import com.qprogramming.shopper.app.account.event.AccountEventType;
 import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,10 +38,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.qprogramming.shopper.app.settings.Settings.APP_EMAIL_FROM;
 import static com.qprogramming.shopper.app.settings.Settings.APP_URL;
@@ -56,15 +57,17 @@ public class AccountService implements UserDetailsService {
     private AvatarRepository _avatarRepository;
     private AuthorityService _authorityService;
     private AccountPasswordEncoder _accountPasswordEncoder;
+    private AccountEventRepository _accountEventRepository;
     private MailService _mailService;
 
     @Autowired
-    public AccountService(PropertyService propertyService, AccountRepository accountRepository, AvatarRepository avatarRepository, AuthorityService authorityService, AccountPasswordEncoder accountPasswordEncoder, MailService mailService) {
+    public AccountService(PropertyService propertyService, AccountRepository accountRepository, AvatarRepository avatarRepository, AuthorityService authorityService, AccountPasswordEncoder accountPasswordEncoder, AccountEventRepository accountEventRepository, MailService mailService) {
         this._propertyService = propertyService;
         this._accountRepository = accountRepository;
         this._avatarRepository = avatarRepository;
         this._authorityService = authorityService;
         this._accountPasswordEncoder = accountPasswordEncoder;
+        this._accountEventRepository = accountEventRepository;
         this._mailService = mailService;
     }
 
@@ -264,6 +267,8 @@ public class AccountService implements UserDetailsService {
     }
 
     public void delete(Account account) {
+        List<AccountEvent> allByAccount = _accountEventRepository.findAllByAccount(account);
+        _accountEventRepository.deleteAll(allByAccount);
         _accountRepository.delete(account);
     }
 
@@ -271,36 +276,88 @@ public class AccountService implements UserDetailsService {
     @Transactional
     public Account createLocalAccount(Account account) {
         account.setId(generateID());
-        account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
-        account.setUuid(Generators.timeBasedGenerator().generate().toString());
+        encodePassword(account);
         account.setType(Account.AccountType.LOCAL);
         return createAcount(account);
     }
 
-    public void sendConfirmEmail(Account account) throws MessagingException {
+    public void sendConfirmEmail(Account account, AccountEvent event) throws MessagingException {
         String application = _propertyService.getProperty(APP_URL);
         Mail mail = new Mail();
         mail.setMailTo(account.getEmail());
         mail.setMailFrom(_propertyService.getProperty(APP_EMAIL_FROM));
         mail.addToModel("name", account.getName());
         mail.addToModel("application", application);
-        mail.addToModel("confirmURL", application + "/auth/confirm?token=" + account.getUuid());
-        mail.setLocale(account.getLanguage());
-        _mailService.sendConfirmMessage(mail);
-
-    }
-
-    public Account findByUuid(String uuid) throws AccountNotFoundException {
-        Optional<Account> optionalAccount = _accountRepository.findByUuid(uuid);
-        if (!optionalAccount.isPresent()) {
-            throw new AccountNotFoundException();
+        switch (event.getType()) {
+            case PASSWORD_RESET:
+                mail.addToModel("confirmURL", application + "#/password-change/" + event.getToken());
+                break;
+            case ACCOUNT_CONFIRM:
+                mail.addToModel("confirmURL", application + "#/confirm/" + event.getToken());
+                break;
         }
-        return optionalAccount.get();
+        mail.setLocale(account.getLanguage());
+        _mailService.sendConfirmMessage(mail,event);
+
     }
 
     public void confirm(Account account) {
         account.setEnabled(true);
-        account.setUuid(null);
         _accountRepository.save(account);
+    }
+
+    public void addAccountToFriendList(Account account) throws AccountNotFoundException {
+        Account currentAccount = findById(Utils.getCurrentAccountId());
+        currentAccount.getFriends().add(account);
+    }
+
+    public Set<Account> getAllFriendList() throws AccountNotFoundException {
+        Account currentAccount = findById(Utils.getCurrentAccountId());
+        return currentAccount.getFriends();
+    }
+
+    public Optional<AccountEvent> findEvent(String token) {
+        return _accountEventRepository.findByToken(token);
+    }
+
+    public void removeEvent(AccountEvent event) {
+        this._accountEventRepository.delete(event);
+    }
+
+    public AccountEvent createConfirmEvent(Account account) {
+        AccountEvent event = new AccountEvent();
+        event.setAccount(account);
+        event.setType(AccountEventType.ACCOUNT_CONFIRM);
+        event.setToken(generateToken());
+        return _accountEventRepository.save(event);
+    }
+
+    public AccountEvent createPasswordResetEvent(Account newAccount) {
+        AccountEvent event = new AccountEvent();
+        event.setAccount(newAccount);
+        event.setType(AccountEventType.PASSWORD_RESET);
+        event.setToken(generateToken());
+        return _accountEventRepository.save(event);
+    }
+
+    public void eventConfirmed(AccountEvent event) {
+        _accountEventRepository.delete(event);
+    }
+
+    public String generateToken() {
+        String token = Generators.timeBasedGenerator().generate().toString();
+        while (_accountEventRepository.findByToken(token).isPresent()) {
+            token = Generators.timeBasedGenerator().generate().toString();
+        }
+        return token;
+    }
+
+    /**
+     * Encodes password passed in plain text in Account
+     *
+     * @param account Account for which password will be encoded
+     */
+    public void encodePassword(Account account) {
+        account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
     }
 }

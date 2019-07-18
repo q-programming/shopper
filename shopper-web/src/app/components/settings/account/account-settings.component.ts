@@ -14,6 +14,7 @@ import {getBase64Image} from "../../../utils/utils";
 import {ItemService} from "@services/item.service";
 import {ConfirmDialog, ConfirmDialogComponent} from "../../dialogs/confirm/confirm-dialog.component";
 import {Router} from "@angular/router";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 @Component({
     selector: 'settings-account',
@@ -25,6 +26,7 @@ export class AccountSettingsComponent implements OnInit {
     account: Account;
     avatarData: any = {};
     languages: any = languages;
+    isMobile:boolean;
 
     constructor(public dialog: MatDialog,
                 private authSrv: AuthenticationService,
@@ -34,7 +36,9 @@ export class AccountSettingsComponent implements OnInit {
                 private avatarSrv: AvatarService,
                 private itemSrv: ItemService,
                 private translate: TranslateService,
-                private router: Router) {
+                private router: Router,
+                private deviceService: DeviceDetectorService) {
+        this.isMobile = this.deviceService.isMobile();
     }
 
     ngOnInit() {
@@ -98,6 +102,13 @@ export class AccountSettingsComponent implements OnInit {
             }
         })
     }
+
+    toggleRightCheckboxes(val) {
+        this.api.post(`${environment.account_url}${environment.rightmode_url}`, val.checked).subscribe(() => {
+            this.alertSrv.success('app.settings.app.save.success');
+            this.authSrv.currentAccount.righcheckbox = val.checked
+        })
+    }
 }
 
 @Component({
@@ -107,7 +118,7 @@ export class AccountSettingsComponent implements OnInit {
 })
 export class AvatarUploadComponent implements OnInit {
 
-    @ViewChild('cropper', undefined)
+    @ViewChild('cropper', {static:true})
     cropper: ImageCropperComponent;
     cropperSettings: CropperSettings;
     account: Account;

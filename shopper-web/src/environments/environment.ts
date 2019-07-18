@@ -23,6 +23,7 @@ export const environment = {
     avatar_url: '/avatar',
     avatar_upload_url: '/avatar-upload',
     language_url: '/settings/language',
+    rightmode_url: '/settings/rightmode',
     list_url: '/api/list',
     item_url: '/api/item',
     product_url: '/api/product',

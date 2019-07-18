@@ -6,7 +6,7 @@
     <parent>
         <artifactId>shopper</artifactId>
         <groupId>com.qprogramming.shopper</groupId>
-        <version>0.6.2</version>
+        <version>0.8.0</version>
     </parent>
     <artifactId>shopper-web</artifactId>
     <name>Shopper-Web</name>
@@ -67,6 +67,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.2</version>
                 <configuration>
                     <archive>
                         <addMavenDescriptor>false</addMavenDescriptor>
@@ -80,6 +81,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

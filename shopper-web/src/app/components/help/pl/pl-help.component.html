@@ -334,7 +334,12 @@
         <h4 id="item-new-dialog" class="shopper-font">Dodawania poprzez dialog nowych produktówg</h4>
         <p>
             Najbardziej popularny sposób dodawania nowych produktów do listy, dający najwięcej kontroli nad nazwą,
-            kategorią, ilością , jednostką oraz opisem.<br>
+            kategorią, ilością , jednostką oraz opisem.
+        </p>
+        <p>
+            Jeżeli wprowadzimy w nazwie produktu również ilość i przejdziemy do następnego pola (lub klikniemy gdzieś
+            poza pole), aplikacja postara sie ustawić ilość korzystająć z tych samych reguł opisanych w
+            <a routerLink="." fragment="item-name-quantity">Ustawienie ilośći poprzez nazwę produktu</a>
         </p>
         <!--Quick add-->
         <h4 id="item-quickadd" class="shopper-font">Szybkie dodawanie</h4>
@@ -345,6 +350,10 @@
             Dla tak wprowadzonych produktów aplikacja postara się dopasować automatycznie kategorię według <a
                 class="help-cursor" routerLink="." fragment="item-category">reguł przewidywania kategorii</a> , lub nada
             standardową kategorię "Inne"
+        </p>
+        <p>
+            Podczas szybkiego dodawania produktu, można też ustawić ilość, uzywająć mechanizmu opisanego w
+            <a routerLink="." fragment="item-name-quantity">Ustawienie ilośći poprzez nazwę produktu</a>
         </p>
         <!--Favorites-->
         <h4 id="item-new-dialog-favorites" class="shopper-font">Dodawanie poprzez dialog nowych produktów zakładkę
@@ -367,6 +376,36 @@
             Aby usunąc produkt z ulubionych , odwiedź <a class="help-cursor" routerLink="." fragment="settings">Ustawienia</a>\<a
                 class="help-cursor" routerLink="." fragment="settings-favorite">Ulubione produkty</a>
         </p>
+        <!--Product name quantity-->
+        <h4 id="item-name-quantity" class="shopper-font">Ustawienie ilośći poprzez nazwę produktu</h4>
+        <p>
+            Jeżeli w nazwie pruduktu, na początku lub na końcu podamy liczbę ( samą liczbę
+            bez żadnych dodatkowych znaków) , aplikacja uzna to jako ilość
+            ustawi ją jako ilość nowego produktu<br>
+            Np. :
+        </p>
+        <ul class="list-unstyled">
+            <li>
+                wpisująć <code class="font-larger">jajka 6</code> , do listy zostanie dodane <code class="font-larger">jajka</code>
+                z ilością 6
+            </li>
+            <li>
+                wpisująć <code class="font-larger">woda 1,5</code> , do listy zostanie dodane <code
+                    class="font-larger">woda </code> z ilością 1,5
+            </li>
+            <li>
+                wpisująć <code class="font-larger">10 pomidory</code> , do listy zostanie dodane <code
+                    class="font-larger">pomidory </code> z ilością 10
+            </li>
+            <li>
+                wpisująć <code class="font-larger">śmietana 18%</code> , do listy zostanie dodana tylko <code
+                    class="font-larger">śmietana 18%</code>
+            </li>
+        </ul>
+        <p>
+            Jeżeli podamy ilość zarówno na początku jak i końcu , tylko liczba z końca zostanie uwzględniona<br>
+        </p>
+
     </div>
     <!--List items-->
     <div>

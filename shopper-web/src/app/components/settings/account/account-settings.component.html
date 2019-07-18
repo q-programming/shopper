@@ -35,6 +35,35 @@
         </mat-form-field>
     </div>
 </div>
+<!--Other-->
+<ng-container *ngIf="isMobile">
+    <div fxLayout="row" fxLayoutAlign="center">
+        <div fxFlex="60" fxFlex.xs="100">
+            <h3 class="underlined">
+                <mat-icon>dashboard</mat-icon>
+                {{'app.settings.account.other'|translate}}
+            </h3>
+        </div>
+    </div>
+    <div fxLayout="row wrap" fxLayoutAlign="center">
+        <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center">
+            <mat-slide-toggle
+                    class="example-margin"
+                    color="primary"
+                    [checked]="account.righcheckbox"
+                    (change)="toggleRightCheckboxes($event)"
+            >
+                {{'app.settings.account.righcheckbox'|translate}}
+            </mat-slide-toggle>
+
+        </div>
+        <div fxFlex="60" fxFlex.xs="100" class="mt-3">
+            <mat-hint>
+                {{'app.settings.account.righcheckbox.hint'|translate}}
+            </mat-hint>
+        </div>
+    </div>
+</ng-container>
 <div fxLayout="row" fxLayoutAlign="center">
     <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center" class="delete-account-div">
         <button mat-flat-button color="warn" (click)="deleteAccount()">

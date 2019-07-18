@@ -3,10 +3,14 @@ package com.qprogramming.shopper.app.api.account;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.account.DisplayAccount;
+import com.qprogramming.shopper.app.account.event.AccountEvent;
+import com.qprogramming.shopper.app.account.event.AccountEventType;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +22,11 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -138,6 +141,22 @@ public class AccountRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Sets right mode - checkboxes will be rendered on right side for better mobile experience
+     * @param rightmode boolean
+     * @return {@link HttpStatus#OK} if upload was successful
+     */
+    @Transactional
+    @RequestMapping(value = "/settings/rightmode", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> changeRightMode(@RequestBody boolean rightmode) {
+        Account currentAccount = Utils.getCurrentAccount();
+        currentAccount.setRighcheckbox(rightmode);
+        _accountService.update(currentAccount);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
     @Transactional
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -152,5 +171,21 @@ public class AccountRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
+    @Transactional
+    @RequestMapping(value = "/friends", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Set<Account>> getFriendList(@RequestParam(required = false) String term) {
+        try {
+            if (StringUtils.isBlank(term)) {
+                return ResponseEntity.ok(_accountService.getAllFriendList());
+            }
+            return ResponseEntity.ok(_accountService.getAllFriendList()
+                    .stream()
+                    .filter(account -> account.getEmail().contains(term))
+                    .collect(Collectors.toSet()));
+        } catch (AccountNotFoundException e) {
+            LOG.error("Account with id {} was not found");
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
