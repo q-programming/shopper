@@ -240,6 +240,11 @@ public class MailService {
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/confirm.ftl"));
                 mimeMessageHelper.setText(mail.getMailContent(), true);
                 break;
+            case DEVICE_CONFIRM:
+                mimeMessageHelper.setSubject(_msgSrv.getMessage("app.register.device.confirm", new Object[]{}, "", locale));
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/confirmDevice.ftl"));
+                mimeMessageHelper.setText(mail.getMailContent(), true);
+                break;
         }
         addAppLogo(mimeMessageHelper);
         LOG.info("Sending email message to {}", mail.getMailTo());

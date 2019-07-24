@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.api;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.account.PasswordForm;
+import com.qprogramming.shopper.app.account.devices.NewDevice;
 import com.qprogramming.shopper.app.account.event.AccountEvent;
 import com.qprogramming.shopper.app.account.event.AccountEventType;
 import com.qprogramming.shopper.app.config.mail.Mail;
@@ -104,6 +105,25 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
+    @RequestMapping(value = "/auth/new-device", method = RequestMethod.POST)
+    @Transactional
+    public ResponseEntity registerNewDevice(
+            @RequestBody String email) throws AuthenticationException {
+        Optional<Account> byEmail = _accountService.findByEmail(email);
+        if (!byEmail.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            Account account = byEmail.get();
+            NewDevice newDevice = _accountService.registerNewDevice(account);
+            AccountEvent event = _accountService.createConfirmDeviceEvent(account, newDevice.getId());
+            _accountService.sendConfirmEmail(account, event);
+            return ResponseEntity.ok(newDevice);
+        } catch (MessagingException e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("mailing");
+        }
+    }
+
     /**
      * Refreshes token (if it can be refreshed ) passed in request and returns back the token
      *
@@ -161,6 +181,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(model);
 
     }
+
     @Transactional
     @RequestMapping(value = "/auth/password-reset", method = RequestMethod.POST)
     public ResponseEntity<?> passwordReset(@RequestBody String email) {

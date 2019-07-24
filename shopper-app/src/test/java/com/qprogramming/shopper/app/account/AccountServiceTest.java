@@ -6,6 +6,9 @@ import com.qprogramming.shopper.app.account.authority.AuthorityService;
 import com.qprogramming.shopper.app.account.authority.Role;
 import com.qprogramming.shopper.app.account.avatar.Avatar;
 import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
+import com.qprogramming.shopper.app.account.devices.Device;
+import com.qprogramming.shopper.app.account.devices.DeviceRepository;
+import com.qprogramming.shopper.app.account.devices.NewDevice;
 import com.qprogramming.shopper.app.account.event.AccountEventRepository;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
@@ -51,6 +54,8 @@ public class AccountServiceTest extends MockedAccountTestBase {
     private MailService mailServiceMock;
     @Mock
     private AccountEventRepository accountEventRepositoryMock;
+    @Mock
+    private DeviceRepository deviceRepositoryMock;
 
     private AccountService accountService;
 
@@ -63,7 +68,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
 
     @Before
     public void setUp() throws Exception {
-        accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock, accountEventRepositoryMock, mailServiceMock) {
+        accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock, accountEventRepositoryMock, deviceRepositoryMock, mailServiceMock) {
             @Override
             protected byte[] downloadFromUrl(URL url) {
                 ClassLoader loader = getClass().getClassLoader();
@@ -176,4 +181,41 @@ public class AccountServiceTest extends MockedAccountTestBase {
         accountService.createAvatar(testAccount, "http://google.com");
         verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
     }
+
+    @Test
+    public void registerNewDeviceTest() throws Exception {
+        when(deviceRepositoryMock.save(any(Device.class))).then(returnsFirstArg());
+        when(deviceRepositoryMock.findById(anyString()))
+                .thenReturn(Optional.of(new Device()))
+                .thenReturn(Optional.empty());
+        NewDevice newDevice = accountService.registerNewDevice(testAccount);
+        verify(deviceRepositoryMock, times(2)).findById(anyString());
+        verify(accountRepositoryMock, times(1)).save(any(Account.class));
+        assertThat(newDevice.getPlainKey()).isNotBlank();
+    }
+
+    @Test
+    public void deviceAuthSuccessTest() {
+        String deviceKey = "DeviceKey";
+        Device device = new Device();
+        device.setEnabled(true);
+        device.setDeviceKey(deviceKey);
+        testAccount.getDevices().add(device);
+        when(passwordEncoderMock.matches(deviceKey, device.getDeviceKey())).thenReturn(true);
+        boolean result = accountService.deviceAuth(deviceKey, testAccount);
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void deviceAuthFailedTest() {
+        String deviceKey = "DeviceKey";
+        Device device = new Device();
+        device.setEnabled(true);
+        device.setDeviceKey(deviceKey + 1);
+        testAccount.getDevices().add(device);
+        when(passwordEncoderMock.matches(deviceKey, device.getDeviceKey())).thenReturn(false);
+        boolean result = accountService.deviceAuth(deviceKey, testAccount);
+        assertThat(result).isFalse();
+    }
+
 }

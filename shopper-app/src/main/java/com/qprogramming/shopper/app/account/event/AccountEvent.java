@@ -21,6 +21,10 @@ public class AccountEvent {
     @Column(unique = true)
     private String token;
 
+    @Column(unique = true)
+    private String data;
+
+
     public Long getId() {
         return id;
     }
@@ -51,6 +55,14 @@ public class AccountEvent {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 
     @Override

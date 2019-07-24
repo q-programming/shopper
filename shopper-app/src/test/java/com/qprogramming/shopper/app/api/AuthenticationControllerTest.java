@@ -4,6 +4,8 @@ import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.account.devices.Device;
+import com.qprogramming.shopper.app.account.devices.NewDevice;
 import com.qprogramming.shopper.app.account.event.AccountEvent;
 import com.qprogramming.shopper.app.login.RegisterForm;
 import com.qprogramming.shopper.app.login.token.JwtAuthenticationRequest;
@@ -22,6 +24,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.context.WebApplicationContext;
@@ -31,11 +34,10 @@ import java.util.Optional;
 
 import static com.qprogramming.shopper.app.filters.BasicRestAuthenticationFilter.AUTHENTICATION_SCHEME;
 import static com.qprogramming.shopper.app.filters.BasicRestAuthenticationFilter.AUTHORIZATION;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -211,6 +213,33 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
                 .andExpect(status().isOk());
         verify(accountServiceMock, times(1)).createLocalAccount(any(Account.class));
         verify(accountServiceMock, times(1)).sendConfirmEmail(any(Account.class), any(AccountEvent.class));
+    }
+
+    @Test
+    public void testRegisterNewDeviceEmailNotFound() throws Exception {
+        initMocked();
+        when(accountServiceMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.empty());
+        this.standaloneMvc.perform(post("/auth/new-device")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(testAccount.getEmail()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testRegisterNewDeviceSuccess() throws Exception {
+        initMocked();
+        NewDevice newDevice = new NewDevice(new Device(), "plainKey");
+        newDevice.setId("ID");
+        when(accountServiceMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.of(testAccount));
+        when(accountServiceMock.registerNewDevice(testAccount)).thenReturn(newDevice);
+        MvcResult mvcResult = this.standaloneMvc.perform(post("/auth/new-device")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(testAccount.getEmail()))
+                .andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        NewDevice result = TestUtil.convertJsonToObject(contentAsString, NewDevice.class);
+        assertThat(result.getPlainKey()).isNotBlank();
+        verify(accountServiceMock, times(1)).createConfirmDeviceEvent(testAccount, newDevice.getId());
     }
 
     private void initMocked() {

@@ -3,6 +3,7 @@ package com.qprogramming.shopper.app.account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qprogramming.shopper.app.account.authority.Authority;
 import com.qprogramming.shopper.app.account.authority.Role;
+import com.qprogramming.shopper.app.account.devices.Device;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -65,6 +66,10 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     @Column(columnDefinition = "boolean default false")
     private boolean righcheckbox = false;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Device> devices = new HashSet<>();
 
     public String getId() {
         return id;
@@ -220,6 +225,19 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    @JsonIgnore
+    public Set<Device> getDevices() {
+        if (Collections.isEmpty(this.devices)) {
+            this.devices = new HashSet<>();
+        }
+        return devices;
+    }
+
+    public void setDevices(Set<Device> devices) {
+        this.devices = devices;
+    }
+
 
     @Override
     public boolean equals(Object o) {
