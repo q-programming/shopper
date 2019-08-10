@@ -1,5 +1,6 @@
 package com.qprogramming.shopper.app.api;
 
+import com.fasterxml.uuid.Generators;
 import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.Account;
@@ -7,6 +8,8 @@ import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.account.devices.Device;
 import com.qprogramming.shopper.app.account.devices.NewDevice;
 import com.qprogramming.shopper.app.account.event.AccountEvent;
+import com.qprogramming.shopper.app.account.event.AccountEventType;
+import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import com.qprogramming.shopper.app.login.RegisterForm;
 import com.qprogramming.shopper.app.login.token.JwtAuthenticationRequest;
 import com.qprogramming.shopper.app.login.token.TokenService;
@@ -248,8 +251,85 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         controller = new AuthenticationController(tokenService, authenticationManagerMock, accountServiceMock);
         standaloneMvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
+    }
 
+    @Test
+    public void testConfirmEventNotFound() throws Exception {
+        initMocked();
+        String token = Generators.timeBasedGenerator().generate().toString();
+        when(accountServiceMock.findEvent(token)).thenReturn(Optional.empty());
+        this.standaloneMvc.perform(post("/auth/confirm")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(token))
+                .andExpect(status().isNotFound());
+    }
 
+    @Test
+    public void testConfirmTokenExpired() throws Exception {
+        initMocked();
+        String token = "09011a27-478c-11e7-bcf7-930b1424157e";
+        AccountEvent event = new AccountEvent();
+        event.setToken(token);
+        when(accountServiceMock.findEvent(token)).thenReturn(Optional.of(event));
+        this.standaloneMvc.perform(post("/auth/confirm")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(token))
+                .andExpect(status().isConflict());
+        verify(accountServiceMock, times(1)).removeEvent(event);
+    }
+
+    @Test
+    public void testConfirmAccountNotMatching() throws Exception {
+        initMocked();
+        String token = Generators.timeBasedGenerator().generate().toString();
+        AccountEvent event = new AccountEvent();
+        event.setToken(token);
+        event.setType(AccountEventType.DEVICE_CONFIRM);
+        event.setAccount(TestUtil.createAccount("John", "Doe"));
+        when(accountServiceMock.findEvent(token)).thenReturn(Optional.of(event));
+        this.standaloneMvc.perform(post("/auth/confirm")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testConfirmRegisterNewDeviceNotFound() throws Exception {
+        initMocked();
+        NewDevice newDevice = new NewDevice(new Device(), "plainKey");
+        newDevice.setId("ID");
+        String token = Generators.timeBasedGenerator().generate().toString();
+        AccountEvent event = new AccountEvent();
+        event.setToken(token);
+        event.setData(newDevice.getId());
+        event.setType(AccountEventType.DEVICE_CONFIRM);
+        event.setAccount(testAccount);
+        when(accountServiceMock.findEvent(token)).thenReturn(Optional.of(event));
+        doThrow(new DeviceNotFoundException()).when(accountServiceMock).confirmDevice(testAccount, event.getData());
+        this.standaloneMvc.perform(post("/auth/confirm")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(token))
+                .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    public void testConfirmRegisterNewDeviceSuccess() throws Exception {
+        initMocked();
+        NewDevice newDevice = new NewDevice(new Device(), "plainKey");
+        newDevice.setId("ID");
+        String token = Generators.timeBasedGenerator().generate().toString();
+        AccountEvent event = new AccountEvent();
+        event.setToken(token);
+        event.setData(newDevice.getId());
+        event.setType(AccountEventType.DEVICE_CONFIRM);
+        event.setAccount(testAccount);
+        when(accountServiceMock.findEvent(token)).thenReturn(Optional.of(event));
+        this.standaloneMvc.perform(post("/auth/confirm")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(token))
+                .andExpect(status().isOk());
+        verify(accountServiceMock, times(1)).confirmDevice(testAccount, event.getData());
     }
 
 

@@ -200,6 +200,7 @@
   "app.error.token.invalid": "Przesłany token jest nie poprawny",
   "app.error.token.expired": "Przesłany token wygasł. Email z nowym został wysłany ponownie",
   "app.success.confirmed": "Konto zostało potwierdzone. Możesz się teraz zalogować uzywająć swojego nowego konta",
+  "app.success.device.confirmed": "Twoje nowe urządzenie zostało potwierdzone. Proszę ponoewnie otworzyć aplikację towarzyszącą na zegarku",
   "ALCOHOL": "alkohole",
   "BABY": "dziecięce",
   "BAKERY": "pieczywo",

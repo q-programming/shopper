@@ -24,6 +24,7 @@ const appRoutes: Routes = [
     {path: 'register', component: RegisterComponent},
     {path: 'reset', component: ResetPasswordComponent},
     {path: 'confirm/:token', component: ConfirmComponent},
+    {path: 'confirm-device/:token', component: ConfirmComponent},
     {path: 'password-change/:token', component: ChangePasswordComponent},
     {path: 'error', component: ErrorComponent},
     {path: 'success', component: SuccessComponent},

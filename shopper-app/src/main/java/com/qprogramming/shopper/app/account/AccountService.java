@@ -17,6 +17,7 @@ import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -322,6 +323,13 @@ public class AccountService implements UserDetailsService {
         _accountRepository.save(account);
     }
 
+    public void confirmDevice(Account account, String data) throws DeviceNotFoundException {
+        Optional<Device> confirmedDevice = account.getDevices().stream().filter(device -> device.getId().equals(data)).findFirst();
+        Device device = confirmedDevice.orElseThrow(DeviceNotFoundException::new);
+        device.setEnabled(true);
+        _deviceRepository.save(device);
+    }
+
     public void addAccountToFriendList(Account account) throws AccountNotFoundException {
         Account currentAccount = findById(Utils.getCurrentAccountId());
         currentAccount.getFriends().add(account);
@@ -353,7 +361,7 @@ public class AccountService implements UserDetailsService {
         event.setAccount(account);
         event.setType(AccountEventType.DEVICE_CONFIRM);
         event.setToken(generateToken());
-        event.setData(encode(deviceId));
+        event.setData(deviceId);
         return _accountEventRepository.save(event);
     }
 

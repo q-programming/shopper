@@ -200,6 +200,7 @@
   "app.error.token.invalid": "Passed token was invalid",
   "app.error.token.expired": "Provided token has expired, email with new token was resend",
   "app.success.confirmed": "Your account was confirmed. You can now sign in using your new account",
+  "app.success.device.confirmed": "Your new device was confirmed. Please try to re-open companion app on watch",
   "ALCOHOL": "Alcohol",
   "BABY": "Baby",
   "BAKERY": "Bakery",

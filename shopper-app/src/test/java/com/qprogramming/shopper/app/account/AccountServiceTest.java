@@ -12,6 +12,7 @@ import com.qprogramming.shopper.app.account.devices.NewDevice;
 import com.qprogramming.shopper.app.account.event.AccountEventRepository;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
+import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -216,6 +217,33 @@ public class AccountServiceTest extends MockedAccountTestBase {
         when(passwordEncoderMock.matches(deviceKey, device.getDeviceKey())).thenReturn(false);
         boolean result = accountService.deviceAuth(deviceKey, testAccount);
         assertThat(result).isFalse();
+    }
+
+    @Test(expected = DeviceNotFoundException.class)
+    public void confirmDeviceFailedTest() throws DeviceNotFoundException {
+        accountService.confirmDevice(testAccount, "ID");
+    }
+
+    @Test(expected = DeviceNotFoundException.class)
+    public void confirmDeviceNotFoundFailedTest() throws DeviceNotFoundException {
+        String deviceKey = "DeviceKey";
+        Device device = new Device();
+        device.setEnabled(false);
+        device.setId(deviceKey);
+        testAccount.getDevices().add(device);
+        accountService.confirmDevice(testAccount, "ID");
+    }
+
+
+    @Test
+    public void confirmDeviceSuccessTest() throws DeviceNotFoundException {
+        String deviceKey = "DeviceKey";
+        Device device = new Device();
+        device.setEnabled(false);
+        device.setId(deviceKey);
+        testAccount.getDevices().add(device);
+        accountService.confirmDevice(testAccount, deviceKey);
+        verify(deviceRepositoryMock, times(1)).save(device);
     }
 
 }

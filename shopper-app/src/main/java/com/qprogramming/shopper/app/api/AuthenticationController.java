@@ -8,6 +8,7 @@ import com.qprogramming.shopper.app.account.event.AccountEvent;
 import com.qprogramming.shopper.app.account.event.AccountEventType;
 import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
+import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import com.qprogramming.shopper.app.login.RegisterForm;
 import com.qprogramming.shopper.app.login.token.JwtAuthenticationRequest;
 import com.qprogramming.shopper.app.login.token.TokenService;
@@ -147,7 +148,7 @@ public class AuthenticationController {
         }
     }
 
-
+    @Transactional
     @RequestMapping(value = "/auth/confirm", method = RequestMethod.POST)
     public ResponseEntity confirmOperation(@RequestBody() String token) {
         UUID uuid = UUID.fromString(token);
@@ -158,7 +159,7 @@ public class AuthenticationController {
         AccountEvent event = eventOptional.get();
         DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
         DateTime expireDate = date.plusHours(24);
-        if (date.isAfter(expireDate)) {
+        if (new DateTime().isAfter(expireDate)) {
             _accountService.removeEvent(event);
             return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
         }
@@ -171,6 +172,14 @@ public class AuthenticationController {
                 _accountService.confirm(event.getAccount());
                 model.put("result", "confirmed");
                 break;
+            case DEVICE_CONFIRM:
+                try {
+                    _accountService.confirmDevice(event.getAccount(), event.getData());
+                    model.put("result", "device_confirmed");
+                } catch (DeviceNotFoundException e) {
+                    return ResponseEntity.status(NOT_FOUND).build();
+                }
+                break;
             case PASSWORD_RESET:
                 if (new DateTime().isAfter(date.plusHours(12))) {
                     _accountService.removeEvent(event);
@@ -178,6 +187,7 @@ public class AuthenticationController {
                 }
                 break;
         }
+        _accountService.removeEvent(event);
         return ResponseEntity.ok(model);
 
     }
