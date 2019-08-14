@@ -22,6 +22,7 @@ import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -70,6 +71,8 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     private FavoriteProductsRepository favoritesRepositoryMock;
     @Mock
     private MessagesService msgSrvMock;
+    @Mock
+    private CacheManager cacheManager;
 
 
     @Before
@@ -78,7 +81,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         super.setup();
         CategoryPresetService presetService = new CategoryPresetService(presetRepositoryMock);
         ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, msgSrvMock, mailServiceMock, presetService);
-        ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock);
+        ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock,cacheManager);
         ItemRestController controller = new ItemRestController(listItemService, listService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();

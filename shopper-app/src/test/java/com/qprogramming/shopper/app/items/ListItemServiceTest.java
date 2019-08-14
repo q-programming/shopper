@@ -11,6 +11,7 @@ import com.qprogramming.shopper.app.items.product.ProductRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.cache.CacheManager;
 
 import java.util.Optional;
 
@@ -31,6 +32,8 @@ public class ListItemServiceTest extends MockedAccountTestBase {
     private ListItemRepository listItemRepositoryMock;
     @Mock
     private FavoriteProductsRepository favoritesRepositoryMock;
+    @Mock
+    private CacheManager cacheManager;
 
     private ListItemService listItemService;
 
@@ -38,7 +41,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
     @Override
     public void setup() {
         super.setup();
-        listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock);
+        listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock,cacheManager);
 
     }
 

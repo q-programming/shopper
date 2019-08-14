@@ -16,6 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -33,16 +37,20 @@ public class ListItemService {
     private ListItemRepository _listItemRepository;
     private ProductRepository _productRepository;
     private FavoriteProductsRepository _favoritesRepository;
+    private CacheManager _cacheManager;
+    private Cache _favoritesCache;
     private static final Logger LOG = LoggerFactory.getLogger(ListItemService.class);
 
     public ListItemService() {
     }
 
     @Autowired
-    public ListItemService(ListItemRepository listItemRepository, ProductRepository productRepository, FavoriteProductsRepository favoritesRepository) {
+    public ListItemService(ListItemRepository listItemRepository, ProductRepository productRepository, FavoriteProductsRepository favoritesRepository, CacheManager cacheManager) {
+        this._cacheManager = cacheManager;
         this._listItemRepository = listItemRepository;
         this._productRepository = productRepository;
         this._favoritesRepository = favoritesRepository;
+        this._favoritesCache = _cacheManager.getCache("favorites");
     }
 
     public ListItem findById(Long id) throws ItemNotFoundException {
@@ -245,21 +253,21 @@ public class ListItemService {
     }
 
     private void addToFavorites(Product product) {
-        FavoriteProducts favoriteProducts = getFavoriteProductsForAccount();
+        String currentAccountId = Utils.getCurrentAccountId();
+        FavoriteProducts favoriteProducts = getFavoritesForAccount(currentAccountId);
         Long score = favoriteProducts.getFavorites().getOrDefault(product, 0L);
+        if (score == 0) {
+            _favoritesCache.evict(currentAccountId);
+        }
         favoriteProducts.getFavorites().put(product, ++score);
         _favoritesRepository.save(favoriteProducts);
     }
 
-
-    private FavoriteProducts getFavoriteProductsForAccount() {
-        String currentAccountId = Utils.getCurrentAccountId();
-        Optional<FavoriteProducts> optionalFavorites = _favoritesRepository.findById(currentAccountId);
-        if (!optionalFavorites.isPresent()) {
+    private FavoriteProducts getFavoritesForAccount(String currentAccountId) {
+        return _favoritesRepository.findById(currentAccountId).orElseGet(() -> {
             LOG.debug("No favorites found for {} , returning default", currentAccountId);
             return new FavoriteProducts(currentAccountId);
-        }
-        return optionalFavorites.get();
+        });
     }
 
     /**
@@ -267,9 +275,12 @@ public class ListItemService {
      *
      * @return set of favorite products for current account
      */
-    public Set<Product> getAllFavoritesProducts() {
-        FavoriteProducts favoriteProductsForAccount = getFavoriteProductsForAccount();
-        return sortByValue(favoriteProductsForAccount.getFavorites()).keySet();
+    @Cacheable(value = "favorites", key = "#currentAccountId")
+    public Set<Product> getFavoriteProductsForAccount(String currentAccountId) {
+        return sortByValue(_favoritesRepository.findById(currentAccountId).orElseGet(() -> {
+            LOG.debug("No favorites found for {} , returning default", currentAccountId);
+            return new FavoriteProducts(currentAccountId);
+        }).getFavorites()).keySet();
     }
 
     /**
@@ -277,14 +288,11 @@ public class ListItemService {
      *
      * @return favorite products
      */
-    public List<Product> getFavoriteProducts(ShoppingList list) {
+    public List<Product> filterFavoriteProducts(ShoppingList list, Set<Product> favoriteProductsForAccount) {
         Set<Product> productsAlreadyOnList = list.getItems().stream().map(ListItem::getProduct).collect(Collectors.toSet());
-        FavoriteProducts favoriteProductsForAccount = getFavoriteProductsForAccount();
-        Map<Product, Long> sortedProducts = sortByValue(favoriteProductsForAccount.getFavorites());
-        return sortedProducts.keySet()
+        return favoriteProductsForAccount
                 .stream()
                 .filter(not(onList(productsAlreadyOnList)))
-                .limit(50)
                 .collect(Collectors.toList());
     }
 
@@ -302,12 +310,14 @@ public class ListItemService {
     }
 
     /**
-     * Removes passed product from favorites
+     * Removes passed product from favorites for account with given id
      *
-     * @param product product to be removed from favorites
+     * @param product          product to be removed from favorites
+     * @param currentAccountId id of account
      */
-    public void removeFromFavorites(Product product) {
-        FavoriteProducts favoriteProducts = getFavoriteProductsForAccount();
+    @CacheEvict(value = "favorites", key = "#currentAccountId")
+    public void removeFromFavorites(Product product, String currentAccountId) {
+        FavoriteProducts favoriteProducts = getFavoritesForAccount(currentAccountId);
         favoriteProducts.getFavorites().remove(product);
         _favoritesRepository.save(favoriteProducts);
     }

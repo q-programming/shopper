@@ -215,7 +215,8 @@ public class ItemRestController {
     public ResponseEntity<List<Product>> getFavorites(@PathVariable Long id) {
         try {
             ShoppingList list = _listService.findByID(id);
-            return ResponseEntity.ok(_listItemService.getFavoriteProducts(list));
+            Set<Product> favorites = _listItemService.getFavoriteProductsForAccount(Utils.getCurrentAccountId());
+            return ResponseEntity.ok(_listItemService.filterFavoriteProducts(list, favorites));
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -233,7 +234,7 @@ public class ItemRestController {
     @RequestMapping(value = "/favorites", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Set<Product>> getAllFavorites() {
-        return ResponseEntity.ok(_listItemService.getAllFavoritesProducts());
+        return ResponseEntity.ok(_listItemService.getFavoriteProductsForAccount(Utils.getCurrentAccountId()));
     }
 
     /**
@@ -245,8 +246,9 @@ public class ItemRestController {
     @RequestMapping(value = "/favorites/remove", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Set<Product>> removeFromFavorites(@RequestBody Product product) {
-        _listItemService.removeFromFavorites(product);
-        return ResponseEntity.ok(_listItemService.getAllFavoritesProducts());
+        String currentAccountId = Utils.getCurrentAccountId();
+        _listItemService.removeFromFavorites(product, currentAccountId);
+        return ResponseEntity.ok(_listItemService.getFavoriteProductsForAccount(currentAccountId));
     }
 
 }
