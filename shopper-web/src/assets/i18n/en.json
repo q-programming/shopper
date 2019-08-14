@@ -74,6 +74,7 @@
   "app.shopping.clear": "Clear bought items",
   "app.shopping.cleanup": "Bought items were removed from list",
   "app.shopping.copy": "Copy list",
+  "app.shopping.copy.hint": "Create copy of whle list , including all items and sharing",
   "app.shopping.copy.success": "List {{name}} was successfully copied",
   "app.shopping.copy.error": "There were errors while trying to copy list. Please try again or contact administrator",
   "app.item.add": "Add new item",

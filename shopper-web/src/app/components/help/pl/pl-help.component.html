@@ -108,8 +108,8 @@
                             <span>{{'app.general.delete'|translate}}</span>
                         </button>
                         <button mat-menu-item routerLink="." fragment="shoppinglist-copy"
-                                matTooltip="Stwórz kopię listy uwzględniająć wszystkie produkty oraz współdzielenia">
-                            <mat-icon>file-copy</mat-icon>
+                                matTooltip="{{'app.shopping.copy.hint'|translate}}">
+                            <mat-icon>file_copy</mat-icon>
                             <span>{{'app.shopping.copy'|translate}}</span>
                         </button>
                     </mat-menu>
@@ -280,6 +280,11 @@
                                 fragment="shoppinglist-archive">
                             <mat-icon>unarchive</mat-icon>
                             <span>{{'app.shopping.unarchive'|translate}}</span>
+                        </button>
+                        <button mat-menu-item matTooltip="{{'app.shopping.copy.hint'|translate}}" routerLink="."
+                                fragment="shoppinglist-copy">
+                            <mat-icon>file_copy</mat-icon>
+                            <span>{{'app.shopping.copy'|translate}}</span>
                         </button>
                     </mat-menu>
                     <button mat-icon-button class="pull-right" routerLink="." fragment="shoppinglist-sharing">

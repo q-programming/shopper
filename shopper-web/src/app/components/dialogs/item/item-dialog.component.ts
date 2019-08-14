@@ -24,6 +24,13 @@ export class ItemDialogComponent implements OnInit {
         this.item = data.item ? data.item : new ListItem();
         this.update = data.update;
         this.listID = data.listID;
+        dialogRef.keydownEvents().subscribe(e => {
+            if (e.code === 'Escape') {
+                dialogRef.close();
+            } else if (e.code === 'Enter' && this.formValid) {
+                this.commitItem(this.formValid);
+            }
+        });
     }
 
 
