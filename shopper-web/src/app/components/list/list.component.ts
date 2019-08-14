@@ -45,7 +45,7 @@ export class ListComponent implements OnInit, OnDestroy {
     menuSub: Subscription;
     isMobile: boolean;
     ACTIONS = {
-        [MenuAction.PENDING_REFRESH]: this.refreshPending = true,
+        [MenuAction.PENDING_REFRESH]: () => this.delayRefresh(),
         [MenuAction.REFRESH]: () => {
             this.isInProgress = true;
             this.loadItems()
@@ -275,6 +275,10 @@ export class ListComponent implements OnInit, OnDestroy {
         if (!this.list.archived) {
             this.edit = true;
         }
+    }
+
+    delayRefresh() {
+        this.refreshPending = true;
     }
 
     /**

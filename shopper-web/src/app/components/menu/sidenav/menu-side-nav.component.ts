@@ -17,7 +17,7 @@ export class MenuSideNavComponent implements OnInit {
     @Input() list: ShoppingList;
     @Input() lists: ShoppingList[];
     @Input() shown: boolean;
-    account: Account;
+    @Input() account: Account;
 
     constructor(private router: Router,
                 private menuSrv: MenuActionsService,
@@ -26,7 +26,6 @@ export class MenuSideNavComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.account = this.authSrv.currentAccount;
     }
 
 
