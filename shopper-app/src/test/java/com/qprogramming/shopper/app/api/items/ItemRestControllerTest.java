@@ -22,6 +22,7 @@ import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -73,15 +74,18 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     private MessagesService msgSrvMock;
     @Mock
     private CacheManager cacheManager;
+    @Mock
+    private Cache cacheMock;
 
 
     @Before
     @Override
     public void setup() {
         super.setup();
+        when(cacheManager.getCache(anyString())).thenReturn(cacheMock);
         CategoryPresetService presetService = new CategoryPresetService(presetRepositoryMock);
         ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, msgSrvMock, mailServiceMock, presetService);
-        ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock,cacheManager);
+        ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock, cacheManager);
         ItemRestController controller = new ItemRestController(listItemService, listService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
@@ -105,6 +109,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         assertThat(result.getItems().size() == 1).isTrue();
         verify(listItemRepositoryMock, times(1)).save(any(ListItem.class));
         verify(listRepositoryMock, times(1)).save(any(ShoppingList.class));
+        verify(cacheMock, times(1)).evict(testAccount.getId());
     }
 
     @Test

@@ -37,7 +37,6 @@ public class ListItemService {
     private ListItemRepository _listItemRepository;
     private ProductRepository _productRepository;
     private FavoriteProductsRepository _favoritesRepository;
-    private CacheManager _cacheManager;
     private Cache _favoritesCache;
     private static final Logger LOG = LoggerFactory.getLogger(ListItemService.class);
 
@@ -46,11 +45,10 @@ public class ListItemService {
 
     @Autowired
     public ListItemService(ListItemRepository listItemRepository, ProductRepository productRepository, FavoriteProductsRepository favoritesRepository, CacheManager cacheManager) {
-        this._cacheManager = cacheManager;
         this._listItemRepository = listItemRepository;
         this._productRepository = productRepository;
         this._favoritesRepository = favoritesRepository;
-        this._favoritesCache = _cacheManager.getCache("favorites");
+        this._favoritesCache = cacheManager.getCache("favorites");
     }
 
     public ListItem findById(Long id) throws ItemNotFoundException {
