@@ -1,0 +1,21 @@
+.backdrop {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    display: block;
+    z-index: 1029;
+    visibility: hidden;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.backdrop-shown {
+    visibility: visible;
+    background-color: rgba(0, 0, 0, 0.6);
+}

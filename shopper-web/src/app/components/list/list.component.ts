@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {ListService} from "@services/list.service";
 import {AlertService} from "@services/alert.service";
 import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
@@ -28,6 +28,8 @@ import {DeviceDetectorService} from "ngx-device-detector";
     styleUrls: ['./list.component.css']
 })
 export class ListComponent implements OnInit, OnDestroy {
+    isShow: boolean;
+    topPosToStartShowing = 150;
 
     listID: number;
     list: ShoppingList;
@@ -44,6 +46,16 @@ export class ListComponent implements OnInit, OnDestroy {
     stompClient;
     menuSub: Subscription;
     isMobile: boolean;
+    ACTIONS = {
+        [MenuAction.PENDING_REFRESH]: this.refreshPending = true,
+        [MenuAction.REFRESH]: () => this.loadItems(),
+        [MenuAction.SHARE]: () => this.shareListOpenDialog(),
+        [MenuAction.ADD_ITEM]: () => this.openNewItemDialog(),
+        [MenuAction.EDIT]: () => this.openEditListDialog(),
+        [MenuAction.CLEANUP]: () => this.cleanup(),
+        [MenuAction.LEAVE]: () => this.leaveShared(),
+        [MenuAction.COPY]: () => this.copyList(),
+    };
 
     constructor(private logger: NGXLogger,
                 private listSrv: ListService,
@@ -59,36 +71,16 @@ export class ListComponent implements OnInit, OnDestroy {
         this.isMobile = deviceService.isMobile();
     }
 
+    @HostListener('window:scroll')
+    checkScroll() {
+        const scrollPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        this.isShow = scrollPosition >= this.topPosToStartShowing;
+    }
+
     ngOnInit() {
         this.menuSub = this.menuSrv.actionEmitted.subscribe(action => {
-            switch (action) {
-                case MenuAction.PENDING_REFRESH:
-                    this.refreshPending = true;
-                    break;
-                case MenuAction.REFRESH:
-                    this.loadItems();
-                    break;
-                case MenuAction.SHARE:
-                    this.shareListOpenDialog();
-                    break;
-                case MenuAction.ADD_ITEM:
-                    this.openNewItemDialog();
-                    break;
-                case MenuAction.EDIT:
-                    this.openEditListDialog();
-                    break;
-                case MenuAction.CLEANUP:
-                    this.cleanup();
-                    break;
-                case MenuAction.ARCHIVE:
-                    this.archiveToggle(this.list.archived);
-                    break;
-                case MenuAction.LEAVE:
-                    this.leaveShared();
-                    break;
-                case MenuAction.COPY:
-                    this.copyList();
-                    break;
+            if (this.ACTIONS.hasOwnProperty(action)) {
+                this.ACTIONS[action]()
             }
         });
         this.categories = this.itemSrv.categories;
@@ -170,10 +162,10 @@ export class ListComponent implements OnInit, OnDestroy {
 
     /**
      * Update category of passed item
-     * @param item item for which category will be updated
-     * @param newCategory new category
      */
-    updateCategory(item: ListItem, newCategory: Category) {
+    updateCategory(event) {
+        const item = event.item;
+        const newCategory = event.category;
         if (newCategory !== item.category) {
             item.category = newCategory;
             this.itemSrv.updateItem(this.listID, item).subscribe(list => {

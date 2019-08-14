@@ -1,99 +1,104 @@
-<div fxLayout="column" class="text-center">
-    <img *ngIf="account.avatar" [src]="account.avatar" class="avatar large"/>
-    <img *ngIf="!account.avatar" src="assets/images/avatar-placeholder.png" class="avatar large"/>
-    <span class="mt-4 shopper-font font-larger">{{account.name}} {{account.surname}}</span>
-</div>
-<mat-divider class="mt-2"></mat-divider>
-<button mat-button (click)="openNewListDialog()" *ngIf="!onListView">
-    <img src="assets/images/plus.svg" height="20" class="mr-1">
-    <!--<mat-icon class="text-white mr-2">add_circle_outline</mat-icon>-->
-    {{'app.shopping.create'|translate}}
-</button>
-<div fxLayout="column" *ngIf="list && onListView">
-    <button mat-button (click)="openNewItemDialog()">
-        <img src="assets/images/plus.svg" height="20" class="mr-2">
-        <!--<mat-icon class="text-white mr-2">add_circle_outline</mat-icon>-->
-        {{'app.item.add'|translate}}
-    </button>
-    <ng-container *ngIf="!list.archived">
-        <button mat-button (click)="openEditListDialog()">
-            <mat-icon class="mr-2">edit</mat-icon>
-            <span>{{'app.general.edit'|translate}}</span>
+<backdrop [show]="shown" (clicked)="closed()"></backdrop>
+<div fxLayout="column" [className]="shown?'side-drawer open':'side-drawer close'">
+    <div class="side-drawer-content">
+        <div fxLayout="column" class="text-center">
+            <img *ngIf="account.avatar" [src]="account.avatar" class="avatar large"/>
+            <img *ngIf="!account.avatar" src="assets/images/avatar-placeholder.png" class="avatar large"/>
+            <span class="mt-4 shopper-font font-larger">{{account.name}} {{account.surname}}</span>
+        </div>
+        <mat-divider class="mt-2"></mat-divider>
+        <button mat-button (click)="openNewListDialog()" *ngIf="!onListView" class="side-drawer-button">
+            <img src="assets/images/plus.svg" height="20" class="mr-1">
+            <!--<mat-icon class="text-white mr-2">add_circle_outline</mat-icon>-->
+            {{'app.shopping.create'|translate}}
         </button>
-        <button mat-button (click)="refreshList()">
-            <mat-icon class="mr-2">refresh</mat-icon>
-            <span>{{'app.general.refresh'|translate}}</span>
-        </button>
-        <button mat-button (click)="shareListOpenDialog()">
-            <mat-icon matBadge="{{list.shared.length}}" matBadgePosition="below before"
-                      [matBadgeHidden]="list.shared.length==0" class="mr-2">
-                person
-            </mat-icon>
-            <span>{{'app.shopping.share'|translate}}</span>
-        </button>
-        <button mat-button (click)="cleanup()" [disabled]="list.done==0">
-            <mat-icon class="mr-2">delete_forever</mat-icon>
-            <span>{{'app.shopping.clear'|translate}}</span>
-        </button>
-        <button *ngIf="list.isOwner" mat-button (click)="archiveToggle()">
-            <mat-icon class="mr-2">archive</mat-icon>
-            <span>{{'app.shopping.archive'|translate}}</span>
-        </button>
-        <!--LEAVE SHARED LIST-->
-        <button *ngIf="!list.isOwner" mat-button (click)="leaveShared()"
-                matTooltip="{{'app.shopping.share.leave.hint'|translate}}">
-            <mat-icon class="mr-2">clear</mat-icon>
-            <span>{{'app.shopping.share.leave'|translate}}</span>
-        </button>
-    </ng-container>
-    <!--ARCHIVED-->
-    <ng-container *ngIf="list.archived">
-        <button mat-button (click)="archiveToggle(list.archived)">
-            <mat-icon>unarchive</mat-icon>
-            <span>{{'app.shopping.unarchive'|translate}}</span>
-        </button>
-    </ng-container>
-    <button mat-button (click)="copyList()">
-        <mat-icon class="mr-2">
-            file_copy
-        </mat-icon>
-        <span>{{'app.shopping.copy'|translate}}</span>
-    </button>
-</div>
-<mat-divider class="mt-2"></mat-divider>
-<div fxLayout="column">
-    <button mat-button routerLink="/">
-        <img src="assets/images/list.svg" height="26" class="mr-2">
-        {{'app.menu.lists'| translate}}
-    </button>
-    <div *ngFor="let list of lists">
-        <button mat-button [routerLink]="['list', list.id]">
-            <mat-icon>arrow_right</mat-icon>
-            {{list.name}}
-        </button>
+        <div fxLayout="column" *ngIf="list && onListView">
+            <button mat-button (click)="openNewItemDialog()" class="side-drawer-button">
+                <img src="assets/images/plus.svg" height="20" class="mr-2">
+                <!--<mat-icon class="text-white mr-2">add_circle_outline</mat-icon>-->
+                {{'app.item.add'|translate}}
+            </button>
+            <ng-container *ngIf="!list.archived">
+                <button mat-button (click)="openEditListDialog()" class="side-drawer-button">
+                    <mat-icon class="mr-2">edit</mat-icon>
+                    <span>{{'app.general.edit'|translate}}</span>
+                </button>
+                <button mat-button (click)="refreshList()" class="side-drawer-button">
+                    <mat-icon class="mr-2">refresh</mat-icon>
+                    <span>{{'app.general.refresh'|translate}}</span>
+                </button>
+                <button mat-button (click)="shareListOpenDialog()" class="side-drawer-button">
+                    <mat-icon matBadge="{{list.shared.length}}" matBadgePosition="below before"
+                              [matBadgeHidden]="list.shared.length==0" class="mr-2">
+                        person
+                    </mat-icon>
+                    <span>{{'app.shopping.share'|translate}}</span>
+                </button>
+                <button mat-button (click)="cleanup()" [disabled]="list.done==0" class="side-drawer-button">
+                    <mat-icon class="mr-2">delete_forever</mat-icon>
+                    <span>{{'app.shopping.clear'|translate}}</span>
+                </button>
+                <button *ngIf="list.isOwner" mat-button (click)="archiveToggle()" class="side-drawer-button">
+                    <mat-icon class="mr-2">archive</mat-icon>
+                    <span>{{'app.shopping.archive'|translate}}</span>
+                </button>
+                <!--LEAVE SHARED LIST-->
+                <button *ngIf="!list.isOwner" mat-button (click)="leaveShared()"
+                        matTooltip="{{'app.shopping.share.leave.hint'|translate}}" class="side-drawer-button">
+                    <mat-icon class="mr-2">clear</mat-icon>
+                    <span>{{'app.shopping.share.leave'|translate}}</span>
+                </button>
+            </ng-container>
+            <!--ARCHIVED-->
+            <ng-container *ngIf="list.archived">
+                <button mat-button (click)="archiveToggle()" class="side-drawer-button">
+                    <mat-icon>unarchive</mat-icon>
+                    <span>{{'app.shopping.unarchive'|translate}}</span>
+                </button>
+            </ng-container>
+            <button mat-button (click)="copyList()" class="side-drawer-button">
+                <mat-icon class="mr-2">
+                    file_copy
+                </mat-icon>
+                <span>{{'app.shopping.copy'|translate}}</span>
+            </button>
+        </div>
+        <mat-divider class="mt-2"></mat-divider>
+        <div fxLayout="column">
+            <button mat-button routerLink="/" class="side-drawer-button">
+                <img src="assets/images/list.svg" height="26" class="mr-2">
+                {{'app.menu.lists'| translate}}
+            </button>
+            <div *ngFor="let list of lists">
+                <button mat-button [routerLink]="['list', list.id]" class="side-drawer-button">
+                    <mat-icon>arrow_right</mat-icon>
+                    {{list.name}}
+                </button>
+            </div>
+            <button mat-button [routerLink]="['/']" [queryParams]="{archived:true}" class="side-drawer-button">
+                <img src="assets/images/list_archive.svg" height="26" class="mr-2">
+                {{'app.shopping.archived' | translate}}
+            </button>
+        </div>
+        <mat-divider class="mt-2"></mat-divider>
+        <div fxLayout="column">
+            <!--MESSAGES-->
+            <!--<button mat-button routerLink="/messages">-->
+            <!--<mat-icon class="mr-2">message</mat-icon>-->
+            <!--{{'app.menu.messages'|translate:message_count}}-->
+            <!--</button>-->
+            <button mat-button routerLink="/settings" class="side-drawer-button">
+                <mat-icon class="mr-2">settings</mat-icon>
+                {{'app.menu.settings'|translate}}
+            </button>
+            <button mat-button routerLink="/help" class="side-drawer-button">
+                <mat-icon class="mr-2">help</mat-icon>
+                {{'app.menu.help'|translate}}
+            </button>
+            <button mat-button (click)="logout();" class="side-drawer-button">
+                <mat-icon class="mr-2">exit_to_app</mat-icon>
+                {{'app.menu.logout'|translate}}
+            </button>
+        </div>
     </div>
-    <button mat-button [routerLink]="['/']" [queryParams]="{archived:true}">
-        <img src="assets/images/list_archive.svg" height="26" class="mr-2">
-        {{'app.shopping.archived' | translate}}
-    </button>
-</div>
-<mat-divider class="mt-2"></mat-divider>
-<div fxLayout="column">
-    <!--MESSAGES-->
-    <!--<button mat-button routerLink="/messages">-->
-    <!--<mat-icon class="mr-2">message</mat-icon>-->
-    <!--{{'app.menu.messages'|translate:message_count}}-->
-    <!--</button>-->
-    <button mat-button routerLink="/settings">
-        <mat-icon class="mr-2">settings</mat-icon>
-        {{'app.menu.settings'|translate}}
-    </button>
-    <button mat-button routerLink="/help">
-        <mat-icon class="mr-2">help</mat-icon>
-        {{'app.menu.help'|translate}}
-    </button>
-    <button mat-button (click)="logout();">
-        <mat-icon class="mr-2">exit_to_app</mat-icon>
-        {{'app.menu.logout'|translate}}
-    </button>
 </div>

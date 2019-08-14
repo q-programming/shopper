@@ -66,6 +66,8 @@ import {ResetPasswordComponent} from './components/login/reset-password/reset-pa
 import {ChangePasswordComponent} from "./components/login/change-password/change-password.component";
 import {ConfirmComponent} from "./components/confirm/confirm.component";
 import {DeviceDetectorModule} from "ngx-device-detector";
+import { BackdropComponent } from './components/menu/backdrop/backdrop.component';
+import { ItemComponent } from './components/list/item/item.component';
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -110,7 +112,9 @@ export function initUserFactory(authService: AuthenticationService) {
         ErrorComponent,
         ResetPasswordComponent,
         ChangePasswordComponent,
-        ConfirmComponent
+        ConfirmComponent,
+        BackdropComponent,
+        ItemComponent
     ],
     entryComponents: [
         AvatarUploadComponent,

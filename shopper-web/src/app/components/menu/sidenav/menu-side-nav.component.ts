@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ShoppingList} from "@model/ShoppingList";
 import {Account} from "@model/Account";
 import {AuthenticationService} from "@services/authentication.service";
@@ -7,7 +7,8 @@ import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
 
 @Component({
     selector: 'menu-sidenav',
-    templateUrl: './menu-side-nav.component.html'
+    templateUrl: './menu-side-nav.component.html',
+    styleUrls: ['./menu-side-nav.component.css']
 })
 export class MenuSideNavComponent implements OnInit {
 
@@ -15,16 +16,19 @@ export class MenuSideNavComponent implements OnInit {
     @Output() newList = new EventEmitter<boolean>();
     @Input() list: ShoppingList;
     @Input() lists: ShoppingList[];
+    @Input() shown: boolean;
     account: Account;
 
     constructor(private router: Router,
                 private menuSrv: MenuActionsService,
                 private authSrv: AuthenticationService) {
+        this.router.events.subscribe(() => this.sidenav.emit(SideNavAction.CLOSE))
     }
 
     ngOnInit() {
         this.account = this.authSrv.currentAccount;
     }
+
 
     openNewListDialog() {
         this.sidenav.emit(SideNavAction.CLOSE);
@@ -77,9 +81,14 @@ export class MenuSideNavComponent implements OnInit {
         });
     }
 
+    closed() {
+        this.sidenav.emit(SideNavAction.CLOSE);
+    }
+
     get onListView(): boolean {
         return this.router.url.includes('/list')
     }
+
 }
 
 export enum SideNavAction {
