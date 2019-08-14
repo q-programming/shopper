@@ -4,7 +4,7 @@ import {DOCUMENT} from "@angular/common";
 @Component({
     selector: 'pull-to-refresh',
     templateUrl: './pull-to-refresh.component.html',
-    styles: []
+    styleUrls: ['./pull-to-refresh.component.css']
 })
 export class PullToRefreshComponent {
 
@@ -20,22 +20,17 @@ export class PullToRefreshComponent {
     }
 
     private get scrollTop() {
-        return this.element.scrollTop || 0;
+        return this.document.scrollingElement.scrollTop || 0;
     }
 
     @HostListener('scroll')
     @HostListener('touchmove')
     onScroll() {
-        console.log("window offset:" + window.pageYOffset);
-        console.log("window scrollY:" + window.scrollY);
-        console.log("el:" + this.scrollTop);
-        console.log("doc" + this.document.scrollingElement.scrollTop);
-
         if (this.scrollTop <= 0 && this.lastScrollTop <= 0) {
-            if (this.isAtTop) {
+            if (this.isAtTop && !this.inProgress) {
                 this.onPull.emit(true);
-            }
-            else this.isAtTop = true;
+                this.inProgress = true
+            } else this.isAtTop = true;
         }
         this.lastScrollTop = this.scrollTop;
     }

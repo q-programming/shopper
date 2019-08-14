@@ -20,6 +20,7 @@
     background-color: #00c500;
 }
 
+
 .mat-progress-bar-fill::after {
     background-color: #00c500 !important;
 }
@@ -43,4 +44,7 @@
     text-decoration: none;
     font-size: 14px;
     outline-style: none;
+}
+.loader::ng-deep circle {
+    stroke: white;
 }

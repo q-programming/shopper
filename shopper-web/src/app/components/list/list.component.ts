@@ -8,7 +8,6 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ShoppingList} from "@model/ShoppingList";
 import {ListItem} from "@model/ListItem";
 import {Account} from "@model/Account";
-import {Category} from "@model/Category";
 import {CategoryOption} from "@model/CategoryOption";
 import {WSAction, WSActionType} from "@model/WSAction";
 import {environment} from "@env/environment";
@@ -17,7 +16,6 @@ import * as SockJS from 'sockjs-client';
 import * as _ from 'lodash';
 import {TranslateService} from "@ngx-translate/core";
 import {NGXLogger} from "ngx-logger";
-import {itemDisplayName} from "../../utils/utils";
 import {Subscription} from "rxjs";
 import {DeviceDetectorService} from "ngx-device-detector";
 
@@ -48,7 +46,10 @@ export class ListComponent implements OnInit, OnDestroy {
     isMobile: boolean;
     ACTIONS = {
         [MenuAction.PENDING_REFRESH]: this.refreshPending = true,
-        [MenuAction.REFRESH]: () => this.loadItems(),
+        [MenuAction.REFRESH]: () => {
+            this.isInProgress = true;
+            this.loadItems()
+        },
         [MenuAction.SHARE]: () => this.shareListOpenDialog(),
         [MenuAction.ADD_ITEM]: () => this.openNewItemDialog(),
         [MenuAction.EDIT]: () => this.openEditListDialog(),
@@ -239,6 +240,7 @@ export class ListComponent implements OnInit, OnDestroy {
             if (this.sharedCount > 0 && !this.stompClient) {
                 this.initializeWebSocketConnection();
             }
+            this.isInProgress = false;
         });
     }
 
@@ -409,14 +411,11 @@ export class ListComponent implements OnInit, OnDestroy {
         });
     }
 
-    displayName(item: ListItem): string {
-        return itemDisplayName(item)
-    }
-
-
     onPull() {
-        console.log("Refresh me!");
         this.isInProgress = true;
+        setTimeout(() => {
+            this.loadItems();
+        }, 300);
     }
 
     private copyList() {
