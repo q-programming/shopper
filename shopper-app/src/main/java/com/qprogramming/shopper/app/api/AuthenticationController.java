@@ -109,8 +109,8 @@ public class AuthenticationController {
     @RequestMapping(value = "/auth/new-device", method = RequestMethod.POST)
     @Transactional
     public ResponseEntity registerNewDevice(
-            @RequestBody String email) throws AuthenticationException {
-        Optional<Account> byEmail = _accountService.findByEmail(email);
+            @RequestBody RegisterForm form) throws AuthenticationException {
+        Optional<Account> byEmail = _accountService.findByEmail(form.getEmail());
         if (!byEmail.isPresent()) {
             return ResponseEntity.notFound().build();
         }

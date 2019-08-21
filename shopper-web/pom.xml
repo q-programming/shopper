@@ -6,7 +6,7 @@
     <parent>
         <artifactId>shopper</artifactId>
         <groupId>com.qprogramming.shopper</groupId>
-        <version>0.8.0</version>
+        <version>0.9.0</version>
     </parent>
     <artifactId>shopper-web</artifactId>
     <name>Shopper-Web</name>

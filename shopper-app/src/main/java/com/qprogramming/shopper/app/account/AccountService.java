@@ -427,6 +427,6 @@ public class AccountService implements UserDetailsService {
         device = _deviceRepository.save(device);
         account.getDevices().add(device);
         _accountRepository.save(account);
-        return new NewDevice(device, deviceKey);
+        return new NewDevice(device, deviceKey, account.getEmail());
     }
 }

@@ -221,23 +221,27 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
     @Test
     public void testRegisterNewDeviceEmailNotFound() throws Exception {
         initMocked();
+        RegisterForm form = new RegisterForm();
+        form.setEmail(testAccount.getEmail());
         when(accountServiceMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.empty());
         this.standaloneMvc.perform(post("/auth/new-device")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(testAccount.getEmail()))
+                .content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void testRegisterNewDeviceSuccess() throws Exception {
         initMocked();
-        NewDevice newDevice = new NewDevice(new Device(), "plainKey");
+        RegisterForm form = new RegisterForm();
+        form.setEmail(testAccount.getEmail());
+        NewDevice newDevice = new NewDevice(new Device(), "plainKey", testAccount.getEmail());
         newDevice.setId("ID");
         when(accountServiceMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.of(testAccount));
         when(accountServiceMock.registerNewDevice(testAccount)).thenReturn(newDevice);
         MvcResult mvcResult = this.standaloneMvc.perform(post("/auth/new-device")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(testAccount.getEmail()))
+                .content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         NewDevice result = TestUtil.convertJsonToObject(contentAsString, NewDevice.class);
@@ -296,7 +300,7 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
     @Test
     public void testConfirmRegisterNewDeviceNotFound() throws Exception {
         initMocked();
-        NewDevice newDevice = new NewDevice(new Device(), "plainKey");
+        NewDevice newDevice = new NewDevice(new Device(), "plainKey", testAccount.getEmail());
         newDevice.setId("ID");
         String token = Generators.timeBasedGenerator().generate().toString();
         AccountEvent event = new AccountEvent();
@@ -316,7 +320,7 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
     @Test
     public void testConfirmRegisterNewDeviceSuccess() throws Exception {
         initMocked();
-        NewDevice newDevice = new NewDevice(new Device(), "plainKey");
+        NewDevice newDevice = new NewDevice(new Device(), "plainKey", testAccount.getEmail());
         newDevice.setId("ID");
         String token = Generators.timeBasedGenerator().generate().toString();
         AccountEvent event = new AccountEvent();
