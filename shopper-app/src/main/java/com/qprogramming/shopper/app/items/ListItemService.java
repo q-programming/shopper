@@ -83,20 +83,37 @@ public class ListItemService {
         }
     }
 
-    public void addItemToList(ShoppingList list, ListItem item) throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
+    /**
+     * Add List item to list, if item with same product is found on list, it's quantity is increased , or it's marked as undone
+     * @param list list to be updated with new item
+     * @param item item with product to be added
+     * @throws ProductNotFoundException if product was not found
+     * @throws BadProductNameException if product has wrong name or no name at all
+     */
+    public void addItemToList(ShoppingList list, ListItem item) throws ProductNotFoundException, BadProductNameException {
         ListItem listItem;
         setQuantityFromName(item);
         Optional<ListItem> itemOptional = list.getItems().stream().filter(sameProduct(item.getProduct())).findFirst();
         if (itemOptional.isPresent()) {
-            listItem = itemOptional.get();
-            listItem.setQuantity(atLeastOneQuantity(listItem) + atLeastOneQuantity(item));
-            listItem.setDone(false);
+            updateExistingItemOnList(item, itemOptional.get());
         } else {
             listItem = createListItem(item);
             list.getItems().add(listItem);
         }
     }
 
+    private void updateExistingItemOnList(ListItem item, ListItem existingItem) {
+        if (existingItem.isDone()) {
+            existingItem.setDone(false);
+        } else {
+            existingItem.setQuantity(atLeastOneQuantity(existingItem) + atLeastOneQuantity(item));
+        }
+    }
+
+    /**
+     * Set quantity from name
+     * @param item item which name wil be analysed and quantity extracted from
+     */
     public void setQuantityFromName(ListItem item) {
         if (StringUtils.isBlank(item.getProduct().getName())) {
             return;

@@ -66,13 +66,10 @@ public class ItemRestController {
             LOG.error(BAD_PRODUCT_NAME);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (ShoppingAccessException e) {
-            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(),id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
             LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (AccountNotFoundException e) {
-            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

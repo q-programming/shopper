@@ -9,6 +9,7 @@ import com.qprogramming.shopper.app.items.favorites.FavoriteProducts;
 import com.qprogramming.shopper.app.items.favorites.FavoriteProductsRepository;
 import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.items.product.ProductRepository;
+import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

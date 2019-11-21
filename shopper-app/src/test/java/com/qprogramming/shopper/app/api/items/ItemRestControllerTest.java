@@ -113,6 +113,48 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
+    public void addItemAlreadyExistsTest() throws Exception {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        ShoppingList list = createList(NAME, 1L);
+        list.getItems().add(listItem);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        when(productRepositoryMock.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepositoryMock.save(any())).then(returnsFirstArg());
+        when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
+        MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(listItem))).andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getItems().size() == 1).isTrue();
+        assertThat(result.getItems().get(0).getQuantity() == 2f).isTrue();
+        verify(listRepositoryMock, times(1)).save(any(ShoppingList.class));
+    }
+
+    @Test
+    public void addItemAlreadyExistsAndIsDoneTest() throws Exception {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        listItem.setDone(true);
+        ShoppingList list = createList(NAME, 1L);
+        list.getItems().add(listItem);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        when(productRepositoryMock.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepositoryMock.save(any())).then(returnsFirstArg());
+        when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
+        MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(listItem))).andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getItems().size() == 1).isTrue();
+        assertThat(result.getItems().get(0).getQuantity() == 1f).isTrue();
+        assertThat(result.getItems().get(0).isDone()).isFalse();
+        verify(listRepositoryMock, times(1)).save(any(ShoppingList.class));
+    }
+
+    @Test
     public void addItemBadProductNameTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         listItem.getProduct().setName(null);
