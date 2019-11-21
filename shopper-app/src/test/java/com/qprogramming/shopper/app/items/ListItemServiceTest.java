@@ -18,6 +18,8 @@ import org.springframework.cache.CacheManager;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -113,12 +115,19 @@ public class ListItemServiceTest extends MockedAccountTestBase {
 
     @Test
     public void setQuantityFromName() {
+        //string pools
+        String name_with_quantity = "Name with quantity";
+        String name_with_no_number = "Name with no number";
+        String water = "water";
+        String potatoes = "potatoes";
+        String kg = "kg";
+
         ListItem item = TestUtil.createListItem(NAME);
         item.setQuantity(0f);
-        item.getProduct().setName("Name with quantity 2");
+        item.getProduct().setName(name_with_quantity + " 2");
         listItemService.setQuantityFromName(item);
+        assertThat(item.getProduct().getName()).isEqualTo(name_with_quantity);
         assertThat(item.getQuantity()).isEqualTo(2f);
-        assertThat(item.getProduct().getName()).isEqualTo("Name with quantity");
 
         item.setQuantity(0f);
         item.getProduct().setName("Name with no number 2%");
@@ -126,7 +135,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
         assertThat(item.getQuantity()).isEqualTo(0f);
 
         item.setQuantity(0f);
-        item.getProduct().setName("Name with no number");
+        item.getProduct().setName(name_with_no_number);
         listItemService.setQuantityFromName(item);
         assertThat(item.getQuantity()).isEqualTo(0f);
 
@@ -148,18 +157,38 @@ public class ListItemServiceTest extends MockedAccountTestBase {
         assertThat(item.getQuantity()).isEqualTo(0f);
 
         item.setQuantity(0f);
-        item.getProduct().setName("water 1.5");
+        item.getProduct().setName(water + " 1.5");
         listItemService.setQuantityFromName(item);
         assertThat(item.getQuantity()).isEqualTo(1.5f);
-        assertThat(item.getProduct().getName()).isEqualTo("water");
+        assertThat(item.getProduct().getName()).isEqualTo(water);
 
         testAccount.setLanguage("pl");
         item.setQuantity(0f);
-        item.getProduct().setName("water 1,5");
+        item.getProduct().setName(water + " 1,5");
         listItemService.setQuantityFromName(item);
         assertThat(item.getQuantity()).isEqualTo(1.5f);
-        assertThat(item.getProduct().getName()).isEqualTo("water");
+        assertThat(item.getProduct().getName()).isEqualTo(water);
 
+        //test with units
+        item.setQuantity(0f);
+        item.getProduct().setName(water + " 1l");
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isEqualTo(1.0f);
+        assertThat(item.getUnit()).isEqualTo("l");
+        assertThat(item.getProduct().getName()).isEqualTo(water);
 
+        item.setQuantity(0f);
+        item.getProduct().setName(potatoes + " 2,5kg");
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isEqualTo(2.5f);
+        assertThat(item.getUnit()).isEqualTo(kg);
+        assertThat(item.getProduct().getName()).isEqualTo(potatoes);
+
+        item.setQuantity(0f);
+        item.getProduct().setName("2,5kg " + potatoes);
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isEqualTo(2.5f);
+        assertThat(item.getUnit()).isEqualTo(kg);
+        assertThat(item.getProduct().getName()).isEqualTo(potatoes);
     }
 }
