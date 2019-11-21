@@ -1,8 +1,7 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {AuthenticationService} from "@services/authentication.service";
 import {Account} from "@model/Account";
-import {MatSidenav} from "@angular/material";
 import {ListService} from "@services/list.service";
 import {ShoppingList} from "@model/ShoppingList";
 import {AlertService} from "@services/alert.service";
@@ -14,14 +13,12 @@ import {SideNavAction} from "./components/menu/sidenav/menu-side-nav.component";
     styles: []
 })
 export class AppComponent implements OnInit {
-
+    shown: boolean;
     account: Account;
     message_count = {count: ""};
     lists: ShoppingList[];
     list: ShoppingList;
     isInProgress: boolean = false;
-    @ViewChild("sidenav", {static:false})
-    private sidenav: MatSidenav;
 
     constructor(private router: Router,
                 private activatedRoute: ActivatedRoute,
@@ -31,9 +28,6 @@ export class AppComponent implements OnInit {
 
 
         router.events.subscribe(() => {
-            if (this.sidenav && this.sidenav.opened) {
-                this.sidenav.close();
-            }
             this.account = this.authSrv.currentAccount;
         });
         this.listSrv.listEmiter.subscribe(list => {
@@ -54,7 +48,6 @@ export class AppComponent implements OnInit {
     }
 
     openNewListDialog() {
-        this.sidenav.close();
         this.listSrv.openNewListDialog().subscribe(res => {
                 if (res) {
                     this.getUserLists();
@@ -79,16 +72,16 @@ export class AppComponent implements OnInit {
     handleSideNav($event: SideNavAction) {
         switch ($event) {
             case SideNavAction.CLOSE:
-                this.sidenav.close();
+                this.shown = false;
                 break;
             case SideNavAction.TOGGLE:
-                if (!this.sidenav.opened) {
+                if (this.shown) {
                     this.getUserLists();
                 }
-                this.sidenav.toggle();
+                this.shown = !this.shown;
                 break;
             case SideNavAction.OPEN:
-                this.sidenav.open();
+                this.shown = true;
                 break;
         }
     }

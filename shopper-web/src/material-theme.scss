@@ -17,13 +17,12 @@ $general-typography: mat-typography-config(
 body {
   font-family: 'Kalam', cursive;
   font-weight: 300;
-  min-height: 100vh;
   margin: 0;
   font-size: 1rem;
   line-height: 1.5;
   color: #212529;
   text-align: left;
-  background-color: #fff;
+  background-color: #2c5aa0;
 }
 
 .shopper-font {
@@ -46,11 +45,6 @@ body {
 .mat-drawer-container {
   background-color: #fff;
   z-index: auto !important;
-}
-
-.mat-sidenav-content {
-  background: #2c5aa0;
-  height: 100vh !important;
 }
 
 .mat-sidenav {
@@ -76,10 +70,11 @@ body {
 }
 
 .shopper-modal > mat-dialog-content.mat-dialog-content {
-  margin: 0!important;
+  margin: 0 !important;
 }
+
 .shopper-modal.mat-dialog-content {
-  margin: 0!important;
+  margin: 0 !important;
 }
 
 
@@ -121,10 +116,6 @@ body {
   .m-plr-5 {
     padding: 0 5px;
   }
-}
-
-.mat-progress-spinner circle, .mat-spinner circle {
-  stroke: #ffffff;
 }
 
 .cdk-overlay-container {

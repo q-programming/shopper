@@ -1,25 +1,26 @@
-<div *ngIf="!list" fxLayout="column" fxLayoutAlign="center center" class="full-page">
-    <mat-spinner [strokeWidth]="15"></mat-spinner>
-</div>
-<div *ngIf="list" class="text-white">
-    <!--LIST NAME EDIT-->
-    <h2 *ngIf="edit">
-        <mat-form-field fxFlex="80" class="list-name-input" color="warn">
-            <input matInput cdkFocusRegionstart placeholder="{{'app.shopping.name' | translate}}"
-                   [(ngModel)]="listName"
-                   (keydown.enter)="editListName()" autocomplete="off" #listNameInput autofocus
-                   (blur)="editListName()">
-        </mat-form-field>
-    </h2>
-    <!--LIST HEADER -->
-    <h2 *ngIf="!edit">
-        <button mat-icon-button routerLink="/">
-            <mat-icon class="text-white">
-                arrow_back_ios
-            </mat-icon>
-        </button>
-        <span (click)="startEdit()" class="{{list.archived?'':'clickable'}}"
-              matTooltip="{{list.archived?'':('app.shopping.clicktoedit'| translate)}}">
+<pull-to-refresh (onPull)="onPull()" [refresh]="isInProgress">
+    <div *ngIf="!list" fxLayout="column" fxLayoutAlign="center center" class="full-page">
+        <mat-spinner [strokeWidth]="15" class="loader"></mat-spinner>
+    </div>
+    <div *ngIf="list" class="text-white">
+        <!--LIST NAME EDIT-->
+        <h2 *ngIf="edit">
+            <mat-form-field fxFlex="80" class="list-name-input" color="warn">
+                <input matInput cdkFocusRegionstart placeholder="{{'app.shopping.name' | translate}}"
+                       [(ngModel)]="listName"
+                       (keydown.enter)="editListName()" autocomplete="off" #listNameInput autofocus
+                       (blur)="editListName()">
+            </mat-form-field>
+        </h2>
+        <!--LIST HEADER -->
+        <h2 *ngIf="!edit">
+            <button mat-icon-button routerLink="/">
+                <mat-icon class="text-white">
+                    arrow_back_ios
+                </mat-icon>
+            </button>
+            <span (click)="startEdit()" class="{{list.archived?'':'clickable'}}"
+                  matTooltip="{{list.archived?'':('app.shopping.clicktoedit'| translate)}}">
             <!--TITLE-->
             <span *ngIf="list.archived" matTooltip="{{'app.shopping.archived'|translate}}">
                 <img class="v-middle" src="assets/images/box.svg" height="24">
@@ -29,164 +30,108 @@
                     {{list.name}}
             </span>
         </span>
-        <span *ngIf="list.preset" matTooltip="{{'app.settings.products.category.preset'|translate}}"
-              fxShow.xs="false"
-              class="category-preset">
+            <span *ngIf="list.preset" matTooltip="{{'app.settings.products.category.preset'|translate}}"
+                  fxShow.xs="false"
+                  class="category-preset">
                 ({{list.preset.name}})
         </span>
-        <!--MENU-->
-        <button mat-icon-button class="pull-right" [matMenuTriggerFor]="menu" fxShow.xs="false">
-            <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-            <!--NORMAL-->
-            <ng-container *ngIf="!list.archived">
-                <button mat-menu-item (click)="openEditListDialog()">
-                    <mat-icon>edit</mat-icon>
-                    <span>{{'app.general.edit'|translate}}</span>
-                </button>
-                <button mat-menu-item (click)="loadItems()">
-                    <mat-icon>refresh</mat-icon>
-                    <span>{{'app.general.refresh'|translate}}</span>
-                </button>
-                <button mat-menu-item (click)="shareListOpenDialog(list)">
-                    <mat-icon>person</mat-icon>
-                    <span>{{'app.shopping.share'|translate}}</span>
-                </button>
-                <button mat-menu-item (click)="cleanup()" [disabled]="done.length==0">
-                    <mat-icon>delete_forever</mat-icon>
-                    <span>{{'app.shopping.clear'|translate}}</span>
-                </button>
-                <button *ngIf="list.isOwner" mat-menu-item (click)="archiveToggle()">
-                    <mat-icon>archive</mat-icon>
-                    <span>{{'app.shopping.archive'|translate}}</span>
-                </button>
-                <!--LEAVE SHARED LIST-->
-                <button *ngIf="!list.isOwner" mat-menu-item (click)="leaveShared()"
-                        matTooltip="{{'app.shopping.share.leave.hint'|translate}}">
-                    <mat-icon>clear</mat-icon>
-                    <span>{{'app.shopping.share.leave'|translate}}</span>
-                </button>
-            </ng-container>
-            <!--ARCHIVED-->
-            <ng-container *ngIf="list.archived">
-                <button mat-menu-item (click)="archiveToggle(list.archived)">
-                    <mat-icon>unarchive</mat-icon>
-                    <span>{{'app.shopping.unarchive'|translate}}</span>
-                </button>
-            </ng-container>
-            <button mat-menu-item (click)="copyList()">
-                <mat-icon>file_copy</mat-icon>
-                <span>{{'app.shopping.copy'|translate}}</span>
+            <!--MENU-->
+            <button mat-icon-button class="pull-right" [matMenuTriggerFor]="menu" fxShow.xs="false">
+                <mat-icon>more_vert</mat-icon>
             </button>
-        </mat-menu>
-        <!--SHARE-->
-        <button *ngIf="!list.archived"
-                mat-icon-button class="pull-right" (click)="shareListOpenDialog()"
-                matTooltip="{{shareTooltip}}" fxShow.xs="false">
-            <mat-icon matBadge="{{sharedCount}}" matBadgePosition="below before"
-                      [matBadgeHidden]="sharedCount==0">person
-            </mat-icon>
-        </button>
-        <span class="pull-right mr-2" fxShow.xs="false">{{done.length}}/{{list.items.length}}</span>
-    </h2>
-    <!--ITEMS DONE %-->
-    <div class="m-plr-5">
-        <mat-progress-bar mode="determinate" matTooltip="{{percentage}} %" matTooltipPosition="above"
-                          value="{{percentage}}"></mat-progress-bar>
-    </div>
-</div>
-<!--QUICK ADD AND REGULAR ADD-->
-<mat-card fxLayout="row" class="new-item" *ngIf="list && !list.archived">
-    <app-quickadd fxFlex="80" [(listID)]="listID" (created)="quickAdd($event)"></app-quickadd>
-    <span class="fill-remaining-space"></span>
-    <button mat-icon-button class="mt-3" (click)="openNewItemDialog()" matTooltip="{{'app.item.add'|translate}}">
-        <mat-icon class="new-item-button">add_circle_outline</mat-icon>
-    </button>
-</mat-card>
-<div>
-    <!--ITEMS-->
-    <mat-card fxLayout="row" *ngFor="let item of items;trackBy: trackByFn" class="item">
-        <ng-container *ngIf="isMobile">
-            <button mat-icon-button class="item-checkbox" *ngIf="!currentAccount.righcheckbox" (click)="toggleItem(item)" [disabled]="list.archived">
-                <mat-icon class="item-checkbox-icon">check_box_outline_blank</mat-icon>
-            </button>
-            <!--<mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"-->
-                          <!--[disabled]="list.archived" *ngIf="!currentAccount.righcheckbox">-->
-            <!--</mat-checkbox>-->
-        </ng-container>
-        <ng-container *ngIf="!isMobile">
-            <button mat-icon-button class="item-checkbox" (click)="toggleItem(item)" [disabled]="list.archived">
-                <mat-icon class="item-checkbox-icon">check_box_outline_blank</mat-icon>
-            </button>
-            <!--<mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"-->
-                          <!--[disabled]="list.archived">-->
-            <!--</mat-checkbox>-->
-        </ng-container>
-        <mat-card-title-group class="ml-2">
-            <mat-card-title>{{displayName(item)}}
-            </mat-card-title>
-            <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
-        </mat-card-title-group>
-        <span class="fill-remaining-space"></span>
-        <!--CARD MENU-->
-        <span class="card-menu" *ngIf="!list.archived">
-                    <button mat-icon-button (click)="openEditItemDialog(item)">
-                        <mat-icon class="card-menu">edit</mat-icon>
+            <mat-menu #menu="matMenu">
+                <!--NORMAL-->
+                <ng-container *ngIf="!list.archived">
+                    <button mat-menu-item (click)="openEditListDialog()">
+                        <mat-icon>edit</mat-icon>
+                        <span>{{'app.general.edit'|translate}}</span>
                     </button>
-                    <button mat-icon-button (click)="deleteItem(item)">
-                        <mat-icon class="card-menu">delete</mat-icon>
+                    <button mat-menu-item (click)="loadItems()">
+                        <mat-icon>refresh</mat-icon>
+                        <span>{{'app.general.refresh'|translate}}</span>
+                    </button>
+                    <button mat-menu-item (click)="shareListOpenDialog(list)">
+                        <mat-icon>person</mat-icon>
+                        <span>{{'app.shopping.share'|translate}}</span>
+                    </button>
+                    <button mat-menu-item (click)="cleanup()" [disabled]="done.length==0">
+                        <mat-icon>delete_forever</mat-icon>
+                        <span>{{'app.shopping.clear'|translate}}</span>
+                    </button>
+                    <button *ngIf="list.isOwner" mat-menu-item (click)="archiveToggle()">
+                        <mat-icon>archive</mat-icon>
+                        <span>{{'app.shopping.archive'|translate}}</span>
+                    </button>
+                    <!--LEAVE SHARED LIST-->
+                    <button *ngIf="!list.isOwner" mat-menu-item (click)="leaveShared()"
+                            matTooltip="{{'app.shopping.share.leave.hint'|translate}}">
+                        <mat-icon>clear</mat-icon>
+                        <span>{{'app.shopping.share.leave'|translate}}</span>
+                    </button>
+                </ng-container>
+                <!--ARCHIVED-->
+                <ng-container *ngIf="list.archived">
+                    <button mat-menu-item (click)="archiveToggle(list.archived)">
+                        <mat-icon>unarchive</mat-icon>
+                        <span>{{'app.shopping.unarchive'|translate}}</span>
+                    </button>
+                </ng-container>
+                <button mat-menu-item (click)="copyList()">
+                    <mat-icon>file_copy</mat-icon>
+                    <span>{{'app.shopping.copy'|translate}}</span>
                 </button>
-        </span>
-        <mat-card-subtitle class="mt-2"><span *ngIf="item.quantity !== 0">{{item.quantity}}</span>
-            {{item.unit}}
-        </mat-card-subtitle>
-        <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="{{item.category | translate}}" [disabled]="list.archived">
-            <img [src]='"assets/images/categories/"+ item.category + ".png"' class="category">
-        </button>
-        <!--<mat-checkbox [checked]="item.done" color="primary" (change)="toggleItem(item)"-->
-                      <!--[disabled]="list.archived" *ngIf="currentAccount.righcheckbox && isMobile" class="ml-2">-->
-        <!--</mat-checkbox>-->
-        <button mat-icon-button class="item-checkbox" *ngIf="currentAccount.righcheckbox && isMobile"
-                (click)="toggleItem(item)" [disabled]="list.archived">
-            <mat-icon class="item-checkbox-icon">check_box_outline_blank</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-            <button *ngFor="let cat of categories" mat-menu-item (click)="updateCategory(item,cat.category)">
-                <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category">
-                {{cat.name}}
+            </mat-menu>
+            <!--SHARE-->
+            <button *ngIf="!list.archived"
+                    mat-icon-button class="pull-right" (click)="shareListOpenDialog()"
+                    matTooltip="{{shareTooltip}}" fxShow.xs="false">
+                <mat-icon matBadge="{{sharedCount}}" matBadgePosition="below before"
+                          [matBadgeHidden]="sharedCount==0">person
+                </mat-icon>
             </button>
-        </mat-menu>
-    </mat-card>
-    <!--DONE-->
-    <mat-card fxLayout="row" *ngFor="let item of done;trackBy: trackByFn" class="item done"
-              style="background: #e8e8e8bf!important;">
-        <ng-container *ngIf="isMobile">
-            <button mat-icon-button (click)="toggleItem(item)" class="item-checkbox-icon"
-                    *ngIf="!currentAccount.righcheckbox" [disabled]="list.archived">
-                <mat-icon class="large-icon">check</mat-icon>
-            </button>
-        </ng-container>
-        <ng-container *ngIf="!isMobile">
-            <button mat-icon-button (click)="toggleItem(item)" class="item-checkbox" [disabled]="list.archived">
-                <mat-icon>check</mat-icon>
-            </button>
-        </ng-container>
-        <mat-card-title-group class="ml-2">
-            <mat-card-title>{{item.product.name}}</mat-card-title>
-            <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
-        </mat-card-title-group>
+            <span class="pull-right mr-2" fxShow.xs="false">{{done.length}}/{{list.items.length}}</span>
+        </h2>
+        <!--ITEMS DONE %-->
+        <div class="m-plr-5">
+            <mat-progress-bar mode="determinate" matTooltip="{{percentage}} %" matTooltipPosition="above"
+                              value="{{percentage}}"></mat-progress-bar>
+        </div>
+    </div>
+    <!--QUICK ADD AND REGULAR ADD-->
+    <mat-card fxLayout="row" class="new-item" *ngIf="list && !list.archived">
+        <app-quickadd fxFlex="80" [listID]="listID" (created)="quickAdd($event)"></app-quickadd>
         <span class="fill-remaining-space"></span>
-        <mat-card-subtitle class="mt-2">
-            <span *ngIf="item.quantity!==0">{{item.quantity}}</span>
-            {{item.unit}}
-        </mat-card-subtitle>
-        <button mat-icon-button [disabled]="list.archived">
-            <img [src]='"assets/images/categories/"+ item.category + ".png"' class="category">
-        </button>
-        <button mat-icon-button (click)="toggleItem(item)" class="item-checkbox-icon"
-                *ngIf="isMobile && currentAccount.righcheckbox" [disabled]="list.archived">
-            <mat-icon class="large-icon">check</mat-icon>
+        <button mat-icon-button class="mt-3" (click)="openNewItemDialog()" matTooltip="{{'app.item.add'|translate}}">
+            <mat-icon class="new-item-button">add_circle_outline</mat-icon>
         </button>
     </mat-card>
-</div>
+    <div>
+        <!--ITEMS-->
+        <ng-container *ngFor="let item of items;trackBy: trackByFn">
+            <Item [item]="item"
+                  [categories]="categories"
+                  [archived]="list.archived"
+                  (toggle)="toggleItem($event)"
+                  (delete)="deleteItem($event)"
+                  (edit)="openEditItemDialog($event)"
+                  (updateCat)="updateCategory($event)"
+            >
+            </Item>
+        </ng-container>
+        <!--DONE-->
+        <ng-container *ngFor="let item of done;trackBy: trackByFn">
+            <Item [item]="item"
+                  [categories]="categories"
+                  [archived]="list.archived"
+                  (toggle)="toggleItem($event)"
+                  (delete)="deleteItem($event)"
+                  (edit)="openEditItemDialog($event)"
+                  (updateCat)="updateCategory($event)"
+            ></Item>
+        </ng-container>
+        <div *ngIf="!isMobile && isShow" (click)="openNewItemDialog()" class="add-item-button">
+            <img src="assets/images/plus.svg" class="add-list-icon" height="50"
+                 matTooltip="{{'app.item.add'|translate}}">
+        </div>
+    </div>
+</pull-to-refresh>

@@ -32,6 +32,9 @@ export class ConfirmComponent implements OnInit {
                     case 'confirmed':
                         this.alertSrv.success('app.success.confirmed');
                         break;
+                    case 'device_confirmed':
+                        this.alertSrv.success('app.success.device.confirmed');
+                        break;
                 }
                 this.router.navigate(['/']);
             }, error => {

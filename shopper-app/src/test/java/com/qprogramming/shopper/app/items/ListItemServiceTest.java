@@ -5,14 +5,19 @@ import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.BadProductNameException;
 import com.qprogramming.shopper.app.exceptions.ProductNotFoundException;
+import com.qprogramming.shopper.app.items.favorites.FavoriteProducts;
 import com.qprogramming.shopper.app.items.favorites.FavoriteProductsRepository;
 import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.items.product.ProductRepository;
+import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -31,6 +36,10 @@ public class ListItemServiceTest extends MockedAccountTestBase {
     private ListItemRepository listItemRepositoryMock;
     @Mock
     private FavoriteProductsRepository favoritesRepositoryMock;
+    @Mock
+    private CacheManager cacheManager;
+    @Mock
+    private Cache cacheMock;
 
     private ListItemService listItemService;
 
@@ -38,7 +47,8 @@ public class ListItemServiceTest extends MockedAccountTestBase {
     @Override
     public void setup() {
         super.setup();
-        listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock);
+        when(cacheManager.getCache(anyString())).thenReturn(cacheMock);
+        listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock, cacheManager);
 
     }
 
@@ -49,6 +59,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
         ListItem listItem = listItemService.createListItem(item);
         verify(productRepositoryMock, times(1)).save(item.getProduct());
         verify(listItemRepositoryMock, times(1)).save(item);
+        verify(cacheMock, times(1)).evict(testAccount.getId());
     }
 
     @Test(expected = BadProductNameException.class)
@@ -77,9 +88,27 @@ public class ListItemServiceTest extends MockedAccountTestBase {
     public void createListItemProductExistsTest() throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
         ListItem item = TestUtil.createListItem(NAME);
         item.getProduct().setId(1L);
+        FavoriteProducts favorites = new FavoriteProducts();
+        favorites.getFavorites().put(item.getProduct(), 1L);
         when(productRepositoryMock.findById(1L)).thenReturn(Optional.of(item.getProduct()));
+        when(favoritesRepositoryMock.findById(testAccount.getId())).thenReturn(Optional.of(favorites));
         listItemService.createListItem(item);
         verify(listItemRepositoryMock, times(1)).save(item);
+        verify(cacheMock, never()).evict(testAccount.getId());
+    }
+
+    @Test
+    public void getFavoritesSortedTest() throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
+        Product product1 = TestUtil.createProduct(NAME + 1);
+        Product product2 = TestUtil.createProduct(NAME + 2);
+        product1.setId(1L);
+        product2.setId(2L);
+        FavoriteProducts favorites = new FavoriteProducts();
+        favorites.getFavorites().put(product1, 1L);
+        favorites.getFavorites().put(product2, 2L);
+        when(favoritesRepositoryMock.findById(testAccount.getId())).thenReturn(Optional.of(favorites));
+        Set<Product> productsForAccount = listItemService.getFavoriteProductsForAccount(testAccount.getId());
+        assertThat(productsForAccount.iterator().next()).isEqualTo(product2);
     }
 
     @Test
@@ -130,7 +159,6 @@ public class ListItemServiceTest extends MockedAccountTestBase {
         listItemService.setQuantityFromName(item);
         assertThat(item.getQuantity()).isEqualTo(1.5f);
         assertThat(item.getProduct().getName()).isEqualTo("water");
-
 
 
     }

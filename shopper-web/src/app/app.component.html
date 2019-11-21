@@ -8,23 +8,20 @@
 <menu-toolbar (sidenav)="handleSideNav($event)" [account]="account" [onListView]="onListView"
               [loggedIn]="loggedIn"></menu-toolbar>
 <!--SIDE POPUP MENU-->
-<mat-sidenav-container fxFlexFill class="side-navigation">
-    <mat-sidenav color="primary" #sidenav fxLayout="column" mode="over" position="end" hasBackdrop="false"
-                 *ngIf="loggedIn">
-        <menu-sidenav
-                [list]="list"
-                [lists]="lists"
-                (sidenav)="handleSideNav($event)"
-                (newList)="openNewListDialog()">
-        </menu-sidenav>
-    </mat-sidenav>
-    <mat-sidenav-content fxFlexFill>
-        <main class="container" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%"
-              fxLayoutAlign="center">
-            <div fxFlex="80%">
-                <!--CONTENT-->
-                <router-outlet></router-outlet>
-            </div>
-        </main>
-    </mat-sidenav-content>
-</mat-sidenav-container>
+<menu-sidenav
+        [list]="list"
+        [lists]="lists"
+        [shown]="shown"
+        [account]="account"
+        (sidenav)="handleSideNav($event)"
+        (newList)="openNewListDialog()">
+</menu-sidenav>
+<div fxFlexFill>
+    <main class="container" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%"
+          fxLayoutAlign="center">
+        <div fxFlex="80%">
+            <!--CONTENT-->
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+</div>

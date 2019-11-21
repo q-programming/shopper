@@ -3,10 +3,12 @@ package com.qprogramming.shopper.app.api;
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.account.PasswordForm;
+import com.qprogramming.shopper.app.account.devices.NewDevice;
 import com.qprogramming.shopper.app.account.event.AccountEvent;
 import com.qprogramming.shopper.app.account.event.AccountEventType;
 import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
+import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import com.qprogramming.shopper.app.login.RegisterForm;
 import com.qprogramming.shopper.app.login.token.JwtAuthenticationRequest;
 import com.qprogramming.shopper.app.login.token.TokenService;
@@ -104,6 +106,25 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
+    @RequestMapping(value = "/auth/new-device", method = RequestMethod.POST)
+    @Transactional
+    public ResponseEntity registerNewDevice(
+            @RequestBody RegisterForm form) throws AuthenticationException {
+        Optional<Account> byEmail = _accountService.findByEmail(form.getEmail());
+        if (!byEmail.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            Account account = byEmail.get();
+            NewDevice newDevice = _accountService.registerNewDevice(account);
+            AccountEvent event = _accountService.createConfirmDeviceEvent(account, newDevice.getId());
+            _accountService.sendConfirmEmail(account, event);
+            return ResponseEntity.ok(newDevice);
+        } catch (MessagingException e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("mailing");
+        }
+    }
+
     /**
      * Refreshes token (if it can be refreshed ) passed in request and returns back the token
      *
@@ -127,7 +148,7 @@ public class AuthenticationController {
         }
     }
 
-
+    @Transactional
     @RequestMapping(value = "/auth/confirm", method = RequestMethod.POST)
     public ResponseEntity confirmOperation(@RequestBody() String token) {
         UUID uuid = UUID.fromString(token);
@@ -138,7 +159,7 @@ public class AuthenticationController {
         AccountEvent event = eventOptional.get();
         DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
         DateTime expireDate = date.plusHours(24);
-        if (date.isAfter(expireDate)) {
+        if (new DateTime().isAfter(expireDate)) {
             _accountService.removeEvent(event);
             return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
         }
@@ -151,6 +172,14 @@ public class AuthenticationController {
                 _accountService.confirm(event.getAccount());
                 model.put("result", "confirmed");
                 break;
+            case DEVICE_CONFIRM:
+                try {
+                    _accountService.confirmDevice(event.getAccount(), event.getData());
+                    model.put("result", "device_confirmed");
+                } catch (DeviceNotFoundException e) {
+                    return ResponseEntity.status(NOT_FOUND).build();
+                }
+                break;
             case PASSWORD_RESET:
                 if (new DateTime().isAfter(date.plusHours(12))) {
                     _accountService.removeEvent(event);
@@ -158,9 +187,11 @@ public class AuthenticationController {
                 }
                 break;
         }
+        _accountService.removeEvent(event);
         return ResponseEntity.ok(model);
 
     }
+
     @Transactional
     @RequestMapping(value = "/auth/password-reset", method = RequestMethod.POST)
     public ResponseEntity<?> passwordReset(@RequestBody String email) {

@@ -9,7 +9,7 @@ spring:
 logging:
   level:
     org.hibernate.engine.jdbc.env.internal.LobCreatorBuilderImpl: ERROR
-    org.springframework.security: ERROR
+    org.springframework.security: INFO
     org.springframework.web.filter.CommonsRequestLoggingFilter: ERROR
     org.springframework.web.socket.config.WebSocketMessageBrokerStats: ERROR
 app:
