@@ -24,9 +24,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.qprogramming.shopper.app.support.Utils.isNumeric;
 import static com.qprogramming.shopper.app.support.Utils.not;
 
 /**
@@ -34,6 +34,8 @@ import static com.qprogramming.shopper.app.support.Utils.not;
  */
 @Service
 public class ListItemService {
+    private static final String UNITS = "(kg|g|l|m|L|cm)";
+    private static final Pattern QUANTITY_PATTERN = Pattern.compile("(\\d+(\\.|,?)\\d*)" + UNITS + "?$");
     private ListItemRepository _listItemRepository;
     private ProductRepository _productRepository;
     private FavoriteProductsRepository _favoritesRepository;
@@ -85,10 +87,11 @@ public class ListItemService {
 
     /**
      * Add List item to list, if item with same product is found on list, it's quantity is increased , or it's marked as undone
+     *
      * @param list list to be updated with new item
      * @param item item with product to be added
      * @throws ProductNotFoundException if product was not found
-     * @throws BadProductNameException if product has wrong name or no name at all
+     * @throws BadProductNameException  if product has wrong name or no name at all
      */
     public void addItemToList(ShoppingList list, ListItem item) throws ProductNotFoundException, BadProductNameException {
         ListItem listItem;
@@ -107,11 +110,13 @@ public class ListItemService {
             existingItem.setDone(false);
         } else {
             existingItem.setQuantity(atLeastOneQuantity(existingItem) + atLeastOneQuantity(item));
+            existingItem.setUnit(item.getUnit());
         }
     }
 
     /**
      * Set quantity from name
+     *
      * @param item item which name wil be analysed and quantity extracted from
      */
     public void setQuantityFromName(ListItem item) {
@@ -124,14 +129,25 @@ public class ListItemService {
             //check if first and last is number
             String b = parts[0].replace(',', '.');
             String e = parts[wordsCount - 1].replace(',', '.');
-            if (isNumeric(b) && !isNumeric(e)) {
-                item.setQuantity(Float.valueOf(b));
+            if (isQuantityAndUnit(b) && !isQuantityAndUnit(e)) {
+                setQuantityAndUnit(item, b);
                 item.getProduct().setName(StringUtils.join(parts, " ", 1, wordsCount));
-            } else if (isNumeric(e)) {
-                item.setQuantity(Float.valueOf(e));
+            } else if (isQuantityAndUnit(e)) {
+                setQuantityAndUnit(item, e);
                 item.getProduct().setName(StringUtils.join(parts, " ", 0, wordsCount - 1));
             }
         }
+    }
+
+    private boolean isQuantityAndUnit(String part) {
+        return QUANTITY_PATTERN.matcher(part).matches();
+    }
+
+    private void setQuantityAndUnit(ListItem item, String b) {
+        String[] split = b.split(UNITS);
+        String unit = b.replace(split[0], "");
+        item.setQuantity(Float.parseFloat(split[0]));
+        item.setUnit(unit);
     }
 
     private float atLeastOneQuantity(ListItem item) {
