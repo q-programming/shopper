@@ -111,24 +111,35 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
         }
     }
 
-
-    tryToGetQuantity(): string {
+    private tryToGetQuantity(): string {
         let result = <string>this.form.controls.product.value;
         let parts = result.split(' ').filter(i => i);
         const wordCounts = parts.length;
         if (wordCounts > 1) {
             let b = parts[0].replace(',', '.');
             let e = parts[wordCounts - 1].replace(',', '.');
-            if (isNumber(b) && !isNumber(e)) {
-                this.form.controls.quantity.setValue(Number(b));
+            if (this.isQuantityAndUnit(b) && !this.isQuantityAndUnit(e)) {
+                this.setQuantityAndUnit(b);
                 result = parts.slice(1).join(" ");
                 this.form.controls.product.setValue(result)
-            } else if (isNumber(e)) {
-                this.form.controls.quantity.setValue(Number(e));
+            } else if (this.isQuantityAndUnit(e)) {
+                this.setQuantityAndUnit(e);
                 result = parts.slice(0, wordCounts - 1).join(" ");
                 this.form.controls.product.setValue(result)
             }
         }
         return result;
     }
+
+    private isQuantityAndUnit(part: string): boolean {
+        return /(\d+(\.|,?)\d*)(kg|g|l|m|cm|ml|dkg)?$/.test(part);
+    }
+
+    private setQuantityAndUnit(quantityAndUnit: string) {
+        const split = quantityAndUnit.split(/(kg|g|l|m|cm|ml|dkg)/);
+        const unit = quantityAndUnit.replace(split[0], "");
+        this.form.controls.quantity.setValue(Number(split[0]));
+        this.form.controls.unit.setValue(unit);
+    }
+
 }

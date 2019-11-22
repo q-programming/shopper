@@ -164,6 +164,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
 
         testAccount.setLanguage("pl");
         item.setQuantity(0f);
+        item.setUnit(null);
         item.getProduct().setName(water + " 1,5");
         listItemService.setQuantityFromName(item);
         assertThat(item.getQuantity()).isEqualTo(1.5f);
@@ -171,6 +172,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
 
         //test with units
         item.setQuantity(0f);
+        item.setUnit(null);
         item.getProduct().setName(water + " 1l");
         listItemService.setQuantityFromName(item);
         assertThat(item.getQuantity()).isEqualTo(1.0f);
@@ -178,6 +180,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
         assertThat(item.getProduct().getName()).isEqualTo(water);
 
         item.setQuantity(0f);
+        item.setUnit(null);
         item.getProduct().setName(potatoes + " 2,5kg");
         listItemService.setQuantityFromName(item);
         assertThat(item.getQuantity()).isEqualTo(2.5f);
@@ -186,9 +189,17 @@ public class ListItemServiceTest extends MockedAccountTestBase {
 
         item.setQuantity(0f);
         item.getProduct().setName("2,5kg " + potatoes);
+        item.setUnit(null);
         listItemService.setQuantityFromName(item);
         assertThat(item.getQuantity()).isEqualTo(2.5f);
         assertThat(item.getUnit()).isEqualTo(kg);
         assertThat(item.getProduct().getName()).isEqualTo(potatoes);
+
+        item.setQuantity(0f);
+        item.setUnit(null);
+        item.getProduct().setName(potatoes + " 2,5 kg");
+        listItemService.setQuantityFromName(item);
+        assertThat(item.getQuantity()).isNotEqualTo(2.5f);
+        assertThat(item.getUnit()).isNotEqualTo(kg);
     }
 }
