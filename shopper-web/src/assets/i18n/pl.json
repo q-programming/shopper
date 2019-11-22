@@ -216,7 +216,7 @@
   "ELECTRONICAL": "elektronika",
   "FISH": "ryby",
   "FROZEN": "mrożonki",
-  "GRAINS_PASTA": "art. sypkie i makarony",
+  "GRAINS_FLOURS": "art. sypkie i mąki",
   "HOME_KITCHEN": "art. domowe",
   "HOME_BAKING": "dodatki do ciast",
   "CLEANING": "sprzątanie i pranie",
@@ -236,5 +236,6 @@
   "BUILDING": "art. budowlane",
   "BREAKFAST": "art. śniadaniowe",
   "TOYS": "zabawki",
+  "PASTA": "makarony",
   "OTHER": "inne"
 }
