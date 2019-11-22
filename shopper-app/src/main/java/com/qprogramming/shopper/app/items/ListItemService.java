@@ -34,7 +34,7 @@ import static com.qprogramming.shopper.app.support.Utils.not;
  */
 @Service
 public class ListItemService {
-    private static final String UNITS = "(kg|g|l|m|L|cm)";
+    private static final String UNITS = "(kg|g|l|m|cm|ml|dkg)";
     private static final Pattern QUANTITY_PATTERN = Pattern.compile("(\\d+(\\.|,?)\\d*)" + UNITS + "?$");
     private ListItemRepository _listItemRepository;
     private ProductRepository _productRepository;
@@ -143,9 +143,9 @@ public class ListItemService {
         return QUANTITY_PATTERN.matcher(part).matches();
     }
 
-    private void setQuantityAndUnit(ListItem item, String b) {
-        String[] split = b.split(UNITS);
-        String unit = b.replace(split[0], "");
+    private void setQuantityAndUnit(ListItem item, String quantityAndUnit) {
+        String[] split = quantityAndUnit.split(UNITS);
+        String unit = quantityAndUnit.replace(split[0], "");
         item.setQuantity(Float.parseFloat(split[0]));
         item.setUnit(unit);
     }

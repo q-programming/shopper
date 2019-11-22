@@ -71,6 +71,7 @@
     outline-style: none;
     background: rgba(255, 255, 255, 0.2);
 }
+
 .btt-btn:hover {
     background: rgba(255, 255, 255, 0.6);
 }
@@ -78,6 +79,7 @@
 .btt-btn:active {
     background: rgba(255, 255, 255, 0.8);
 }
+
 @media (max-width: 768px) {
     .btt-btn {
         background: rgba(44, 90, 160, 0.2);
@@ -90,5 +92,10 @@
     .btt-btn:active {
         background: rgba(44, 90, 160, 0.8);
     }
+}
 
+code {
+    color: #a60000;
+    border: 1px solid;
+    padding: 0 5px;
 }
