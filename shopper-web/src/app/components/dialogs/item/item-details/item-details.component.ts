@@ -111,7 +111,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
         }
     }
 
-    private tryToGetQuantity(): string {
+    tryToGetQuantity(): string {
         let result = <string>this.form.controls.product.value;
         let parts = result.split(' ').filter(i => i);
         const wordCounts = parts.length;
