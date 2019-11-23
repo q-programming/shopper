@@ -189,7 +189,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
         when(deviceRepositoryMock.findById(anyString()))
                 .thenReturn(Optional.of(new Device()))
                 .thenReturn(Optional.empty());
-        NewDevice newDevice = accountService.registerNewDevice(testAccount);
+        NewDevice newDevice = accountService.registerNewDevice(testAccount, "name");
         verify(deviceRepositoryMock, times(2)).findById(anyString());
         verify(accountRepositoryMock, times(1)).save(any(Account.class));
         assertThat(newDevice.getPlainKey()).isNotBlank();

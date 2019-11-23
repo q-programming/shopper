@@ -15,6 +15,10 @@ public class Device {
     @Column(columnDefinition = "boolean default false")
     private boolean enabled = false;
 
+    @Column
+    private String name;
+
+
     public String getId() {
         return id;
     }
@@ -39,6 +43,14 @@ public class Device {
         this.enabled = enabled;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -52,4 +64,5 @@ public class Device {
     public int hashCode() {
         return Objects.hash(id, deviceKey);
     }
+
 }

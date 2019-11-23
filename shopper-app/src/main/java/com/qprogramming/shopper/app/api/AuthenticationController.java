@@ -116,7 +116,7 @@ public class AuthenticationController {
         }
         try {
             Account account = byEmail.get();
-            NewDevice newDevice = _accountService.registerNewDevice(account);
+            NewDevice newDevice = _accountService.registerNewDevice(account, form.getName());
             AccountEvent event = _accountService.createConfirmDeviceEvent(account, newDevice.getId());
             _accountService.sendConfirmEmail(account, event);
             return ResponseEntity.ok(newDevice);

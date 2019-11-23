@@ -419,11 +419,12 @@ public class AccountService implements UserDetailsService {
                 );
     }
 
-    public NewDevice registerNewDevice(Account account) {
+    public NewDevice registerNewDevice(Account account, String name) {
         String deviceKey = generateRandomString(64);
         Device device = new Device();
         device.setId(generateDeviceID());
         device.setDeviceKey(encode(deviceKey));
+        device.setName(name);
         device = _deviceRepository.save(device);
         account.getDevices().add(device);
         _accountRepository.save(account);

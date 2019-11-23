@@ -235,10 +235,12 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         initMocked();
         RegisterForm form = new RegisterForm();
         form.setEmail(testAccount.getEmail());
+        String name = "name";
+        form.setName(name);
         NewDevice newDevice = new NewDevice(new Device(), "plainKey", testAccount.getEmail());
         newDevice.setId("ID");
         when(accountServiceMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.of(testAccount));
-        when(accountServiceMock.registerNewDevice(testAccount)).thenReturn(newDevice);
+        when(accountServiceMock.registerNewDevice(testAccount, name)).thenReturn(newDevice);
         MvcResult mvcResult = this.standaloneMvc.perform(post("/auth/new-device")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(form)))
