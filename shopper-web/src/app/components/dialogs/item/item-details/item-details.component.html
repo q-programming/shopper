@@ -38,8 +38,8 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="40px">
             <mat-form-field fxFlex="20">
-                <input id="quantity" type="number" matInput placeholder="{{'app.item.quantity'|translate}}"
-                       formControlName="quantity">
+                <input id="quantity" #quantity type="number" matInput placeholder="{{'app.item.quantity'|translate}}"
+                       formControlName="quantity" (click)="quantity.select()">
             </mat-form-field>
             <mat-form-field fxFlex="20">
                 <input id="unit" matInput placeholder="{{'app.item.unit'|translate}}"
