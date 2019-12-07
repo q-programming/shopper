@@ -44,7 +44,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
         this.form = this.formBuilder.group({
             product: [this.item.product ? itemDisplayName(this.item) : '', Validators.required],
             category: [this.item.category, Validators.required],
-            quantity: this.item.quantity,
+            quantity: this.item.quantity > 0 ? this.item.quantity : 1,
             unit: this.item.unit,
             description: this.item.description,
             categoryFilterCtrl: ''
