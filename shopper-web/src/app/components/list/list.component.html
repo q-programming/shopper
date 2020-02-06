@@ -1,6 +1,6 @@
 <pull-to-refresh (onPull)="onPull()" [refresh]="isInProgress">
     <div *ngIf="!list" fxLayout="column" fxLayoutAlign="center center" class="full-page">
-        <mat-spinner [strokeWidth]="15" class="loader"></mat-spinner>
+        <inner-loader></inner-loader>
     </div>
     <div *ngIf="list" class="text-white">
         <!--LIST NAME EDIT-->

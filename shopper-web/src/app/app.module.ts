@@ -68,6 +68,7 @@ import {ConfirmComponent} from "./components/confirm/confirm.component";
 import {DeviceDetectorModule} from "ngx-device-detector";
 import { BackdropComponent } from './components/menu/backdrop/backdrop.component';
 import { ItemComponent } from './components/list/item/item.component';
+import { InnerLoaderComponent } from './components/inner-loader/inner-loader.component';
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -114,7 +115,8 @@ export function initUserFactory(authService: AuthenticationService) {
         ChangePasswordComponent,
         ConfirmComponent,
         BackdropComponent,
-        ItemComponent
+        ItemComponent,
+        InnerLoaderComponent
     ],
     entryComponents: [
         AvatarUploadComponent,

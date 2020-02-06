@@ -14,6 +14,7 @@ import {ChangePasswordComponent} from "./components/login/change-password/change
 import {ConfirmComponent} from "./components/confirm/confirm.component";
 
 const appRoutes: Routes = [
+    {path: '_', component: ShoppingListsComponent, canActivate: [AuthGuard]},
     {path: '', component: ShoppingListsComponent, canActivate: [AuthGuard]},
     {path: 'settings', component: SettingsComponent, canActivate: [AuthGuard]},
     {path: 'login', component: LoginComponent},
