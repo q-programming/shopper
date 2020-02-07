@@ -43,8 +43,12 @@
             <span [fxShow.xs]="false">&nbsp;{{'app.item.add.favorites'|translate}}</span>
         </ng-template>
         <ng-template matTabContent>
-            <div mat-dialog-content>
-                <item-favorites [listID]="listID"></item-favorites>
+            <div mat-dialog-content
+                 infinite-scroll
+                 [infiniteScrollDistance]="1"
+                 [scrollWindow]="false"
+                 (scrolled)="favorites.onScrollDown()">
+                <item-favorites #favorites [listID]="listID"></item-favorites>
             </div>
         </ng-template>
     </mat-tab>

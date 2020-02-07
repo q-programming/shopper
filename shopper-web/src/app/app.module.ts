@@ -35,6 +35,7 @@ import {HighlightDirective} from './directives/highlight.directive';
 import {QuickaddComponent} from './components/list/quickadd/quickadd.component';
 import {ShareComponent} from './components/dialogs/share/share.component';
 import {EmailSettingsComponent} from './components/settings/email/email-settings.component';
+import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {
     AccountSettingsComponent,
     AvatarUploadComponent
@@ -66,9 +67,9 @@ import {ResetPasswordComponent} from './components/login/reset-password/reset-pa
 import {ChangePasswordComponent} from "./components/login/change-password/change-password.component";
 import {ConfirmComponent} from "./components/confirm/confirm.component";
 import {DeviceDetectorModule} from "ngx-device-detector";
-import { BackdropComponent } from './components/menu/backdrop/backdrop.component';
-import { ItemComponent } from './components/list/item/item.component';
-import { InnerLoaderComponent } from './components/inner-loader/inner-loader.component';
+import {BackdropComponent} from './components/menu/backdrop/backdrop.component';
+import {ItemComponent} from './components/list/item/item.component';
+import {InnerLoaderComponent} from './components/inner-loader/inner-loader.component';
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -138,6 +139,7 @@ export function initUserFactory(authService: AuthenticationService) {
         NgProgressRouterModule,
         FlexLayoutModule,
         DragDropModule,
+        InfiniteScrollModule,
         LoggerModule.forRoot({
             level: environment.logging,
             serverLogLevel: NgxLoggerLevel.ERROR

@@ -24,7 +24,11 @@
                 <span fxShow.xs="false" class="ml-1">{{'app.item.add.favorites'|translate}}</span>
             </ng-template>
             <ng-template matTabContent>
-                <item-favorites [settings]="true"></item-favorites>
+                <div infinite-scroll
+                     [infiniteScrollDistance]="1"
+                     (scrolled)="favorites.onScrollDown()">
+                    <item-favorites #favorites  [settings]="true"></item-favorites>
+                </div>
             </ng-template>
         </mat-tab>
         <!--<mat-tab *ngIf="admin">-->
