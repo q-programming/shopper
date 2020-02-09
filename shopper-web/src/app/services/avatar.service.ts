@@ -20,23 +20,23 @@ export class AvatarService {
      */
     getUserAvatarById(id: string): Observable<string> {
         return new Observable((observable) => {
-            let image = localStorage.getItem("avatar:" + id);
+            let image = sessionStorage.getItem("avatar:" + id);
             if (!image) {
                 this.logger.debug(`Getting avatar from DB for user ${id}`);
                 this.api.getObject(environment.account_url + `/${id}${environment.avatar_url}`).subscribe(result => {
                     if (result) {
                         const dataType = "data:" + result.type + ";base64,";
                         image = dataType + result.image;
-                        localStorage.setItem("avatar:" + id, image);
+                        sessionStorage.setItem("avatar:" + id, image);
                     } else {
                         image = 'assets/images/avatar-placeholder.png';
-                        localStorage.setItem("avatar:" + id, image);
+                        sessionStorage.setItem("avatar:" + id, image);
                     }
                     observable.next(image);
                     observable.complete();
                 });
             } else {
-                this.logger.debug(`Fetching avatar from localStorage for account : ${id}`);
+                this.logger.debug(`Fetching avatar from sessionStorage for account : ${id}`);
                 observable.next(image);
                 observable.complete();
             }
@@ -56,7 +56,7 @@ export class AvatarService {
 
     /**
      * Updates avatar data for given account.
-     * Data for that account is removed from localstorage. But it only removed currently logged user ( other users will still see old avatar,
+     * Data for that account is removed from sessionstorage. But it only removed currently logged user ( other users will still see old avatar,
      * until their local storage is cleared ( for ex. logout )
      *
      * @param base64Image new avatar base 64 data
@@ -64,7 +64,7 @@ export class AvatarService {
      */
     updateAvatar(base64Image: String, account: Account) {
         return this.api.post(`${environment.account_url}${environment.avatar_upload_url}`, base64Image).subscribe(() => {
-            localStorage.removeItem("avatar:" + account.id);
+            sessionStorage.removeItem("avatar:" + account.id);
             this.getUserAvatar(account).subscribe(avatar => {
                 account.avatar = avatar;
             });

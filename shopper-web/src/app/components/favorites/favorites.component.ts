@@ -25,8 +25,12 @@ export class FavoritesComponent implements OnInit {
     @Input() settings: boolean;
     filterControl: FormControl;
     filter: string;
-    limiter = 40;
+    limiter;
     public innerHeight: any;
+
+    SM_LIMIT = 40;
+    MD_LIMIT = 60;
+    XL_LIMIT = 80;
 
     constructor(private api: ApiService, private alertSrv: AlertService, private menuSrv: MenuActionsService,) {
     }
@@ -40,11 +44,11 @@ export class FavoritesComponent implements OnInit {
 
     private initialLimiter() {
         if (this.innerHeight < 1000) {
-            return 40;
+            return this.SM_LIMIT;
         } else if (1000 < this.innerHeight && this.innerHeight < 1300) {
-            return 60
+            return this.MD_LIMIT
         } else {
-            return 80
+            return this.XL_LIMIT
         }
     }
 
@@ -66,7 +70,7 @@ export class FavoritesComponent implements OnInit {
         } else {
             url += `/favorites`;
         }
-        this.api.getObject<Product>(url)
+        this.api.getObject<Product[]>(url)
             .subscribe(response => {
                 this.favorites = response;
                 this.limitedFavorites = this.favorites.slice(0, this.limiter);

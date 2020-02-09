@@ -12,6 +12,7 @@ import {ShoppingList} from "@model/ShoppingList";
 import {CategoryOption} from "@model/CategoryOption";
 import {Category} from "@model/Category";
 import {TranslateService} from "@ngx-translate/core";
+import {Product} from "@model/Product";
 
 @Injectable({
     providedIn: 'root'
@@ -20,6 +21,7 @@ export class ItemService {
 
     currentAccount: Account;
     categories: CategoryOption[] = [];
+    account_favorites: string[] = [];
     private dialogConfig: MatDialogConfig = {
         disableClose: true,
         autoFocus: true,
@@ -37,6 +39,7 @@ export class ItemService {
                 private dialog: MatDialog) {
         this.currentAccount = this.authSrv.currentAccount;
         this.loadCategoriesWithLocalName();
+        this.loadAccountFavorites();
     }
 
     /**
@@ -78,6 +81,7 @@ export class ItemService {
         this.dialogConfig.data.update = false;
         this.dialogConfig.data.item = undefined;
         this.dialogConfig.data.categories = this.categories;
+        this.dialogConfig.data.favorites = this.favorites();
         this.dialogConfig.data.listID = listID;
         return new Observable((observable) => {
             let dialogRef = this.dialog.open(ItemDialogComponent, this.dialogConfig);
@@ -111,6 +115,7 @@ export class ItemService {
         this.dialogConfig.data.update = true;
         this.dialogConfig.data.item = item;
         this.dialogConfig.data.categories = this.categories;
+        this.dialogConfig.data.favorites = this.favorites();
         this.dialogConfig.data.listID = listID;
         return new Observable((observable) => {
             let dialogRef = this.dialog.open(ItemDialogComponent, this.dialogConfig);
@@ -130,6 +135,29 @@ export class ItemService {
             });
         });
     }
+
+    private favorites(){
+        if (!this.account_favorites || !this.account_favorites.length) {
+            this.loadAccountFavorites();
+        }
+        return this.account_favorites;
+    }
+
+    private loadAccountFavorites() {
+        if (!this.account_favorites || !this.account_favorites.length) {
+            const favJSON = sessionStorage.getItem('favorites');
+            if (favJSON) {
+                this.account_favorites = (JSON.parse(favJSON) as Product[]).map(product => product.name);
+            } else {
+                this.authSrv.loadFavorites().subscribe(response => {
+                    this.favorites = response.map(product => product.name);
+                    sessionStorage.setItem('favorites', JSON.stringify(response));
+                });
+            }
+        }
+    }
+
+
 
     /**
      * Create new item for list
@@ -157,4 +185,6 @@ export class ItemService {
             })
         });
     }
+
+
 }

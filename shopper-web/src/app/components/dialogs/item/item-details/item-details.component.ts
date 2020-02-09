@@ -8,7 +8,7 @@ import {Observable, Subscription} from "rxjs";
 import {Product} from "@model/Product";
 import {environment} from "@env/environment";
 import * as _ from 'lodash';
-import {isNumber, itemDisplayName} from "../../../../utils/utils";
+import {itemDisplayName} from "../../../../utils/utils";
 import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
 
 @Component({
@@ -24,10 +24,12 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
     @Input() update: boolean;
     @Output() itemChange: EventEmitter<ListItem> = new EventEmitter<ListItem>();
     @Input() categories: CategoryOption[];
+    @Input() favorites: string[];
     @Output() commit: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() valid: EventEmitter<boolean> = new EventEmitter<boolean>();
     formValid: boolean;
     filteredCategories: Observable<CategoryOption[]>;
+    filteredFavorites: Observable<string[]>;
     productTerm: String = '';
     categoryTerm: String = '';
     menuSub: Subscription;
@@ -47,16 +49,21 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
             quantity: this.item.quantity > 0 ? this.item.quantity : 1,
             unit: this.item.unit,
             description: this.item.description,
-            categoryFilterCtrl: ''
+            categoryFilterCtrl: '',
+            productFilterCtrl: ''
         });
-        //product
-        this.form.controls.product.valueChanges
+        //filtered product
+        this.filteredFavorites = this.form.controls.product.valueChanges
             .debounceTime(600)
             .distinctUntilChanged()
-            .subscribe(value => {
-                this.productTerm = value;
-                this.handleProductValueChange(value);
-            });
+            .pipe(
+                startWith<string>(''),
+                map(value => {
+                        this.productTerm = value;
+                        this.handleProductValueChange(value);
+                        return this._filterProducts(value)
+                    }
+                ));
         //filtered categories
         this.filteredCategories = this.form.controls.categoryFilterCtrl.valueChanges
             .pipe(
@@ -105,6 +112,12 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
         return value ? _.filter(this.categories, cat => cat.name.toLowerCase().includes(filterValue)) : this.categories;
     }
 
+    private _filterProducts(value: string): string[] {
+        const filterValue = value.toLowerCase();
+        return value ? _.filter(this.favorites, product => product.toLowerCase().includes(filterValue)) : this.favorites;
+    }
+
+
     commitItem() {
         if (this.form.valid) {
             this.commit.emit(this.form.value)
@@ -112,6 +125,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
     }
 
     tryToGetQuantity(): string {
+        this.productTerm = '';
         let result = <string>this.form.controls.product.value;
         let parts = result.split(' ').filter(i => i);
         const wordCounts = parts.length;
@@ -141,5 +155,4 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
         this.form.controls.quantity.setValue(Number(split[0]));
         this.form.controls.unit.setValue(unit);
     }
-
 }

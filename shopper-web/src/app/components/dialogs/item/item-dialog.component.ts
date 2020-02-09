@@ -14,6 +14,7 @@ export class ItemDialogComponent implements OnInit {
     listID: number;
     item: ListItem;
     categories: CategoryOption[];
+    favorites: string[];
     formValid: boolean;
 
 
@@ -21,6 +22,7 @@ export class ItemDialogComponent implements OnInit {
                 @Inject(MAT_DIALOG_DATA) public data: any, private menuSrv: MenuActionsService) {
         //load categories
         this.categories = data.categories;
+        this.favorites = data.favorites;
         this.item = data.item ? data.item : new ListItem();
         this.update = data.update;
         this.listID = data.listID;
@@ -28,7 +30,13 @@ export class ItemDialogComponent implements OnInit {
             if (e.code === 'Escape') {
                 dialogRef.close();
             } else if (e.code === 'Enter' && this.formValid) {
-                this.commitItem(this.formValid);
+                const that = this;
+                setTimeout(function () {
+                    const active = document.activeElement;
+                    if (active.id !== 'productInput') {
+                        that.commitItem(that.formValid);
+                    }
+                });
             }
         });
     }

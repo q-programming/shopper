@@ -13,6 +13,7 @@
                   [(item)]="item"
                   [update]="update"
                   [categories]="categories"
+                  [favorites]="favorites"
                   (commit)="commitItem($event)"
                   (valid)="formValid=$event"
     >
@@ -31,6 +32,7 @@
                     [listID]="listID"
                     [(item)]="item"
                     [categories]="categories"
+                    [favorites]="favorites"
                     [update]="update"
                     (commit)="commitItem($event)"
                     (valid)="formValid=$event"
