@@ -4,7 +4,8 @@
     <button mat-icon-button mat-dialog-close class="pull-right header-button">
         <mat-icon>close</mat-icon>
     </button>
-    <button mat-icon-button class="pull-right header-button" *ngIf="formValid" [fxShow.gt-sm]="false" (click)="emitCommit()">
+    <button mat-icon-button class="pull-right header-button" *ngIf="formValid" [fxShow.gt-sm]="false"
+            (click)="emitCommit()">
         <mat-icon>check</mat-icon>
     </button>
 </h2>
@@ -45,16 +46,25 @@
             <span [fxShow.xs]="false">&nbsp;{{'app.item.add.favorites'|translate}}</span>
         </ng-template>
         <ng-template matTabContent>
-            <div mat-dialog-content
-                 infinite-scroll
-                 [infiniteScrollDistance]="1"
-                 [scrollWindow]="false"
-                 (scrolled)="favorites.onScrollDown()">
-                <item-favorites #favorites [listID]="listID"></item-favorites>
+            <div class="favorites-container">
+                <div mat-dialog-content
+                     class="shopper-modal mat-dialog-content"
+                     infinite-scroll
+                     [infiniteScrollDistance]="1"
+                     [scrollWindow]="false"
+                     (scrolled)="favorites.onScrollDown();toTopVisible=true">
+                    <span id="top"></span>
+                    <item-favorites #favorites [listID]="listID"></item-favorites>
+                </div>
+                <div *ngIf="toTopVisible" class="go-to-top"
+                     matTooltip="{{'app.general.btt'|translate}}"
+                     [ngx-scroll-to]="'#top'"
+                     [ngx-scroll-to-duration]="0">
+                    <mat-icon class="rotate-270">last_page</mat-icon>
+                </div>
             </div>
         </ng-template>
     </mat-tab>
 </mat-tab-group>
-
 
 

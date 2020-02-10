@@ -1715,3 +1715,10 @@
 .list-unstyled{
     list-style-type: none;
 }
+.rotate-270 {
+    -webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    transform: rotate(270deg);
+}

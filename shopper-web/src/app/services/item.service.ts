@@ -136,7 +136,7 @@ export class ItemService {
         });
     }
 
-    private favorites(){
+    private favorites(): string[]{
         if (!this.account_favorites || !this.account_favorites.length) {
             this.loadAccountFavorites();
         }
@@ -150,7 +150,7 @@ export class ItemService {
                 this.account_favorites = (JSON.parse(favJSON) as Product[]).map(product => product.name);
             } else {
                 this.authSrv.loadFavorites().subscribe(response => {
-                    this.favorites = response.map(product => product.name);
+                    this.account_favorites = response.map(product => product.name);
                     sessionStorage.setItem('favorites', JSON.stringify(response));
                 });
             }

@@ -59,9 +59,13 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
             .pipe(
                 startWith<string>(''),
                 map(value => {
-                        this.productTerm = value;
-                        this.handleProductValueChange(value);
-                        return this._filterProducts(value)
+                        if (value.length >= 1) {
+                            this.productTerm = value;
+                            this.handleProductValueChange(value);
+                            return this._filterProducts(value)
+                        } else {
+                            return [];
+                        }
                     }
                 ));
         //filtered categories

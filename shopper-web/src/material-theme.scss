@@ -104,6 +104,9 @@ body {
   .shopper-modal-normal {
     max-width: 100% !important;
   }
+  .shopper-modal .mat-dialog-content {
+    padding: 0!important;
+  }
 
   .shopper-modal {
     max-width: 100% !important;

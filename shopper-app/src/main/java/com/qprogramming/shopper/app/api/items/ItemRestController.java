@@ -66,7 +66,7 @@ public class ItemRestController {
             LOG.error(BAD_PRODUCT_NAME);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (ShoppingAccessException e) {
-            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(),id);
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
             LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
@@ -98,7 +98,7 @@ public class ItemRestController {
             _listService.sortItems(list);
             return ResponseEntity.ok(_listService.save(list));
         } catch (ShoppingAccessException e) {
-            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
             LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);

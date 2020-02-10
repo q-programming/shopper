@@ -16,10 +16,12 @@ export class ItemDialogComponent implements OnInit {
     categories: CategoryOption[];
     favorites: string[];
     formValid: boolean;
+    toTopVisible:boolean;
 
 
     constructor(private dialogRef: MatDialogRef<ItemDialogComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: any, private menuSrv: MenuActionsService) {
+                @Inject(MAT_DIALOG_DATA) public data: any,
+                private menuSrv: MenuActionsService) {
         //load categories
         this.categories = data.categories;
         this.favorites = data.favorites;
@@ -54,5 +56,4 @@ export class ItemDialogComponent implements OnInit {
 
     ngOnInit() {
     }
-
 }
