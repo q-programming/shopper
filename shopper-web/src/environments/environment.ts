@@ -4,6 +4,7 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 import {NgxLoggerLevel} from "ngx-logger";
+import {version} from "../../package.json";
 
 export const environment = {
     production: false,
@@ -29,5 +30,6 @@ export const environment = {
     product_url: '/api/product',
     config_url: '/api/config',
     ws_ur: '/ws',
-    ws_send_url: '/ws/send/'
+    ws_send_url: '/ws/send/',
+    version: version,
 };
