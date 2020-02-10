@@ -99,7 +99,7 @@ public class AccountRestController {
             try {
                 return new DisplayAccount(_accountService.findById(s));
             } catch (AccountNotFoundException e) {
-                LOG.error("Account with id {} was not found");
+                LOG.error("Account with id {} was not found", s);
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toSet());
@@ -143,6 +143,7 @@ public class AccountRestController {
 
     /**
      * Sets right mode - checkboxes will be rendered on right side for better mobile experience
+     *
      * @param rightmode boolean
      * @return {@link HttpStatus#OK} if upload was successful
      */
@@ -184,7 +185,7 @@ public class AccountRestController {
                     .filter(account -> account.getEmail().contains(term))
                     .collect(Collectors.toSet()));
         } catch (AccountNotFoundException e) {
-            LOG.error("Account with id {} was not found");
+            LOG.error("Account with id {} was not found", Utils.getCurrentAccountId());
             return ResponseEntity.notFound().build();
         }
     }

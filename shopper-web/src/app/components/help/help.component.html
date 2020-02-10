@@ -4,7 +4,7 @@
             <img src="assets/images/logo.svg" height="50px" class="ml-2">
             Shopper
         </h1>
-        <strong>{{'app.general.version'|translate}} 0.8.0</strong>
+        <strong>{{'app.general.version'|translate}} {{version}}</strong>
     </div>
     <div *ngIf="toc">
         <h2>{{'app.help.contents'|translate}}</h2>
@@ -21,5 +21,5 @@
     </ng-container>
 </mat-card>
 <div class="btt-btn" (click)="backToTop()" matTooltip="{{'app.general.btt'|translate}}">
-    <mat-icon>arrow_upward</mat-icon>
+    <mat-icon class="rotate-270">last_page</mat-icon>
 </div>

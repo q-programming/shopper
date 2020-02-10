@@ -8,6 +8,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {AlertService} from "./alert.service";
 import {NGXLogger} from "ngx-logger";
 import {Observable} from "rxjs";
+import {Product} from "@model/Product";
 
 @Injectable()
 export class AuthenticationService {
@@ -23,7 +24,7 @@ export class AuthenticationService {
      * If this succeeds , current user is fetched and stored into currentAccount , so that it can be reused across whole application
      */
     initUser() {
-        const promise = this.apiService.get(environment.refresh_token_url, {}).toPromise()
+        return this.apiService.get(environment.refresh_token_url, {}).toPromise()
             .then(res => {
                 if (res.access_token !== null) {
                     // this.currentAccount = {token: res.access_token};
@@ -33,9 +34,9 @@ export class AuthenticationService {
             .catch((err) => {
                 this.alertSrv.error('app.login.error');
                 this.logger.error(err);
+                sessionStorage.clear();
                 return null
             });
-        return promise;
     }
 
     private handleLogin() {
@@ -50,12 +51,17 @@ export class AuthenticationService {
             });
     }
 
+    loadFavorites() {
+        return this.apiService.getObject<Product[]>(environment.item_url + `/favorites`);
+    }
+
     /**
      * Logouts currently logged user by calling api and setting currentAccount as null
      */
     logout() {
         return this.apiService.post(environment.logout_url, {})
             .map(() => {
+                sessionStorage.clear();
                 this.currentAccount = null;
             });
     }
@@ -104,10 +110,10 @@ export class AuthenticationService {
         });
     }
 
-    setLanguage(){
-        if(this.currentAccount){
+    setLanguage() {
+        if (this.currentAccount) {
             this.translate.use(this.currentAccount.language);
-        }else{
+        } else {
             this.apiService.get(environment.default_lang_url).subscribe(defaults => {
                 if (defaults) {
                     let lang = defaults.language;

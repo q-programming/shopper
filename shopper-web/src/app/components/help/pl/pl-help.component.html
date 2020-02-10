@@ -108,8 +108,8 @@
                             <span>{{'app.general.delete'|translate}}</span>
                         </button>
                         <button mat-menu-item routerLink="." fragment="shoppinglist-copy"
-                                matTooltip="Stwórz kopię listy uwzględniająć wszystkie produkty oraz współdzielenia">
-                            <mat-icon>file-copy</mat-icon>
+                                matTooltip="{{'app.shopping.copy.hint'|translate}}">
+                            <mat-icon>file_copy</mat-icon>
                             <span>{{'app.shopping.copy'|translate}}</span>
                         </button>
                     </mat-menu>
@@ -281,6 +281,11 @@
                             <mat-icon>unarchive</mat-icon>
                             <span>{{'app.shopping.unarchive'|translate}}</span>
                         </button>
+                        <button mat-menu-item matTooltip="{{'app.shopping.copy.hint'|translate}}" routerLink="."
+                                fragment="shoppinglist-copy">
+                            <mat-icon>file_copy</mat-icon>
+                            <span>{{'app.shopping.copy'|translate}}</span>
+                        </button>
                     </mat-menu>
                     <button mat-icon-button class="pull-right" routerLink="." fragment="shoppinglist-sharing">
                         <mat-icon matBadge="2" matBadgePosition="below before"
@@ -379,31 +384,59 @@
         <!--Product name quantity-->
         <h4 id="item-name-quantity" class="shopper-font">Ustawienie ilośći poprzez nazwę produktu</h4>
         <p>
-            Jeżeli w nazwie pruduktu, na początku lub na końcu podamy liczbę ( samą liczbę
-            bez żadnych dodatkowych znaków) , aplikacja uzna to jako ilość
-            ustawi ją jako ilość nowego produktu<br>
+            Jeżeli w nazwie pruduktu, na początku lub na końcu podamy liczbę, lub liczbę z jednostką (bez spacji) ,
+            aplikacja uzna to jako ilość
+            ustawi ją jako ilość nowego lub edytowanego produktu<br>
             Np. :
         </p>
         <ul class="list-unstyled">
             <li>
-                wpisująć <code class="font-larger">jajka 6</code> , do listy zostanie dodane <code class="font-larger">jajka</code>
-                z ilością 6
+                wpisująć <code>jajka 6</code> , do listy zostanie dodane <code>jajka</code>
+                z ilością <code>6</code>
             </li>
             <li>
-                wpisująć <code class="font-larger">woda 1,5</code> , do listy zostanie dodane <code
-                    class="font-larger">woda </code> z ilością 1,5
+                wpisująć <code>woda 1,5</code> , do listy zostanie dodane <code>woda</code> z ilością <code>1,5</code>
             </li>
             <li>
-                wpisująć <code class="font-larger">10 pomidory</code> , do listy zostanie dodane <code
-                    class="font-larger">pomidory </code> z ilością 10
+                wpisująć <code>10 pomidory</code> , do listy zostanie dodane <code>pomidory </code> z ilością
+                <code>10</code>
             </li>
             <li>
-                wpisująć <code class="font-larger">śmietana 18%</code> , do listy zostanie dodana tylko <code
-                    class="font-larger">śmietana 18%</code>
+                wpisująć <code>śmietana 18%</code> , do listy zostanie dodana tylko <code>śmietana 18%</code>
+            </li>
+        </ul>
+        <p>Jeżeli jedna ze standardowych jednostek <code>g, dkg, kg, ml, l, cm, m</code> zostanie użyta z liczbą,
+            zostanie to zdekodowane jako liczebność i jednostka
+            <br>
+            For example:
+        </p>
+        <ul class="list-unstyled">
+            <li>
+                wpisująć <code>1kg mąka</code> , do listy zostanie dodane <code>mąka</code>
+                z ilością <code>1</code> i jednostką <code>kg</code>
+            </li>
+            <li>
+                wpisująć <code>woda 1,5l</code> , do listy zostanie dodane <code>woda</code>
+                z ilością <code>1,5</code> i jednostką <code>l</code>
+            </li>
+            <li>
+                Uwaga!: wpisująć <code>woda 1,5 l</code> , do listy zostanie dodane <code>woda 1,5 l</code>
             </li>
         </ul>
         <p>
-            Jeżeli podamy ilość zarówno na początku jak i końcu , tylko liczba z końca zostanie uwzględniona<br>
+            Jeżeli podamy ilość (z jednostką) zarówno na początku jak i końcu , tylko liczba z końca zostanie
+            uwzględniona<br>
+        </p>
+        <h4 id="item-quantity-increase" class="shopper-font">Dodawanie istniejącego produktu</h4>
+        <p>Jeżeli dodamy do listy produkt, który już istnieje na liście, możliwe są dwa zachowania :</p>
+        <p><b>Jeśli produkt został już zrealizowany</b>, zostanie od na powrót zaznaczony jako nie zrealizowany</p>
+        <p>
+            <b>Jeśli produkt nadal nie został zrealizowany</b>, jego ilość zostanie zwiększona.<br>
+            Jeżeli istniejący produkt nie ma podanej ilości zostanie to potraktowane jako 1 i ilość nowo dodawanego
+            produktu zostanie o tyle
+            zwiększona. Na przykład: <br>
+            <code>mąka</code> + <code>1kg mąka</code> = <code>mąka</code> z ilością <code>2</code> i
+            jednostką <code>kg</code>
         </p>
 
     </div>

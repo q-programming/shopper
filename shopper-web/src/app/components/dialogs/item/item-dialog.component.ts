@@ -14,16 +14,33 @@ export class ItemDialogComponent implements OnInit {
     listID: number;
     item: ListItem;
     categories: CategoryOption[];
+    favorites: string[];
     formValid: boolean;
+    toTopVisible:boolean;
 
 
     constructor(private dialogRef: MatDialogRef<ItemDialogComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: any, private menuSrv: MenuActionsService) {
+                @Inject(MAT_DIALOG_DATA) public data: any,
+                private menuSrv: MenuActionsService) {
         //load categories
         this.categories = data.categories;
+        this.favorites = data.favorites;
         this.item = data.item ? data.item : new ListItem();
         this.update = data.update;
         this.listID = data.listID;
+        dialogRef.keydownEvents().subscribe(e => {
+            if (e.code === 'Escape') {
+                dialogRef.close();
+            } else if (e.code === 'Enter' && this.formValid) {
+                const that = this;
+                setTimeout(function () {
+                    const active = document.activeElement;
+                    if (active.id !== 'productInput') {
+                        that.commitItem(that.formValid);
+                    }
+                });
+            }
+        });
     }
 
 
@@ -39,5 +56,4 @@ export class ItemDialogComponent implements OnInit {
 
     ngOnInit() {
     }
-
 }

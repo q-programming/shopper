@@ -1,41 +1,6 @@
-.item {
-    padding: 10px 24px 0 24px;
-}
-
-
 .new-item-button {
     font-size: 40px;
     margin-left: -19px;
-}
-
-mat-card .item.done {
-    background: #e8e8e8bf !important;
-    box-shadow: none !important;
-}
-
-.item-checkbox {
-    width: 50px;
-    margin-left: -10px;
-    margin-right: -5px;
-    margin-top: -5px !important;
-}
-
-.item-checkbox-icon {
-    margin-left: -5px;
-}
-
-.mat-card-title {
-    font-size: 20px;
-    margin-bottom: 5px;
-}
-
-.card-menu {
-    display: none;
-}
-
-.mat-card:hover .card-menu {
-    color: #00000050;
-    display: inline;
 }
 
 .mat-badge-content {
@@ -55,6 +20,7 @@ mat-card .item.done {
     background-color: #00c500;
 }
 
+
 .mat-progress-bar-fill::after {
     background-color: #00c500 !important;
 }
@@ -67,4 +33,18 @@ mat-card .item.done {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.add-item-button {
+    cursor: pointer;
+    position: fixed;
+    bottom: 0.5rem;
+    right: 1rem;
+    padding: 1rem 1rem 0.5rem;
+    text-decoration: none;
+    font-size: 14px;
+    outline-style: none;
+}
+.loader::ng-deep circle {
+    stroke: white;
 }

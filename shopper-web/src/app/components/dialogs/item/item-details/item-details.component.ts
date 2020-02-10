@@ -8,7 +8,7 @@ import {Observable, Subscription} from "rxjs";
 import {Product} from "@model/Product";
 import {environment} from "@env/environment";
 import * as _ from 'lodash';
-import {isNumber, itemDisplayName} from "../../../../utils/utils";
+import {itemDisplayName} from "../../../../utils/utils";
 import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
 
 @Component({
@@ -24,10 +24,12 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
     @Input() update: boolean;
     @Output() itemChange: EventEmitter<ListItem> = new EventEmitter<ListItem>();
     @Input() categories: CategoryOption[];
+    @Input() favorites: string[];
     @Output() commit: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() valid: EventEmitter<boolean> = new EventEmitter<boolean>();
     formValid: boolean;
     filteredCategories: Observable<CategoryOption[]>;
+    filteredFavorites: Observable<string[]>;
     productTerm: String = '';
     categoryTerm: String = '';
     menuSub: Subscription;
@@ -44,19 +46,28 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
         this.form = this.formBuilder.group({
             product: [this.item.product ? itemDisplayName(this.item) : '', Validators.required],
             category: [this.item.category, Validators.required],
-            quantity: this.item.quantity,
+            quantity: this.item.quantity > 0 ? this.item.quantity : 1,
             unit: this.item.unit,
             description: this.item.description,
-            categoryFilterCtrl: ''
+            categoryFilterCtrl: '',
+            productFilterCtrl: ''
         });
-        //product
-        this.form.controls.product.valueChanges
+        //filtered product
+        this.filteredFavorites = this.form.controls.product.valueChanges
             .debounceTime(600)
             .distinctUntilChanged()
-            .subscribe(value => {
-                this.productTerm = value;
-                this.handleProductValueChange(value);
-            });
+            .pipe(
+                startWith<string>(''),
+                map(value => {
+                        if (value.length >= 1) {
+                            this.productTerm = value;
+                            this.handleProductValueChange(value);
+                            return this._filterProducts(value)
+                        } else {
+                            return [];
+                        }
+                    }
+                ));
         //filtered categories
         this.filteredCategories = this.form.controls.categoryFilterCtrl.valueChanges
             .pipe(
@@ -105,30 +116,47 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
         return value ? _.filter(this.categories, cat => cat.name.toLowerCase().includes(filterValue)) : this.categories;
     }
 
+    private _filterProducts(value: string): string[] {
+        const filterValue = value.toLowerCase();
+        return value ? _.filter(this.favorites, product => product.toLowerCase().includes(filterValue)) : this.favorites;
+    }
+
+
     commitItem() {
         if (this.form.valid) {
             this.commit.emit(this.form.value)
         }
     }
 
-
     tryToGetQuantity(): string {
+        this.productTerm = '';
         let result = <string>this.form.controls.product.value;
         let parts = result.split(' ').filter(i => i);
         const wordCounts = parts.length;
         if (wordCounts > 1) {
             let b = parts[0].replace(',', '.');
             let e = parts[wordCounts - 1].replace(',', '.');
-            if (isNumber(b) && !isNumber(e)) {
-                this.form.controls.quantity.setValue(Number(b));
+            if (this.isQuantityAndUnit(b) && !this.isQuantityAndUnit(e)) {
+                this.setQuantityAndUnit(b);
                 result = parts.slice(1).join(" ");
                 this.form.controls.product.setValue(result)
-            } else if (isNumber(e)) {
-                this.form.controls.quantity.setValue(Number(e));
+            } else if (this.isQuantityAndUnit(e)) {
+                this.setQuantityAndUnit(e);
                 result = parts.slice(0, wordCounts - 1).join(" ");
                 this.form.controls.product.setValue(result)
             }
         }
         return result;
+    }
+
+    private isQuantityAndUnit(part: string): boolean {
+        return /(\d+(\.|,?)\d*)(kg|g|l|m|cm|ml|dkg)?$/.test(part);
+    }
+
+    private setQuantityAndUnit(quantityAndUnit: string) {
+        const split = quantityAndUnit.split(/(kg|g|l|m|cm|ml|dkg)/);
+        const unit = quantityAndUnit.replace(split[0], "");
+        this.form.controls.quantity.setValue(Number(split[0]));
+        this.form.controls.unit.setValue(unit);
     }
 }

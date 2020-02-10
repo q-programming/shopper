@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -36,6 +37,7 @@ public class BasicRestAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
+    @Transactional
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         if (!AuthUtils.isAuthenticated()) {//already logged in , skip
             String credentials = request.getHeader(AUTHORIZATION);
@@ -54,14 +56,15 @@ public class BasicRestAuthenticationFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    private void verifyAndLogin(String user, String password, HttpServletResponse response) {
+    private void verifyAndLogin(String user, String passwordOrKey, HttpServletResponse response) {
         Account account = accountService.loadUserByUsername(user);
-        if (!accountService.matches(password, account.getPassword())) {
-            SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
-        } else {
+        //check if user tries to login with password or has devices and tries to login with it
+        if (accountService.deviceAuth(passwordOrKey, account) || accountService.matches(passwordOrKey, account.getPassword())) {
             accountService.signin(account);
             tokenService.createTokenRESTCookies(response, account);
             LOG.debug("Authorization successful using base auth via rest. New token returned");
+        } else {
+            SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
         }
     }
 }

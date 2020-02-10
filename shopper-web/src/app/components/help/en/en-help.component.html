@@ -105,6 +105,11 @@
                             <mat-icon>delete</mat-icon>
                             <span>{{'app.general.delete'|translate}}</span>
                         </button>
+                        <button mat-menu-item routerLink="." fragment="shoppinglist-copy"
+                                matTooltip="{{'app.shopping.copy.hint'|translate}}">
+                            <mat-icon>file_copy</mat-icon>
+                            <span>{{'app.shopping.copy'|translate}}</span>
+                        </button>
                     </mat-menu>
                 </mat-card-header>
                 <mat-card-content class="pb-1 help-cursor"
@@ -277,6 +282,11 @@
                             <mat-icon>unarchive</mat-icon>
                             <span>{{'app.shopping.unarchive'|translate}}</span>
                         </button>
+                        <button mat-menu-item matTooltip="{{'app.shopping.copy.hint'|translate}}" routerLink="."
+                                fragment="shoppinglist-copy">
+                            <mat-icon>file_copy</mat-icon>
+                            <span>{{'app.shopping.copy'|translate}}</span>
+                        </button>
                     </mat-menu>
                     <button mat-icon-button class="pull-right" routerLink="." fragment="shoppinglist-sharing">
                         <mat-icon matBadge="2" matBadgePosition="below before"
@@ -332,7 +342,8 @@
             When dialog is opened, we are presented with form where name, and category are mandatory fields.
         </p>
         <p>
-            If in product name we enter also quantity and we switch to next field ( or just click someplace else )
+            If in product name we enter also quantity with unit and we switch to next field ( or just click someplace
+            else )
             , application will try to set item quantity using same rules as described in
             <a routerLink="." fragment="item-name-quantity">Setting quantity in product name</a>
         </p>
@@ -368,31 +379,59 @@
         <!--Product name quantity-->
         <h4 id="item-name-quantity" class="shopper-font">Setting quantity in product name</h4>
         <p>
-            If at the beginning or at the end of product name we put number ( just number, no extra chars), application
+            If at the beginning or at the end of product name we put number, or number with unit(without space),
+            application
             will treat it as a quantity and will set it as new/edited product quantity.
             <br>
             For example:
         </p>
         <ul class="list-unstyled">
             <li>
-                if we enter <code class="font-larger">egs 6</code>, application will add <code
-                    class="font-larger">jajka</code> with quantity 6
+                if we enter <code>egs 6</code>, application will add <code>egs</code> with quantity <code>6</code>
             </li>
             <li>
-                if we enter <code class="font-larger">10 tomatoes</code>, application will add <code
-                    class="font-larger">tomatoes</code> with quantity 10
+                if we enter <code>10 tomatoes</code>, application will add <code>tomatoes</code> with quantity
+                <code>10</code>
             </li>
             <li>
-                if we enter <code class="font-larger">water 1.5</code>, application will add <code
-                    class="font-larger">water</code> with quantity 1.5
+                if we enter <code>water 1.5</code>, application will add <code>water</code> with quantity
+                <code>1.5</code>
             </li>
             <li>
-                if we enter <code class="font-larger">cream 18%</code> , application will add<code
-                    class="font-larger">cream 18%</code>
+                if we enter <code>cream 18%</code> , application will add <code>cream 18%</code>
+            </li>
+        </ul>
+        <p>If any of SI units <code>g, dkg, kg, ml, l, cm, m</code> will be added with number, it will be decoded as
+            quantity and unit
+            <br>
+            For example:
+        </p>
+        <ul class="list-unstyled">
+            <li>
+                if we enter <code>flour 1kg</code>, application will add <code>flour</code> with quantity <code>1</code>
+                and unit <code>kg</code>
+            </li>
+            <li>
+                if we enter <code>water 1.5l</code>, application will add <code>water</code> with quantity
+                <code>1.5</code> and unit <code>l</code>
+            </li>
+            <li>
+                Warning!: if we enter <code>water 1.5 l</code>, application will add <code>water 1.5 l</code>
             </li>
         </ul>
         <p>
-            If we give number on both beginning and end ,only number from end will be used<br>
+            If we give number (with unit) on both beginning and end ,only number from end will be used<br>
+        </p>
+        <h4 id="item-quantity-increase" class="shopper-font">Adding existing product</h4>
+        <p>If to list we add product which is already existing, there are two possible outcomes: </p>
+        <p><b>If product is already marked as done</b>, it will be marked as undone</p>
+        <p>
+            <b>If product is not done </b>, it's quantity will be increased.<br>
+            If existing product don't have quantity defined, it will be treated as 1 and newly added product quantity
+            will be increased by it.
+            For example: <br>
+            <code>flour</code> + <code>1kg flour</code> = <code>flour</code> with quantity <code>2</code> and unit
+            <code>kg</code>
         </p>
     </div>
     <!--List items-->

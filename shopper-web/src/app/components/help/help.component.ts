@@ -2,6 +2,7 @@ import {AfterViewInit, Component, ElementRef, OnInit} from '@angular/core';
 import {TranslateService} from "@ngx-translate/core";
 import {ActivatedRoute} from "@angular/router";
 import {ScrollToConfigOptions, ScrollToService} from "@nicky-lenaers/ngx-scroll-to";
+import {environment} from "@env/environment";
 
 @Component({
     selector: 'app-help',
@@ -12,6 +13,7 @@ export class HelpComponent implements OnInit, AfterViewInit {
 
     lang: string;
     toc: NodeList;
+    version: string = environment.version;
 
     constructor(private translate: TranslateService,
                 private route: ActivatedRoute,

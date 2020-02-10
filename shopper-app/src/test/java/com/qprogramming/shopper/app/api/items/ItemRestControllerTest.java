@@ -22,6 +22,8 @@ import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -70,15 +72,20 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     private FavoriteProductsRepository favoritesRepositoryMock;
     @Mock
     private MessagesService msgSrvMock;
+    @Mock
+    private CacheManager cacheManager;
+    @Mock
+    private Cache cacheMock;
 
 
     @Before
     @Override
     public void setup() {
         super.setup();
+        when(cacheManager.getCache(anyString())).thenReturn(cacheMock);
         CategoryPresetService presetService = new CategoryPresetService(presetRepositoryMock);
         ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, msgSrvMock, mailServiceMock, presetService);
-        ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock);
+        ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock, cacheManager);
         ItemRestController controller = new ItemRestController(listItemService, listService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
@@ -101,6 +108,49 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
         assertThat(result.getItems().size() == 1).isTrue();
         verify(listItemRepositoryMock, times(1)).save(any(ListItem.class));
+        verify(listRepositoryMock, times(1)).save(any(ShoppingList.class));
+        verify(cacheMock, times(1)).evict(testAccount.getId());
+    }
+
+    @Test
+    public void addItemAlreadyExistsTest() throws Exception {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        ShoppingList list = createList(NAME, 1L);
+        list.getItems().add(listItem);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        when(productRepositoryMock.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepositoryMock.save(any())).then(returnsFirstArg());
+        when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
+        MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(listItem))).andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getItems().size() == 1).isTrue();
+        assertThat(result.getItems().get(0).getQuantity() == 2f).isTrue();
+        verify(listRepositoryMock, times(1)).save(any(ShoppingList.class));
+    }
+
+    @Test
+    public void addItemAlreadyExistsAndIsDoneTest() throws Exception {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        listItem.setDone(true);
+        ShoppingList list = createList(NAME, 1L);
+        list.getItems().add(listItem);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
+        when(productRepositoryMock.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepositoryMock.save(any())).then(returnsFirstArg());
+        when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
+        MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(listItem))).andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ShoppingList result = TestUtil.convertJsonToObject(contentAsString, ShoppingList.class);
+        assertThat(result.getItems().size() == 1).isTrue();
+        assertThat(result.getItems().get(0).getQuantity() == 1f).isTrue();
+        assertThat(result.getItems().get(0).isDone()).isFalse();
         verify(listRepositoryMock, times(1)).save(any(ShoppingList.class));
     }
 

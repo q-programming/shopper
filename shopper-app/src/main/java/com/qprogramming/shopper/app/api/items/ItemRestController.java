@@ -66,13 +66,10 @@ public class ItemRestController {
             LOG.error(BAD_PRODUCT_NAME);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (ShoppingAccessException e) {
-            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
             LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (AccountNotFoundException e) {
-            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -101,7 +98,7 @@ public class ItemRestController {
             _listService.sortItems(list);
             return ResponseEntity.ok(_listService.save(list));
         } catch (ShoppingAccessException e) {
-            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
             LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
@@ -215,7 +212,8 @@ public class ItemRestController {
     public ResponseEntity<List<Product>> getFavorites(@PathVariable Long id) {
         try {
             ShoppingList list = _listService.findByID(id);
-            return ResponseEntity.ok(_listItemService.getFavoriteProducts(list));
+            Set<Product> favorites = _listItemService.getFavoriteProductsForAccount(Utils.getCurrentAccountId());
+            return ResponseEntity.ok(_listItemService.filterFavoriteProducts(list, favorites));
         } catch (ShoppingAccessException e) {
             LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -233,7 +231,7 @@ public class ItemRestController {
     @RequestMapping(value = "/favorites", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Set<Product>> getAllFavorites() {
-        return ResponseEntity.ok(_listItemService.getAllFavoritesProducts());
+        return ResponseEntity.ok(_listItemService.getFavoriteProductsForAccount(Utils.getCurrentAccountId()));
     }
 
     /**
@@ -245,8 +243,9 @@ public class ItemRestController {
     @RequestMapping(value = "/favorites/remove", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Set<Product>> removeFromFavorites(@RequestBody Product product) {
-        _listItemService.removeFromFavorites(product);
-        return ResponseEntity.ok(_listItemService.getAllFavoritesProducts());
+        String currentAccountId = Utils.getCurrentAccountId();
+        _listItemService.removeFromFavorites(product, currentAccountId);
+        return ResponseEntity.ok(_listItemService.getFavoriteProductsForAccount(currentAccountId));
     }
 
 }

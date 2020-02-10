@@ -7,6 +7,9 @@ import com.qprogramming.shopper.app.account.authority.AuthorityService;
 import com.qprogramming.shopper.app.account.authority.Role;
 import com.qprogramming.shopper.app.account.avatar.Avatar;
 import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
+import com.qprogramming.shopper.app.account.devices.Device;
+import com.qprogramming.shopper.app.account.devices.DeviceRepository;
+import com.qprogramming.shopper.app.account.devices.NewDevice;
 import com.qprogramming.shopper.app.account.event.AccountEvent;
 import com.qprogramming.shopper.app.account.event.AccountEventRepository;
 import com.qprogramming.shopper.app.account.event.AccountEventType;
@@ -14,6 +17,7 @@ import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
+import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import com.qprogramming.shopper.app.support.Utils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +53,7 @@ import static com.qprogramming.shopper.app.settings.Settings.APP_URL;
 @Service
 public class AccountService implements UserDetailsService {
 
-    private static final String API_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
+    private static final String API_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}?";
 
     private static final Logger LOG = LoggerFactory.getLogger(AccountService.class);
     private PropertyService _propertyService;
@@ -58,16 +62,18 @@ public class AccountService implements UserDetailsService {
     private AuthorityService _authorityService;
     private AccountPasswordEncoder _accountPasswordEncoder;
     private AccountEventRepository _accountEventRepository;
+    private DeviceRepository _deviceRepository;
     private MailService _mailService;
 
     @Autowired
-    public AccountService(PropertyService propertyService, AccountRepository accountRepository, AvatarRepository avatarRepository, AuthorityService authorityService, AccountPasswordEncoder accountPasswordEncoder, AccountEventRepository accountEventRepository, MailService mailService) {
+    public AccountService(PropertyService propertyService, AccountRepository accountRepository, AvatarRepository avatarRepository, AuthorityService authorityService, AccountPasswordEncoder accountPasswordEncoder, AccountEventRepository accountEventRepository, DeviceRepository deviceRepository, MailService mailService) {
         this._propertyService = propertyService;
         this._accountRepository = accountRepository;
         this._avatarRepository = avatarRepository;
         this._authorityService = authorityService;
         this._accountPasswordEncoder = accountPasswordEncoder;
         this._accountEventRepository = accountEventRepository;
+        this._deviceRepository = deviceRepository;
         this._mailService = mailService;
     }
 
@@ -106,8 +112,7 @@ public class AccountService implements UserDetailsService {
 
     private void generatePassword(Account account) {
         if (StringUtils.isBlank(account.getPassword())) {
-            char[] possibleCharacters = API_CHARS.toCharArray();
-            String password = RandomStringUtils.random(32, 0, possibleCharacters.length - 1, false, false, possibleCharacters, new SecureRandom());
+            String password = generateRandomString(32);
             //TODO remove afterwards
             LOG.info("******Generated new password for " + account.getEmail() + ". Password is : \"" + password + "\" ******");
             account.setPassword(encode(password));
@@ -121,6 +126,15 @@ public class AccountService implements UserDetailsService {
         }
         return uuid;
     }
+
+    public String generateDeviceID() {
+        String uuid = UUID.randomUUID().toString();
+        while (_deviceRepository.findById(uuid).isPresent()) {
+            uuid = UUID.randomUUID().toString();
+        }
+        return uuid;
+    }
+
 
     private void setDefaultLocale(Account account) {
         String defaultLanguage = _propertyService.getDefaultLang();
@@ -295,15 +309,25 @@ public class AccountService implements UserDetailsService {
             case ACCOUNT_CONFIRM:
                 mail.addToModel("confirmURL", application + "#/confirm/" + event.getToken());
                 break;
+            case DEVICE_CONFIRM:
+                mail.addToModel("confirmURL", application + "#/confirm-device/" + event.getToken());
+                break;
         }
         mail.setLocale(account.getLanguage());
-        _mailService.sendConfirmMessage(mail,event);
+        _mailService.sendConfirmMessage(mail, event);
 
     }
 
     public void confirm(Account account) {
         account.setEnabled(true);
         _accountRepository.save(account);
+    }
+
+    public void confirmDevice(Account account, String data) throws DeviceNotFoundException {
+        Optional<Device> confirmedDevice = account.getDevices().stream().filter(device -> device.getId().equals(data)).findFirst();
+        Device device = confirmedDevice.orElseThrow(DeviceNotFoundException::new);
+        device.setEnabled(true);
+        _deviceRepository.save(device);
     }
 
     public void addAccountToFriendList(Account account) throws AccountNotFoundException {
@@ -332,6 +356,16 @@ public class AccountService implements UserDetailsService {
         return _accountEventRepository.save(event);
     }
 
+    public AccountEvent createConfirmDeviceEvent(Account account, String deviceId) {
+        AccountEvent event = new AccountEvent();
+        event.setAccount(account);
+        event.setType(AccountEventType.DEVICE_CONFIRM);
+        event.setToken(generateToken());
+        event.setData(deviceId);
+        return _accountEventRepository.save(event);
+    }
+
+
     public AccountEvent createPasswordResetEvent(Account newAccount) {
         AccountEvent event = new AccountEvent();
         event.setAccount(newAccount);
@@ -352,6 +386,11 @@ public class AccountService implements UserDetailsService {
         return token;
     }
 
+    private String generateRandomString(int lenght) {
+        char[] possibleCharacters = API_CHARS.toCharArray();
+        return RandomStringUtils.random(lenght, 0, possibleCharacters.length - 1, false, false, possibleCharacters, new SecureRandom());
+    }
+
     /**
      * Encodes password passed in plain text in Account
      *
@@ -359,5 +398,36 @@ public class AccountService implements UserDetailsService {
      */
     public void encodePassword(Account account) {
         account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
+    }
+
+    /**
+     * Checks if passed key belongs to any of Account's device.
+     * While matching the key will be encoded and then compared
+     *
+     * @param key     device key which will be checked
+     * @param account account which will be searched for enabled devices with that key
+     * @return true if authentication should be true
+     */
+    @Transactional
+    public boolean deviceAuth(String key, Account account) {
+        Set<Device> devices = account.getDevices();
+        return devices
+                .stream()
+                .filter(Device::isEnabled)
+                .anyMatch(device ->
+                        _accountPasswordEncoder.matches(key, device.getDeviceKey())
+                );
+    }
+
+    public NewDevice registerNewDevice(Account account, String name) {
+        String deviceKey = generateRandomString(64);
+        Device device = new Device();
+        device.setId(generateDeviceID());
+        device.setDeviceKey(encode(deviceKey));
+        device.setName(name);
+        device = _deviceRepository.save(device);
+        account.getDevices().add(device);
+        _accountRepository.save(account);
+        return new NewDevice(device, deviceKey, account.getEmail());
     }
 }
