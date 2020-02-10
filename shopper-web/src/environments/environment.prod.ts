@@ -1,4 +1,6 @@
 import {NgxLoggerLevel} from "ngx-logger";
+import {version} from "../../package.json";
+
 
 export const environment = {
     production: true,
@@ -24,5 +26,6 @@ export const environment = {
     product_url: '/api/product',
     config_url: '/api/config',
     ws_ur: '/ws',
-    ws_send_url: '/ws/send/'
+    ws_send_url: '/ws/send/',
+    version: version,
 };
