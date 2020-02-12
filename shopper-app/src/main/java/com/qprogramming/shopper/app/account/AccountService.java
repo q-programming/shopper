@@ -411,8 +411,13 @@ public class AccountService implements UserDetailsService {
     public boolean deviceAuth(String key, Account account) {
         Set<Device> devices = account.getDevices();
         Optional<Device> optionalDevice = devices.stream().filter(Device::isEnabled).filter(device -> _accountPasswordEncoder.matches(key, device.getDeviceKey())).findFirst();
-        optionalDevice.ifPresent(device -> device.setLastUsed(new Date()));
-        return optionalDevice.isPresent();
+        if (optionalDevice.isPresent()) {
+            Device device = optionalDevice.get();
+            device.setLastUsed(new Date());
+            _deviceRepository.save(device);
+            return true;
+        }
+        return false;
     }
 
     /**
