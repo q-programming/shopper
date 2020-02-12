@@ -12,6 +12,7 @@ import com.qprogramming.shopper.app.account.devices.NewDevice;
 import com.qprogramming.shopper.app.account.event.AccountEventRepository;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
+import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -68,7 +69,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock, accountEventRepositoryMock, deviceRepositoryMock, mailServiceMock) {
             @Override
             protected byte[] downloadFromUrl(URL url) {
@@ -84,7 +85,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void createOAuthAdminAccountTest() throws Exception {
+    public void createOAuthAdminAccountTest() {
         Account account = TestUtil.createAccount();
         account.setLanguage("");
         when(authorityServiceMock.findByRole(Role.ROLE_USER)).thenReturn(TestUtil.createUserAuthority());
@@ -97,7 +98,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void createOAuthLocalAccountTest() throws Exception {
+    public void createOAuthLocalAccountTest() {
         Account account = TestUtil.createAccount();
         when(accountRepositoryMock.findAll()).thenReturn(Collections.singletonList(testAccount));
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
@@ -108,7 +109,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void generateIDFails2TimesTest() throws Exception {
+    public void generateIDFails2TimesTest() {
         Optional<Account> account1 = Optional.of(TestUtil.createAccount());
         Optional<Account> account2 = Optional.of(TestUtil.createAccount());
 
@@ -121,25 +122,25 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void loadUserByUsernameTest() throws Exception {
+    public void loadUserByUsernameTest() {
         when(accountRepositoryMock.findOneByUsername(testAccount.getUsername())).thenReturn(testAccount);
         Account userDetails = accountService.loadUserByUsername(testAccount.getUsername());
         assertEquals(userDetails, testAccount);
     }
 
     @Test(expected = UsernameNotFoundException.class)
-    public void loadUserByUsernameNotFoundTest() throws Exception {
+    public void loadUserByUsernameNotFoundTest() {
         accountService.loadUserByUsername(testAccount.getUsername());
     }
 
     @Test
-    public void signInTest() throws Exception {
+    public void signInTest() {
         accountService.signin(testAccount);
         verify(securityMock, times(1)).setAuthentication(any(UsernamePasswordAuthenticationToken.class));
     }
 
     @Test
-    public void getAccountAvatarTest() throws Exception {
+    public void getAccountAvatarTest() {
         when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(new Avatar());
         Avatar accountAvatar = accountService.getAccountAvatar(testAccount);
         assertThat(accountAvatar).isNotNull();
@@ -155,7 +156,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void createAvatarUknownTypeTest() throws Exception {
+    public void createAvatarUknownTypeTest() {
         ClassLoader loader = this.getClass().getClassLoader();
         accountService.updateAvatar(testAccount, STATIC_IMAGES_LOGO_WHITE_PNG.getBytes());
         verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
@@ -184,7 +185,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void registerNewDeviceTest() throws Exception {
+    public void registerNewDeviceTest() {
         when(deviceRepositoryMock.save(any(Device.class))).then(returnsFirstArg());
         when(deviceRepositoryMock.findById(anyString()))
                 .thenReturn(Optional.of(new Device()))
@@ -193,6 +194,42 @@ public class AccountServiceTest extends MockedAccountTestBase {
         verify(deviceRepositoryMock, times(2)).findById(anyString());
         verify(accountRepositoryMock, times(1)).save(any(Account.class));
         assertThat(newDevice.getPlainKey()).isNotBlank();
+    }
+
+    @Test(expected = DeviceNotFoundException.class)
+    public void removeDeviceNotPresentTest() throws DeviceNotFoundException, AccountNotFoundException {
+        when(accountRepositoryMock.findOneById(testAccount.getId())).thenReturn(Optional.of(testAccount));
+        when(deviceRepositoryMock.findById(anyString()))
+                .thenReturn(Optional.empty());
+        accountService.removeDevice("1");
+        fail("Exception was not thrown");
+    }
+
+    @Test(expected = DeviceNotFoundException.class)
+    public void removeDeviceNotOwnerTest() throws Exception {
+        Device device = new Device();
+        device.setId("1");
+        device.setDeviceKey("key");
+        device.setName("name");
+        when(accountRepositoryMock.findOneById(testAccount.getId())).thenReturn(Optional.of(testAccount));
+        when(deviceRepositoryMock.findById("1"))
+                .thenReturn(Optional.of(device));
+        accountService.removeDevice("1");
+        fail("Exception was not thrown");
+    }
+
+    @Test()
+    public void removeDeviceSuccessTest() throws DeviceNotFoundException, AccountNotFoundException {
+        Device device = new Device();
+        device.setId("1");
+        device.setDeviceKey("key");
+        device.setName("name");
+        testAccount.getDevices().add(device);
+        when(accountRepositoryMock.findOneById(testAccount.getId())).thenReturn(Optional.of(testAccount));
+        when(deviceRepositoryMock.findById("1"))
+                .thenReturn(Optional.of(device));
+        accountService.removeDevice("1");
+        verify(deviceRepositoryMock, times(1)).delete(device);
     }
 
     @Test

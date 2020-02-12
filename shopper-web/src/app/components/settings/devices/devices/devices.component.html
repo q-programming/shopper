@@ -1,0 +1,29 @@
+<div fxLayout="row wrap" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+        <h3 class="underlined">
+            <mat-icon mat-list-icon>devices_other</mat-icon>
+            {{'app.settings.devices.help'|translate}}
+        </h3>
+    </div>
+    <div fxFlex="60" fxFlex.xs="100">
+        <div class="text-center">
+            <inner-loader *ngIf="loading" [blue]="true"></inner-loader>
+        </div>
+        <mat-list *ngIf="!loading && devices.length">
+            <mat-list-item *ngFor="let device of devices; let even=even" [ngClass]="{
+                    'disabled':!device.enabled,'even':even}">
+                <mat-icon mat-list-icon>devices_other</mat-icon>
+                <h3 mat-line matTooltip="{{!device.enabled?('app.settings.devices.disabled'|translate):''}}">
+                    <button mat-icon-button class="pull-right"
+                            matTooltip="{{'app.settings.devices.remove.text'|translate}}"
+                            (click)="deleteDevice(device.id)"
+                            *ngIf="device.enabled">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                    {{device.name}}
+                </h3>
+                <p mat-line> {{device.lastUsed |  date:'dd.MM.yyyy HH:mm'}} </p>
+            </mat-list-item>
+        </mat-list>
+    </div>
+</div>

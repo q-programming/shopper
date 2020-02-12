@@ -1,6 +1,9 @@
 package com.qprogramming.shopper.app.account.devices;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -17,6 +20,9 @@ public class Device {
 
     @Column
     private String name;
+
+    @Column
+    private Date lastUsed;
 
 
     public String getId() {
@@ -49,6 +55,14 @@ public class Device {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Date getLastUsed() {
+        return lastUsed;
+    }
+
+    public void setLastUsed(Date lastUsed) {
+        this.lastUsed = lastUsed;
     }
 
     @Override

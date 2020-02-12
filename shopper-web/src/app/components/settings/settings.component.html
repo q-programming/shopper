@@ -31,6 +31,15 @@
                 </div>
             </ng-template>
         </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon>devices_other</mat-icon>
+                <span fxShow.xs="false" class="ml-1">{{'app.settings.devices.text'|translate}}</span>
+            </ng-template>
+            <ng-template matTabContent>
+                <settings-devices></settings-devices>
+            </ng-template>
+        </mat-tab>
         <!--<mat-tab *ngIf="admin">-->
             <!--<ng-template mat-tab-label>-->
                 <!--<mat-icon>message</mat-icon>-->

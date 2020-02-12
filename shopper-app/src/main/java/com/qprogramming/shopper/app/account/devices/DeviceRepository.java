@@ -9,4 +9,6 @@ import java.util.Optional;
  */
 public interface DeviceRepository extends JpaRepository<Device, String> {
     Optional<Device> findByDeviceKey(String key);
+
+    Optional<Device> findById(String s);
 }

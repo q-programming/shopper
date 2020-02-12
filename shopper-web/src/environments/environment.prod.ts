@@ -19,6 +19,7 @@ export const environment = {
     avatar_upload_url: '/avatar-upload',
     language_url: '/settings/language',
     rightmode_url: '/settings/rightmode',
+    devices_url: '/settings/devices',
     account_url: '/api/account',
     avatar_url: '/avatar',
     list_url: '/api/list',
