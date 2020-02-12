@@ -1,9 +1,6 @@
-name: Build , Test and Publish
+name: Build
 
-on:
-  push:
-    tags:
-    - '*'
+on: [push]
   
 jobs:
   build:
@@ -44,10 +41,4 @@ jobs:
     - name: Upload coverage to Codecov  
       uses: codecov/codecov-action@v1
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}  
-    - name: Upload to release
-      uses: JasonEtco/upload-to-release@master
-      with:
-        args: shopper-app/target/shopper.war application/zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.CODECOV_TOKEN }}

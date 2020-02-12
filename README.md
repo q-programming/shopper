@@ -1,21 +1,25 @@
 Shopper
 =========================================
-Latest build: [![CircleCI](https://circleci.com/gh/q-programming/shopper.svg?style=svg)](https://circleci.com/gh/q-programming/shopper)
+![Build , Test and Publish](https://github.com/q-programming/shopper/workflows/Build/badge.svg)
+[![codecov](https://codecov.io/gh/q-programming/shopper/branch/master/graph/badge.svg)](https://codecov.io/gh/q-programming/shopper)
 
 About
 ---
 Application to create and share shopping lists.
-If you quickly need to add something, open webpage or app add it, and it will automatically show on shared user lists 
+If you quickly need to add something, open webpage or app add it, and it will automatically show on shared user lists
 
-It's also possible login using companion app for Tizen.
-First device is registered by calling `/auth/new-device` with existing application email. 
-IF account exist , token will be returned , which is used to authenticate all calls comming from companion app by REST API.
-Until confirmed by email, all calls will be rejected 
+![alt text](https://q-programming.pl/assets/images/projects/shopper_1.png)
+ 
 
 ##  Accounts
 
 Application accounts can be created either with login password, or login using social media : facebook or google
 In case of social media created account, all data like name, surname and photo will be automatically used
+
+It's also possible login using companion app for Tizen.
+First device is registered by calling `/auth/new-device` with existing application email. 
+IF account exist , token will be returned , which is used to authenticate all calls comming from companion app by REST API.
+Until confirmed by email, all calls will be rejected 
 
 
 ## Instalation
@@ -43,6 +47,13 @@ Create database in your datasource and all tables will be created automatically 
 First logged in user will be made administrator
 
 Stack: Spring Boot + Angular 8.x
+
+## Companion app
+
+For Samsung Galaxy S3 and Galaxy Watch there is dedicated. Sources for it are available in `shopper-companion`
+You can build it and sign it with own certificate, or can try to use one build with my certificate, available on github release page
+If you are interested to in integrating any other devices, feel free to contact me via email so I can help you if needed
+ 
 
 Licence
 ----------

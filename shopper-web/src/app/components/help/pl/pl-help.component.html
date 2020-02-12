@@ -12,9 +12,9 @@
     </p>
     <p class="text-center">
         Możesz pobrać aplikację na androida z tąd :
-        <a mat-flat-button href="https://q-programming.pl/apps/shopper-0.5.0.apk">
+        <a mat-flat-button href="https://q-programming.pl/apps/shopper-0.7.0.apk">
             <mat-icon>cloud_download</mat-icon>
-            shopper-0.5.0.apk
+            shopper-0.7.0.apk
         </a>
         i zainstalować ją na swoim telefonie (wymagane jest pozwolenie na instalację z nieznanych źródeł )
     </p>
@@ -625,6 +625,29 @@
         <p>
             Produkt może być usunięty z ulubionych poprzez kliknięcie nazwy produktu z tego ekranu.
         </p>
+        <mat-icon class="help-title-icon">devices_other</mat-icon>
+        <h4 class="shopper-font" id="settings-devices">
+            {{'app.settings.devices.text'|translate}}
+        </h4>
+        <p>
+            Można tez używac Shoppera poprzez towarzyszącą aplikację. Na te potrzeby stworzyłem aplikację na urządzenia
+            z systemem Tizen ( testowane z Samsung
+            Gear S3 i Gear Watch)
+        </p>
+        <p>
+            Aby sparować urządzenie , uruchom aplikację na urządzeniu i wprowadz swój adres email używany w aplikacji.
+            Otrzymasz maila z potwierdzeniem i linkiem do aktywacji urządzenia.<br>
+            Kiedy urządzenie zostanie autoryzowane, będziesz widzieć wszystkie swoje listy, oraz ich produkty
+            authorized. Będziesz też mógł oznaczać produkty jako gotowe/ nie gotowe
+        </p>
+        <p>Wszystkie autoryzowane urządzenia będą widocznę na tej stronie ustawień. Każde z nich będzie miało nazwę (
+            producent + model )
+            oraz ostatnie poprawna authentykacja tego urządzenia. W każdej chwili możesz usunąc urządzenie klikająć
+            guzik <mat-icon>delete</mat-icon>.
+            <br>Po usunięciu , urządzenie będzie musiałoo być ponownie sparowane aby można było na niej używać aplikacji
+            shopper.
+        </p>
+
         <!--ADMIN SECTION-->
         <ng-container *ngIf="isAdmin">
             <mat-icon class="help-title-icon">build</mat-icon>
