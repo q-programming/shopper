@@ -11,9 +11,9 @@
     </p>
     <p class="text-center">
         You can download companion android app from:
-        <a mat-flat-button href="https://q-programming.pl/apps/shopper-0.5.0.apk">
+        <a mat-flat-button href="https://q-programming.pl/apps/shopper-0.7.0.apk">
             <mat-icon>cloud_download</mat-icon>
-            shopper-0.5.0.apk
+            shopper-0.7.0.apk
         </a>
         and install it ( you have to enable installing from unknown sources)
     </p>
@@ -611,6 +611,21 @@
         </p>
         <p>
             Product can be removed from favorites from this screen , by just clicking it's name.
+        </p>
+        <mat-icon class="help-title-icon">devices_other</mat-icon>
+        <h4 class="shopper-font" id="settings-devices">
+            {{'app.settings.devices.text'|translate}}
+        </h4>
+        <p>
+            It's also possible use shopper using companion app. I created one for Tizen watches ( tested with Samsung
+            Gear S3 and Gear Watch)
+        </p>
+        <p>
+            To pair devices, launch app on watch and enter your email used in application. You will receive confirmation email with link to authorize new device.<br>
+            When authorized , you will see all your lists and its items and be able to mark them as done/not done.
+            <br>All authorized devices will be shown on this settings page. There will be name for them ( Manufacturer + model )
+            And last successful authentication from that device.You can remove device by clicking <mat-icon>delete</mat-icon> button.
+            When deleted, device will have to be re-authorized again to use shopper there
         </p>
         <!--ADMIN SECTION-->
         <ng-container *ngIf="isAdmin">

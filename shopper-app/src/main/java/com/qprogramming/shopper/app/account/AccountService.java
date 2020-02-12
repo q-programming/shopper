@@ -242,7 +242,7 @@ public class AccountService implements UserDetailsService {
      * @param account account for which avatar is created
      * @param url     url from which avatar image will be fetched
      * @return new {@link Avatar}
-     * @throws MalformedURLException
+     * @throws MalformedURLException if avatar url is invalid
      */
     public Avatar createAvatar(Account account, String url) throws MalformedURLException {
         byte[] bytes = downloadFromUrl(new URL(url));
@@ -257,7 +257,6 @@ public class AccountService implements UserDetailsService {
      * @param account Account for which avatar is created
      * @param bytes   bytes containing avatar
      * @return new {@link Avatar}
-     * @throws IOException
      */
     public Avatar createAvatar(Account account, byte[] bytes) {
         Avatar avatar = new Avatar();
@@ -411,14 +410,23 @@ public class AccountService implements UserDetailsService {
     @Transactional
     public boolean deviceAuth(String key, Account account) {
         Set<Device> devices = account.getDevices();
-        return devices
-                .stream()
-                .filter(Device::isEnabled)
-                .anyMatch(device ->
-                        _accountPasswordEncoder.matches(key, device.getDeviceKey())
-                );
+        Optional<Device> optionalDevice = devices.stream().filter(Device::isEnabled).filter(device -> _accountPasswordEncoder.matches(key, device.getDeviceKey())).findFirst();
+        if (optionalDevice.isPresent()) {
+            Device device = optionalDevice.get();
+            device.setLastUsed(new Date());
+            _deviceRepository.save(device);
+            return true;
+        }
+        return false;
     }
 
+    /**
+     * Registers new device for given account
+     *
+     * @param account Account for which new device will be registered
+     * @param name    name of device
+     * @return new device ( not authorized yet)
+     */
     public NewDevice registerNewDevice(Account account, String name) {
         String deviceKey = generateRandomString(64);
         Device device = new Device();
@@ -429,5 +437,22 @@ public class AccountService implements UserDetailsService {
         account.getDevices().add(device);
         _accountRepository.save(account);
         return new NewDevice(device, deviceKey, account.getEmail());
+    }
+
+    /**
+     * Removes device with id from current account all registered devices
+     *
+     * @param id id of removed device
+     * @throws DeviceNotFoundException if device was not found or is not from current user
+     */
+    public void removeDevice(String id) throws DeviceNotFoundException, AccountNotFoundException {
+        Account account = findById(Utils.getCurrentAccountId());
+        Optional<Device> optionalDevice = _deviceRepository.findById(id);
+        if (!optionalDevice.isPresent() || account.getDevices().stream().noneMatch(dev -> id.equals(dev.getId()))) {
+            throw new DeviceNotFoundException("Device was not found or is not from current user for id:" + id);
+        }
+        Device device = optionalDevice.get();
+        account.getDevices().remove(device);
+        _deviceRepository.delete(device);
     }
 }

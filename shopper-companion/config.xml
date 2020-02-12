@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="https://q-programming.pl/shopper" version="1.0.1" viewmodes="maximized">
+    <access origin="*" subdomains="true"></access>
+    <tizen:application id="CXkUy2Z79u.ShopperCompanion" package="CXkUy2Z79u" required_version="3.0"/>
+    <author href="https://q-programming.pl" email="jakub.romaniszyn@gmail.com">Jakub Romaniszyn</author>
+    <tizen:background-category value="background-network"/>
+    <tizen:background-category value="sensor"/>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/screen.size.normal"/>
+    <feature name="tizen.org/feature/input.rotating_bezel"/>
+    <icon src="logo.png"/>
+    <name>Shopper Companion</name>
+    <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:privilege name="http://tizen.org/privilege/power"/>
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    <tizen:profile name="wearable"/>
+    <tizen:setting background-support="enable" encryption="disable" hwkey-event="enable"/>
+</widget>
