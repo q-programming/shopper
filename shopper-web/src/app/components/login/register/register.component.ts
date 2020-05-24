@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {environment} from "../../../../environments/environment";
+import {environment} from "@env/environment";
 import {
     AbstractControl,
     FormBuilder,
@@ -9,12 +9,12 @@ import {
     NgForm,
     Validators
 } from "@angular/forms";
-import {ErrorStateMatcher} from "@angular/material";
 import {Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {ApiService} from "@services/api.service";
 import {AlertService} from "@services/alert.service";
 import {AuthenticationService} from "@services/authentication.service";
+import {ErrorStateMatcher} from "@angular/material/core";
 
 @Component({
     selector: 'app-register',
@@ -25,7 +25,6 @@ export class RegisterComponent implements OnInit {
 
     baseForm: FormGroup;
     passwordForm: FormGroup;
-    myColors = ['#DD2C00', '#FF6D00', '#FFD600', '#AEEA00', '#00C853'];
     matcher = new MyErrorStateMatcher();
     currentPass;
 
@@ -79,7 +78,7 @@ export class RegisterComponent implements OnInit {
                 email: this.baseForm.controls.email.value,
                 password: this.passwordForm.controls.password.value,
                 confirmPassword: this.passwordForm.controls.confirmPassword.value,
-            }).subscribe(result => {
+            }).subscribe(() => {
                 this.alertSrv.success('app.register.success', {email: this.baseForm.controls.email.value});
                 this.router.navigate(['/login'])
             }, error => {

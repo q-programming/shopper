@@ -3,7 +3,6 @@ import {Account} from "@model/Account";
 import {NGXLogger} from "ngx-logger";
 import {ApiService} from "./api.service";
 import {AuthenticationService} from "./authentication.service";
-import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ListItem} from "@model/ListItem";
 import {environment} from "@env/environment";
 import {Observable} from "rxjs";
@@ -13,6 +12,7 @@ import {CategoryOption} from "@model/CategoryOption";
 import {Category} from "@model/Category";
 import {TranslateService} from "@ngx-translate/core";
 import {Product} from "@model/Product";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 
 @Injectable({
     providedIn: 'root'

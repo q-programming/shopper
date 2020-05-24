@@ -1,10 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {CategoryPreset} from "@model/CategoryPreset";
 import {ShoppingList} from "@model/ShoppingList";
 import * as _ from 'lodash';
 import {Account} from "@model/Account";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
 @Component({
     templateUrl: './shopping-list-dialog.component.html'

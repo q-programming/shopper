@@ -23,7 +23,7 @@
                   matTooltip="{{list.archived?'':('app.shopping.clicktoedit'| translate)}}">
             <!--TITLE-->
             <span *ngIf="list.archived" matTooltip="{{'app.shopping.archived'|translate}}">
-                <img class="v-middle" src="assets/images/box.svg" height="24">
+                <img alt="Archived lists" class="v-middle" height="24" src="assets/images/box.svg">
             </span>
             <span fxShow.xs="true" fxShow.gt-sm="false" [innerHtml]="list.name | trim:20"></span>
             <span fxShow.lt-md="false" class="shopper-font">
@@ -106,7 +106,7 @@
         </button>
     </mat-card>
     <div *ngIf="list" infinite-scroll
-         [infiniteScrollDistance]="1"
+         [infiniteScrollDistance]="2"
          (scrolled)="onScrollDown()">
         <!--ITEMS-->
         <ng-container *ngFor="let item of items;trackBy: trackByFn">
@@ -121,7 +121,7 @@
             </Item>
         </ng-container>
         <div *ngIf="!isMobile && isShow" (click)="openNewItemDialog()" class="add-item-button">
-            <img src="assets/images/plus.svg" class="add-list-icon" height="50"
+            <img alt="Add new item" class="add-list-icon" height="50" src="assets/images/plus.svg"
                  matTooltip="{{'app.item.add'|translate}}">
         </div>
     </div>

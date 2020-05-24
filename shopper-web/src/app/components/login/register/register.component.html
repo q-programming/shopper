@@ -1,7 +1,7 @@
 <mat-card class="text-center">
     <mat-card-title>
         <h4>
-            <img src="assets/images/logo.svg" height="50px" class="ml-2 v-middle">
+            <img alt="Shopper Logo" class="ml-2 v-middle" height="50px" src="assets/images/logo.svg">
             Shopper
         </h4>
     </mat-card-title>
@@ -66,11 +66,7 @@
                 <div fxFlex="40%">
                     <div>
                         <span fxShow.lt-sm="false">{{'app.register.password.strength'|translate}}</span>
-                        <ng2-password-strength-bar
-                                [passwordToCheck]="currentPass"
-                                [barColors]="myColors">
-                        </ng2-password-strength-bar>
-
+                        <password-strength-meter [password]="currentPass"></password-strength-meter>
                     </div>
                     <div>
                         <button mat-raised-button [disabled]="baseForm.invalid || passwordForm.invalid"

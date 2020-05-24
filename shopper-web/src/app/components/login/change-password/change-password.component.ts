@@ -4,7 +4,6 @@ import {MyErrorStateMatcher} from "../register/register.component";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ApiService} from "@services/api.service";
 import {AlertService} from "@services/alert.service";
-import {AuthenticationService} from "@services/authentication.service";
 import {environment} from "@env/environment";
 
 @Component({
@@ -16,7 +15,6 @@ export class ChangePasswordComponent implements OnInit {
 
 
     passwordForm: FormGroup;
-    myColors = ['#DD2C00', '#FF6D00', '#FFD600', '#AEEA00', '#00C853'];
     matcher = new MyErrorStateMatcher();
     currentPass;
     private token: string;
@@ -26,8 +24,7 @@ export class ChangePasswordComponent implements OnInit {
                 private formBuilder: FormBuilder,
                 private router: Router,
                 private apiSrv: ApiService,
-                private alertSrv: AlertService,
-                private authSrv: AuthenticationService) {
+                private alertSrv: AlertService) {
     }
 
     ngOnInit() {
@@ -59,7 +56,7 @@ export class ChangePasswordComponent implements OnInit {
             token: this.token,
             password: this.passwordForm.controls.password.value,
             confirmpassword: this.passwordForm.controls.confirmPassword.value,
-        }).subscribe((result) => {
+        }).subscribe(() => {
             this.alertSrv.success('app.password.change.success');
             this.router.navigate(['/login']);
         }, error => {
