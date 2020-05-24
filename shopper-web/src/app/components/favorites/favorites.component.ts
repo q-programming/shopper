@@ -121,7 +121,7 @@ export class FavoritesComponent implements OnInit {
         let item = new ListItem();
         item.product = product;
         this.filterControl.setValue('');
-        _.remove(this.favorites, (p) => p.id === product.id);
+        _.remove(this.limitedFavorites, (p) => p.id === product.id);
         this.api.postObject<ShoppingList>(environment.item_url + `/${this.listID}/add`, item).subscribe(result => {
             if (result) {
                 this.alertSrv.success("app.item.add.named.success", {name: product.name});
