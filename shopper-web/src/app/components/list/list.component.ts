@@ -303,7 +303,7 @@ export class ListComponent implements OnInit, OnDestroy {
                 this.sendWSRefresh();
                 this.loadItems();
             }
-        }, error => {
+        }, () => {
             this.alertSrv.error('app.shopping.update.fail');
         })
     }
@@ -372,7 +372,7 @@ export class ListComponent implements OnInit, OnDestroy {
                 this.alertSrv.success('app.shopping.name.success');
                 this.list.name = list.name;
                 this.sendWSRefresh();
-            }, error => {
+            }, () => {
                 this.alertSrv.error('app.shopping.name.fail')
             })
         }
@@ -390,7 +390,7 @@ export class ListComponent implements OnInit, OnDestroy {
                 this.alertSrv.success(msgKey);
                 this.sendWSRefresh();
             }
-        }, error => {
+        }, () => {
             let msgKey = archived ? 'app.shopping.unarchive.fail' : 'app.shopping.archive.fail';
             this.alertSrv.error(msgKey);
         }, () => {
@@ -421,7 +421,7 @@ export class ListComponent implements OnInit, OnDestroy {
     cleanup() {
         this.refreshPending = true;
         this.list.done = 0;
-        this.list.items.length = this.firstDoneIndex;
+        _.remove(this.list.items, (item) => item.done == true);
         this.items = this.list.items;
         this.alertSrv.undoable("app.shopping.cleanup").subscribe(undo => {
             if (undo !== undefined) {
@@ -474,6 +474,7 @@ export class ListComponent implements OnInit, OnDestroy {
             this.logger.debug(msg);
         };
         let that = this;
+        // noinspection JSUnusedLocalSymbols
         this.stompClient.connect({}, function (frame) {
             that.stompClient.subscribe(`/actions/${that.listID}`, (action) => {
                 let wsaction = JSON.parse(action.body) as WSAction;
