@@ -1,8 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ListItem} from "@model/ListItem";
 import {CategoryOption} from "@model/CategoryOption";
 import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
 @Component({
     templateUrl: './item-dialog.component.html',

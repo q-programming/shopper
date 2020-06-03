@@ -23,7 +23,7 @@
                   matTooltip="{{list.archived?'':('app.shopping.clicktoedit'| translate)}}">
             <!--TITLE-->
             <span *ngIf="list.archived" matTooltip="{{'app.shopping.archived'|translate}}">
-                <img class="v-middle" src="assets/images/box.svg" height="24">
+                <img alt="Archived lists" class="v-middle" height="24" src="assets/images/box.svg">
             </span>
             <span fxShow.xs="true" fxShow.gt-sm="false" [innerHtml]="list.name | trim:20"></span>
             <span fxShow.lt-md="false" class="shopper-font">
@@ -50,11 +50,11 @@
                         <mat-icon>refresh</mat-icon>
                         <span>{{'app.general.refresh'|translate}}</span>
                     </button>
-                    <button mat-menu-item (click)="shareListOpenDialog(list)">
+                    <button mat-menu-item (click)="shareListOpenDialog()">
                         <mat-icon>person</mat-icon>
                         <span>{{'app.shopping.share'|translate}}</span>
                     </button>
-                    <button mat-menu-item (click)="cleanup()" [disabled]="done.length==0">
+                    <button mat-menu-item (click)="cleanup()" [disabled]="list.done==0">
                         <mat-icon>delete_forever</mat-icon>
                         <span>{{'app.shopping.clear'|translate}}</span>
                     </button>
@@ -89,7 +89,7 @@
                           [matBadgeHidden]="sharedCount==0">person
                 </mat-icon>
             </button>
-            <span class="pull-right mr-2" fxShow.xs="false">{{done.length}}/{{list.items.length}}</span>
+            <span class="pull-right mr-2" fxShow.xs="false">{{list.done}}/{{list.items.length}}</span>
         </h2>
         <!--ITEMS DONE %-->
         <div class="m-plr-5">
@@ -99,13 +99,15 @@
     </div>
     <!--QUICK ADD AND REGULAR ADD-->
     <mat-card fxLayout="row" class="new-item" *ngIf="list && !list.archived">
-        <app-quickadd fxFlex="80" [listID]="listID" (created)="quickAdd($event)"></app-quickadd>
+        <quickadd fxFlex="80" [listID]="listID" (created)="quickAdd($event)"></quickadd>
         <span class="fill-remaining-space"></span>
         <button mat-icon-button class="mt-3" (click)="openNewItemDialog()" matTooltip="{{'app.item.add'|translate}}">
             <mat-icon class="new-item-button">add_circle_outline</mat-icon>
         </button>
     </mat-card>
-    <div>
+    <div *ngIf="list" infinite-scroll
+         [infiniteScrollDistance]="2"
+         (scrolled)="onScrollDown()">
         <!--ITEMS-->
         <ng-container *ngFor="let item of items;trackBy: trackByFn">
             <Item [item]="item"
@@ -118,19 +120,8 @@
             >
             </Item>
         </ng-container>
-        <!--DONE-->
-        <ng-container *ngFor="let item of done;trackBy: trackByFn">
-            <Item [item]="item"
-                  [categories]="categories"
-                  [archived]="list.archived"
-                  (toggle)="toggleItem($event)"
-                  (delete)="deleteItem($event)"
-                  (edit)="openEditItemDialog($event)"
-                  (updateCat)="updateCategory($event)"
-            ></Item>
-        </ng-container>
         <div *ngIf="!isMobile && isShow" (click)="openNewItemDialog()" class="add-item-button">
-            <img src="assets/images/plus.svg" class="add-list-icon" height="50"
+            <img alt="Add new item" class="add-list-icon" height="50" src="assets/images/plus.svg"
                  matTooltip="{{'app.item.add'|translate}}">
         </div>
     </div>

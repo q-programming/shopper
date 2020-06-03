@@ -16,7 +16,7 @@ import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
     styleUrls: ["./category-sorting-settings.component.css"]
 })
 export class CategorySortingSettingsComponent implements OnInit {
-    @ViewChild('orderingName', {static: false}) orderingNameInput;
+    @ViewChild('orderingName') orderingNameInput;
     categoryPresetControl: FormControl;
     presets: CategoryPreset[];
     preset: CategoryPreset;

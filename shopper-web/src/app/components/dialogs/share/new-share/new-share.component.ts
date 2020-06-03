@@ -4,11 +4,11 @@ import {ShoppingList} from "@model/ShoppingList";
 import {environment} from "@env/environment";
 import {ApiService} from "@services/api.service";
 import {AlertService} from "@services/alert.service";
-import {MatDialogRef} from "@angular/material";
 import {ShareComponent} from "../share.component";
 import {Account} from "@model/Account";
 import {debounceTime, finalize, switchMap, tap} from 'rxjs/operators';
 import {Observable} from "rxjs";
+import {MatDialogRef} from "@angular/material/dialog";
 
 @Component({
     selector: 'new-share',

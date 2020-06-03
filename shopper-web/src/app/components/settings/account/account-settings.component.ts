@@ -1,7 +1,6 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {Account} from "@model/Account";
 import {languages} from "../../../../assets/i18n/languages";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig} from "@angular/material";
 import {AuthenticationService} from "@services/authentication.service";
 import {ApiService} from "@services/api.service";
 import {NGXLogger} from "ngx-logger";
@@ -15,6 +14,7 @@ import {ItemService} from "@services/item.service";
 import {ConfirmDialog, ConfirmDialogComponent} from "../../dialogs/confirm/confirm-dialog.component";
 import {Router} from "@angular/router";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig} from "@angular/material/dialog";
 
 @Component({
     selector: 'settings-account',
@@ -26,7 +26,7 @@ export class AccountSettingsComponent implements OnInit {
     account: Account;
     avatarData: any = {};
     languages: any = languages;
-    isMobile:boolean;
+    isMobile: boolean;
 
     constructor(public dialog: MatDialog,
                 private authSrv: AuthenticationService,
@@ -118,7 +118,7 @@ export class AccountSettingsComponent implements OnInit {
 })
 export class AvatarUploadComponent implements OnInit {
 
-    @ViewChild('cropper', {static:true})
+    @ViewChild('cropper', {static: true})
     cropper: ImageCropperComponent;
     cropperSettings: CropperSettings;
     account: Account;

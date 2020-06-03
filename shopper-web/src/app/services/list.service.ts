@@ -7,11 +7,11 @@ import {ShoppingList} from "@model/ShoppingList";
 import {AvatarService} from "./avatar.service";
 import {AuthenticationService} from "./authentication.service";
 import {Account} from "@model/Account";
-import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ShoppingListDialogComponent} from "../components/dialogs/list/shopping-list-dialog.component";
 import {ShareComponent} from "../components/dialogs/share/share.component";
 import {AppSettings} from "@model/AppSettings";
 import {CategoryPreset} from "@model/CategoryPreset";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 
 @Injectable({
     providedIn: 'root'
@@ -84,7 +84,7 @@ export class ListService {
         })
     }
 
-    emitList(list:ShoppingList){
+    emitList(list: ShoppingList) {
         this.emitListSource.next(list);//tell any other subscriber that there was list loaded
     }
 
@@ -231,7 +231,6 @@ export class ListService {
      * Edit list name
      *
      * @param list list to be edited
-     * @param listName new list name
      */
     updateList(list: ShoppingList): Observable<ShoppingList> {
         return this.api.post(environment.list_url + `/edit`, list);

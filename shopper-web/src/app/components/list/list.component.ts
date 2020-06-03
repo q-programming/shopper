@@ -32,7 +32,7 @@ export class ListComponent implements OnInit, OnDestroy {
     listID: number;
     list: ShoppingList;
     items: ListItem[];
-    done: ListItem[];
+    firstDoneIndex: number;
     categories: CategoryOption[] = [];
     shareTooltip: string;
     listName: string;
@@ -44,6 +44,8 @@ export class ListComponent implements OnInit, OnDestroy {
     stompClient;
     menuSub: Subscription;
     isMobile: boolean;
+    public innerHeight: any;
+    limiter;
     ACTIONS = {
         [MenuAction.PENDING_REFRESH]: () => this.delayRefresh(),
         [MenuAction.REFRESH]: () => {
@@ -57,6 +59,9 @@ export class ListComponent implements OnInit, OnDestroy {
         [MenuAction.LEAVE]: () => this.leaveShared(),
         [MenuAction.COPY]: () => this.copyList(),
     };
+    SM_LIMIT = 20;
+    MD_LIMIT = 30;
+    XL_LIMIT = 40;
 
     constructor(private logger: NGXLogger,
                 private listSrv: ListService,
@@ -79,6 +84,9 @@ export class ListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.innerHeight = window.innerHeight;
+        this.limiter = this.initialLimiter();
+        console.log(this.limiter);
         this.menuSub = this.menuSrv.actionEmitted.subscribe(action => {
             if (this.ACTIONS.hasOwnProperty(action)) {
                 this.ACTIONS[action]()
@@ -101,6 +109,38 @@ export class ListComponent implements OnInit, OnDestroy {
         this.menuSub.unsubscribe();
     }
 
+    private initialLimiter() {
+        if (this.innerHeight < 1000) {
+            return this.SM_LIMIT;
+        } else if (1000 < this.innerHeight && this.innerHeight < 1300) {
+            return this.MD_LIMIT
+        } else {
+            return this.XL_LIMIT
+        }
+    }
+
+    @HostListener('window:resize', ['$event'])
+    onResize() {
+        this.innerHeight = window.innerHeight;
+        const newLimiter = this.initialLimiter();
+        if (newLimiter != this.limiter) {
+            this.limiter = newLimiter;
+            this.loadItems();
+        }
+    }
+
+    private loadItems() {
+        this.listSrv.getListByID(this.listID).subscribe(list => {
+            this.listName = list.name;
+            this.assignListWithSorting(list as ShoppingList);
+            //if list is shared with at least one account, init websocket
+            if (this.sharedCount > 0 && !this.stompClient) {
+                this.initializeWebSocketConnection();
+            }
+            this.isInProgress = false;
+        });
+    }
+
 
     private getSharedButtonTootlip() {
         if (this.sharedCount > 0) {
@@ -118,12 +158,48 @@ export class ListComponent implements OnInit, OnDestroy {
         if (!this.list.archived) {
             this.itemSrv.toggleItem(this.listID, item).subscribe((result) => {
                 if (result) {
-                    _.find(this.list.items, i => i.id === result.id).done = result.done;
-                    this.sortDoneNotDone();
+                    item.done = result.done;
+                    this.shiftToggledItem(item);
                     this.sendWSRefresh();
                     this.listSrv.emitList(this.list);
                 }
             })
+        }
+    }
+
+    /**
+     * When Item was marked as done/undone remve it from current items position, and move it to firstDoneIndex position
+     * If view has not loaded it yet ( for example on smaller device ) , just move it to global list.items instead
+     * @param item Item to be shifted
+     */
+    private shiftToggledItem(item: ListItem) {
+        const oldIndex = _.findIndex(this.items, it => it.id === item.id);
+        this.items.splice(oldIndex, 1);
+        //If view already passed not done/done border, index have to be searched again due to adding and removing
+        // from spliced items array
+        if (this.items.length >= this.firstDoneIndex) {
+            const firstDoneInItems = _.findIndex(this.items, it => it.done == true);
+            if (firstDoneInItems < 0) {
+                this.items.push(item)
+            } else {
+                this.items.splice(firstDoneInItems, 0, item);
+            }
+        } else {
+            this.list.items.splice(oldIndex, 1);
+            this.list.items.splice(this.firstDoneIndex, 0, item);
+        }
+        if (item.done) {
+            this.list.done++;
+        } else {
+            this.list.done--;
+        }
+        this.calcFirstDoneIndex();
+    }
+
+    private calcFirstDoneIndex() {
+        this.firstDoneIndex = (this.list.items.length - this.list.done);
+        if (this.firstDoneIndex > this.list.items.length - 1) {
+            this.firstDoneIndex--;
         }
     }
 
@@ -227,21 +303,9 @@ export class ListComponent implements OnInit, OnDestroy {
                 this.sendWSRefresh();
                 this.loadItems();
             }
-        }, error => {
+        }, () => {
             this.alertSrv.error('app.shopping.update.fail');
         })
-    }
-
-    private loadItems() {
-        this.listSrv.getListByID(this.listID).subscribe(list => {
-            this.listName = list.name;
-            this.assignListWithSorting(list as ShoppingList);
-            //if list is shared with at least one account, init websocket
-            if (this.sharedCount > 0 && !this.stompClient) {
-                this.initializeWebSocketConnection();
-            }
-            this.isInProgress = false;
-        });
     }
 
     /**
@@ -259,13 +323,30 @@ export class ListComponent implements OnInit, OnDestroy {
         this.list = list;
         this.sharedCount = list.shared.length;
         this.getSharedButtonTootlip();
-        this.sortDoneNotDone();
+        this.calcFirstDoneIndex();
+        this.items = this.list.items.slice(0, this.limiter);
     }
 
-    private sortDoneNotDone() {
-        this.done = _.filter(this.list.items, item => item.done);
-        this.items = _.difference(this.list.items, this.done);
-        this.list.done = this.done.length;
+    /**
+     * When there is scrolling event happening , more favorites should be added and rendered
+     * If limiter is greater than there are favorites, just equalize it to length, and stop adding more if it's the end of table
+     */
+    onScrollDown() {
+        // add another 20 items
+        const start = this.limiter;
+        this.limiter += 20;
+        if (this.limiter > this.list.items.length) {
+            this.limiter = this.list.items.length
+        }
+        if (this.limiter > start) {
+            this.appendItems(start, this.limiter);
+        }
+    }
+
+    private appendItems(startIndex, endIndex) {
+        for (let i = startIndex; i < endIndex; ++i) {
+            this.items.push(this.list.items[i]);
+        }
     }
 
     /**
@@ -291,7 +372,7 @@ export class ListComponent implements OnInit, OnDestroy {
                 this.alertSrv.success('app.shopping.name.success');
                 this.list.name = list.name;
                 this.sendWSRefresh();
-            }, error => {
+            }, () => {
                 this.alertSrv.error('app.shopping.name.fail')
             })
         }
@@ -309,7 +390,7 @@ export class ListComponent implements OnInit, OnDestroy {
                 this.alertSrv.success(msgKey);
                 this.sendWSRefresh();
             }
-        }, error => {
+        }, () => {
             let msgKey = archived ? 'app.shopping.unarchive.fail' : 'app.shopping.archive.fail';
             this.alertSrv.error(msgKey);
         }, () => {
@@ -339,9 +420,9 @@ export class ListComponent implements OnInit, OnDestroy {
      */
     cleanup() {
         this.refreshPending = true;
-        this.done = [];
         this.list.done = 0;
-        this.list.items = this.items;
+        _.remove(this.list.items, (item) => item.done == true);
+        this.items = this.list.items;
         this.alertSrv.undoable("app.shopping.cleanup").subscribe(undo => {
             if (undo !== undefined) {
                 if (!undo) {
@@ -359,7 +440,7 @@ export class ListComponent implements OnInit, OnDestroy {
     }
 
     get percentage() {
-        let percentage = this.list.items.length > 0 ? (this.done.length / this.list.items.length) * 100 : 0;
+        let percentage = this.list.items.length > 0 ? (this.list.done / this.list.items.length) * 100 : 0;
         return parseFloat(`${percentage}`).toFixed(2);
     }
 
@@ -393,6 +474,7 @@ export class ListComponent implements OnInit, OnDestroy {
             this.logger.debug(msg);
         };
         let that = this;
+        // noinspection JSUnusedLocalSymbols
         this.stompClient.connect({}, function (frame) {
             that.stompClient.subscribe(`/actions/${that.listID}`, (action) => {
                 let wsaction = JSON.parse(action.body) as WSAction;

@@ -5,7 +5,7 @@ import {ItemService} from "@services/item.service";
 import {ShoppingList} from "@model/ShoppingList";
 
 @Component({
-    selector: 'app-quickadd',
+    selector: 'quickadd',
     templateUrl: './quickadd.component.html',
     styles: []
 })

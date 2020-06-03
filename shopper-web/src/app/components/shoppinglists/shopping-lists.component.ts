@@ -7,9 +7,9 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ShoppingList} from "@model/ShoppingList";
 import {Account} from "@model/Account";
 import {NGXLogger} from "ngx-logger";
-import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ConfirmDialog, ConfirmDialogComponent} from "../dialogs/confirm/confirm-dialog.component";
 import {Subscription} from "rxjs";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 
 
 @Component({

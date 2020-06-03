@@ -120,6 +120,7 @@ public class ShoppingListService {
             if (!canView(shoppingList)) {
                 throw new ShoppingAccessException();
             }
+            shoppingList.setDone(shoppingList.getItems().stream().filter(ListItem::isDone).count());
             return shoppingList;
         }
         throw new ShoppingNotFoundException();
