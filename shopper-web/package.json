@@ -36,7 +36,7 @@
     "cryptiles": "^4.1.3",
     "font-awesome": "^4.7.0",
     "hammerjs": "^2.0.8",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "net": "^1.0.2",
     "ngx-device-detector": "^1.4.2",
     "ngx-img-cropper": "^9.0.1",
