@@ -57,7 +57,8 @@ export class ItemComponent implements OnInit {
     ngOnInit() {
     }
 
-    toggleItem(item: ListItem) {
+    toggleItem(item: ListItem, event: MouseEvent) {
+        event.preventDefault();
         this.toggle.emit(item);
     }
 

@@ -1,5 +1,4 @@
 import {Component, Inject, OnInit} from '@angular/core';
-
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {CategoryPreset} from "@model/CategoryPreset";
 import {ShoppingList} from "@model/ShoppingList";

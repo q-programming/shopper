@@ -1,7 +1,7 @@
 Shopper
 =========================================
 ![Build , Test and Publish](https://github.com/q-programming/shopper/workflows/Build/badge.svg)
-[![codecov](https://codecov.io/gh/q-programming/shopper/branch/master/graph/badge.svg)](https://codecov.io/gh/q-programming/shopper)
+[![codecov](https://codecov.io/gh/q-programming/shopper/graph/badge.svg)](https://codecov.io/gh/q-programming/shopper)
 
 About
 ---

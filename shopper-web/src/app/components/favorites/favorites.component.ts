@@ -104,6 +104,7 @@ export class FavoritesComponent implements OnInit {
 
     private removeFavorite(product: Product) {
         _.remove(this.favorites, (p) => p.id === product.id);
+        _.remove(this.limitedFavorites, (p) => p.id === product.id);
         this.alertSrv.undoable("app.item.remove.favorites.success", {name: product.name}).subscribe(undo => {
             if (undo !== undefined) {
                 if (undo) {
