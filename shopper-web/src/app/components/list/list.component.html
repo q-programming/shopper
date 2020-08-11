@@ -105,9 +105,10 @@
             <mat-icon class="new-item-button">add_circle_outline</mat-icon>
         </button>
     </mat-card>
+    <!--    Overflow anchor disabled to prevent Chrome from messing around with toggled items-->
     <div *ngIf="list" infinite-scroll
          [infiniteScrollDistance]="2"
-         (scrolled)="onScrollDown()">
+         (scrolled)="onScrollDown()" style="overflow-anchor:none">
         <!--ITEMS-->
         <ng-container *ngFor="let item of items;trackBy: trackByFn">
             <Item [item]="item"
