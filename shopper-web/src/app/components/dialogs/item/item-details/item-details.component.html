@@ -4,9 +4,9 @@
             <!--            PRODUCT-->
             <mat-form-field class="" fxFlex="70">
                 <img [src]='"assets/images/spacer.png"' class="mr-2" matPrefix alt="spacer">
-                <input id="productInput" #product matInput placeholder="{{'app.item.product'|translate}}"
+                <input id="productInput" matInput placeholder="{{'app.item.product'|translate}}"
                        [matAutocomplete]="favAutocomplete" autocomplete="off"
-                       (click)="product.select()" cdkFocusRegionstart formControlName="product" required
+                       cdkFocusRegionstart formControlName="product" required
                        (blur)="tryToGetQuantity()">
                 <mat-error *ngIf="form.value.product.invalid"></mat-error>
                 <mat-autocomplete #favAutocomplete="matAutocomplete" [autoActiveFirstOption]>
