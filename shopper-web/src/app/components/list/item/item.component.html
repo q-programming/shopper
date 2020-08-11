@@ -1,13 +1,13 @@
 <mat-card fxLayout="row" [ngClass]="{'item':true,'done':item.done}">
     <ng-container *ngIf="isMobile">
         <button mat-icon-button class="item-checkbox" *ngIf="!currentAccount.righcheckbox"
-                (click)="toggleItem(item,$event)" [disabled]="archived">
+                (click)="toggleItem(item)" [disabled]="archived">
             <mat-icon *ngIf="!item.done" class="item-checkbox-icon">check_box_outline_blank</mat-icon>
             <mat-icon *ngIf="item.done" class="large-icon">check</mat-icon>
         </button>
     </ng-container>
     <ng-container *ngIf="!isMobile">
-        <button mat-icon-button class="item-checkbox" (click)="toggleItem(item,$event)" [disabled]="archived">
+        <button (click)="toggleItem(item)" [disabled]="archived" class="item-checkbox" mat-icon-button>
             <mat-icon *ngIf="!item.done" class="item-checkbox-icon">check_box_outline_blank</mat-icon>
             <mat-icon *ngIf="item.done" class="large-icon">check</mat-icon>
         </button>
@@ -33,22 +33,22 @@
     <ng-container *ngIf="!item.done">
         <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="{{item.category | translate}}"
                 [disabled]="archived">
-            <img [src]='"assets/images/categories/"+ item.category + ".png"' class="category">
+            <img [src]='"assets/images/categories/"+ item.category + ".png"' alt="{{item.category}}" class="category">
         </button>
     </ng-container>
     <ng-container *ngIf="item.done">
         <button mat-icon-button [disabled]="archived">
-            <img [src]='"assets/images/categories/"+ item.category + ".png"' class="category">
+            <img [src]='"assets/images/categories/"+ item.category + ".png"' alt="{{item.category}}" class="category">
         </button>
     </ng-container>
     <button mat-icon-button class="item-checkbox" *ngIf="currentAccount.righcheckbox && isMobile"
-            (click)="toggleItem(item,$event)" [disabled]="archived">
+            (click)="toggleItem(item)" [disabled]="archived">
         <mat-icon *ngIf="!item.done" class="item-checkbox-icon">check_box_outline_blank</mat-icon>
         <mat-icon *ngIf="item.done" class="large-icon">check</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
         <button *ngFor="let cat of categories" mat-menu-item (click)="updateCategory(item,cat.category)">
-            <img [src]='"assets/images/categories/"+ cat.category + ".png"' class="category">
+            <img [src]='"assets/images/categories/"+ cat.category + ".png"' alt="{{item.category}}" class="category">
             {{cat.name}}
         </button>
     </mat-menu>
