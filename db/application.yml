@@ -25,8 +25,8 @@ spring:
     default-encoding: UTF-8
   datasource:
     url: jdbc:postgresql://localhost:5432/shopper
-    username: shopper
-    password: ChangeYourPassword
+    username: postgres
+    password: password
   social:
     facebook:
       app-id: 1750703375258695

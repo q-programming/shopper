@@ -1,13 +1,13 @@
 <mat-card fxLayout="row" [ngClass]="{'item':true,'done':item.done}">
     <ng-container *ngIf="isMobile">
         <button mat-icon-button class="item-checkbox" *ngIf="!currentAccount.righcheckbox"
-                (click)="toggleItem(item)" [disabled]="archived">
+                (click)="toggleItem(item,$event)" [disabled]="archived">
             <mat-icon *ngIf="!item.done" class="item-checkbox-icon">check_box_outline_blank</mat-icon>
             <mat-icon *ngIf="item.done" class="large-icon">check</mat-icon>
         </button>
     </ng-container>
     <ng-container *ngIf="!isMobile">
-        <button mat-icon-button class="item-checkbox" (click)="toggleItem(item)" [disabled]="archived">
+        <button mat-icon-button class="item-checkbox" (click)="toggleItem(item,$event)" [disabled]="archived">
             <mat-icon *ngIf="!item.done" class="item-checkbox-icon">check_box_outline_blank</mat-icon>
             <mat-icon *ngIf="item.done" class="large-icon">check</mat-icon>
         </button>
@@ -42,7 +42,7 @@
         </button>
     </ng-container>
     <button mat-icon-button class="item-checkbox" *ngIf="currentAccount.righcheckbox && isMobile"
-            (click)="toggleItem(item)" [disabled]="archived">
+            (click)="toggleItem(item,$event)" [disabled]="archived">
         <mat-icon *ngIf="!item.done" class="item-checkbox-icon">check_box_outline_blank</mat-icon>
         <mat-icon *ngIf="item.done" class="large-icon">check</mat-icon>
     </button>

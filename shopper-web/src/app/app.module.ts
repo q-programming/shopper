@@ -57,6 +57,7 @@ import {EnHelpComponent} from './components/help/en/en-help.component';
 import {PlHelpComponent} from './components/help/pl/pl-help.component';
 import {ScrollToModule} from "@nicky-lenaers/ngx-scroll-to";
 import {RegisterComponent} from './components/login/register/register.component';
+import {Ng9PasswordStrengthBarModule} from "ng9-password-strength-bar";
 import {ErrorComponent} from './components/error/error.component';
 import {SuccessComponent} from "./components/success/success.component";
 import {DragDropModule} from "@angular/cdk/drag-drop";
@@ -70,7 +71,6 @@ import {BackdropComponent} from './components/menu/backdrop/backdrop.component';
 import {ItemComponent} from './components/list/item/item.component';
 import {InnerLoaderComponent} from './components/inner-loader/inner-loader.component';
 import {DevicesComponent} from './components/settings/devices/devices/devices.component';
-import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
 
 
 export function initUserFactory(authService: AuthenticationService) {
@@ -157,7 +157,7 @@ export function initUserFactory(authService: AuthenticationService) {
         LayoutModule,
         NgxMatSelectSearchModule,
         ScrollToModule.forRoot(),
-        PasswordStrengthMeterModule,
+        Ng9PasswordStrengthBarModule,
         DeviceDetectorModule.forRoot()
     ],
     schemas: [NO_ERRORS_SCHEMA],
