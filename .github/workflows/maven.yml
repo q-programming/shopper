@@ -16,9 +16,9 @@ jobs:
           ${{ runner.os }}-maven-
           
     - name: Setup Node.js
-      uses: actions/setup-node@v1.1.0
+      uses: actions/setup-node@v2.1.5
       with:
-        version: 12
+        node-version: 12.x
 
     - name: Install Angular-CLI
       run: npm install --unsafe-perm -g @angular/cli        
