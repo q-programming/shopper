@@ -8,6 +8,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {AlertService} from "./alert.service";
 import {NGXLogger} from "ngx-logger";
 import {Observable} from "rxjs";
+import {map} from 'rxjs/operators';
 import {Product} from "@model/Product";
 
 @Injectable()
@@ -60,17 +61,19 @@ export class AuthenticationService {
      */
     logout() {
         return this.apiService.post(environment.logout_url, {})
-            .map(() => {
-                sessionStorage.clear();
-                this.currentAccount = null;
-            });
+            .pipe(
+                map(() => {
+                    sessionStorage.clear();
+                    this.currentAccount = null;
+                })
+            );
     }
 
     /**
      * Return currently logged in account information
      */
     getMyInfo() {
-        return this.apiService.post(environment.whoami_url, {},).map(account => this.currentAccount = account);
+        return this.apiService.post(environment.whoami_url, {},).pipe(map(account => this.currentAccount = account));
     }
 
     /**

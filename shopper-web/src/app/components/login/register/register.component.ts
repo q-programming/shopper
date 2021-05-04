@@ -15,6 +15,7 @@ import {ApiService} from "@services/api.service";
 import {AlertService} from "@services/alert.service";
 import {AuthenticationService} from "@services/authentication.service";
 import {ErrorStateMatcher} from "@angular/material/core";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 
 @Component({
     selector: 'app-register',
@@ -52,8 +53,9 @@ export class RegisterComponent implements OnInit {
             confirmPassword: [null, [Validators.required]]
         }, {validator: this.matchingPasswords});
         this.passwordForm.controls.password.valueChanges
-            .debounceTime(100)
-            .distinctUntilChanged()
+            .pipe(
+                debounceTime(100),
+                distinctUntilChanged())
             .subscribe(value => {
                 this.currentPass = value;
             });
