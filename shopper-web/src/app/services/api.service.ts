@@ -61,8 +61,8 @@ export class ApiService {
     }
 
 
-    post(path: string, body: any, customHeaders?: HttpHeaders): Observable<any> {
-        return this.request(path, body, RequestMethod.Post, customHeaders);
+    post(path: string, body: any, customHeaders?: HttpHeaders, showAlerts: boolean = true): Observable<any> {
+        return this.request(path, body, RequestMethod.Post, customHeaders, showAlerts);
     }
 
     put(path: string, body: any): Observable<any> {
@@ -85,11 +85,11 @@ export class ApiService {
             .catch(error => this.checkError(error));
     }
 
-    private request(path: string, body: any, method = RequestMethod.Post, custemHeaders?: HttpHeaders): Observable<any> {
+    private request(path: string, body: any, method = RequestMethod.Post, customHeaders?: HttpHeaders, showAlerts: boolean = true): Observable<any> {
         this.progress.start();
         path = environment.context + path;
         const req = new HttpRequest(method, path, body, {
-            headers: custemHeaders || this.headers,
+            headers: customHeaders || this.headers,
             withCredentials: true
         });
 
@@ -101,21 +101,23 @@ export class ApiService {
             })
             .catch(error => {
                 this.progress.complete();
-                return this.checkError(error)
+                return this.checkError(error, showAlerts)
             });
     }
 
     // Display error if logged in, otherwise redirect to IDP
-    private checkError(error: any): any {
-        if (error && error.status === 401) {
-            this.alertSrv.error('app.api.error.unauthorized');
-            // this.redirectIfUnauth(error);
-        } else if (error && error.status === 404) {
-            this.alertSrv.error('app.api.error.notfound');
-        } else if (error && error.status === 403) {
-            this.alertSrv.error('app.api.error.unauthorized');
-            //TODO redirect to login?
-        } else if (error && error.status === 503) {
+    private checkError(error: any, showAlerts: boolean = true): any {
+        this.progress.complete();
+        if (showAlerts) {
+            if (error && error.status === 401) {
+                this.alertSrv.error('error.api.unauthorized');
+                // this.redirectIfUnauth(error);
+            } else if (error && error.status === 404) {
+                this.alertSrv.error('error.api.notfound');
+            } else if (error && error.status === 403) {
+                this.alertSrv.error('error.api.unauthorized');
+            } else if (error && error.status === 503) {
+            }
         }
         throw error;
     }

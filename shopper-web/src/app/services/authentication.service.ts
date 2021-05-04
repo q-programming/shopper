@@ -88,7 +88,7 @@ export class AuthenticationService {
             this.apiService.post(environment.auth_url, {
                 username: username,
                 password: password
-            }).subscribe((res) => {
+            }, null, false).subscribe((res) => {
                 if (res.access_token !== null) {
                     this.getMyInfo().subscribe(user => {
                         this.currentAccount = user as Account;

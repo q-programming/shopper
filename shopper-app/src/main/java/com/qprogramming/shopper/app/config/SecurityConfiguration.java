@@ -124,10 +124,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .anyRequest()
                     .authenticated()
                 //social auth
-                .and().addFilterBefore(ssoFilters(), BasicAuthenticationFilter.class)
+                .and()
+                    .addFilterBefore(ssoFilters(), BasicAuthenticationFilter.class)
                     .authorizeRequests()
-                    .anyRequest()
-                    .authenticated()
                 //basic auth rest auth
                 .and()
                     .addFilterBefore(basicRestAuthenticationFilter(),BasicAuthenticationFilter.class)

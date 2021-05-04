@@ -1,8 +1,8 @@
 package com.qprogramming.shopper.app.items.product;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qprogramming.shopper.app.items.category.Category;
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 import javax.persistence.*;
 import java.util.Collections;
