@@ -1,18 +1,19 @@
+@use '~@angular/material' as mat;
 @import '~@angular/material/theming';
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Kalam');
 
-@include mat-core();
-$primary: mat-palette($mat-indigo, 500);
-$accent: mat-palette($mat-blue, 900);
-$theme: mat-light-theme($primary, $accent);
-@include angular-material-theme($theme);
+@include mat.core();
+$primary: mat.define-palette(mat.$indigo-palette, 500);
+$accent: mat.define-palette(mat.$blue-palette, 900);
+$theme: mat.define-light-theme($primary, $accent);
+@include mat.all-component-themes($theme);
 
-$general-typography: mat-typography-config(
+$general-typography: mat.define-typography-config(
         $font-family: '"Kalam", "Roboto", sans-serif',
-        $body-2: mat-typography-level(14px, 24px, 600)
+        $body-2: mat.define-typography-level(14px, 24px, 600)
 );
 
-@include mat-core($general-typography);
+@include mat.core($general-typography);
 
 body {
   font-family: 'Kalam', cursive;

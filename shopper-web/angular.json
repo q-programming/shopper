@@ -11,6 +11,11 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "lodash",
+              "sockjs-client",
+              "stompjs"
+            ],
             "aot": true,
             "outputPath": "dist",
             "index": "src/index.html",
@@ -30,8 +35,7 @@
               "src/material-theme.scss"
             ],
             "scripts": [
-              "node_modules/chart.js/dist/Chart.js",
-              "node_modules/hammerjs/hammer.min.js"
+              "node_modules/chart.js/dist/Chart.js"
             ]
           },
           "configurations": {
@@ -84,8 +88,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [
-              "node_modules/chart.js/dist/Chart.js",
-              "node_modules/hammerjs/hammer.min.js"
+              "node_modules/chart.js/dist/Chart.js"
             ],
             "styles": [
               "node_modules/font-awesome/scss/font-awesome.scss",

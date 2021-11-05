@@ -26,7 +26,6 @@ export class RegisterComponent implements OnInit {
 
     baseForm: FormGroup;
     passwordForm: FormGroup;
-    myColors = ['#DD2C00', '#FF6D00', '#FFD600', '#AEEA00', '#00C853'];
     matcher = new MyErrorStateMatcher();
     currentPass;
 

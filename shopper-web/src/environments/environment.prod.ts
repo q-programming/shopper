@@ -1,5 +1,5 @@
 import {NgxLoggerLevel} from "ngx-logger";
-import {version} from "../../package.json";
+import packageInfo from "../../package.json";
 
 
 export const environment = {
@@ -29,5 +29,5 @@ export const environment = {
     config_url: '/api/config',
     ws_ur: '/ws',
     ws_send_url: '/ws/send/',
-    version: version,
+    version: packageInfo.version,
 };

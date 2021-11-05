@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {NGXLogger} from "ngx-logger";
 import {ApiService} from "./api.service";
-import {Observable, Subject} from "rxjs";
-import {EmptyObservable} from "rxjs/observable/EmptyObservable";
+import {EMPTY, Observable, Subject} from "rxjs";
 import {environment} from "@env/environment";
 import {ShoppingList} from "@model/ShoppingList";
 import {AvatarService} from "./avatar.service";
@@ -140,7 +139,7 @@ export class ListService {
                 });
             });
         } else {
-            return new EmptyObservable<ShoppingList>()
+            return EMPTY;
         }
     }
 
@@ -179,7 +178,7 @@ export class ListService {
                 });
             });
         } else {
-            return new EmptyObservable<ShoppingList>()
+            return EMPTY
         }
     }
 
@@ -207,7 +206,7 @@ export class ListService {
                 });
             });
         } else {
-            return new EmptyObservable<boolean>()
+            return EMPTY;
         }
     }
 

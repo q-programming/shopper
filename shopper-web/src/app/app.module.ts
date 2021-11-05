@@ -66,8 +66,6 @@ import {BackdropComponent} from './components/menu/backdrop/backdrop.component';
 import {ItemComponent} from './components/list/item/item.component';
 import {InnerLoaderComponent} from './components/inner-loader/inner-loader.component';
 import {DevicesComponent} from './components/settings/devices/devices/devices.component';
-import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
-
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -150,7 +148,6 @@ export function initUserFactory(authService: AuthenticationService) {
         }),
         LayoutModule,
         NgxMatSelectSearchModule,
-        PasswordStrengthMeterModule,
     ],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [

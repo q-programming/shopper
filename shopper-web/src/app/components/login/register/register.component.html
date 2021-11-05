@@ -68,10 +68,6 @@
             <div fxLayout="row" fxLayoutAlign="center center" class="text-left mt-3">
                 <div fxFlex="40%">
                     <div>
-                        <span fxShow.lt-sm="false">{{'app.register.password.strength'|translate}}</span>
-                        <password-strength-meter [password]="currentPass"></password-strength-meter>
-                    </div>
-                    <div>
                         <button mat-raised-button [disabled]="baseForm.invalid || passwordForm.invalid"
                                 (click)="register()"
                                 class="pull-right success-button">

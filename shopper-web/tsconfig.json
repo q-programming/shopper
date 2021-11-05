@@ -19,6 +19,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "target": "es2018",
