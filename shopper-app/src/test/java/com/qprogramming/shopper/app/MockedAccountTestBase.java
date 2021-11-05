@@ -2,7 +2,7 @@ package com.qprogramming.shopper.app;
 
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.config.MockSecurityContext;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.Authentication;
@@ -22,7 +22,7 @@ public class MockedAccountTestBase {
     protected MockMvc mvc;
 
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         testAccount = TestUtil.createAccount();

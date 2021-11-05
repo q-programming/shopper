@@ -15,8 +15,9 @@ import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,8 +30,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -61,15 +61,9 @@ public class AccountServiceTest extends MockedAccountTestBase {
 
     private AccountService accountService;
 
-
-    @Before
-    @Override
-    public void setup() {
+    @BeforeEach
+    void setUp() {
         super.setup();
-    }
-
-    @Before
-    public void setUp() {
         accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock, accountEventRepositoryMock, deviceRepositoryMock, mailServiceMock) {
             @Override
             protected byte[] downloadFromUrl(URL url) {
@@ -77,7 +71,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
                 try (InputStream avatarFile = loader.getResourceAsStream(STATIC_AVATAR_PLACEHOLDER)) {
                     return IOUtils.toByteArray(avatarFile);
                 } catch (IOException e) {
-                    fail();
+                    Assertions.fail();
                 }
                 return new byte[0];
             }
@@ -85,31 +79,31 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void createOAuthAdminAccountTest() {
+    void createOAuthAdminAccountTest() {
         Account account = TestUtil.createAccount();
         account.setLanguage("");
         when(authorityServiceMock.findByRole(Role.ROLE_USER)).thenReturn(TestUtil.createUserAuthority());
         when(authorityServiceMock.findByRole(Role.ROLE_ADMIN)).thenReturn(TestUtil.createAdminAuthority());
         when(accountRepositoryMock.findAll()).thenReturn(Collections.emptyList());
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
-        Account result = accountService.createAcount(account);
+        Account result = accountService.createAccount(account);
         assertThat(result.getIsAdmin()).isTrue();
         verify(accountRepositoryMock, times(1)).save(any(Account.class));
     }
 
     @Test
-    public void createOAuthLocalAccountTest() {
+    void createOAuthLocalAccountTest() {
         Account account = TestUtil.createAccount();
         when(accountRepositoryMock.findAll()).thenReturn(Collections.singletonList(testAccount));
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
         when(authorityServiceMock.findByRole(Role.ROLE_USER)).thenReturn(TestUtil.createUserAuthority());
-        Account result = accountService.createAcount(account);
+        Account result = accountService.createAccount(account);
         assertThat(result.getIsUser()).isTrue();
         verify(accountRepositoryMock, times(1)).save(any(Account.class));
     }
 
     @Test
-    public void generateIDFails2TimesTest() {
+    void generateIDFails2TimesTest() {
         Optional<Account> account1 = Optional.of(TestUtil.createAccount());
         Optional<Account> account2 = Optional.of(TestUtil.createAccount());
 
@@ -122,32 +116,32 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void loadUserByUsernameTest() {
-        when(accountRepositoryMock.findOneByUsername(testAccount.getUsername())).thenReturn(testAccount);
+    void loadUserByUsernameTest() {
+        when(accountRepositoryMock.findOneByUsername(testAccount.getUsername())).thenReturn(Optional.of(testAccount));
         Account userDetails = accountService.loadUserByUsername(testAccount.getUsername());
-        assertEquals(userDetails, testAccount);
-    }
-
-    @Test(expected = UsernameNotFoundException.class)
-    public void loadUserByUsernameNotFoundTest() {
-        accountService.loadUserByUsername(testAccount.getUsername());
+        Assertions.assertEquals(userDetails, testAccount);
     }
 
     @Test
-    public void signInTest() {
+    void loadUserByUsernameNotFoundTest() {
+        assertThrows(UsernameNotFoundException.class, () -> accountService.loadUserByUsername(testAccount.getUsername()));
+    }
+
+    @Test
+    void signInTest() {
         accountService.signin(testAccount);
         verify(securityMock, times(1)).setAuthentication(any(UsernamePasswordAuthenticationToken.class));
     }
 
     @Test
-    public void getAccountAvatarTest() {
+    void getAccountAvatarTest() {
         when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(new Avatar());
         Avatar accountAvatar = accountService.getAccountAvatar(testAccount);
         assertThat(accountAvatar).isNotNull();
     }
 
     @Test
-    public void createAvatarTest() throws Exception {
+    void createAvatarTest() throws Exception {
         ClassLoader loader = this.getClass().getClassLoader();
         try (InputStream avatarFile = loader.getResourceAsStream(STATIC_IMAGES_LOGO_WHITE_PNG)) {
             accountService.updateAvatar(testAccount, IOUtils.toByteArray(avatarFile));
@@ -156,7 +150,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void createAvatarUknownTypeTest() {
+    void createAvatarUknownTypeTest() {
         ClassLoader loader = this.getClass().getClassLoader();
         accountService.updateAvatar(testAccount, STATIC_IMAGES_LOGO_WHITE_PNG.getBytes());
         verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
@@ -164,7 +158,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
 
 
     @Test
-    public void updateAvatarTest() throws Exception {
+    void updateAvatarTest() throws Exception {
         ClassLoader loader = this.getClass().getClassLoader();
         try (InputStream avatarFile = loader.getResourceAsStream(STATIC_IMAGES_LOGO_WHITE_PNG)) {
             when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(new Avatar());
@@ -173,19 +167,19 @@ public class AccountServiceTest extends MockedAccountTestBase {
         }
     }
 
-    @Test(expected = IOException.class)
-    public void createAvatarFromUrlErrorTest() throws Exception {
-        accountService.createAvatar(testAccount, STATIC_IMAGES_LOGO_WHITE_PNG);
+    @Test
+    void createAvatarFromUrlErrorTest() {
+        assertThrows(IOException.class, () -> accountService.createAvatar(testAccount, STATIC_IMAGES_LOGO_WHITE_PNG));
     }
 
     @Test
-    public void createAvatarFromUrlTest() throws Exception {
+    void createAvatarFromUrlTest() throws Exception {
         accountService.createAvatar(testAccount, "http://google.com");
         verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
     }
 
     @Test
-    public void registerNewDeviceTest() {
+    void registerNewDeviceTest() {
         when(deviceRepositoryMock.save(any(Device.class))).then(returnsFirstArg());
         when(deviceRepositoryMock.findById(anyString()))
                 .thenReturn(Optional.of(new Device()))
@@ -196,17 +190,16 @@ public class AccountServiceTest extends MockedAccountTestBase {
         assertThat(newDevice.getPlainKey()).isNotBlank();
     }
 
-    @Test(expected = DeviceNotFoundException.class)
-    public void removeDeviceNotPresentTest() throws DeviceNotFoundException, AccountNotFoundException {
+    @Test
+    void removeDeviceNotPresentTest() {
         when(accountRepositoryMock.findOneById(testAccount.getId())).thenReturn(Optional.of(testAccount));
         when(deviceRepositoryMock.findById(anyString()))
                 .thenReturn(Optional.empty());
-        accountService.removeDevice("1");
-        fail("Exception was not thrown");
+        assertThrows(DeviceNotFoundException.class, () -> accountService.removeDevice("1"));
     }
 
-    @Test(expected = DeviceNotFoundException.class)
-    public void removeDeviceNotOwnerTest() throws Exception {
+    @Test
+    void removeDeviceNotOwnerTest() {
         Device device = new Device();
         device.setId("1");
         device.setDeviceKey("key");
@@ -214,12 +207,11 @@ public class AccountServiceTest extends MockedAccountTestBase {
         when(accountRepositoryMock.findOneById(testAccount.getId())).thenReturn(Optional.of(testAccount));
         when(deviceRepositoryMock.findById("1"))
                 .thenReturn(Optional.of(device));
-        accountService.removeDevice("1");
-        fail("Exception was not thrown");
+        assertThrows(DeviceNotFoundException.class, () -> accountService.removeDevice("1"));
     }
 
     @Test()
-    public void removeDeviceSuccessTest() throws DeviceNotFoundException, AccountNotFoundException {
+    void removeDeviceSuccessTest() throws DeviceNotFoundException, AccountNotFoundException {
         Device device = new Device();
         device.setId("1");
         device.setDeviceKey("key");
@@ -233,7 +225,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void deviceAuthSuccessTest() {
+    void deviceAuthSuccessTest() {
         String deviceKey = "DeviceKey";
         Device device = new Device();
         device.setEnabled(true);
@@ -245,7 +237,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void deviceAuthFailedTest() {
+    void deviceAuthFailedTest() {
         String deviceKey = "DeviceKey";
         Device device = new Device();
         device.setEnabled(true);
@@ -256,24 +248,25 @@ public class AccountServiceTest extends MockedAccountTestBase {
         assertThat(result).isFalse();
     }
 
-    @Test(expected = DeviceNotFoundException.class)
-    public void confirmDeviceFailedTest() throws DeviceNotFoundException {
-        accountService.confirmDevice(testAccount, "ID");
+    @Test
+    void confirmDeviceFailedTest() {
+        assertThrows(DeviceNotFoundException.class, () -> accountService.confirmDevice(testAccount, "ID"));
+
     }
 
-    @Test(expected = DeviceNotFoundException.class)
-    public void confirmDeviceNotFoundFailedTest() throws DeviceNotFoundException {
+    @Test
+    void confirmDeviceNotFoundFailedTest() {
         String deviceKey = "DeviceKey";
         Device device = new Device();
         device.setEnabled(false);
         device.setId(deviceKey);
         testAccount.getDevices().add(device);
-        accountService.confirmDevice(testAccount, "ID");
+        assertThrows(DeviceNotFoundException.class, () -> accountService.confirmDevice(testAccount, "ID"));
     }
 
 
     @Test
-    public void confirmDeviceSuccessTest() throws DeviceNotFoundException {
+    void confirmDeviceSuccessTest() throws DeviceNotFoundException {
         String deviceKey = "DeviceKey";
         Device device = new Device();
         device.setEnabled(false);

@@ -8,7 +8,7 @@ import {ShoppingList} from "@model/ShoppingList";
 import {ListItem} from "@model/ListItem";
 import {Observable} from "rxjs";
 import {FormControl} from "@angular/forms";
-import {map} from "rxjs/operators";
+import {distinctUntilChanged, map, startWith} from "rxjs/operators";
 import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
 
 @Component({
@@ -80,12 +80,14 @@ export class FavoritesComponent implements OnInit {
 
     private initFilteredFavorites() {
         this.filteredProducts = this.filterControl.valueChanges
-            .distinctUntilChanged()
-            .startWith('')
             .pipe(
+                distinctUntilChanged(),
+                startWith(''),
                 map(value => {
-                    this.filter = value;
-                    return this._filter(value);
+                    if (typeof value === "string") {
+                        this.filter = value;
+                        return this._filter(value);
+                    }
                 }));
     }
 

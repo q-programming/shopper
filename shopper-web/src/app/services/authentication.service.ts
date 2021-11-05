@@ -87,23 +87,21 @@ export class AuthenticationService {
     }
 
     login(username: string, password: string): Observable<any> {
+        const body = new URLSearchParams();
+        body.set('username', username);
+        body.set('password', password);
         return new Observable((observable) => {
-            this.apiService.post(environment.auth_url, {
-                username: username,
-                password: password
-            }, null, false).subscribe((res) => {
-                if (res.access_token !== null) {
-                    this.getMyInfo().subscribe(user => {
-                        this.currentAccount = user as Account;
-                        this.avatarSrv.getUserAvatar(this.currentAccount).subscribe(avatar => {
-                            this.currentAccount.avatar = avatar;
-                            observable.next(this.currentAccount);
-                            observable.complete();
-                        });
-                        // this.avatarSrv.getUserAvatar(this.currentAccount);
-                        this.translate.use(this.currentAccount.language);
-                    })
-                }
+            this.apiService.login(environment.login_url, body).subscribe(() => {
+                this.getMyInfo().subscribe(user => {
+                    this.currentAccount = user as Account;
+                    this.avatarSrv.getUserAvatar(this.currentAccount).subscribe(avatar => {
+                        this.currentAccount.avatar = avatar;
+                        observable.next(this.currentAccount);
+                        observable.complete();
+                    });
+                    // this.avatarSrv.getUserAvatar(this.currentAccount);
+                    this.translate.use(this.currentAccount.language);
+                })
             }, err => {
                 this.alertSrv.error('app.login.error');
                 this.logger.error(err);

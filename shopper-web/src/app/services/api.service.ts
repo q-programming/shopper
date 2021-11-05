@@ -1,14 +1,12 @@
 import {HttpClient, HttpHeaders, HttpRequest, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import 'rxjs/Rx';
-import 'rxjs/add/observable/throw';
 import {serialize} from "../utils/serialize";
 import {environment} from "@env/environment";
 import {AlertService} from "./alert.service";
 import {NgProgress, NgProgressRef} from "ngx-progressbar";
 import {catchError, filter, map} from 'rxjs/operators';
 import {TranslateService} from "@ngx-translate/core";
+import {Observable} from "rxjs";
 
 export enum RequestMethod {
     Get = 'GET',
@@ -68,6 +66,11 @@ export class ApiService {
         return this.requestObject<R>(path, body, RequestMethod.Post, customHeaders);
     }
 
+    login(path: string, body: any): Observable<any> {
+        const xformHeader = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+        return this.request(path, body.toString(), RequestMethod.Post, xformHeader, false);
+    }
+
 
     post(path: string, body: any, customHeaders?: HttpHeaders, showAlerts: boolean = true): Observable<any> {
         return this.request(path, body, RequestMethod.Post, customHeaders, showAlerts);
@@ -108,7 +111,7 @@ export class ApiService {
                     this.progress.complete();
                     return response.body
                 }),
-                catchError(error => this.checkError(error)));
+                catchError(error => this.checkError(error, showAlerts)));
     }
 
     // Display error if logged in, otherwise redirect to IDP
@@ -116,12 +119,12 @@ export class ApiService {
         this.progress.complete();
         if (showAlerts) {
             if (error && error.status === 401) {
-                this.alertSrv.error('error.api.unauthorized');
+                this.alertSrv.error('app.api.error.unauthorized');
                 // this.redirectIfUnauth(error);
             } else if (error && error.status === 404) {
-                this.alertSrv.error('error.api.notfound');
+                this.alertSrv.error('app.api.error.notfound');
             } else if (error && error.status === 403) {
-                this.alertSrv.error('error.api.unauthorized');
+                this.alertSrv.error('app.api.error.unauthorized');
             } else if (error && error.status === 503) {
             }
         }

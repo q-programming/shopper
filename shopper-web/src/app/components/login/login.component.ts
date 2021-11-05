@@ -12,6 +12,7 @@ import {FormControl, Validators} from "@angular/forms";
 export class LoginComponent implements OnInit {
 
     login_url = environment.context + environment.login_url;
+    oauth_login_url = environment.context + environment.oauth_login_url;
     usernameCtrl = new FormControl('', Validators.required);
     passwordCtrl = new FormControl('', Validators.required);
 

@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {NGXLogger} from "ngx-logger";
 import {ApiService} from "./api.service";
 import {Observable, Subject} from "rxjs";
+import {EmptyObservable} from "rxjs/observable/EmptyObservable";
 import {environment} from "@env/environment";
 import {ShoppingList} from "@model/ShoppingList";
 import {AvatarService} from "./avatar.service";
@@ -12,6 +13,7 @@ import {ShareComponent} from "../components/dialogs/share/share.component";
 import {AppSettings} from "@model/AppSettings";
 import {CategoryPreset} from "@model/CategoryPreset";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {map} from "rxjs/operators";
 
 @Injectable({
     providedIn: 'root'
@@ -50,12 +52,12 @@ export class ListService {
             return this.api.getObject<ShoppingList[]>(environment.list_url + `/user/${userID}`, {
                 archived: archived,
                 items: items
-            }).map(res => this.processList(res));
+            }).pipe(map(res => this.processList(res)));
         }
         return this.api.getObject<ShoppingList[]>(environment.list_url + '/mine', {
             archived: archived,
             items: items
-        }).map(res => this.processList(res))
+        }).pipe(map(res => this.processList(res)));
     }
 
     /**
@@ -66,7 +68,7 @@ export class ListService {
         return this.api.getObject<ShoppingList[]>(environment.list_url + '/mine', {
             archived: false,
             items: false,
-        }).map(res => this.processList(res, true))
+        }).pipe(map(res => this.processList(res, true)));
     }
 
     /**
@@ -77,11 +79,11 @@ export class ListService {
     getListByID(listID: number): Observable<ShoppingList> {
         this.currentAccount = this.authSrv.currentAccount;
         this.listId = listID;
-        return this.api.getObject<ShoppingList>(environment.list_url + `/${listID}`).map(list => {
+        return this.api.getObject<ShoppingList>(environment.list_url + `/${listID}`).pipe(map(list => {
             list.isOwner = this.isOwner(list);
             this.emitList(list);
             return list;
-        })
+        }));
     }
 
     emitList(list: ShoppingList) {
@@ -138,7 +140,7 @@ export class ListService {
                 });
             });
         } else {
-            return Observable.empty();
+            return new EmptyObservable<ShoppingList>()
         }
     }
 
@@ -177,7 +179,7 @@ export class ListService {
                 });
             });
         } else {
-            return Observable.empty();
+            return new EmptyObservable<ShoppingList>()
         }
     }
 
@@ -205,7 +207,7 @@ export class ListService {
                 });
             });
         } else {
-            return Observable.empty();
+            return new EmptyObservable<boolean>()
         }
     }
 

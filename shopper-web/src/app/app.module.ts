@@ -4,7 +4,6 @@ import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/h
 import {routing} from "./app.routing";
 import {AppComponent} from './app.component';
 import {LoginComponent} from './components/login/login.component';
-import {HomeComponent} from './components/home/home.component';
 import {AuthenticationService} from "@services/authentication.service";
 import {AuthInterceptor} from "./guards/auth.interceptor";
 import {AlertComponent} from './components/alert/alert.component';
@@ -79,7 +78,6 @@ export function initUserFactory(authService: AuthenticationService) {
     declarations: [
         AppComponent,
         LoginComponent,
-        HomeComponent,
         AlertComponent,
         SettingsComponent,
         AvatarUploadComponent,

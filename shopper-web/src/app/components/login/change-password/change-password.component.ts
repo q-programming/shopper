@@ -5,6 +5,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ApiService} from "@services/api.service";
 import {AlertService} from "@services/alert.service";
 import {environment} from "@env/environment";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 
 @Component({
     selector: 'app-change-password',
@@ -36,12 +37,12 @@ export class ChangePasswordComponent implements OnInit {
             password: [null, [Validators.required, Validators.minLength(8)]],
             confirmPassword: [null, [Validators.required]]
         }, {validator: this.matchingPasswords});
-        this.passwordForm.controls.password.valueChanges
-            .debounceTime(100)
-            .distinctUntilChanged()
-            .subscribe(value => {
-                this.currentPass = value;
-            });
+        this.passwordForm.controls.password.valueChanges.pipe(
+            debounceTime(100),
+            distinctUntilChanged(),
+        ).subscribe(value => {
+            this.currentPass = value;
+        });
     }
 
     matchingPasswords(c: AbstractControl): { [key: string]: any } {

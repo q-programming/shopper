@@ -57,7 +57,7 @@ public class Product {
         this.categoryScore = categoryScore;
     }
 
-    @JsonProperty("top-category")
+    @JsonProperty("topCategory")
     public Category getTopCategory() {
         if (!categoryScore.isEmpty()) {
             return Collections.max(categoryScore.entrySet(), Map.Entry.comparingByValue()).getKey();
