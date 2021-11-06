@@ -6,34 +6,30 @@ import com.qprogramming.shopper.app.account.PasswordForm;
 import com.qprogramming.shopper.app.account.devices.NewDevice;
 import com.qprogramming.shopper.app.account.event.AccountEvent;
 import com.qprogramming.shopper.app.account.event.AccountEventType;
-import com.qprogramming.shopper.app.config.mail.Mail;
-import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import com.qprogramming.shopper.app.login.RegisterForm;
-import com.qprogramming.shopper.app.login.token.JwtAuthenticationRequest;
-import com.qprogramming.shopper.app.login.token.TokenService;
 import com.qprogramming.shopper.app.login.token.UserTokenState;
+import com.qprogramming.shopper.app.security.TokenService;
 import com.qprogramming.shopper.app.support.Utils;
+import lombok.RequiredArgsConstructor;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,39 +43,35 @@ import static org.springframework.http.HttpStatus.*;
  * https://github.com/bfwg/springboot-jwt-starter
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
-    private TokenService _tokenService;
-    private AuthenticationManager _authenticationManager;
-    private AccountService _accountService;
+    private final TokenService _tokenService;
+    private final AuthenticationManager _authenticationManager;
+    private final AccountService _accountService;
 
     @Value("${jwt.expires_in}")
     private int EXPIRES_IN;
 
-    @Autowired
-    public AuthenticationController(TokenService tokenService, AuthenticationManager authenticationManager, AccountService accountService) {
-        this._tokenService = tokenService;
-        this._authenticationManager = authenticationManager;
-        this._accountService = accountService;
-    }
 
-    @RequestMapping(value = "/auth", method = RequestMethod.POST)
-    public ResponseEntity createAuthenticationToken(
-            @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) throws AuthenticationException, IOException {
-        final Authentication authentication = _authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authenticationRequest.getUsername(),
-                        authenticationRequest.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        Account account = (Account) authentication.getPrincipal();
-        _tokenService.createTokenCookies(response, account);
-        return ResponseEntity.ok().build();
-    }
+    //TODO check LOGIN via form ?!
+//    @RequestMapping(value = "/auth", method = RequestMethod.POST)
+//    public ResponseEntity createAuthenticationToken(
+//            @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) throws AuthenticationException, IOException {
+//        final Authentication authentication = _authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        authenticationRequest.getUsername(),
+//                        authenticationRequest.getPassword()
+//                )
+//        );
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        Account account = (Account) authentication.getPrincipal();
+//        _tokenService.createTokenCookies(response, account);
+//        return ResponseEntity.ok().build();
+//    }
 
     @RequestMapping(value = "/auth/register", method = RequestMethod.POST)
     @Transactional

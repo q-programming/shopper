@@ -16,7 +16,8 @@
         {{'app.item.add.favorites.onlist'|translate}}
     </div>
     <div fxLayout="row wrap" fxLayoutGap="5px" fxLayoutAlign="space-around center" class="mt-1 mb-1 mr-3 ml-3">
-        <div *ngFor="let fav of filteredProducts | async; trackBy:trackByFn" fxFlex="calc(50%-5px)" class="mt-1">
+        <div *ngFor="let fav of filteredProducts | async; trackBy:trackByFn" class="mt-1" fxFlex="calc(50%-5px)"
+             fxFlex.lt-md="100%">
             <button mat-raised-button class="fav-button" (click)="operation(fav)"
                     matTooltip="{{settings?('app.item.remove.favorites'|translate:{name:fav.name}):('app.item.add.favorites.tolist'|translate:{name:fav.name})}}">
                 <div fxLayout="row" fxLayoutGap="5px">
@@ -25,7 +26,7 @@
                           class="font-weight-normal text-left wrapped-text mt-2"
                           fxFlex>
                 </span>
-                    <span fxFlex="15" fxShow.xs="false">
+                    <span fxFlex="15">
                 <img [src]='"assets/images/categories/"+ fav.topCategory+ ".png"'
                      class="category v-middle pull-right">
                 </span>

@@ -56,10 +56,9 @@
                     <span id="top"></span>
                     <item-favorites #favorites [listID]="listID"></item-favorites>
                 </div>
+                <!-- TODO add scroll to top -->
                 <div *ngIf="toTopVisible" class="go-to-top"
-                     matTooltip="{{'app.general.btt'|translate}}"
-                     [ngx-scroll-to]="'#top'"
-                     [ngx-scroll-to-duration]="0">
+                     matTooltip="{{'app.general.btt'|translate}}">
                     <mat-icon class="rotate-270">last_page</mat-icon>
                 </div>
             </div>

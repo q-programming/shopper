@@ -2,15 +2,15 @@ package com.qprogramming.shopper.app.config.mail;
 
 import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.account.Account;
-import com.qprogramming.shopper.app.account.AccountService;
 import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
 import com.qprogramming.shopper.app.config.MockSecurityContext;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.messages.MessagesService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
@@ -27,8 +27,7 @@ import java.util.Locale;
 import java.util.Properties;
 
 import static com.qprogramming.shopper.app.settings.Settings.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 /**
@@ -64,7 +63,7 @@ public class MailServiceTest {
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Properties props = new Properties();
         props.setProperty("mail.debug", "true");
@@ -100,18 +99,18 @@ public class MailServiceTest {
 
     @Test
     public void testConnection() {
-        assertTrue(mailService.testConnection());
+        Assertions.assertTrue(mailService.testConnection());
     }
 
     @Test
     public void testConnectionWithException() throws MessagingException {
         doThrow(new MessagingException()).when(mailSenderMock).testConnection();
-        assertFalse(mailService.testConnection());
+        Assertions.assertFalse(mailService.testConnection());
     }
 
-    @Test(expected = MessagingException.class)
-    public void testConnectionWithCredentialsThrowsException() throws MessagingException {
-        mailService.testConnection("", 25, "", "");
+    @Test
+    public void testConnectionWithCredentialsThrowsException() {
+        assertThrows(MessagingException.class, () -> mailService.testConnection("", 25, "", ""));
     }
 
     @Test

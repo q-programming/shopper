@@ -8,8 +8,8 @@ import com.qprogramming.shopper.app.account.devices.Device;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.test.web.servlet.MvcResult;
@@ -40,9 +40,8 @@ public class AccountRestControllerTest extends MockedAccountTestBase {
     private LogoutHandler logoutHandlerMock;
 
 
-    @Before
-    @Override
-    public void setup() {
+    @BeforeEach
+    void setUp() {
         super.setup();
         AccountRestController controller = new AccountRestController(accountServiceMock, shoppingListServiceMock, logoutHandlerMock);
         mvc = MockMvcBuilders.standaloneSetup(controller)
@@ -51,13 +50,13 @@ public class AccountRestControllerTest extends MockedAccountTestBase {
 
 
     @Test
-    public void getFriendListAccountNotFound() throws Exception {
+    void getFriendListAccountNotFound() throws Exception {
         when(accountServiceMock.getAllFriendList()).thenThrow(AccountNotFoundException.class);
         this.mvc.perform(get(API_FRIENDS_URL)).andExpect(status().is4xxClientError());
     }
 
     @Test
-    public void getFriendList() throws Exception {
+    void getFriendList() throws Exception {
         Account account = TestUtil.createAccount("John", "Doe");
         when(accountServiceMock.getAllFriendList()).thenReturn(Collections.singleton(account));
         MvcResult mvcResult = this.mvc.perform(get(API_FRIENDS_URL)).andExpect(status().is2xxSuccessful()).andReturn();
@@ -67,7 +66,7 @@ public class AccountRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void getFriendListWithTerm() throws Exception {
+    void getFriendListWithTerm() throws Exception {
         Account account = TestUtil.createAccount("John", "Doe");
         when(accountServiceMock.getAllFriendList()).thenReturn(Collections.singleton(account));
         MvcResult mvcResult = this.mvc.perform(get(API_FRIENDS_URL).param("term", "user")).andExpect(status().is2xxSuccessful()).andReturn();
@@ -77,7 +76,7 @@ public class AccountRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void getFriendListWithTermNotFound() throws Exception {
+    void getFriendListWithTermNotFound() throws Exception {
         Account account = TestUtil.createAccount("John", "Doe");
         when(accountServiceMock.getAllFriendList()).thenReturn(Collections.singleton(account));
         MvcResult mvcResult = this.mvc.perform(get(API_FRIENDS_URL).param("term", "john")).andExpect(status().is2xxSuccessful()).andReturn();
@@ -87,7 +86,7 @@ public class AccountRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void getDeviceList() throws Exception {
+    void getDeviceList() throws Exception {
         Device device = new Device();
         device.setId("1");
         device.setName("name");
@@ -102,13 +101,13 @@ public class AccountRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void removeDeviceNotFound() throws Exception {
+    void removeDeviceNotFound() throws Exception {
         doThrow(new DeviceNotFoundException()).when(accountServiceMock).removeDevice(anyString());
         this.mvc.perform(delete(API_DEVICES_URL + "/1/remove")).andExpect(status().isNotFound());
     }
 
     @Test
-    public void removeDevice() throws Exception {
+    void removeDevice() throws Exception {
         this.mvc.perform(delete(API_DEVICES_URL + "/1/remove")).andExpect(status().is2xxSuccessful());
     }
 

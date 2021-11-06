@@ -4,7 +4,6 @@ import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/h
 import {routing} from "./app.routing";
 import {AppComponent} from './app.component';
 import {LoginComponent} from './components/login/login.component';
-import {HomeComponent} from './components/home/home.component';
 import {AuthenticationService} from "@services/authentication.service";
 import {AuthInterceptor} from "./guards/auth.interceptor";
 import {AlertComponent} from './components/alert/alert.component';
@@ -55,23 +54,18 @@ import {environment} from "@env/environment";
 import {PullToRefreshComponent} from './components/pull-to-refresh/pull-to-refresh.component';
 import {EnHelpComponent} from './components/help/en/en-help.component';
 import {PlHelpComponent} from './components/help/pl/pl-help.component';
-import {ScrollToModule} from "@nicky-lenaers/ngx-scroll-to";
 import {RegisterComponent} from './components/login/register/register.component';
-import {Ng9PasswordStrengthBarModule} from "ng9-password-strength-bar";
 import {ErrorComponent} from './components/error/error.component';
 import {SuccessComponent} from "./components/success/success.component";
 import {DragDropModule} from "@angular/cdk/drag-drop";
-import {NgProgressRouterModule} from "@ngx-progressbar/router";
-import {NgProgressModule} from "@ngx-progressbar/core";
+import {NgProgressModule} from 'ngx-progressbar';
 import {ResetPasswordComponent} from './components/login/reset-password/reset-password.component';
 import {ChangePasswordComponent} from "./components/login/change-password/change-password.component";
 import {ConfirmComponent} from "./components/confirm/confirm.component";
-import {DeviceDetectorModule} from "ngx-device-detector";
 import {BackdropComponent} from './components/menu/backdrop/backdrop.component';
 import {ItemComponent} from './components/list/item/item.component';
 import {InnerLoaderComponent} from './components/inner-loader/inner-loader.component';
 import {DevicesComponent} from './components/settings/devices/devices/devices.component';
-
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -82,7 +76,6 @@ export function initUserFactory(authService: AuthenticationService) {
     declarations: [
         AppComponent,
         LoginComponent,
-        HomeComponent,
         AlertComponent,
         SettingsComponent,
         AvatarUploadComponent,
@@ -138,7 +131,6 @@ export function initUserFactory(authService: AuthenticationService) {
         routing,
         AppMaterialModules,
         NgProgressModule,
-        NgProgressRouterModule,
         FlexLayoutModule,
         DragDropModule,
         InfiniteScrollModule,
@@ -156,9 +148,6 @@ export function initUserFactory(authService: AuthenticationService) {
         }),
         LayoutModule,
         NgxMatSelectSearchModule,
-        ScrollToModule.forRoot(),
-        Ng9PasswordStrengthBarModule,
-        DeviceDetectorModule.forRoot()
     ],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [

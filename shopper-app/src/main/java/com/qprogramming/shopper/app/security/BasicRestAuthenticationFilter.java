@@ -1,12 +1,10 @@
-package com.qprogramming.shopper.app.filters;
+package com.qprogramming.shopper.app.security;
 
 import com.qprogramming.shopper.app.account.Account;
 import com.qprogramming.shopper.app.account.AccountService;
-import com.qprogramming.shopper.app.login.AnonAuthentication;
-import com.qprogramming.shopper.app.login.token.TokenService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
@@ -22,19 +20,14 @@ import java.util.StringTokenizer;
 /**
  * Created by Jakub Romaniszyn on 20.07.2018.
  */
+@RequiredArgsConstructor
+@Slf4j
 public class BasicRestAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BasicRestAuthenticationFilter.class);
     public static final String AUTHORIZATION = "Authorization";
     public static final String AUTHENTICATION_SCHEME = "Basic";
-    private AccountService accountService;
-    private TokenService tokenService;
-
-
-    public BasicRestAuthenticationFilter(AccountService accountService, TokenService tokenService) {
-        this.accountService = accountService;
-        this.tokenService = tokenService;
-    }
+    private final AccountService accountService;
+    private final TokenService tokenService;
 
     @Override
     @Transactional
@@ -62,7 +55,7 @@ public class BasicRestAuthenticationFilter extends OncePerRequestFilter {
         if (accountService.deviceAuth(passwordOrKey, account) || accountService.matches(passwordOrKey, account.getPassword())) {
             accountService.signin(account);
             tokenService.createTokenRESTCookies(response, account);
-            LOG.debug("Authorization successful using base auth via rest. New token returned");
+            log.debug("Authorization successful using base auth via rest. New token returned");
         } else {
             SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
         }

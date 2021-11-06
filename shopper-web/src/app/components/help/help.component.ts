@@ -1,8 +1,9 @@
 import {AfterViewInit, Component, ElementRef, OnInit} from '@angular/core';
 import {TranslateService} from "@ngx-translate/core";
 import {ActivatedRoute} from "@angular/router";
-import {ScrollToConfigOptions, ScrollToService} from "@nicky-lenaers/ngx-scroll-to";
 import {environment} from "@env/environment";
+import {ViewportScroller} from "@angular/common";
+import {first} from 'rxjs/operators';
 
 @Component({
     selector: 'app-help',
@@ -14,10 +15,11 @@ export class HelpComponent implements OnInit, AfterViewInit {
     lang: string;
     toc: NodeList;
     version: string = environment.version;
+    currentSection = 'about';
 
     constructor(private translate: TranslateService,
                 private route: ActivatedRoute,
-                private scrollToService: ScrollToService,
+                private viewportScroller: ViewportScroller,
                 private elem: ElementRef) {
     }
 
@@ -29,14 +31,14 @@ export class HelpComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
         setTimeout(() => {
             this.toc = this.elem.nativeElement.querySelectorAll('h3,h4');
+            this.route.fragment.pipe(first()).subscribe(fragment => {
+                this.viewportScroller.scrollToAnchor(fragment);
+                this.currentSection = fragment;
+            });
         }, 0)
     }
 
     backToTop() {
-        const config: ScrollToConfigOptions = {
-            target: 'top',
-            offset: -70
-        };
-        this.scrollToService.scrollTo(config);
+        this.viewportScroller.scrollToAnchor('top');
     }
 }

@@ -65,7 +65,7 @@ export class NewShareComponent implements OnInit {
         }
     }
 
-    getFriendList(value: string): Observable<Account[]> {
+    getFriendList(value: any): Observable<Account[]> {
         this.term = value;
         return this.api.get(`${environment.account_url}/friends`, {term: value})
     }

@@ -8,11 +8,12 @@ import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.support.Utils;
-import org.apache.commons.codec.binary.Base64;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,20 +31,15 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/account")
 public class AccountRestController {
     private static final Logger LOG = LoggerFactory.getLogger(AccountRestController.class);
-    private AccountService _accountService;
-    private ShoppingListService _listService;
-    private LogoutHandler _logoutHandler;
-
-    @Autowired
-    public AccountRestController(AccountService accountService, ShoppingListService listService, LogoutHandler logoutHandler) {
-        this._accountService = accountService;
-        this._listService = listService;
-        this._logoutHandler = logoutHandler;
-    }
+    private final AccountService _accountService;
+    private final ShoppingListService _listService;
+    private final LogoutHandler _logoutHandler;
 
     /**
      * Returns currently logged in user as {@link Account}

@@ -9,7 +9,7 @@
     <div fxFlex="10">
         <img [src]="update?'assets/images/list.svg':'assets/images/list_add.svg'" height="64" class="ml-2">
     </div>
-    <form [formGroup]="form" fxFlex="80">
+    <form [formGroup]="form" fxFlex="70" fxFlexOffset="10">
         <mat-dialog-content class="mat-typography text-center ml-0 mr-0">
             <mat-form-field class="mat-form-field-full-width">
                 <input id="listName" matInput cdkFocusRegionstart placeholder="{{'app.general.name'|translate}}"

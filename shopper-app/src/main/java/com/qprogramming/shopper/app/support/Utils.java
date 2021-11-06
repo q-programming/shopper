@@ -9,11 +9,8 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
@@ -35,7 +32,7 @@ public class Utils {
 
     public static Account getCurrentAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken) && !(authentication instanceof OAuth2Authentication)) {
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
             return (Account) authentication.getPrincipal();
         }
         return null;

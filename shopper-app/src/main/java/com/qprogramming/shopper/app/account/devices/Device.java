@@ -1,11 +1,16 @@
 package com.qprogramming.shopper.app.account.devices;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.Date;
 import java.util.Objects;
 
+@Getter
+@Setter
 @Entity
 public class Device {
 
@@ -23,47 +28,6 @@ public class Device {
 
     @Column
     private Date lastUsed;
-
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getDeviceKey() {
-        return deviceKey;
-    }
-
-    public void setDeviceKey(String deviceKey) {
-        this.deviceKey = deviceKey;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Date getLastUsed() {
-        return lastUsed;
-    }
-
-    public void setLastUsed(Date lastUsed) {
-        this.lastUsed = lastUsed;
-    }
 
     @Override
     public boolean equals(Object o) {

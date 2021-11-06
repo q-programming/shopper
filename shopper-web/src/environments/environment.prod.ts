@@ -1,5 +1,5 @@
 import {NgxLoggerLevel} from "ngx-logger";
-import {version} from "../../package.json";
+import packageInfo from "../../package.json";
 
 
 export const environment = {
@@ -12,6 +12,7 @@ export const environment = {
     whoami_url: '/api/account/whoami',
     login_url: '/login',
     auth_url: '/auth',
+    oauth_login_url: '/oauth2/authorize/',
     default_lang_url: '/api/config/default-language',
     logout_url: '/logout',
     resource_url: '/api/resource',
@@ -28,5 +29,5 @@ export const environment = {
     config_url: '/api/config',
     ws_ur: '/ws',
     ws_send_url: '/ws/send/',
-    version: version,
+    version: packageInfo.version,
 };
