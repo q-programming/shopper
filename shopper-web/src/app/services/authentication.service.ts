@@ -125,3 +125,6 @@ export class AuthenticationService {
         }
     }
 }
+
+export const GOOGLE_AUTH_URL = environment.context + environment.oauth_login_url + 'google?redirect_uri=';
+export const FACEBOOK_AUTH_URL = environment.context + environment.oauth_login_url + 'facebook?redirect_uri=';

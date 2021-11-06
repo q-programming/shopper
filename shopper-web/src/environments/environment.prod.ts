@@ -12,7 +12,7 @@ export const environment = {
     whoami_url: '/api/account/whoami',
     login_url: '/login',
     auth_url: '/auth',
-    oauth_login_url: '/oauth2/authorize',
+    oauth_login_url: '/oauth2/authorize/',
     default_lang_url: '/api/config/default-language',
     logout_url: '/logout',
     resource_url: '/api/resource',

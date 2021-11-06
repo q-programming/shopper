@@ -1,6 +1,7 @@
 package com.qprogramming.shopper.app.security.oauth2;
 
 import com.qprogramming.shopper.app.security.TokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import static com.qprogramming.shopper.app.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
 @Component
+@Slf4j
 public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
 
@@ -35,6 +37,7 @@ public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationF
         targetUrl = UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("error", exception.getLocalizedMessage())
                 .build().toUriString();
+        log.error("Failed to login", exception);
         _httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
