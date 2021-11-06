@@ -1,12 +1,12 @@
 import {HttpClient, HttpHeaders, HttpRequest, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/Rx';
-import 'rxjs/add/observable/throw';
 import {serialize} from "../utils/serialize";
 import {environment} from "@env/environment";
 import {AlertService} from "./alert.service";
-import {NgProgress, NgProgressRef} from "@ngx-progressbar/core";
+import {NgProgress, NgProgressRef} from "ngx-progressbar";
+import {catchError, filter, map} from 'rxjs/operators';
+import {TranslateService} from "@ngx-translate/core";
+import {Observable} from "rxjs";
 
 export enum RequestMethod {
     Get = 'GET',
@@ -27,7 +27,7 @@ export class ApiService {
         'Content-Type': 'application/json'
     });
 
-    constructor(private http: HttpClient, private alertSrv: AlertService, public ngProgress: NgProgress) {
+    constructor(private http: HttpClient, private alertSrv: AlertService, public ngProgress: NgProgress, private translate: TranslateService) {
         this.progress = ngProgress.ref();
     }
 
@@ -41,7 +41,11 @@ export class ApiService {
             options['params'] = serialize(args);
         }
         return this.http.get(path, options)
-            .catch(this.checkError.bind(this));
+            .pipe(
+                map((response) => {
+                    this.progress.complete();
+                    return response
+                }), catchError(error => this.checkError(error)));
     }
 
     getObject<R>(path: string, args?: any): Observable<any> {
@@ -53,16 +57,23 @@ export class ApiService {
         if (args) {
             options['params'] = serialize(args);
         }
-        return this.http.get<R>(path, options).catch(this.checkError.bind(this));
+        return this.http.get<R>(path, options).pipe(
+            catchError(error => this.checkError(error))
+        );
     }
 
     postObject<R>(path: string, body: any, customHeaders?: HttpHeaders): Observable<any> {
         return this.requestObject<R>(path, body, RequestMethod.Post, customHeaders);
     }
 
+    login(path: string, body: any): Observable<any> {
+        const xformHeader = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+        return this.request(path, body.toString(), RequestMethod.Post, xformHeader, false);
+    }
 
-    post(path: string, body: any, customHeaders?: HttpHeaders): Observable<any> {
-        return this.request(path, body, RequestMethod.Post, customHeaders);
+
+    post(path: string, body: any, customHeaders?: HttpHeaders, showAlerts: boolean = true): Observable<any> {
+        return this.request(path, body, RequestMethod.Post, customHeaders, showAlerts);
     }
 
     put(path: string, body: any): Observable<any> {
@@ -80,42 +91,42 @@ export class ApiService {
             withCredentials: true
         });
 
-        return this.http.request<R>(req)
-            .map((response: HttpResponse<R>) => response.body)
-            .catch(error => this.checkError(error));
+        return this.http.request<R>(req).pipe(
+            map((response: HttpResponse<R>) => response.body),
+            catchError(error => this.checkError(error)));
     }
 
-    private request(path: string, body: any, method = RequestMethod.Post, custemHeaders?: HttpHeaders): Observable<any> {
+    private request(path: string, body: any, method = RequestMethod.Post, customHeaders?: HttpHeaders, showAlerts: boolean = true): Observable<any> {
         this.progress.start();
         path = environment.context + path;
         const req = new HttpRequest(method, path, body, {
-            headers: custemHeaders || this.headers,
+            headers: customHeaders || this.headers,
             withCredentials: true
         });
 
         return this.http.request(req)
-            .filter(response => response instanceof HttpResponse)
-            .map((response: HttpResponse<any>) => {
-                this.progress.complete();
-                return response.body
-            })
-            .catch(error => {
-                this.progress.complete();
-                return this.checkError(error)
-            });
+            .pipe(
+                filter(response => response instanceof HttpResponse),
+                map((response: HttpResponse<any>) => {
+                    this.progress.complete();
+                    return response.body
+                }),
+                catchError(error => this.checkError(error, showAlerts)));
     }
 
     // Display error if logged in, otherwise redirect to IDP
-    private checkError(error: any): any {
-        if (error && error.status === 401) {
-            this.alertSrv.error('app.api.error.unauthorized');
-            // this.redirectIfUnauth(error);
-        } else if (error && error.status === 404) {
-            this.alertSrv.error('app.api.error.notfound');
-        } else if (error && error.status === 403) {
-            this.alertSrv.error('app.api.error.unauthorized');
-            //TODO redirect to login?
-        } else if (error && error.status === 503) {
+    private checkError(error: any, showAlerts: boolean = true): any {
+        this.progress.complete();
+        if (showAlerts) {
+            if (error && error.status === 401) {
+                this.alertSrv.error('app.api.error.unauthorized');
+                // this.redirectIfUnauth(error);
+            } else if (error && error.status === 404) {
+                this.alertSrv.error('app.api.error.notfound');
+            } else if (error && error.status === 403) {
+                this.alertSrv.error('app.api.error.unauthorized');
+            } else if (error && error.status === 503) {
+            }
         }
         throw error;
     }

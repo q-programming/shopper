@@ -1,9 +1,15 @@
 package com.qprogramming.shopper.app.account;
 
 import com.qprogramming.shopper.app.login.RegisterForm;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PasswordForm {
     @NotBlank(message = RegisterForm.NOT_BLANK_MESSAGE)
     private String password;
@@ -14,27 +20,4 @@ public class PasswordForm {
     @NotBlank(message = RegisterForm.NOT_BLANK_MESSAGE)
     private String token;
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getConfirmpassword() {
-        return confirmpassword;
-    }
-
-    public void setConfirmpassword(String confirmpassword) {
-        this.confirmpassword = confirmpassword;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

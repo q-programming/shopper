@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {map, startWith} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, map, startWith} from "rxjs/operators";
 import {ApiService} from "@services/api.service";
 import {ListItem} from "@model/ListItem";
 import {CategoryOption} from "@model/CategoryOption";
@@ -54,12 +54,12 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
         });
         //filtered product
         this.filteredFavorites = this.form.controls.product.valueChanges
-            .debounceTime(600)
-            .distinctUntilChanged()
             .pipe(
+                debounceTime(600),
+                distinctUntilChanged(),
                 startWith<string>(''),
                 map(value => {
-                        if (value.length >= 1) {
+                        if (typeof value === "string" && value.length >= 1) {
                             this.productTerm = value;
                             this.handleProductValueChange(value);
                             return this._filterProducts(value)
@@ -73,8 +73,10 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
             .pipe(
                 startWith(''),
                 map(value => {
-                    this.categoryTerm = value;
-                    return this._filter(value);
+                    if (typeof value === "string") {
+                        this.categoryTerm = value;
+                        return this._filter(value);
+                    }
                 }));
         this.form.controls.category.valueChanges.subscribe(value => this.item.category = value);
         this.form.controls.unit.valueChanges.subscribe(value => this.item.unit = value);
@@ -150,7 +152,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
     }
 
     private isQuantityAndUnit(part: string): boolean {
-        return /(\d+(\.|,?)\d*)(kg|g|l|m|cm|ml|dkg)?$/.test(part);
+        return /^(\d+(\.|,?)\d*)(kg|g|l|m|cm|ml|dkg)?$/.test(part);
     }
 
     private setQuantityAndUnit(quantityAndUnit: string) {

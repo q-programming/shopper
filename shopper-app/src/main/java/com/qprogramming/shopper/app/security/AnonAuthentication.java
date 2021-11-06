@@ -1,13 +1,12 @@
-package com.qprogramming.shopper.app.login;
+package com.qprogramming.shopper.app.security;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 /**
- * Created by Jakub Romaniszyn on 19.07.2018.
- *
  * Based on
  * https://github.com/bfwg/springboot-jwt-starter
  */
+
 public class AnonAuthentication extends AbstractAuthenticationToken {
 
     public AnonAuthentication() {
@@ -31,8 +30,7 @@ public class AnonAuthentication extends AbstractAuthenticationToken {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        return hash;
+        return 31;
     }
 
     @Override
@@ -43,10 +41,7 @@ public class AnonAuthentication extends AbstractAuthenticationToken {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        return true;
+        return getClass() == obj.getClass();
     }
 
 

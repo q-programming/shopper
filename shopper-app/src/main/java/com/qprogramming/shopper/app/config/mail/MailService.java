@@ -2,6 +2,7 @@ package com.qprogramming.shopper.app.config.mail;
 
 
 import com.qprogramming.shopper.app.account.Account;
+import com.qprogramming.shopper.app.account.AccountType;
 import com.qprogramming.shopper.app.account.avatar.Avatar;
 import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
 import com.qprogramming.shopper.app.account.event.AccountEvent;
@@ -50,13 +51,13 @@ public class MailService {
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     private JavaMailSender _mailSender;
-    private PropertyService _propertyService;
-    private Configuration _freemarkerConfiguration;
-    private MessagesService _msgSrv;
-    private AvatarRepository _avatarRepository;
+    private final PropertyService _propertyService;
+    private final Configuration _freemarkerConfiguration;
+    private final MessagesService _msgSrv;
+    private final AvatarRepository _avatarRepository;
 
-    private Map<Account, File> avatarBuffer;
-    private String cron_scheduler;
+    private final Map<Account, File> avatarBuffer;
+    private final String cron_scheduler;
 
 
     @Autowired
@@ -255,17 +256,17 @@ public class MailService {
         Locale locale = getMailLocale(mail);
         mimeMessageHelper.setSubject(_msgSrv.getMessage("app.password.reset", new Object[]{}, "", locale));
         mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/passwordReset.ftl"));
-        if (event.getAccount().getType().equals(Account.AccountType.GOOGLE)) {
+        if (event.getAccount().getType().equals(AccountType.GOOGLE)) {
             mail.addToModel("linkGoogle", mail.getModel().get(APPLICATION) + "login/google");
-        } else if (event.getAccount().getType().equals(Account.AccountType.FACEBOOK)) {
+        } else if (event.getAccount().getType().equals(AccountType.FACEBOOK)) {
             mail.addToModel("linkFacebook", mail.getModel().get(APPLICATION) + "login/facebook");
         }
         mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/passwordReset.ftl"));
         mimeMessageHelper.setText(mail.getMailContent(), true);
         //include buttons
-        if (event.getAccount().getType().equals(Account.AccountType.GOOGLE)) {
+        if (event.getAccount().getType().equals(AccountType.GOOGLE)) {
             mimeMessageHelper.addInline("signInGoogle.png", new ClassPathResource("static/assets/images/signin_google_" + locale.toString() + ".png"));
-        } else if (event.getAccount().getType().equals(Account.AccountType.FACEBOOK)) {
+        } else if (event.getAccount().getType().equals(AccountType.FACEBOOK)) {
             mimeMessageHelper.addInline("signInFacebook.png", new ClassPathResource("static/assets/images/signin_facebook_" + locale.toString() + ".png"));
         }
     }

@@ -1,10 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Message, MessageType} from "@model/Message";
-import {Observable} from "rxjs/Observable";
+import {Observable, Subscriber, timer} from "rxjs";
 import {TranslateService} from "@ngx-translate/core";
-import { timer } from 'rxjs/observable/timer';
 import * as _ from 'lodash';
-import {Subscriber} from "rxjs";
 
 @Injectable()
 export class AlertService {

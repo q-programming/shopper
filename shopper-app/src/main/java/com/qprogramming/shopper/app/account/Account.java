@@ -5,8 +5,10 @@ import com.qprogramming.shopper.app.account.authority.Authority;
 import com.qprogramming.shopper.app.account.authority.Role;
 import com.qprogramming.shopper.app.account.devices.Device;
 import io.jsonwebtoken.lang.Collections;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -18,8 +20,13 @@ import static com.qprogramming.shopper.app.support.Utils.ACCOUNT_COMPARATOR;
 /**
  * Created by Jakub Romaniszyn on 20.07.2018.
  */
+@Getter
+@Setter
 @Entity
-public class Account implements Serializable, UserDetails, Comparable<Account> {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Account implements Serializable, OAuth2User, UserDetails, Comparable<Account> {
 
     @Id
     private String id;
@@ -71,22 +78,6 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Device> devices = new HashSet<>();
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     @JsonIgnore
     public String getPassword() {
         return password;
@@ -97,63 +88,14 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.password = password;
     }
 
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public AccountType getType() {
-        return type;
-    }
-
-    public void setType(AccountType type) {
-        this.type = type;
-    }
+    @Transient
+    private Map<String, Object> attributes;
 
     public Set<Account> getFriends() {
         if (Collections.isEmpty(this.friends)) {
             this.friends = new HashSet<>();
         }
         return friends;
-    }
-
-    public void setFriends(Set<Account> friends) {
-        this.friends = friends;
     }
 
     public void addAuthority(Authority authority) {
@@ -242,14 +184,22 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Account account = (Account) o;
-
-        if (!id.equals(account.id)) return false;
-        if (!Objects.equals(email, account.email)) return false;
-        if (!name.equals(account.name)) return false;
-        if (!surname.equals(account.surname)) return false;
+        if (!id.equals(account.id)) {
+            return false;
+        }
+        if (!Objects.equals(email, account.email)) {
+            return false;
+        }
+        if (!name.equals(account.name)) {
+            return false;
+        }
+        if (!surname.equals(account.surname)) {
+            return false;
+        }
         return Objects.equals(created, account.created);
     }
 
@@ -265,10 +215,6 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     public String getFullname() {
         return getName() + " " + getSurname();
-    }
-
-    public enum AccountType {
-        LOCAL, FACEBOOK, GOOGLE
     }
 
 }

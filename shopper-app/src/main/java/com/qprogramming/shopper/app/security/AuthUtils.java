@@ -1,4 +1,4 @@
-package com.qprogramming.shopper.app.filters;
+package com.qprogramming.shopper.app.security;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +27,7 @@ public class AuthUtils {
     private static final String LOGIN_MATCHER = "/login";
     private static final String LOGOUT_MATCHER = "/logout";
 
-    private static List<String> PATHS_TO_SKIP = Arrays.asList(
+    private static final List<String> PATHS_TO_SKIP = Arrays.asList(
             ROOT_MATCHER,
             HTML_MATCHER,
             FAVICON_MATCHER,
@@ -47,7 +47,7 @@ public class AuthUtils {
     }
 
     /**
-     * By default if user is not authenticated or is using {@link com.qprogramming.shopper.app.login.AnonAuthentication}
+     * By default if user is not authenticated or is using
      * authentication is null or it's princiapl is
      *
      * @return true if user correctly previously authenticated in filter chain

@@ -5,10 +5,9 @@ import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.settings.Settings;
 import com.qprogramming.shopper.app.support.Utils;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,19 +27,15 @@ import static com.qprogramming.shopper.app.settings.Settings.*;
 /**
  * Created by Jakub Romaniszyn on 2018-09-13
  */
+@Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/config")
 public class ConfigRestController {
 
-    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
-    private MailService mailService;
-    private PropertyService propertyService;
+    private final MailService mailService;
+    private final PropertyService propertyService;
 
-    @Autowired
-    public ConfigRestController(MailService mailService, PropertyService propertyService) {
-        this.mailService = mailService;
-        this.propertyService = propertyService;
-    }
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
@@ -56,7 +51,7 @@ public class ConfigRestController {
         try {
             emailSettings.setPort(Integer.parseInt(propertyService.getProperty(APP_EMAIL_PORT)));
         } catch (NumberFormatException e) {
-            LOG.warn("Failed to set port from properties");
+            log.warn("Failed to set port from properties");
         }
         emailSettings.setUsername(propertyService.getProperty(APP_EMAIL_USERNAME));
         emailSettings.setPassword(propertyService.getProperty(APP_EMAIL_PASS));
@@ -85,7 +80,7 @@ public class ConfigRestController {
         try {
             mailService.testConnection(settings.getHost(), settings.getPort(), settings.getUsername(), settings.getPassword());
         } catch (MessagingException e) {
-            LOG.warn("Bad SMTP configuration: {}", e);
+            log.warn("Bad SMTP configuration: {}", e);
             return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
         }
         propertyService.update(APP_EMAIL_HOST, settings.getHost());
@@ -100,7 +95,7 @@ public class ConfigRestController {
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/settings/app", method = RequestMethod.POST)
-    public ResponseEntity changeAppSettings(@RequestBody Settings settings) {
+    public ResponseEntity<?> changeAppSettings(@RequestBody Settings settings) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

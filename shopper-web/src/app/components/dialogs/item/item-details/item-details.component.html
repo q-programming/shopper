@@ -2,7 +2,7 @@
     <form [formGroup]="form" class="no-overflow">
         <div fxLayout="row" fxLayoutAlign="center">
             <!--            PRODUCT-->
-            <mat-form-field class="" fxFlex="70">
+            <mat-form-field class="" fxFlex="80" fxFlex.lt-sm="90">
                 <img [src]='"assets/images/spacer.png"' class="mr-2" matPrefix alt="spacer">
                 <input id="productInput" matInput placeholder="{{'app.item.product'|translate}}"
                        [matAutocomplete]="favAutocomplete" autocomplete="off"
@@ -18,7 +18,7 @@
         </div>
         <!--        CATEGORY-->
         <div fxLayout="row" fxLayoutAlign="center">
-            <mat-form-field class="" fxFlex="70">
+            <mat-form-field class="" fxFlex="80" fxFlex.lt-sm="90">
                 <img *ngIf="item.category" [src]='"assets/images/categories/"+ item.category + ".png"'
                      class="category mr-2"
                      matPrefix>
@@ -42,20 +42,20 @@
             </mat-form-field>
         </div>
         <!--        QUANTITY-->
-        <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="40px">
-            <mat-form-field fxFlex="20">
+        <div fxLayout="row" fxLayoutAlign="start">
+            <mat-form-field fxFlex="20" fxFlexOffset="20">
                 <input id="quantity" #quantity type="number" matInput placeholder="{{'app.item.quantity'|translate}}"
                        formControlName="quantity" (click)="quantity.select()">
             </mat-form-field>
             <!--            UNIT-->
-            <mat-form-field fxFlex="20">
+            <mat-form-field fxFlex="20" fxFlexOffset="20">
                 <input id="unit" matInput placeholder="{{'app.item.unit'|translate}}"
                        formControlName="unit">
             </mat-form-field>
         </div>
         <!--        DESCRIPTION-->
         <div fxLayout="row" fxLayoutAlign="center">
-            <mat-form-field fxFlex="80">
+            <mat-form-field fxFlex="80" fxFlex.lt-sm="90">
                 <textarea matInput placeholder="{{'app.item.description'|translate}}" formControlName="description">
                 </textarea>
             </mat-form-field>

@@ -9,7 +9,16 @@
     }
   },
   "/shopper/login": {
-    "target": "http://localhost:8080/shopper/login",
+    "target": "https://localhost/shopper/login",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/shopper/login": ""
+    }
+  },
+  "/shopper/oauth2/authorize',": {
+    "target": "https://localhost/shopper/oauth2/authorize",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true,

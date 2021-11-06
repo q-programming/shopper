@@ -19,11 +19,11 @@ import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import com.qprogramming.shopper.app.support.Utils;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -51,31 +51,20 @@ import static com.qprogramming.shopper.app.settings.Settings.APP_URL;
  * Created by Jakub Romaniszyn on 20.07.2018.
  */
 @Service
+@RequiredArgsConstructor
 public class AccountService implements UserDetailsService {
 
     private static final String API_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}?";
 
     private static final Logger LOG = LoggerFactory.getLogger(AccountService.class);
-    private PropertyService _propertyService;
-    private AccountRepository _accountRepository;
-    private AvatarRepository _avatarRepository;
-    private AuthorityService _authorityService;
-    private AccountPasswordEncoder _accountPasswordEncoder;
-    private AccountEventRepository _accountEventRepository;
-    private DeviceRepository _deviceRepository;
-    private MailService _mailService;
-
-    @Autowired
-    public AccountService(PropertyService propertyService, AccountRepository accountRepository, AvatarRepository avatarRepository, AuthorityService authorityService, AccountPasswordEncoder accountPasswordEncoder, AccountEventRepository accountEventRepository, DeviceRepository deviceRepository, MailService mailService) {
-        this._propertyService = propertyService;
-        this._accountRepository = accountRepository;
-        this._avatarRepository = avatarRepository;
-        this._authorityService = authorityService;
-        this._accountPasswordEncoder = accountPasswordEncoder;
-        this._accountEventRepository = accountEventRepository;
-        this._deviceRepository = deviceRepository;
-        this._mailService = mailService;
-    }
+    private final PropertyService propertyService;
+    private final AccountRepository accountRepository;
+    private final AvatarRepository avatarRepository;
+    private final AuthorityService authorityService;
+    private final AccountPasswordEncoder accountPasswordEncoder;
+    private final AccountEventRepository accountEventRepository;
+    private final DeviceRepository deviceRepository;
+    private final MailService mailService;
 
     public void signin(Account account) {
         SecurityContextHolder.getContext().setAuthentication(authenticate(account));
@@ -86,19 +75,15 @@ public class AccountService implements UserDetailsService {
     }
 
     public Account findById(String id) throws AccountNotFoundException {
-        Optional<Account> optionalAccount = _accountRepository.findOneById(id);
-        if (!optionalAccount.isPresent()) {
-            throw new AccountNotFoundException();
-        }
-        return optionalAccount.get();
+        return accountRepository.findOneById(id).orElseThrow(AccountNotFoundException::new);
     }
 
-    public Account createAcount(Account account) {
+    public Account createAccount(Account account) {
         List<Authority> auths = new ArrayList<>();
-        Authority role = _authorityService.findByRole(Role.ROLE_USER);
+        Authority role = authorityService.findByRole(Role.ROLE_USER);
         auths.add(role);
-        if (_accountRepository.findAll().size() == 0) {
-            Authority admin = _authorityService.findByRole(Role.ROLE_ADMIN);
+        if (accountRepository.findAll().size() == 0) {
+            Authority admin = authorityService.findByRole(Role.ROLE_ADMIN);
             auths.add(admin);
         }
         account.setAuthorities(auths);
@@ -107,7 +92,7 @@ public class AccountService implements UserDetailsService {
         }
         //generate password if needed
         generatePassword(account);
-        return _accountRepository.save(account);
+        return accountRepository.save(account);
     }
 
     private void generatePassword(Account account) {
@@ -121,7 +106,7 @@ public class AccountService implements UserDetailsService {
 
     public String generateID() {
         String uuid = UUID.randomUUID().toString();
-        while (_accountRepository.findOneById(uuid).isPresent()) {
+        while (accountRepository.findOneById(uuid).isPresent()) {
             uuid = UUID.randomUUID().toString();
         }
         return uuid;
@@ -129,7 +114,7 @@ public class AccountService implements UserDetailsService {
 
     public String generateDeviceID() {
         String uuid = UUID.randomUUID().toString();
-        while (_deviceRepository.findById(uuid).isPresent()) {
+        while (deviceRepository.findById(uuid).isPresent()) {
             uuid = UUID.randomUUID().toString();
         }
         return uuid;
@@ -137,48 +122,43 @@ public class AccountService implements UserDetailsService {
 
 
     private void setDefaultLocale(Account account) {
-        String defaultLanguage = _propertyService.getDefaultLang();
+        String defaultLanguage = propertyService.getDefaultLang();
         account.setLanguage(defaultLanguage);
     }
 
     public Optional<Account> findByEmail(String email) {
-        return _accountRepository.findOneByEmail(email);
+        return accountRepository.findOneByEmail(email);
     }
 
     @Override
     public Account loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account;
-        Optional<Account> optionalAccount = _accountRepository.findOneByEmail(username);
-        if (optionalAccount.isPresent()) {
-            account = optionalAccount.get();
-        } else {
-            account = _accountRepository.findOneByUsername(username);
-            if (account == null) {
-                throw new UsernameNotFoundException("user not found");
-            }
-        }
+        Optional<Account> optionalAccount = accountRepository.findOneByEmail(username);
+        account = optionalAccount
+                .orElseGet(() -> accountRepository.findOneByUsername(username)
+                        .orElseThrow(() -> new UsernameNotFoundException("user not found")));
         //TODO remove later on
         if (StringUtils.isEmpty(account.getPassword())) {
             generatePassword(account);
-            account = _accountRepository.save(account);
+            account = accountRepository.save(account);
         }
         return account;
     }
 
-    public Account findByUsername(String username) {
-        return _accountRepository.findOneByUsername(username);
+    public Optional<Account> findByUsername(String username) {
+        return accountRepository.findOneByUsername(username);
     }
 
     public List<Account> findAll() {
-        return _accountRepository.findAll();
+        return accountRepository.findAll();
     }
 
     public String encode(String string) {
-        return _accountPasswordEncoder.encode(string);
+        return accountPasswordEncoder.encode(string);
     }
 
     public boolean matches(String raw, String encoded) {
-        return _accountPasswordEncoder.matches(raw, encoded);
+        return accountPasswordEncoder.matches(raw, encoded);
     }
 
     /**
@@ -188,7 +168,7 @@ public class AccountService implements UserDetailsService {
      * @return updated account
      */
     public Account update(Account account) {
-        return _accountRepository.save(account);
+        return accountRepository.save(account);
     }
 
     /**
@@ -214,7 +194,7 @@ public class AccountService implements UserDetailsService {
     //User avatar handling
 
     public Avatar getAccountAvatar(Account account) {
-        return _avatarRepository.findOneById(account.getId());
+        return avatarRepository.findOneById(account.getId());
     }
 
     /**
@@ -226,12 +206,12 @@ public class AccountService implements UserDetailsService {
      * @param bytes   image bytes
      */
     public void updateAvatar(Account account, byte[] bytes) {
-        Avatar avatar = _avatarRepository.findOneById(account.getId());
+        Avatar avatar = avatarRepository.findOneById(account.getId());
         if (avatar == null) {
             createAvatar(account, bytes);
         } else {
             setAvatarTypeAndBytes(bytes, avatar);
-            _avatarRepository.save(avatar);
+            avatarRepository.save(avatar);
         }
     }
 
@@ -262,7 +242,7 @@ public class AccountService implements UserDetailsService {
         Avatar avatar = new Avatar();
         avatar.setId(account.getId());
         setAvatarTypeAndBytes(bytes, avatar);
-        return _avatarRepository.save(avatar);
+        return avatarRepository.save(avatar);
     }
 
     private void setAvatarTypeAndBytes(byte[] bytes, Avatar avatar) {
@@ -280,9 +260,9 @@ public class AccountService implements UserDetailsService {
     }
 
     public void delete(Account account) {
-        List<AccountEvent> allByAccount = _accountEventRepository.findAllByAccount(account);
-        _accountEventRepository.deleteAll(allByAccount);
-        _accountRepository.delete(account);
+        List<AccountEvent> allByAccount = accountEventRepository.findAllByAccount(account);
+        accountEventRepository.deleteAll(allByAccount);
+        accountRepository.delete(account);
     }
 
 
@@ -290,15 +270,15 @@ public class AccountService implements UserDetailsService {
     public Account createLocalAccount(Account account) {
         account.setId(generateID());
         encodePassword(account);
-        account.setType(Account.AccountType.LOCAL);
-        return createAcount(account);
+        account.setType(AccountType.LOCAL);
+        return createAccount(account);
     }
 
     public void sendConfirmEmail(Account account, AccountEvent event) throws MessagingException {
-        String application = _propertyService.getProperty(APP_URL);
+        String application = propertyService.getProperty(APP_URL);
         Mail mail = new Mail();
         mail.setMailTo(account.getEmail());
-        mail.setMailFrom(_propertyService.getProperty(APP_EMAIL_FROM));
+        mail.setMailFrom(propertyService.getProperty(APP_EMAIL_FROM));
         mail.addToModel("name", account.getName());
         mail.addToModel("application", application);
         switch (event.getType()) {
@@ -313,20 +293,20 @@ public class AccountService implements UserDetailsService {
                 break;
         }
         mail.setLocale(account.getLanguage());
-        _mailService.sendConfirmMessage(mail, event);
+        mailService.sendConfirmMessage(mail, event);
 
     }
 
     public void confirm(Account account) {
         account.setEnabled(true);
-        _accountRepository.save(account);
+        accountRepository.save(account);
     }
 
     public void confirmDevice(Account account, String data) throws DeviceNotFoundException {
         Optional<Device> confirmedDevice = account.getDevices().stream().filter(device -> device.getId().equals(data)).findFirst();
         Device device = confirmedDevice.orElseThrow(DeviceNotFoundException::new);
         device.setEnabled(true);
-        _deviceRepository.save(device);
+        deviceRepository.save(device);
     }
 
     public void addAccountToFriendList(Account account) throws AccountNotFoundException {
@@ -340,11 +320,11 @@ public class AccountService implements UserDetailsService {
     }
 
     public Optional<AccountEvent> findEvent(String token) {
-        return _accountEventRepository.findByToken(token);
+        return accountEventRepository.findByToken(token);
     }
 
     public void removeEvent(AccountEvent event) {
-        this._accountEventRepository.delete(event);
+        this.accountEventRepository.delete(event);
     }
 
     public AccountEvent createConfirmEvent(Account account) {
@@ -352,7 +332,7 @@ public class AccountService implements UserDetailsService {
         event.setAccount(account);
         event.setType(AccountEventType.ACCOUNT_CONFIRM);
         event.setToken(generateToken());
-        return _accountEventRepository.save(event);
+        return accountEventRepository.save(event);
     }
 
     public AccountEvent createConfirmDeviceEvent(Account account, String deviceId) {
@@ -361,7 +341,7 @@ public class AccountService implements UserDetailsService {
         event.setType(AccountEventType.DEVICE_CONFIRM);
         event.setToken(generateToken());
         event.setData(deviceId);
-        return _accountEventRepository.save(event);
+        return accountEventRepository.save(event);
     }
 
 
@@ -370,16 +350,16 @@ public class AccountService implements UserDetailsService {
         event.setAccount(newAccount);
         event.setType(AccountEventType.PASSWORD_RESET);
         event.setToken(generateToken());
-        return _accountEventRepository.save(event);
+        return accountEventRepository.save(event);
     }
 
     public void eventConfirmed(AccountEvent event) {
-        _accountEventRepository.delete(event);
+        accountEventRepository.delete(event);
     }
 
     public String generateToken() {
         String token = Generators.timeBasedGenerator().generate().toString();
-        while (_accountEventRepository.findByToken(token).isPresent()) {
+        while (accountEventRepository.findByToken(token).isPresent()) {
             token = Generators.timeBasedGenerator().generate().toString();
         }
         return token;
@@ -396,7 +376,7 @@ public class AccountService implements UserDetailsService {
      * @param account Account for which password will be encoded
      */
     public void encodePassword(Account account) {
-        account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
+        account.setPassword(accountPasswordEncoder.encode(account.getPassword()));
     }
 
     /**
@@ -410,11 +390,11 @@ public class AccountService implements UserDetailsService {
     @Transactional
     public boolean deviceAuth(String key, Account account) {
         Set<Device> devices = account.getDevices();
-        Optional<Device> optionalDevice = devices.stream().filter(Device::isEnabled).filter(device -> _accountPasswordEncoder.matches(key, device.getDeviceKey())).findFirst();
+        Optional<Device> optionalDevice = devices.stream().filter(Device::isEnabled).filter(device -> accountPasswordEncoder.matches(key, device.getDeviceKey())).findFirst();
         if (optionalDevice.isPresent()) {
             Device device = optionalDevice.get();
             device.setLastUsed(new Date());
-            _deviceRepository.save(device);
+            deviceRepository.save(device);
             return true;
         }
         return false;
@@ -433,9 +413,9 @@ public class AccountService implements UserDetailsService {
         device.setId(generateDeviceID());
         device.setDeviceKey(encode(deviceKey));
         device.setName(name);
-        device = _deviceRepository.save(device);
+        device = deviceRepository.save(device);
         account.getDevices().add(device);
-        _accountRepository.save(account);
+        accountRepository.save(account);
         return new NewDevice(device, deviceKey, account.getEmail());
     }
 
@@ -447,12 +427,25 @@ public class AccountService implements UserDetailsService {
      */
     public void removeDevice(String id) throws DeviceNotFoundException, AccountNotFoundException {
         Account account = findById(Utils.getCurrentAccountId());
-        Optional<Device> optionalDevice = _deviceRepository.findById(id);
-        if (!optionalDevice.isPresent() || account.getDevices().stream().noneMatch(dev -> id.equals(dev.getId()))) {
+        Optional<Device> optionalDevice = deviceRepository.findById(id);
+        if (optionalDevice.isEmpty() || account.getDevices().stream().noneMatch(dev -> id.equals(dev.getId()))) {
             throw new DeviceNotFoundException("Device was not found or is not from current user for id:" + id);
         }
         Device device = optionalDevice.get();
         account.getDevices().remove(device);
-        _deviceRepository.delete(device);
+        deviceRepository.delete(device);
+    }
+
+    public void setLocale(Account account) {
+        setLocale(account, null);
+    }
+
+    public void setLocale(Account account, String locale) {
+        if (StringUtils.isBlank(locale) || propertyService.getLanguages().containsKey(locale)) {
+            account.setLanguage(locale);
+        } else {
+            locale = propertyService.getDefaultLang();
+            setLocale(account, locale);
+        }
     }
 }

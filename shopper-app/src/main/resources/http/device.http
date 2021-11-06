@@ -1,0 +1,55 @@
+###Add device
+POST {{baseUrl}}/auth/new-device
+Content-Type: application/json
+X-XSRF-TOKEN : {{token}}
+
+{
+  "email": "kubarom@gmail.com",
+  "name": "localtest"
+}
+
+
+###Who am I
+POST {{baseUrl}}/api/account/whoami
+Content-Type: application/json
+Authorization: Basic {{auth}}
+
+{}
+
+###get all lists with items
+GET {{baseUrl}}/api/list/mine
+Content-Type: application/json
+Authorization: Basic {{auth}}
+
+###get all lists with items
+GET {{baseUrl}}/api/list/mine?items=true
+Content-Type: application/json
+Authorization: Basic {{auth}}
+
+###get lists with id
+GET {{baseUrl}}/api/list/1
+Content-Type: application/json
+Authorization: Basic {{auth}}
+
+###toggle item from payload on list 1
+POST {{baseUrl}}/api/item/1/toggle
+Content-Type: application/json
+Authorization: Basic {{auth}}
+
+{
+  "id": 2969,
+  "product": {
+    "id": 17,
+    "name": "sok pomarańczowy",
+    "categoryScore": {
+      "BEVERAGES": 3
+    },
+    "topCategory": "BEVERAGES"
+  },
+  "name": "sok pomarańczowy",
+  "description": null,
+  "quantity": 0.0,
+  "unit": null,
+  "category": "BEVERAGES",
+  "done": false
+}

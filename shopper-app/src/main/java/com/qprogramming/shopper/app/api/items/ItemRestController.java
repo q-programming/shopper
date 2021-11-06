@@ -7,9 +7,8 @@ import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.support.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,20 +28,14 @@ import static com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException.
 /**
  * Created by Jakub Romaniszyn on 2018-08-13
  */
+@RequiredArgsConstructor
+@Slf4j
 @RestController
 @RequestMapping("/api/item")
 public class ItemRestController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ItemRestController.class);
-    private ListItemService _listItemService;
-    private ShoppingListService _listService;
-
-    @Autowired
-    public ItemRestController(ListItemService listItemService, ShoppingListService listService) {
-        this._listItemService = listItemService;
-        _listService = listService;
-    }
-
+    private final ListItemService _listItemService;
+    private final ShoppingListService _listService;
 
     /**
      * Add list item to list with id .
@@ -60,16 +53,16 @@ public class ItemRestController {
             _listService.sortItems(list);
             return ResponseEntity.ok(_listService.save(list));
         } catch (ProductNotFoundException e) {
-            LOG.error(PRODUCT_NOT_FOUND, item.getProduct().getId());
+            log.error(PRODUCT_NOT_FOUND, item.getProduct().getId());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (BadProductNameException e) {
-            LOG.error(BAD_PRODUCT_NAME);
+            log.error(BAD_PRODUCT_NAME);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (ShoppingAccessException e) {
-            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
+            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
-            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            log.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -98,22 +91,22 @@ public class ItemRestController {
             _listService.sortItems(list);
             return ResponseEntity.ok(_listService.save(list));
         } catch (ShoppingAccessException e) {
-            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
+            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
-            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            log.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ItemNotFoundException e) {
-            LOG.error(ITEM_NOT_FOUND, id);
+            log.error(ITEM_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ProductNotFoundException e) {
-            LOG.error(PRODUCT_NOT_FOUND, item.getProduct().getId());
+            log.error(PRODUCT_NOT_FOUND, item.getProduct().getId());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (BadProductNameException e) {
-            LOG.error(BAD_PRODUCT_NAME);
+            log.error(BAD_PRODUCT_NAME);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (AccountNotFoundException e) {
-            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, id);
+            log.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -136,13 +129,13 @@ public class ItemRestController {
             _listService.sortItems(list);
             return ResponseEntity.ok(_listService.save(list));
         } catch (ShoppingAccessException e) {
-            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
-            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            log.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ItemNotFoundException e) {
-            LOG.error(ITEM_NOT_FOUND, id);
+            log.error(ITEM_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -162,13 +155,13 @@ public class ItemRestController {
             item = _listItemService.findById(item.getId());
             return ResponseEntity.ok(_listItemService.toggleItem(item));
         } catch (ShoppingAccessException e) {
-            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
-            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            log.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ItemNotFoundException e) {
-            LOG.error(ITEM_NOT_FOUND, id);
+            log.error(ITEM_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -188,13 +181,13 @@ public class ItemRestController {
             ListItem item = _listItemService.findById(itemId);
             return ResponseEntity.ok(_listItemService.toggleItem(item));
         } catch (ShoppingAccessException e) {
-            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
-            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            log.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ItemNotFoundException e) {
-            LOG.error(ITEM_NOT_FOUND, id);
+            log.error(ITEM_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -215,10 +208,10 @@ public class ItemRestController {
             Set<Product> favorites = _listItemService.getFavoriteProductsForAccount(Utils.getCurrentAccountId());
             return ResponseEntity.ok(_listItemService.filterFavoriteProducts(list, favorites));
         } catch (ShoppingAccessException e) {
-            LOG.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
-            LOG.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
+            log.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

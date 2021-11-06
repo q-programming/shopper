@@ -5,15 +5,7 @@ app:
     order: FRUIT_VEGETABLES,BAKERY,BREAKFAST,BABY,CANNED,CAR,CLOTHES,COFFEE_TEA,COSMETICS,DIARY,DIET,ELECTRONICAL,FISH,FROZEN,GRAINS_FLOURS,PASTA,HOME_KITCHEN,HOME_BAKING,CLEANING,MEAT,NEWSPAPERS,OFFICE_SUPPLIES,OILS,HYGIENE,PET,PHARMACY,PRESERVES,READY_MEALS,SNACKS,SPICES,BEVERAGES,ALCOHOL,GARDEN,BUILDING,TOYS,OTHER
   newsletter:
     schedule: 0 0 2-3 * * MON
-security:
-  oauth2:
-    client:
-      client-id: shopper
-      client-secret: 205a973f43d75da1524f133d14456ba1
-      scope: read,write
-      auto-approve-scopes: '.*'
-    resource:
-      userInfoUri: "*"
+
 spring:
   mail:
     host: localhost
@@ -24,39 +16,35 @@ spring:
     password: ps
     default-encoding: UTF-8
   datasource:
-    url: jdbc:postgresql://localhost:5432/shopper
+    url: jdbc:postgresql://192.168.1.50:5432/shopper
     username: postgres
     password: password
-  social:
-    facebook:
-      app-id: 1750703375258695
-      app-secret: fb3c3e7ed3b5ffa7db0586c659198424
-facebook:
-  client:
-    clientId: 1085784114929242
-    clientSecret: b7704a518a9db12f2a7511bcd2522541
-    accessTokenUri: https://graph.facebook.com/oauth/access_token
-    userAuthorizationUri: https://www.facebook.com/dialog/oauth
-    tokenName: oauth_token
-    scope: email,public_profile
-    authenticationScheme: query
-    clientAuthenticationScheme: form
-  resource:
-    userInfoUri: https://graph.facebook.com/me?fields=email,name,locale
-google:
-  client:
-    clientId: 940247594127-qqsrtbils54hjkf7h0u30sijdov4va1k.apps.googleusercontent.com
-    clientSecret: Tyh5U1mMob6d_q4Ie2jCIKYn
-    accessTokenUri: https://www.googleapis.com/oauth2/v4/token
-    userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
-    clientAuthenticationScheme: form
-    scope:
-      - openid
-      - email
-      - profile
-  resource:
-    userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
-    preferTokenInfo: true
+  security:
+    oauth2:
+      resource:
+        userInfoUri: "*"
+      client:
+        registration:
+          google:
+            clientId: CLIENT_ID
+            clientSecret: CLIENT_SECRET
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
+          facebook:
+            clientId: CLIENT_ID
+            clientSecret: CLIENT_SECRET
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - public_profile
+        provider:
+          facebook:
+            authorizationUri: https://www.facebook.com/v6.0/dialog/oauth
+            tokenUri: https://graph.facebook.com/v6.0/oauth/access_token
+            userInfoUri: https://graph.facebook.com/v6.0/me?fields=id,first_name,middle_name,last_name,name,email,verified,is_verified,picture.width(250).height(250)
+
 jwt:
   header: Authorization
   expires_in: 604800 # week

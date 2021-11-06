@@ -39,12 +39,12 @@ import static java.util.stream.Collectors.toMap;
 @Service
 public class ShoppingListService {
 
-    private ShoppingListRepository _listRepository;
-    private AccountService _accountService;
-    private PropertyService _propertyService;
-    private MessagesService _msgSrv;
-    private MailService _mailService;
-    private CategoryPresetService _presetService;
+    private final ShoppingListRepository _listRepository;
+    private final AccountService _accountService;
+    private final PropertyService _propertyService;
+    private final MessagesService _msgSrv;
+    private final MailService _mailService;
+    private final CategoryPresetService _presetService;
     @PersistenceContext
     private EntityManager entityManager;
 

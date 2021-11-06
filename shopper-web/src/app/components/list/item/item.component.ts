@@ -7,7 +7,7 @@ import {AlertService} from "@services/alert.service";
 import {MenuActionsService} from "@services/menu-actions.service";
 import {AuthenticationService} from "@services/authentication.service";
 import {TranslateService} from "@ngx-translate/core";
-import {DeviceDetectorService} from "ngx-device-detector";
+import {DeviceDetectorService} from 'ngx-device-detector';
 import {Account} from "@model/Account";
 import {ListItem} from "@model/ListItem";
 import {Category} from "@model/Category";

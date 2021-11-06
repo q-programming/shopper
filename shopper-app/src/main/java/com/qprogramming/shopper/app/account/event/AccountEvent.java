@@ -1,11 +1,15 @@
 package com.qprogramming.shopper.app.account.event;
 
 import com.qprogramming.shopper.app.account.Account;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Getter
+@Setter
 public class AccountEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_event_seq_gen")
@@ -23,47 +27,6 @@ public class AccountEvent {
 
     @Column(unique = true)
     private String data;
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public AccountEventType getType() {
-        return type;
-    }
-
-    public void setType(AccountEventType type) {
-        this.type = type;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getData() {
-        return data;
-    }
-
-    public void setData(String data) {
-        this.data = data;
-    }
 
     @Override
     public boolean equals(Object o) {
