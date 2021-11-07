@@ -2,6 +2,11 @@
     font-size: 1.5rem;
 }
 
+.app-title-larger {
+    color: white;
+    font-size: 2rem;
+}
+
 .fixed-top {
     position: fixed;
     top: 0;

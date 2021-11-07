@@ -66,6 +66,7 @@ import {BackdropComponent} from './components/menu/backdrop/backdrop.component';
 import {ItemComponent} from './components/list/item/item.component';
 import {InnerLoaderComponent} from './components/inner-loader/inner-loader.component';
 import {DevicesComponent} from './components/settings/devices/devices/devices.component';
+import {ScrollTopComponent} from "./components/scroll-top/scroll-top.component";
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -112,7 +113,8 @@ export function initUserFactory(authService: AuthenticationService) {
         BackdropComponent,
         ItemComponent,
         InnerLoaderComponent,
-        DevicesComponent
+        DevicesComponent,
+        ScrollTopComponent
     ],
     entryComponents: [
         AvatarUploadComponent,
