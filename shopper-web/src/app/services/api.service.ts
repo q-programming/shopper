@@ -125,7 +125,8 @@ export class ApiService {
                 this.alertSrv.error('app.api.error.notfound');
             } else if (error && error.status === 403) {
                 this.alertSrv.error('app.api.error.unauthorized');
-            } else if (error && error.status === 503) {
+            } else if (error && error.status === 504) {
+                this.alertSrv.error('app.api.error.timeout');
             }
         }
         throw error;

@@ -12,8 +12,10 @@ import com.qprogramming.shopper.app.account.devices.NewDevice;
 import com.qprogramming.shopper.app.account.event.AccountEventRepository;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
+import com.qprogramming.shopper.app.exceptions.AccountNotConfirmedException;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
+import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -274,6 +276,35 @@ public class AccountServiceTest extends MockedAccountTestBase {
         testAccount.getDevices().add(device);
         accountService.confirmDevice(testAccount, deviceKey);
         verify(deviceRepositoryMock, times(1)).save(device);
+    }
+
+    @Test
+    void loadNotConfirmedUserTest() {
+        testAccount.setEnabled(false);
+        when(accountRepositoryMock.findOneByEmail(testAccount.getEmail())).thenReturn(Optional.of(testAccount));
+        assertThrows(AccountNotConfirmedException.class, () -> accountService.loadUserByUsername(testAccount.getEmail()));
+    }
+
+    @Test
+    void accountTypeDefaultTest() {
+        val result = AccountType.type("no_existing");
+        assertThat(result).isEqualTo(AccountType.LOCAL);
+    }
+
+    @Test
+    void downloadFromUrlTest() {
+        val accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock, accountEventRepositoryMock, deviceRepositoryMock, mailServiceMock);
+        val url = getClass().getClassLoader().getResource("bit.png");
+        val result = accountService.downloadFromUrl(url);
+        assertThat(result).isNotEmpty();
+    }
+
+    @Test
+    void downloadFromUrlFailedTest() {
+        val accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock, accountEventRepositoryMock, deviceRepositoryMock, mailServiceMock);
+        val url = getClass().getClassLoader().getResource("bit2.png");
+        val result = accountService.downloadFromUrl(url);
+        assertThat(result).isNull();
     }
 
 }

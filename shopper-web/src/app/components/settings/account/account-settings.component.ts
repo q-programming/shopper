@@ -93,7 +93,7 @@ export class AccountSettingsComponent implements OnInit {
         let dialogRef = this.dialog.open(ConfirmDialogComponent, dialogConfig);
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.api.post(`${environment.account_url}/delete`, this.authSrv.currentAccount).subscribe(() => {
+                this.api.delete(`${environment.account_url}/delete`, this.authSrv.currentAccount).subscribe(() => {
                     this.alertSrv.success('app.settings.account.delete.confirm.success');
                     this.authSrv.currentAccount = null;
                     this.router.navigate(['/login'])

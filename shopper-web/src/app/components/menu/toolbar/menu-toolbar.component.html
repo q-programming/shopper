@@ -36,22 +36,28 @@
     </div>
 </mat-toolbar>
 <ng-container *ngIf="!loggedIn">
-    <div class="mt-2" fxLayout="row wrap" fxLayoutAlign="center start">
-        <div fxFlex="80" fxFlex.lt-md="100">
-            <div fxLayout="row">
-                <div class="mat-toolbar-button app-title-larger shopper-font" fxFlex>
-                    <img alt="" class="d-inline-block align-top" height="50" src="assets/images/logo_white.svg">
-                    <span fxShow.lt-md="false">Shopper</span>
-                </div>
-                <span class="fill-remaining-space"></span>
-                <div class="mt-4" fxFlex>
-                    <button class="mr-4 pl-5 pr-5" mat-flat-button routerLink="/register">{{'app.register'|translate}}
-                    </button>
-                    <button (click)="scrollToLogin()" class="pl-5 pr-5 success-button"
-                            mat-flat-button>{{'app.login.logpass.login'|translate}}
-                    </button>
+    <mat-toolbar class="fixed-top " color="primary">
+        <div class="mt-2 full-width-button" fxLayout="row wrap" fxLayoutAlign="center start">
+            <div fxFlex="80" fxFlex.lt-md="95">
+                <div fxLayout="row">
+                    <div class="mat-toolbar-button app-title-larger shopper-font" fxFlex>
+                        <img alt="" class="d-inline-block align-top" height="50" src="assets/images/logo_white.svg">
+                        <span fxShow.lt-md="false">Shopper</span>
+                    </div>
+                    <span class="fill-remaining-space"></span>
+                    <div class="mt-4" fxFlex="30" fxFlex.lt-md="50">
+                        <div fxLayout="row">
+                            <button class="mr-4 pl-2 pr-2 login-buton" fxFlex="50" mat-flat-button
+                                    routerLink="/register">{{'app.register'|translate}}
+                            </button>
+                            <button (click)="scrollToLogin()" class="pl-2 pr-2 success-button login-buton" fxFlex="50"
+                                    mat-flat-button>{{'app.login.logpass.login'|translate}}
+                            </button>
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </mat-toolbar>
 </ng-container>

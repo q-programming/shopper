@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,7 +34,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/account")
 public class AccountRestController {
-    private static final Logger LOG = LoggerFactory.getLogger(AccountRestController.class);
     private final AccountService _accountService;
     private final ShoppingListService _listService;
     private final LogoutHandler _logoutHandler;
@@ -77,7 +74,7 @@ public class AccountRestController {
             Account account = _accountService.findById(id);
             return ResponseEntity.ok(_accountService.getAccountAvatar(account));
         } catch (AccountNotFoundException e) {
-            e.printStackTrace();
+            log.error("Account for which avatar was searched was not found", e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -96,7 +93,7 @@ public class AccountRestController {
             try {
                 return new DisplayAccount(_accountService.findById(s));
             } catch (AccountNotFoundException e) {
-                LOG.error("Account with id {} was not found", s);
+                log.error("Account with id {} was not found", s);
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toSet());
@@ -173,7 +170,7 @@ public class AccountRestController {
         try {
             _accountService.removeDevice(device);
         } catch (DeviceNotFoundException | AccountNotFoundException e) {
-            LOG.error(e.getMessage());
+            log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok().build();
@@ -181,7 +178,7 @@ public class AccountRestController {
 
 
     @Transactional
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> deleteAccount(HttpServletRequest requ, HttpServletResponse resp, @RequestBody Account account) {
         if (!account.equals(Utils.getCurrentAccount())) {
@@ -207,7 +204,7 @@ public class AccountRestController {
                     .filter(account -> account.getEmail().contains(term))
                     .collect(Collectors.toSet()));
         } catch (AccountNotFoundException e) {
-            LOG.error("Account with id {} was not found", Utils.getCurrentAccountId());
+            log.error("Account with id {} was not found", Utils.getCurrentAccountId());
             return ResponseEntity.notFound().build();
         }
     }

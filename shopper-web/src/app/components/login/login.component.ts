@@ -1,5 +1,4 @@
 import {AfterViewInit, Component, Inject, OnInit} from '@angular/core';
-import {environment} from "@env/environment";
 import {AuthenticationService, FACEBOOK_AUTH_URL, GOOGLE_AUTH_URL} from "@services/authentication.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormControl, Validators} from "@angular/forms";
@@ -13,10 +12,11 @@ import {first} from "rxjs/operators";
 })
 export class LoginComponent implements OnInit, AfterViewInit {
 
-    login_url = environment.context + environment.login_url;
+    isLoading: boolean;
     FacebookLoginURL;
     GoogleLoginURL;
     redirect_url;
+    currentLang = 'en';
 
     usernameCtrl = new FormControl('', Validators.required);
     passwordCtrl = new FormControl('', Validators.required);
@@ -27,7 +27,13 @@ export class LoginComponent implements OnInit, AfterViewInit {
         private authSrv: AuthenticationService,
         private router: Router,
         @Inject(DOCUMENT) private document: Document) {
-        this.authSrv.setLanguage();
+        this.isLoading = true;
+        this.authSrv.getDefaultLanguage().subscribe((lang) => {
+            this.currentLang = lang;
+            this.isLoading = false;
+        }, () => {
+            this.isLoading = false;
+        })
     }
 
     ngOnInit() {

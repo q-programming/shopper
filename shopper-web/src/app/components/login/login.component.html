@@ -1,126 +1,115 @@
-<div fxLayout="row">
-    <mat-card class="p-4 text-center" fxFlex="80" fxFlex.gt-md="60" fxFlex.lt-md="100" fxFlexOffset="10"
-              fxFlexOffset.gt-md="20" fxFlexOffset.lt-sm="0">
-        <div fxLayout="row wrap" fxLayoutAlign="center start" fxLayoutGap="20px">
-            <div fxFlex="45" fxFlex.lt-sm="100" fxShow.lt-md="false">
-                <img alt="promo 1" class="promo-image" src="assets/images/promo_1.png">
-            </div>
-            <div fxFlex="45" fxFlex.lt-md="100">
-                <h1 class="text-center">
-                    <img alt="application logo" class="ml-2 v-middle" height="50px" src="assets/images/logo.svg">
-                    {{'app.login.welcome'|translate}}
-                </h1>
-                <div class="mt-2 text-left">
-                    Application to create and share shopping lists.<br>
-                    If you quickly need to add something, open webpage or
-                    app add it,<br>
-                    and it will automatically show on shared user lists
+<ng-container *ngIf="isLoading">
+    <div class="text-center">
+        <inner-loader></inner-loader>
+    </div>
+</ng-container>
+<ng-container *ngIf="!isLoading">
+    <div fxLayout="row">
+        <mat-card class="p-4 text-center" fxFlex="80" fxFlex.gt-md="60" fxFlex.lt-md="100" fxFlexOffset="10"
+                  fxFlexOffset.gt-md="20" fxFlexOffset.lt-sm="0">
+            <div fxLayout="row wrap" fxLayoutAlign="center start" fxLayoutGap="20px">
+                <div fxFlex="45" fxFlex.lt-sm="100" fxShow.lt-md="false">
+                    <img alt="promo screens" class="promo-image" src="assets/images/login/promo.png">
                 </div>
-            </div>
-            <div class="mt-4" fxFlex="45" fxFlex.lt-md="100">
-                <h4>Create your shopping lists and quickly populate it</h4>
-                <div class="mt-2 text-left">
-                    Every time product is added to shopping list, application stores that choice individually for each
-                    account,<br>storing information how many times that product was added.<br>
-                    Afterwards when adding new item to shopping list using "New item dialog",<br>
-                    user can click favorites tab, and see all his/hers favorite products ( sorted by
-                    popularity/score)<br>
-                    To add favorite product, just click on it , and it will be quickly added to list.
+                <div fxFlex="45" fxFlex.lt-md="100">
+                    <h1 class="text-center">
+                        <img alt="application logo" class="ml-2 v-middle" height="50px" src="assets/images/logo.svg">
+                        {{'app.login.welcome.header.text'|translate}}
+                    </h1>
+                    <div [innerHTML]="'app.login.welcome.header.sub'|translate" class="mt-2 text-left"></div>
                 </div>
-            </div>
-            <div class="mt-4" fxFlex="45" fxFlex.lt-md="100" fxShow.lt-md="false">
-                <img alt="add product dialog" class="promo-image" src="assets/images/add_product.png">
-            </div>
-            <div class="mt-4" fxFlex="45" fxFlex.lt-md="100" fxShow.lt-md="false">
-                <img alt="add product dialog" class="promo-image" src="assets/images/categories_pl.png">
-            </div>
-            <div class="mt-4" fxFlex="45" fxFlex.lt-md="100">
-                <h4>Product categories automatically assigned</h4>
-                Whenever product is entered by user, application will try to match it to ones already existing in
-                database.
-                <br>
-                If found , category will be proposed for it.That category can be of course changed freely by user.
-                <br>
-                Everytime category is assigned to product (including item category edit) , application stores that
-                information, increasing category score for it, so that next time when adding score it should be more
-                accurate.
-            </div>
-            <div class="mt-2" fxFlex="100">
-                Product category is then used to sort all items on your lists . You can also create multiple presets ,
-                to
-                have custom sorting for each of your favorite shop individually
-            </div>
-        </div>
-    </mat-card>
-</div>
-<div fxLayout="row">
-    <mat-card class="mt-5 p-4 text-center" fxFlex="80" fxFlex.gt-md="60" fxFlex.lt-md="100" fxFlexOffset="10"
-              fxFlexOffset.gt-md="20" fxFlexOffset.lt-sm="0">
-        <h2 class="mt-4">Want to start ? </h2>
-        <div>
-            Register free account with email and password or use Google or Facebook to create account automatically
-        </div>
-        <!--    LOGIN SECTION-->
-        <div class="mt-4" fxLayout="row wrap" fxLayoutAlign="center start" id="login">
-            <div class="social-form" fxFlex.gt-xs fxFlex.xs="100%">
-                <h4 class="mb-5">{{'app.login.social'|translate}}</h4>
-                <div>
-                    <a class="btn-social facebook" href="{{FacebookLoginURL}}">
-                        <img height="25px" src="assets/images/btn_facebook.svg">
-                        {{'app.login.social.facebook'|translate}}
-                    </a>
-                </div>
-                <div class="mt-1">
-                    <a class="btn-social google" href="{{GoogleLoginURL}}">
-                        <img height="25px" src="assets/images/btn_google.svg">
-                        {{'app.login.social.google'|translate}}
-                    </a>
-                </div>
-                <div [innerHTML]="'app.login.social.register'|translate" class="mt-5">
-                </div>
-            </div>
-            <div class="username-form" fxFlex.gt-xs fxFlex.xs="100%">
-                <h4>{{'app.login.logpass'|translate}}</h4>
-                <form>
-                    <div>
-                        <mat-form-field>
-                            <input [formControl]="usernameCtrl" matInput name="username"
-                                   placeholder="{{'app.login.logpass.username'|translate}}">
-                            <mat-icon matPrefix="">person</mat-icon>
-                        </mat-form-field>
+                <div class="mt-4" fxFlex="45" fxFlex.lt-md="100">
+                    <h4>{{'app.login.welcome.create.text'|translate}}</h4>
+                    <div [innerHTML]="'app.login.welcome.create.sub'|translate" class="mt-2 text-left">
                     </div>
-                    <div>
-                        <mat-form-field>
-                            <input (keydown.enter)="login()" [formControl]="passwordCtrl" matInput
-                                   name="password" placeholder="{{'app.login.logpass.password'|translate}}"
-                                   type="password">
-                            <mat-icon matPrefix>vpn_key</mat-icon>
-                        </mat-form-field>
-                    </div>
-                    <div>
-                        <button (click)="login()" color="primary"
-                                mat-flat-button>{{'app.login.logpass.login'|translate}}
-                        </button>
-                    </div>
-                </form>
-                <div class="mt-2">
-                    {{'app.login.logpass.noaccount'|translate}}<a
-                        routerLink="/register">{{'app.login.register.here'|translate}}</a>
                 </div>
-                <div class="mt-2">
-                    {{'app.login.logpass.forgot'|translate}}
-                    <a routerLink="/reset">
-                        {{'app.login.logpass.forgot.here'|translate}}
-                    </a>
+                <div class="mt-4" fxFlex="45" fxFlex.lt-md="100" fxShow.lt-md="false">
+                    <img alt="add product dialog" class="promo-image"
+                         src="assets/images/login/add_product_{{currentLang}}.png">
+                </div>
+                <div class="mt-4" fxFlex="45" fxFlex.lt-md="100" fxShow.lt-md="false">
+                    <img alt="product categories screen" class="promo-image"
+                         src="assets/images/login/categories_{{currentLang}}.png">
+                </div>
+                <div class="mt-4" fxFlex="45" fxFlex.lt-md="100">
+                    <h4>{{'app.login.welcome.product.text'|translate}}</h4>
+                    <div [innerHTML]="'app.login.welcome.product.sub'|translate"></div>
+                </div>
+                <div class="mt-2" fxFlex="100">
+                    {{'app.login.welcome.product.summary'|translate}}
                 </div>
             </div>
-        </div>
-    </mat-card>
-</div>
-<div fxLayout="row">
-    <mat-card class="mt-5 text-center" fxFlex="80" fxFlex.gt-md="60" fxFlex.lt-md="100" fxFlexOffset="10"
-              fxFlexOffset.gt-md="20" fxFlexOffset.lt-sm="0">
-        Application created by <a href="mailto:jakub.romaniszyn@gmail.com">Jakub Romaniszyn</a>
-    </mat-card>
-</div>
-<scroll-to-top></scroll-to-top>
+        </mat-card>
+    </div>
+    <div fxLayout="row">
+        <mat-card class="mt-5 p-4 text-center" fxFlex="80" fxFlex.gt-md="60" fxFlex.lt-md="100" fxFlexOffset="10"
+                  fxFlexOffset.gt-md="20" fxFlexOffset.lt-sm="0">
+            <h2 class="mt-4">{{'app.login.welcome.product.start.text'|translate}}</h2>
+            <div>
+                {{'app.login.welcome.product.start.sub'|translate}}
+            </div>
+            <!--    LOGIN SECTION-->
+            <div class="mt-4" fxLayout="row wrap" fxLayoutAlign="center start" id="login">
+                <div class="social-form" fxFlex.gt-xs fxFlex.xs="100%">
+                    <h4 class="mb-5">{{'app.login.social'|translate}}</h4>
+                    <div>
+                        <a class="btn-social facebook" href="{{FacebookLoginURL}}">
+                            <img height="25px" src="assets/images/btn_facebook.svg">
+                            {{'app.login.social.facebook'|translate}}
+                        </a>
+                    </div>
+                    <div class="mt-1">
+                        <a class="btn-social google" href="{{GoogleLoginURL}}">
+                            <img height="25px" src="assets/images/btn_google.svg">
+                            {{'app.login.social.google'|translate}}
+                        </a>
+                    </div>
+                    <div [innerHTML]="'app.login.social.register'|translate" class="mt-5">
+                    </div>
+                </div>
+                <div class="username-form" fxFlex.gt-xs fxFlex.xs="100%">
+                    <h4>{{'app.login.logpass'|translate}}</h4>
+                    <form>
+                        <div>
+                            <mat-form-field>
+                                <input [formControl]="usernameCtrl" matInput name="username"
+                                       placeholder="{{'app.login.logpass.username'|translate}}">
+                                <mat-icon matPrefix="">person</mat-icon>
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <mat-form-field>
+                                <input (keydown.enter)="login()" [formControl]="passwordCtrl" matInput
+                                       name="password" placeholder="{{'app.login.logpass.password'|translate}}"
+                                       type="password">
+                                <mat-icon matPrefix>vpn_key</mat-icon>
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <button (click)="login()" color="primary"
+                                    mat-flat-button>{{'app.login.logpass.login'|translate}}
+                            </button>
+                        </div>
+                    </form>
+                    <div class="mt-2">
+                        {{'app.login.logpass.noaccount'|translate}}<a
+                            routerLink="/register">{{'app.login.register.here'|translate}}</a>
+                    </div>
+                    <div class="mt-2">
+                        {{'app.login.logpass.forgot'|translate}}
+                        <a routerLink="/reset">
+                            {{'app.login.logpass.forgot.here'|translate}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+    <div fxLayout="row">
+        <mat-card class="mt-5 text-center" fxFlex="80" fxFlex.gt-md="60" fxFlex.lt-md="100" fxFlexOffset="10"
+                  fxFlexOffset.gt-md="20" fxFlexOffset.lt-sm="0">
+            {{'app.login.welcome.created'|translate}}<a href="mailto:jakub.romaniszyn@gmail.com">Jakub Romaniszyn</a>
+        </mat-card>
+    </div>
+    <scroll-to-top></scroll-to-top>
+</ng-container>

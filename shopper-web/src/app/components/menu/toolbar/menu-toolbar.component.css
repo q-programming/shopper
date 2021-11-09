@@ -43,3 +43,7 @@
 .mat-toolbar-button {
     padding: 12px 16px !important;
 }
+
+.login-buton {
+    max-width: 200px !important;
+}
