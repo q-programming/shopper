@@ -1,6 +1,9 @@
 package com.qprogramming.shopper.app.login.token;
 
 import com.qprogramming.shopper.app.account.Account;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,22 +13,17 @@ import org.springframework.security.core.userdetails.UserDetails;
  * Based on
  * https://github.com/bfwg/springboot-jwt-starter
  */
+@ToString
 public class TokenBasedAuthentication extends AbstractAuthenticationToken {
 
     private final UserDetails principal;
+    @Getter
+    @Setter
     private String token;
 
     public TokenBasedAuthentication(UserDetails principal) {
         super(principal.getAuthorities());
         this.principal = principal;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     @Override
@@ -45,13 +43,5 @@ public class TokenBasedAuthentication extends AbstractAuthenticationToken {
 
     public String getName() {
         return ((Account) principal).getId();
-    }
-
-    @Override
-    public String toString() {
-        return "TokenBasedAuthentication{" +
-                "principal=" + principal +
-                ", token='" + token + '\'' +
-                '}';
     }
 }
