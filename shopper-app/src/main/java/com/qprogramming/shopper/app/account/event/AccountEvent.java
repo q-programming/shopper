@@ -1,15 +1,17 @@
 package com.qprogramming.shopper.app.account.event;
 
 import com.qprogramming.shopper.app.account.Account;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Objects;
 
+@Builder
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AccountEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_event_seq_gen")

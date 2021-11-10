@@ -19,8 +19,9 @@ import com.qprogramming.shopper.app.shoppinglist.ShoppingListRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
-import org.junit.Before;
-import org.junit.Test;
+import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -33,9 +34,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -78,22 +77,21 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     private Cache cacheMock;
 
 
-    @Before
-    @Override
-    public void setup() {
+    @BeforeEach
+    void setUp() {
         super.setup();
         when(cacheManager.getCache(anyString())).thenReturn(cacheMock);
-        CategoryPresetService presetService = new CategoryPresetService(presetRepositoryMock);
-        ShoppingListService listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, msgSrvMock, mailServiceMock, presetService);
-        ListItemService listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock, cacheManager);
-        ItemRestController controller = new ItemRestController(listItemService, listService);
+        val presetService = new CategoryPresetService(presetRepositoryMock);
+        val listService = new ShoppingListService(listRepositoryMock, accountServiceMock, propertyServiceMock, msgSrvMock, mailServiceMock, presetService);
+        val listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock, cacheManager);
+        val controller = new ItemRestController(listItemService, listService);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
     }
 
 
     @Test
-    public void addItemTest() throws Exception {
+    void addItemTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         ShoppingList list = createList(NAME, 1L);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
@@ -113,7 +111,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void addItemAlreadyExistsTest() throws Exception {
+    void addItemAlreadyExistsTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         ShoppingList list = createList(NAME, 1L);
         list.getItems().add(listItem);
@@ -133,7 +131,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void addItemAlreadyExistsAndIsDoneTest() throws Exception {
+    void addItemAlreadyExistsAndIsDoneTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         listItem.setDone(true);
         ShoppingList list = createList(NAME, 1L);
@@ -155,20 +153,20 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void addItemBadProductNameTest() throws Exception {
+    void addItemBadProductNameTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         listItem.getProduct().setName(null);
         ShoppingList list = createList(NAME, 1L);
 
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void itemOperationsProductNotFoundTest() throws Exception {
+    void itemOperationsProductNotFoundTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         listItem.getProduct().setId(1L);
         ShoppingList list = createList(NAME, 1L);
@@ -176,58 +174,58 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         when(productRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
 
         this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void itemOperationsListNotFoundTest() throws Exception {
+    void itemOperationsListNotFoundTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.empty());
 
         this.mvc.perform(post(API_ITEM_URL + 1 + ITEM_ADD)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isNotFound());
         this.mvc.perform(post(API_ITEM_URL + 1 + ITEM_UPDATE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isNotFound());
         this.mvc.perform(post(API_ITEM_URL + 1 + ITEM_DELETE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isNotFound());
         this.mvc.perform(post(API_ITEM_URL + 1 + ITEM_TOGGLE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isNotFound());
         this.mvc.perform(get(API_ITEM_URL + 1 + FAVORITES_LIST))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void itemOperationsListNoPermissionTest() throws Exception {
+    void itemOperationsListNoPermissionTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         ShoppingList list1 = createList(NAME, 1L);
         list1.setOwnerId(NAME);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list1));
 
         this.mvc.perform(post(API_ITEM_URL + 1 + ITEM_ADD)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isForbidden());
         this.mvc.perform(post(API_ITEM_URL + 1 + ITEM_UPDATE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isForbidden());
         this.mvc.perform(post(API_ITEM_URL + 1 + ITEM_DELETE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isForbidden());
         this.mvc.perform(post(API_ITEM_URL + 1 + ITEM_TOGGLE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(listItem)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(listItem)))
                 .andExpect(status().isForbidden());
         this.mvc.perform(get(API_ITEM_URL + FAVORITES_LIST + 1))
                 .andExpect(status().isForbidden());
@@ -236,7 +234,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
 
 
     @Test
-    public void updateItemTest() throws Exception {
+    void updateItemTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         ListItem dbItem = TestUtil.createListItem(NAME);
         listItem.setId(1L);
@@ -261,7 +259,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void updateItemProductChangedTest() throws Exception {
+    void updateItemProductChangedTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         listItem.setProduct(TestUtil.createProduct("New Product"));
         ListItem dbItem = TestUtil.createListItem(NAME);
@@ -285,7 +283,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
 
 
     @Test
-    public void itemOperationsItemNotFoundTest() throws Exception {
+    void itemOperationsItemNotFoundTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         listItem.setId(1L);
         ShoppingList list = createList(NAME, 1L);
@@ -305,7 +303,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
 
 
     @Test
-    public void deleteItemTest() throws Exception {
+    void deleteItemTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         listItem.setId(1L);
         ShoppingList list = createList(NAME, 1L);
@@ -324,7 +322,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void toggleItemTest() throws Exception {
+    void toggleItemTest() throws Exception {
         ListItem listItem = TestUtil.createListItem(NAME);
         listItem.setId(1L);
         ShoppingList list = createList(NAME, 1L);
@@ -332,6 +330,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(listItemRepositoryMock.findById(1L)).thenReturn(Optional.of(listItem));
         when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
+
         MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_TOGGLE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(listItem))).andExpect(status().is2xxSuccessful()).andReturn();
@@ -339,10 +338,12 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         ListItem result = TestUtil.convertJsonToObject(contentAsString, ListItem.class);
         verify(listItemRepositoryMock, times(1)).save(listItem);
         assertThat(result.isDone()).isTrue();
+        this.mvc.perform(get("/api/item/" + list.getId() + ITEM_TOGGLE + "/" + listItem.getId()))
+                .andExpect(status().is2xxSuccessful());
     }
 
     @Test
-    public void getFavoritesNothingFoundTest() throws Exception {
+    void getFavoritesNothingFoundTest() throws Exception {
         ListItem listItem = new ListItem();
         listItem.setId(1L);
         ShoppingList list = createList(NAME, 1L);
@@ -359,7 +360,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void favoritesTest() throws Exception {
+    void favoritesTest() throws Exception {
         Product product1 = TestUtil.createProduct(NAME + 1);
         Product product2 = TestUtil.createProduct(NAME + 2);
         Product product3 = TestUtil.createProduct(NAME + 3);

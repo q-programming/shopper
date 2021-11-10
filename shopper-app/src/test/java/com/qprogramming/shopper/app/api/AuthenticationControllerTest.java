@@ -3,24 +3,26 @@ package com.qprogramming.shopper.app.api;
 import com.fasterxml.uuid.Generators;
 import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
-import com.qprogramming.shopper.app.account.Account;
-import com.qprogramming.shopper.app.account.AccountPasswordEncoder;
-import com.qprogramming.shopper.app.account.AccountRepository;
-import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.account.*;
 import com.qprogramming.shopper.app.account.devices.Device;
 import com.qprogramming.shopper.app.account.devices.NewDevice;
 import com.qprogramming.shopper.app.account.event.AccountEvent;
+import com.qprogramming.shopper.app.account.event.AccountEventRepository;
 import com.qprogramming.shopper.app.account.event.AccountEventType;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import com.qprogramming.shopper.app.login.RegisterForm;
 import com.qprogramming.shopper.app.login.token.JwtAuthenticationRequest;
+import com.qprogramming.shopper.app.login.token.UserTokenState;
 import com.qprogramming.shopper.app.security.TokenService;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -30,7 +32,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.PrintWriter;
 import java.util.Optional;
 
 import static com.qprogramming.shopper.app.security.BasicRestAuthenticationFilter.AUTHENTICATION_SCHEME;
@@ -47,36 +48,51 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class AuthenticationControllerTest extends MockedAccountTestBase {
 
-
     public static final String PASS = "pass";
+    private static final String API_REFRESH = "/api/refresh";
+    private static final String AUTH_PASSWORD_RESET = "/auth/password-reset";
+    private static final String AUTH_PASSWORD_CHANGE = "/auth/password-change";
+
     @Autowired
     protected WebApplicationContext context;
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private AccountEventRepository accountEventRepository;
     protected MockMvc mvc;
     protected MockMvc standaloneMvc;
     private AuthenticationController controller;
-    @Mock
-    private PrintWriter writerMock;
     @Autowired
     private AccountPasswordEncoder accountPasswordEncoder;
-    @Autowired
-    private TokenService tokenService;
+    @Mock
+    private TokenService tokenServiceMock;
     @Mock
     private AuthenticationManager authenticationManagerMock;
     @Mock
     private AccountService accountServiceMock;
+    @SpyBean
+    private AccountService accountServiceSpy;
 
 
     @BeforeEach
     void setUp() {
         super.setup();
+        accountEventRepository.deleteAll();
         accountRepository.deleteAll();
         testAccount.setPassword(accountPasswordEncoder.encode(testAccount.getPassword()));
         accountRepository.save(testAccount);
         mvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())
+                .build();
+    }
+
+    private void initMocked() {
+        super.setup();
+        MockitoAnnotations.openMocks(this);
+        controller = new AuthenticationController(tokenServiceMock, authenticationManagerMock, accountServiceMock);
+        standaloneMvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
     }
 
@@ -101,27 +117,47 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
                 .andExpect(status().is4xxClientError());
     }
 
-    //TODO check why it's not working in run all tests
-//    @Test
-//    void refreshTokenLoginUsingToken() throws Exception {
-//        Account account = TestUtil.createAccount();
-//        DummyHttpResponse dummyHttpResponse = new DummyHttpResponse().withWritter(writerMock);
-//        tokenService.createTokenCookies(dummyHttpResponse, account);
-//        Set<Cookie> cookies = dummyHttpResponse.getCookies();
-//        MockHttpServletResponse response = this.mvc.perform(get("/api/refresh").cookie(cookies.toArray(new Cookie[cookies.size()])))
-//                .andExpect(status().is2xxSuccessful()).andReturn().getResponse();
-//        assertThat(response.getCookie("AUTH-TOKEN")).isNotNull();
-//    }
+    @Test
+    void refreshAuthenticationTokenNoTokenTest() throws Exception {
+        initMocked();
+        val mvcResult = standaloneMvc.perform(get(API_REFRESH)).andExpect(status().isAccepted()).andReturn();
+        val contentAsString = mvcResult.getResponse().getContentAsString();
+        val result = TestUtil.convertJsonToObject(contentAsString, UserTokenState.class);
+        assertThat(result.getExpires_in()).isEqualTo(-1L);
+    }
+
+    @Test
+    void refreshAuthenticationTokenExpiredTest() throws Exception {
+        initMocked();
+        val token = "TOKEN";
+        when(tokenServiceMock.getToken(any())).thenReturn(token);
+        when(tokenServiceMock.canTokenBeRefreshed(token)).thenReturn(false);
+        val mvcResult = standaloneMvc.perform(get(API_REFRESH)).andExpect(status().isAccepted()).andReturn();
+        val contentAsString = mvcResult.getResponse().getContentAsString();
+        val result = TestUtil.convertJsonToObject(contentAsString, UserTokenState.class);
+        assertThat(result.getExpires_in()).isEqualTo(-1L);
+    }
+
+    @Test
+    void refreshAuthenticationTest() throws Exception {
+        initMocked();
+        val token = "TOKEN";
+        when(tokenServiceMock.getToken(any())).thenReturn(token);
+        when(tokenServiceMock.canTokenBeRefreshed(token)).thenReturn(true);
+        when(tokenServiceMock.refreshToken(token)).then(returnsFirstArg());
+        standaloneMvc.perform(get(API_REFRESH)).andExpect(status().isOk());
+        verify(tokenServiceMock, times(1)).refreshCookie(anyString(), any());
+    }
 
 
     @Test
-    void failToaccessResourceUsingBadBasicAuthTest() throws Exception {
+    void failToAccessResourceUsingBadBasicAuthTest() throws Exception {
         when(authMock.getPrincipal())
                 .thenReturn(null);
         byte[] encodedBytes = Base64Utils.encode((TestUtil.EMAIL + ":wrong" + TestUtil.PASSWORD).getBytes());
         String authHeader = AUTHENTICATION_SCHEME + " " + new String(encodedBytes);
         this.mvc.perform(get("/api/resource")
-                .header(AUTHORIZATION, authHeader))
+                        .header(AUTHORIZATION, authHeader))
                 .andExpect(status().is4xxClientError());
     }
 
@@ -142,8 +178,8 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         request.setUsername(TestUtil.EMAIL);
         request.setPassword(TestUtil.PASSWORD + 1);
         this.mvc.perform(post("/auth")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(request)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -154,8 +190,8 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         form.setEmail(testAccount.getEmail());
         when(accountServiceMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.of(testAccount));
         this.standaloneMvc.perform(post("/auth/register")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isConflict());
     }
 
@@ -168,8 +204,8 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         form.setConfirmPassword(TestUtil.PASSWORD + 1);
         when(accountServiceMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.empty());
         this.standaloneMvc.perform(post("/auth/register")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isConflict());
     }
 
@@ -182,8 +218,8 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         form.setConfirmPassword(PASS);
         when(accountServiceMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.empty());
         this.standaloneMvc.perform(post("/auth/register")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isConflict());
     }
 
@@ -201,8 +237,8 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         when(accountServiceMock.createLocalAccount(any(Account.class))).then(returnsFirstArg());
         when(accountServiceMock.createConfirmEvent(any(Account.class))).thenReturn(event);
         this.standaloneMvc.perform(post("/auth/register")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isOk());
         verify(accountServiceMock, times(1)).createLocalAccount(any(Account.class));
         verify(accountServiceMock, times(1)).sendConfirmEmail(any(Account.class), any(AccountEvent.class));
@@ -215,8 +251,8 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         form.setEmail(testAccount.getEmail());
         when(accountServiceMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.empty());
         this.standaloneMvc.perform(post("/auth/new-device")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isNotFound());
     }
 
@@ -232,8 +268,8 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         when(accountServiceMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.of(testAccount));
         when(accountServiceMock.registerNewDevice(testAccount, name)).thenReturn(newDevice);
         MvcResult mvcResult = this.standaloneMvc.perform(post("/auth/new-device")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         NewDevice result = TestUtil.convertJsonToObject(contentAsString, NewDevice.class);
@@ -241,13 +277,6 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         verify(accountServiceMock, times(1)).createConfirmDeviceEvent(testAccount, newDevice.getId());
     }
 
-    private void initMocked() {
-        super.setup();
-        MockitoAnnotations.initMocks(this);
-        controller = new AuthenticationController(tokenService, authenticationManagerMock, accountServiceMock);
-        standaloneMvc = MockMvcBuilders.standaloneSetup(controller)
-                .build();
-    }
 
     @Test
     void testConfirmEventNotFound() throws Exception {
@@ -255,8 +284,8 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         String token = Generators.timeBasedGenerator().generate().toString();
         when(accountServiceMock.findEvent(token)).thenReturn(Optional.empty());
         this.standaloneMvc.perform(post("/auth/confirm")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(token))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(token))
                 .andExpect(status().isNotFound());
     }
 
@@ -268,8 +297,8 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         event.setToken(token);
         when(accountServiceMock.findEvent(token)).thenReturn(Optional.of(event));
         this.standaloneMvc.perform(post("/auth/confirm")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(token))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(token))
                 .andExpect(status().isConflict());
         verify(accountServiceMock, times(1)).removeEvent(event);
     }
@@ -284,8 +313,8 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         event.setAccount(TestUtil.createAccount("John", "Doe"));
         when(accountServiceMock.findEvent(token)).thenReturn(Optional.of(event));
         this.standaloneMvc.perform(post("/auth/confirm")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(token))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(token))
                 .andExpect(status().isForbidden());
     }
 
@@ -303,8 +332,8 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         when(accountServiceMock.findEvent(token)).thenReturn(Optional.of(event));
         doThrow(new DeviceNotFoundException()).when(accountServiceMock).confirmDevice(testAccount, event.getData());
         this.standaloneMvc.perform(post("/auth/confirm")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(token))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(token))
                 .andExpect(status().isNotFound());
 
     }
@@ -322,10 +351,55 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
         event.setAccount(testAccount);
         when(accountServiceMock.findEvent(token)).thenReturn(Optional.of(event));
         this.standaloneMvc.perform(post("/auth/confirm")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(token))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(token))
                 .andExpect(status().isOk());
         verify(accountServiceMock, times(1)).confirmDevice(testAccount, event.getData());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void testPasswordReset() throws Exception {
+        doNothing().when(accountServiceSpy).sendConfirmEmail(any(Account.class), any(AccountEvent.class));
+        this.mvc.perform(post(AUTH_PASSWORD_RESET).contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(testAccount.getEmail()))
+                .andExpect(status().isOk());
+        val eventCaptor = ArgumentCaptor.forClass(AccountEvent.class);
+        val accountCaptor = ArgumentCaptor.forClass(Account.class);
+        verify(accountServiceSpy).sendConfirmEmail(accountCaptor.capture(), eventCaptor.capture());
+        val event = eventCaptor.getValue();
+        assertThat(event.getAccount()).isEqualTo(testAccount);
+        assertThat(event.getType()).isEqualTo(AccountEventType.PASSWORD_RESET);
+    }
+
+    @Test
+    @WithAnonymousUser
+    void testPasswordWrongPassChange() throws Exception {
+        val event = accountServiceSpy.createPasswordResetEvent(testAccount);
+        val passwordForm = PasswordForm.builder().password("pass").confirmpassword("pass2").token(event.getToken()).build();
+        this.mvc.perform(post(AUTH_PASSWORD_CHANGE).contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(passwordForm)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void testPasswordChange() throws Exception {
+        val event = accountServiceSpy.createPasswordResetEvent(testAccount);
+        val passwordForm = PasswordForm.builder().password("pass").confirmpassword("pass").token(event.getToken()).build();
+        this.mvc.perform(post(AUTH_PASSWORD_CHANGE).contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(passwordForm)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void testPasswordChangeWrongToken() throws Exception {
+        val token = accountServiceSpy.generateToken();
+        val passwordForm = PasswordForm.builder().password("pass").confirmpassword("pass").token(token).build();
+        this.mvc.perform(post(AUTH_PASSWORD_CHANGE).contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(passwordForm)))
+                .andExpect(status().isNotFound());
     }
 
 

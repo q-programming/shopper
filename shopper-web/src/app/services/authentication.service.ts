@@ -86,6 +86,13 @@ export class AuthenticationService {
         return false;
     }
 
+    /**
+     * Attempt to login with username and password
+     * After successfull login, get user info and it's avatar
+     * If error occurred , check error code. If account is not yet enabled , show proper message ,
+     * otherwise show generic login error message
+
+     */
     login(username: string, password: string): Observable<any> {
         const body = new URLSearchParams();
         body.set('username', username);
@@ -103,12 +110,30 @@ export class AuthenticationService {
                     this.translate.use(this.currentAccount.language);
                 })
             }, err => {
-                this.alertSrv.error('app.login.error');
+                if (err.status === 423) {
+                    this.alertSrv.error('app.login.notConfirmed');
+                } else if (err.status === 504) {
+                    this.alertSrv.error('app.api.error.timeout');
+                } else {
+                    this.alertSrv.error('app.login.error');
+                }
                 this.logger.error(err);
                 observable.next();
                 observable.complete();
             });
         });
+    }
+
+    getDefaultLanguage(): Observable<string> {
+        return this.apiService.get(environment.default_lang_url)
+            .pipe(map(defaults => {
+                if (defaults) {
+                    let lang = defaults.language;
+                    this.translate.setDefaultLang(lang);
+                    this.translate.use(lang)
+                    return lang;
+                }
+            }))
     }
 
     setLanguage() {

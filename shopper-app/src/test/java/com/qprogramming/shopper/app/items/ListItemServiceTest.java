@@ -2,26 +2,23 @@ package com.qprogramming.shopper.app.items;
 
 import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
-import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.BadProductNameException;
 import com.qprogramming.shopper.app.exceptions.ProductNotFoundException;
 import com.qprogramming.shopper.app.items.favorites.FavoriteProducts;
 import com.qprogramming.shopper.app.items.favorites.FavoriteProductsRepository;
 import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.items.product.ProductRepository;
-import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -45,9 +42,8 @@ public class ListItemServiceTest extends MockedAccountTestBase {
 
     private ListItemService listItemService;
 
-    @Before
-    @Override
-    public void setup() {
+    @BeforeEach
+    void setUp() {
         super.setup();
         when(cacheManager.getCache(anyString())).thenReturn(cacheMock);
         listItemService = new ListItemService(listItemRepositoryMock, productRepositoryMock, favoritesRepositoryMock, cacheManager);
@@ -55,7 +51,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void createListItemTest() throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
+    void createListItemTest() throws ProductNotFoundException, BadProductNameException {
         ListItem item = TestUtil.createListItem(NAME);
         when(productRepositoryMock.save(any(Product.class))).then(returnsFirstArg());
         ListItem listItem = listItemService.createListItem(item);
@@ -64,30 +60,30 @@ public class ListItemServiceTest extends MockedAccountTestBase {
         verify(cacheMock, times(1)).evict(testAccount.getId());
     }
 
-    @Test(expected = BadProductNameException.class)
-    public void createListItemNoProductTest() throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
+    @Test
+    void createListItemNoProductTest() {
         ListItem item = TestUtil.createListItem(NAME);
         item.setProduct(null);
-        listItemService.createListItem(item);
-    }
-
-    @Test(expected = BadProductNameException.class)
-    public void createListItemBadProductNameTest() throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
-        ListItem item = TestUtil.createListItem(NAME);
-        item.getProduct().setName(null);
-        listItemService.createListItem(item);
-    }
-
-    @Test(expected = ProductNotFoundException.class)
-    public void createListItemProductNotFoundTest() throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
-        ListItem item = TestUtil.createListItem(NAME);
-        item.getProduct().setId(1L);
-        when(productRepositoryMock.findById(1L)).thenReturn(Optional.empty());
-        listItemService.createListItem(item);
+        assertThrows(BadProductNameException.class, () -> listItemService.createListItem(item));
     }
 
     @Test
-    public void createListItemProductExistsTest() throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
+    void createListItemBadProductNameTest() {
+        ListItem item = TestUtil.createListItem(NAME);
+        item.getProduct().setName(null);
+        assertThrows(BadProductNameException.class, () -> listItemService.createListItem(item));
+    }
+
+    @Test
+    void createListItemProductNotFoundTest() {
+        ListItem item = TestUtil.createListItem(NAME);
+        item.getProduct().setId(1L);
+        when(productRepositoryMock.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ProductNotFoundException.class, () -> listItemService.createListItem(item));
+    }
+
+    @Test
+    void createListItemProductExistsTest() throws ProductNotFoundException, BadProductNameException {
         ListItem item = TestUtil.createListItem(NAME);
         item.getProduct().setId(1L);
         FavoriteProducts favorites = new FavoriteProducts();
@@ -100,7 +96,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void getFavoritesSortedTest() throws ProductNotFoundException, BadProductNameException, AccountNotFoundException {
+    void getFavoritesSortedTest() {
         Product product1 = TestUtil.createProduct(NAME + 1);
         Product product2 = TestUtil.createProduct(NAME + 2);
         product1.setId(1L);
@@ -114,7 +110,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void setQuantityFromName() {
+    void setQuantityFromName() {
         //string pools
         String name_with_quantity = "Name with quantity";
         String name_with_no_number = "Name with no number";

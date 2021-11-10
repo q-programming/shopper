@@ -9,19 +9,28 @@ import com.qprogramming.shopper.app.account.avatar.AvatarRepository;
 import com.qprogramming.shopper.app.account.devices.Device;
 import com.qprogramming.shopper.app.account.devices.DeviceRepository;
 import com.qprogramming.shopper.app.account.devices.NewDevice;
+import com.qprogramming.shopper.app.account.event.AccountEvent;
 import com.qprogramming.shopper.app.account.event.AccountEventRepository;
+import com.qprogramming.shopper.app.account.event.AccountEventType;
+import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
+import com.qprogramming.shopper.app.exceptions.AccountNotConfirmedException;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
+import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +38,8 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Optional;
 
+import static com.qprogramming.shopper.app.settings.Settings.APP_EMAIL_FROM;
+import static com.qprogramming.shopper.app.settings.Settings.APP_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -94,10 +105,13 @@ public class AccountServiceTest extends MockedAccountTestBase {
     @Test
     void createOAuthLocalAccountTest() {
         Account account = TestUtil.createAccount();
+
         when(accountRepositoryMock.findAll()).thenReturn(Collections.singletonList(testAccount));
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
         when(authorityServiceMock.findByRole(Role.ROLE_USER)).thenReturn(TestUtil.createUserAuthority());
-        Account result = accountService.createAccount(account);
+        when(accountRepositoryMock.findOneById(anyString())).thenReturn(Optional.of(testAccount)).thenReturn(Optional.empty());
+
+        Account result = accountService.createLocalAccount(account);
         assertThat(result.getIsUser()).isTrue();
         verify(accountRepositoryMock, times(1)).save(any(Account.class));
     }
@@ -276,4 +290,105 @@ public class AccountServiceTest extends MockedAccountTestBase {
         verify(deviceRepositoryMock, times(1)).save(device);
     }
 
+    @Test
+    void loadNotConfirmedUserTest() {
+        testAccount.setEnabled(false);
+        when(accountRepositoryMock.findOneByEmail(testAccount.getEmail())).thenReturn(Optional.of(testAccount));
+        assertThrows(AccountNotConfirmedException.class, () -> accountService.loadUserByUsername(testAccount.getEmail()));
+    }
+
+    @Test
+    void accountTypeDefaultTest() {
+        val result = AccountType.type("no_existing");
+        assertThat(result).isEqualTo(AccountType.LOCAL);
+    }
+
+    @Test
+    void downloadFromUrlTest() {
+        val accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock, accountEventRepositoryMock, deviceRepositoryMock, mailServiceMock);
+        val url = getClass().getClassLoader().getResource("bit.png");
+        val result = accountService.downloadFromUrl(url);
+        assertThat(result).isNotEmpty();
+    }
+
+    @Test
+    void downloadFromUrlFailedTest() {
+        val accountService = new AccountService(propertyServiceMock, accountRepositoryMock, avatarRepositoryMock, authorityServiceMock, passwordEncoderMock, accountEventRepositoryMock, deviceRepositoryMock, mailServiceMock);
+        val url = getClass().getClassLoader().getResource("bit2.png");
+        val result = accountService.downloadFromUrl(url);
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void deleteAccountTest() {
+        when(accountEventRepositoryMock.findAllByAccount(testAccount)).thenReturn(Collections.emptyList());
+        accountService.delete(testAccount);
+        verify(accountEventRepositoryMock, times(1)).deleteAll(anyCollection());
+        verify(accountRepositoryMock, times(1)).delete(testAccount);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AccountEventType.class)
+    void sendConfirmEmailTest(AccountEventType type) throws MessagingException {
+        val event = AccountEvent.builder().token("token").type(type).account(testAccount).build();
+        when(propertyServiceMock.getProperty(APP_URL)).thenReturn("localhost");
+        when(propertyServiceMock.getProperty(APP_EMAIL_FROM)).thenReturn("test@test.com");
+        accountService.sendConfirmEmail(testAccount, event);
+        val eventCaptor = ArgumentCaptor.forClass(AccountEvent.class);
+        val mailCaptor = ArgumentCaptor.forClass(Mail.class);
+        verify(mailServiceMock).sendConfirmMessage(mailCaptor.capture(), eventCaptor.capture());
+        val result = mailCaptor.getValue();
+        assertThat(result.getModel()).containsKey("confirmURL");
+        val confirmUrl = (String) result.getModel().get("confirmURL");
+        switch (event.getType()) {
+            case PASSWORD_RESET:
+                assertThat(confirmUrl).contains("#/password-change/");
+                break;
+            case ACCOUNT_CONFIRM:
+                assertThat(confirmUrl).contains("#/confirm/");
+                break;
+            case DEVICE_CONFIRM:
+                assertThat(confirmUrl).contains("#/confirm-device/");
+                break;
+        }
+        assertThat(event).isEqualTo(eventCaptor.getValue());
+    }
+
+    @Test
+    void confirmTest() {
+        testAccount.setEnabled(false);
+        when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
+        accountService.confirm(testAccount);
+        assertThat(testAccount.isEnabled()).isTrue();
+    }
+
+    @Test
+    void addAndGetFriends() throws AccountNotFoundException {
+        val account = TestUtil.createAccount();
+        when(accountRepositoryMock.findOneById(testAccount.getId())).thenReturn(Optional.of(testAccount));
+        accountService.addAccountToFriendList(account);
+        val result = accountService.getAllFriendList();
+        assertThat(result).contains(account);
+
+    }
+
+    @Test
+    void createConfirmEvent() {
+        when(accountEventRepositoryMock.save(any(AccountEvent.class))).then(returnsFirstArg());
+        when(accountEventRepositoryMock.findByToken(anyString()))
+                .thenReturn(Optional.of(AccountEvent.builder().build()))
+                .thenReturn(Optional.empty());
+        val result = accountService.createConfirmEvent(testAccount);
+        assertThat(result.getType()).isEqualTo(AccountEventType.ACCOUNT_CONFIRM);
+    }
+
+    @Test
+    void createConfirmDeviceEvent() {
+        when(accountEventRepositoryMock.save(any(AccountEvent.class))).then(returnsFirstArg());
+        when(accountEventRepositoryMock.findByToken(anyString()))
+                .thenReturn(Optional.of(AccountEvent.builder().build()))
+                .thenReturn(Optional.empty());
+        val result = accountService.createConfirmDeviceEvent(testAccount, "device");
+        assertThat(result.getType()).isEqualTo(AccountEventType.DEVICE_CONFIRM);
+    }
 }

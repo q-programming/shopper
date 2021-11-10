@@ -6,21 +6,16 @@ import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.Property;
 import com.qprogramming.shopper.app.config.property.PropertyService;
 import com.qprogramming.shopper.app.settings.Settings;
-import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
-import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.mail.MessagingException;
-import java.util.Collections;
-import java.util.List;
 
 import static com.qprogramming.shopper.app.settings.Settings.APP_URL;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -38,17 +33,14 @@ public class ConfigRestControllerTest extends MockedAccountTestBase {
     public static final String API_CONFIG_APP_URL = "/settings/app";
 
 
-
     @Mock
     private MailService mailServiceMock;
     @Mock
     private PropertyService propertyServiceMock;
 
 
-
-    @Before
-    @Override
-    public void setup() {
+    @BeforeEach
+    void setUp() {
         super.setup();
         ConfigRestController controller = new ConfigRestController(mailServiceMock, propertyServiceMock);
         mvc = MockMvcBuilders.standaloneSetup(controller)
@@ -56,7 +48,7 @@ public class ConfigRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void applicationSettingsPermissionErrorsTest() throws Exception {
+    void applicationSettingsPermissionErrorsTest() throws Exception {
         mvc.perform(get(API_CONFIG_URL + API_CONFIG_SETTINGS_URL)).andExpect(status().is4xxClientError());
         mvc.perform(get(API_CONFIG_URL + API_CONFIG_EMAIL_URL)).andExpect(status().is4xxClientError());
         mvc.perform(get(API_CONFIG_URL + API_CONFIG_APP_URL)).andExpect(status().is4xxClientError());
@@ -64,7 +56,7 @@ public class ConfigRestControllerTest extends MockedAccountTestBase {
 
 
     @Test
-    public void applicationSettingsTest() throws Exception {
+    void applicationSettingsTest() throws Exception {
         Property prop = new Property();
         prop.setKey(APP_URL);
         String url = "localhost";
@@ -78,34 +70,34 @@ public class ConfigRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void changeEmailSettingsTest() throws Exception {
+    void changeEmailSettingsTest() throws Exception {
         Settings settings = createEmailSettings();
         when(authMock.getPrincipal()).thenReturn(TestUtil.createAdminAccount());
         mvc.perform(post(API_CONFIG_URL + API_CONFIG_EMAIL_URL)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(settings)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(settings)))
                 .andExpect(status().isOk());
         verify(mailServiceMock, times(1)).initMailSender();
         verify(propertyServiceMock, times(6)).update(anyString(), anyString());
     }
 
     @Test
-    public void changeEmailSettingsConnectionFailedTest() throws Exception {
+    void changeEmailSettingsConnectionFailedTest() throws Exception {
         Settings settings = createEmailSettings();
         when(authMock.getPrincipal()).thenReturn(TestUtil.createAdminAccount());
         doThrow(MessagingException.class).when(mailServiceMock).testConnection(anyString(), anyInt(), anyString(), anyString());
         mvc.perform(post(API_CONFIG_URL + API_CONFIG_EMAIL_URL)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(settings)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(settings)))
                 .andExpect(status().isServiceUnavailable());
     }
 
     @Test
-    public void changeAppSettingsTest() throws Exception {
+    void changeAppSettingsTest() throws Exception {
         Settings settings = new Settings();
         settings.setAppUrl("localhost");
         settings.setLanguage("en");
         when(authMock.getPrincipal()).thenReturn(TestUtil.createAdminAccount());
         mvc.perform(post(API_CONFIG_URL + API_CONFIG_APP_URL)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(settings)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(settings)))
                 .andExpect(status().isOk());
         verify(propertyServiceMock, times(2)).update(anyString(), anyString());
     }

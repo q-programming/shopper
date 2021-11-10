@@ -1,11 +1,11 @@
-<mat-toolbar color="primary" class="fixed-top">
+<mat-toolbar *ngIf="loggedIn" class="fixed-top" color="primary">
     <button mat-button routerLink="/" class="mat-toolbar-button app-title shopper-font">
         <img src="assets/images/logo_white.svg" height="30" class="d-inline-block align-top" alt="">
         Shopper
     </button>
     <span class="fill-remaining-space"></span>
     <!--MOBILE BUTTON MENU-->
-    <div fxShow="true" fxHide.gt-sm="true" *ngIf="loggedIn">
+    <div fxHide.gt-sm="true" fxShow="true">
         <button *ngIf="onListView" mat-icon-button (click)="openNewItemDialog()"
                 matTooltip="{{'app.item.add'|translate}}">
             <mat-icon>add_circle_outline</mat-icon>
@@ -19,22 +19,15 @@
         </button>
     </div>
     <!--DESKTOP MENU-->
-    <div fxShow="true" fxHide.lt-md="true" *ngIf="loggedIn">
-        <button mat-button class="mat-toolbar-button" routerLink="/" matTooltip="{{'app.shopping.all' | translate}}">
-            <!--<mat-icon class="ml-2">list_alt</mat-icon>-->
+    <div fxHide.lt-md="true" fxShow="true">
+        <button class="mat-toolbar-button" mat-button matTooltip="{{'app.shopping.all' | translate}}"
+                routerLink="/">
             <img src="assets/images/list.svg" height="26">
         </button>
         <button mat-button class="mat-toolbar-button" [routerLink]="['/']" [queryParams]="{archived:true}"
                 matTooltip="{{'app.shopping.archived' | translate}} {{'app.shopping.list' | translate}} ">
             <img src="assets/images/list_archive.svg" height="26">
-            <!--<mat-icon class="ml-2">archived</mat-icon>-->
         </button>
-        <!--MESSAGES-->
-        <!--<button mat-button class="mat-toolbar-button" routerLink="/">-->
-        <!--<mat-icon class="ml-2" matBadge="{{message_count.count}}" matBadgePosition="before" matBadgeColor="accent">-->
-        <!--message-->
-        <!--</mat-icon>-->
-        <!--</button>-->
         <button mat-button class="mat-toolbar-button" (click)="toggleSideNav()" *ngIf="account">
             <img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>
             <img *ngIf="!account.avatar" src="assets/images/avatar-placeholder.png" class="avatar nav-avatar"/>
@@ -42,3 +35,29 @@
         </button>
     </div>
 </mat-toolbar>
+<ng-container *ngIf="!loggedIn">
+    <mat-toolbar class="fixed-top " color="primary">
+        <div class="mt-2 full-width-button" fxLayout="row wrap" fxLayoutAlign="center start">
+            <div fxFlex="80" fxFlex.lt-md="95">
+                <div fxLayout="row">
+                    <div class="mat-toolbar-button app-title-larger shopper-font" fxFlex>
+                        <img alt="" class="d-inline-block align-top" height="50" src="assets/images/logo_white.svg">
+                        <span fxShow.lt-md="false">Shopper</span>
+                    </div>
+                    <span class="fill-remaining-space"></span>
+                    <div class="mt-4" fxFlex="30" fxFlex.lt-md="50">
+                        <div fxLayout="row">
+                            <button class="mr-4 pl-2 pr-2 login-buton" fxFlex="50" mat-flat-button
+                                    routerLink="/register">{{'app.register'|translate}}
+                            </button>
+                            <button (click)="scrollToLogin()" class="pl-2 pr-2 success-button login-buton" fxFlex="50"
+                                    mat-flat-button>{{'app.login.logpass.login'|translate}}
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-toolbar>
+</ng-container>

@@ -77,6 +77,7 @@ public class MailService {
     /**
      * Return mail sender, init it first time it's needed.
      * This is to overcome database property source initialized  later in app life cycle
+     *
      * @return instance of JavaMailSenderImpl
      */
     public JavaMailSender getMailSender() {
@@ -181,7 +182,7 @@ public class MailService {
             mimeMessageHelper.setText(mail.getMailContent(), true);
             getMailSender().send(mimeMessageHelper.getMimeMessage());
         } catch (MessagingException e) {
-            LOG.error("Error while sending email: {}", e);
+            LOG.error("Error while sending email", e);
         }
     }
 
@@ -215,7 +216,7 @@ public class MailService {
         mimeMessageHelper.setTo(mail.getMailTo());
         mail.addToModel(LIST_LINK, listLink);
         mail.addToModel(APPLICATION, application);
-        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + (invite ? "/shareInvite.ftl" : "/share.ftl")));
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale + (invite ? "/shareInvite.ftl" : "/share.ftl")));
         mimeMessageHelper.setText(mail.getMailContent(), true);
         addAppLogo(mimeMessageHelper);
         File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
@@ -238,12 +239,12 @@ public class MailService {
                 break;
             case ACCOUNT_CONFIRM:
                 mimeMessageHelper.setSubject(_msgSrv.getMessage("app.register.confirm", new Object[]{}, "", locale));
-                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/confirm.ftl"));
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale + "/confirm.ftl"));
                 mimeMessageHelper.setText(mail.getMailContent(), true);
                 break;
             case DEVICE_CONFIRM:
                 mimeMessageHelper.setSubject(_msgSrv.getMessage("app.register.device.confirm", new Object[]{}, "", locale));
-                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/confirmDevice.ftl"));
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale + "/confirmDevice.ftl"));
                 mimeMessageHelper.setText(mail.getMailContent(), true);
                 break;
         }
@@ -255,19 +256,19 @@ public class MailService {
     private void templatePasswordReset(Mail mail, MimeMessageHelper mimeMessageHelper, AccountEvent event) throws MessagingException {
         Locale locale = getMailLocale(mail);
         mimeMessageHelper.setSubject(_msgSrv.getMessage("app.password.reset", new Object[]{}, "", locale));
-        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/passwordReset.ftl"));
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale + "/passwordReset.ftl"));
         if (event.getAccount().getType().equals(AccountType.GOOGLE)) {
             mail.addToModel("linkGoogle", mail.getModel().get(APPLICATION) + "login/google");
         } else if (event.getAccount().getType().equals(AccountType.FACEBOOK)) {
             mail.addToModel("linkFacebook", mail.getModel().get(APPLICATION) + "login/facebook");
         }
-        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/passwordReset.ftl"));
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale + "/passwordReset.ftl"));
         mimeMessageHelper.setText(mail.getMailContent(), true);
         //include buttons
         if (event.getAccount().getType().equals(AccountType.GOOGLE)) {
-            mimeMessageHelper.addInline("signInGoogle.png", new ClassPathResource("static/assets/images/signin_google_" + locale.toString() + ".png"));
+            mimeMessageHelper.addInline("signInGoogle.png", new ClassPathResource("static/assets/images/signin_google_" + locale + ".png"));
         } else if (event.getAccount().getType().equals(AccountType.FACEBOOK)) {
-            mimeMessageHelper.addInline("signInFacebook.png", new ClassPathResource("static/assets/images/signin_facebook_" + locale.toString() + ".png"));
+            mimeMessageHelper.addInline("signInFacebook.png", new ClassPathResource("static/assets/images/signin_facebook_" + locale + ".png"));
         }
     }
 
@@ -298,7 +299,7 @@ public class MailService {
                 avatarBuffer.put(account, avatarTempFile);
             }
         } catch (IOException e) {
-            LOG.error("Failed to properly resize image. {}", e);
+            LOG.error("Failed to properly resize image", e);
         }
         return avatarTempFile;
     }

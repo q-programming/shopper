@@ -4,6 +4,8 @@ import {ListService} from "@services/list.service";
 import {SideNavAction} from "../sidenav/menu-side-nav.component";
 import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
 import {Account} from "@model/Account";
+import {ViewportScroller} from "@angular/common";
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'menu-toolbar',
@@ -19,6 +21,8 @@ export class MenuToolbarComponent implements OnInit {
 
     constructor(private authSrv: AuthenticationService,
                 private listSrv: ListService,
+                private router: Router,
+                private viewportScroller: ViewportScroller,
                 private menuSrv: MenuActionsService) {
     }
 
@@ -35,5 +39,12 @@ export class MenuToolbarComponent implements OnInit {
 
     refreshList() {
         this.menuSrv.emmitAction(MenuAction.REFRESH);
+    }
+
+    scrollToLogin() {
+        if (this.router.url != '/') {
+            this.router.navigate(['/'], {fragment: 'login'});
+        }
+        this.viewportScroller.scrollToAnchor('login');
     }
 }
