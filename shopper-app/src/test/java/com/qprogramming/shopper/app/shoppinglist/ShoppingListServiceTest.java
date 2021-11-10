@@ -12,8 +12,8 @@ import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.messages.MessagesService;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetRepository;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import javax.persistence.EntityManager;
@@ -24,11 +24,10 @@ import java.util.stream.Stream;
 import static com.qprogramming.shopper.app.TestUtil.ADMIN_RANDOM_ID;
 import static com.qprogramming.shopper.app.TestUtil.USER_RANDOM_ID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by Jakub Romaniszyn on 2018-08-08
@@ -53,9 +52,8 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     private ShoppingListService listService;
 
 
-    @Before
-    @Override
-    public void setup() {
+    @BeforeEach
+    public void setUp() {
         super.setup();
         CategoryPresetService presetService = new CategoryPresetService(presetRepositoryMock);
         listService = new ShoppingListService(listRepository, accountServiceMock, propertyServiceMock, msgSrvMock, mailServiceMock, presetService) {
@@ -67,7 +65,7 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void findAllByCurrentUserTest() throws AccountNotFoundException {
+    void findAllByCurrentUserTest() throws AccountNotFoundException {
         ShoppingList list1 = createList(NAME, 1L);
         ShoppingList list2 = createList(NAME, 2L);
         Set<ShoppingList> expected = Stream.of(list1, list2).collect(Collectors.toSet());
@@ -78,7 +76,7 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void findAllByOwnerTest() throws AccountNotFoundException {
+    void findAllByOwnerTest() throws AccountNotFoundException {
         ShoppingList list1 = createList(NAME, 1L);
         Set<ShoppingList> expected = Stream.of(list1).collect(Collectors.toSet());
         when(listRepository.findAllByOwnerIdOrSharedIn(anyString(), anySet())).thenReturn(expected);
@@ -88,7 +86,7 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void findAllByOwnerThanCanBeViewedTest() throws AccountNotFoundException {
+    void findAllByOwnerThanCanBeViewedTest() throws AccountNotFoundException {
         ShoppingList list1 = createList(NAME, 1L);
         ShoppingList list2 = createList(NAME, 1L);
         list2.setOwnerId(NAME);
@@ -99,7 +97,7 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void addToListIfPending() {
+    void addToListIfPending() {
         ShoppingList list1 = createList(NAME, 1L);
         ShoppingList list2 = createList(NAME, 2L);
         list1.getPendingshares().add(testAccount.getEmail());
@@ -113,7 +111,7 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
 
 
     @Test
-    public void transferSharedListOwnershipTest() throws Exception {
+    void transferSharedListOwnershipTest() {
         ShoppingList list1 = createList(NAME, 1L);
         ShoppingList list2 = createList(NAME, 2L);
         ShoppingList list3 = createList(NAME, 3L);
@@ -133,7 +131,7 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void copyListTest() throws Exception {
+    void copyListTest() throws Exception {
         ShoppingList list = createList(NAME, 1L);
         list.setOwnerId(ADMIN_RANDOM_ID);
         list.getShared().add(USER_RANDOM_ID);
@@ -148,18 +146,18 @@ public class ShoppingListServiceTest extends MockedAccountTestBase {
         verify(listRepository, times(1)).save(copyList);
     }
 
-    @Test(expected = ShoppingAccessException.class)
-    public void copyListNoPermissionTest() throws Exception {
+    @Test
+    void copyListNoPermissionTest() {
         ShoppingList list = createList(NAME, 1L);
         list.setOwnerId(ADMIN_RANDOM_ID);
         when(listRepository.findById(1L)).thenReturn(Optional.of(list));
-        listService.copyList(1L);
+        assertThrows(ShoppingAccessException.class, () -> listService.copyList(1L));
     }
 
-    @Test(expected = ShoppingNotFoundException.class)
-    public void copyListNoListTest() throws Exception {
+    @Test
+    void copyListNoListTest() {
         when(listRepository.findById(1L)).thenReturn(Optional.empty());
-        listService.copyList(1L);
+        assertThrows(ShoppingNotFoundException.class, () -> listService.copyList(1L));
     }
 
 

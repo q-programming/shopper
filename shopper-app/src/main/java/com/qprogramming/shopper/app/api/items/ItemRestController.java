@@ -129,7 +129,7 @@ public class ItemRestController {
             _listService.sortItems(list);
             return ResponseEntity.ok(_listService.save(list));
         } catch (ShoppingAccessException e) {
-            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
             log.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
@@ -155,7 +155,7 @@ public class ItemRestController {
             item = _listItemService.findById(item.getId());
             return ResponseEntity.ok(_listItemService.toggleItem(item));
         } catch (ShoppingAccessException e) {
-            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
             log.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
@@ -167,21 +167,23 @@ public class ItemRestController {
     }
 
     /**
-     * delete list item from list with id .
+     * get toggle item
      *
      * @param id shopping lis id
      * @return updated shopping list if operation was successful
+     * @deprecated Used only by old tizen based companion app
      */
     @RequestMapping(value = "/{id}/toggle/{itemId}", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
+    @Deprecated
     public ResponseEntity<ListItem> toggleItemByID(@PathVariable Long id, @PathVariable Long itemId) {
         try {
             ShoppingList list = _listService.findByID(id);//just verify that list exists and user has access
             ListItem item = _listItemService.findById(itemId);
             return ResponseEntity.ok(_listItemService.toggleItem(item));
         } catch (ShoppingAccessException e) {
-            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
             log.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);
@@ -208,7 +210,7 @@ public class ItemRestController {
             Set<Product> favorites = _listItemService.getFavoriteProductsForAccount(Utils.getCurrentAccountId());
             return ResponseEntity.ok(_listItemService.filterFavoriteProducts(list, favorites));
         } catch (ShoppingAccessException e) {
-            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId());
+            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ShoppingNotFoundException e) {
             log.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, id);

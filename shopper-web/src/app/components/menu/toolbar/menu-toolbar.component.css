@@ -2,6 +2,11 @@
     font-size: 1.5rem;
 }
 
+.app-title-larger {
+    color: white;
+    font-size: 2rem;
+}
+
 .fixed-top {
     position: fixed;
     top: 0;
@@ -37,4 +42,8 @@
 
 .mat-toolbar-button {
     padding: 12px 16px !important;
+}
+
+.login-buton {
+    max-width: 200px !important;
 }

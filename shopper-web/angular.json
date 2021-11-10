@@ -16,7 +16,6 @@
               "sockjs-client",
               "stompjs"
             ],
-            "aot": true,
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -34,9 +33,12 @@
               "node_modules/font-awesome/css/font-awesome.css",
               "src/material-theme.scss"
             ],
-            "scripts": [
-              "node_modules/chart.js/dist/Chart.js"
-            ]
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -50,7 +52,6 @@
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -61,7 +62,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -70,7 +72,7 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "shopper-app:build:production"
+              "browserTarget": "shopper-app:build:development"
             }
           }
         },
@@ -87,9 +89,6 @@
             "karmaConfig": "./karma.conf.js",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
-            "scripts": [
-              "node_modules/chart.js/dist/Chart.js"
-            ],
             "styles": [
               "node_modules/font-awesome/scss/font-awesome.scss",
               "node_modules/angular-bootstrap-md/scss/bootstrap/bootstrap.scss",

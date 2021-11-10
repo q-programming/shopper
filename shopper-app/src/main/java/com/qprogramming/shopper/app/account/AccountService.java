@@ -16,6 +16,7 @@ import com.qprogramming.shopper.app.account.event.AccountEventType;
 import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
+import com.qprogramming.shopper.app.exceptions.AccountNotConfirmedException;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
 import com.qprogramming.shopper.app.support.Utils;
@@ -142,6 +143,9 @@ public class AccountService implements UserDetailsService {
             generatePassword(account);
             account = accountRepository.save(account);
         }
+        if (!account.isEnabled()) {
+            throw new AccountNotConfirmedException("Account was not yet confirmed");
+        }
         return account;
     }
 
@@ -185,7 +189,7 @@ public class AccountService implements UserDetailsService {
             while ((bytesRead = stream.read(chunk)) > 0) {
                 outputStream.write(chunk, 0, bytesRead);
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             LOG.error("Failed to download from URL ");
             return null;
         }

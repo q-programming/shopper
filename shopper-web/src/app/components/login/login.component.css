@@ -3,6 +3,11 @@
     margin-left: 3rem !important
 }
 
+.promo-image {
+    width: 100%;
+    margin: 0 10px;
+    max-width: 400px;
+}
 
 .social-form {
     border-right: 1px solid gray;

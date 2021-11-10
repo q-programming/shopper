@@ -13,8 +13,6 @@ import com.qprogramming.shopper.app.security.TokenService;
 import com.qprogramming.shopper.app.support.Utils;
 import lombok.RequiredArgsConstructor;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,7 +45,6 @@ import static org.springframework.http.HttpStatus.*;
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
     private final TokenService _tokenService;
     private final AuthenticationManager _authenticationManager;
@@ -56,26 +53,9 @@ public class AuthenticationController {
     @Value("${jwt.expires_in}")
     private int EXPIRES_IN;
 
-
-    //TODO check LOGIN via form ?!
-//    @RequestMapping(value = "/auth", method = RequestMethod.POST)
-//    public ResponseEntity createAuthenticationToken(
-//            @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) throws AuthenticationException, IOException {
-//        final Authentication authentication = _authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        authenticationRequest.getUsername(),
-//                        authenticationRequest.getPassword()
-//                )
-//        );
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        Account account = (Account) authentication.getPrincipal();
-//        _tokenService.createTokenCookies(response, account);
-//        return ResponseEntity.ok().build();
-//    }
-
     @RequestMapping(value = "/auth/register", method = RequestMethod.POST)
     @Transactional
-    public ResponseEntity register(
+    public ResponseEntity<?> register(
             @RequestBody RegisterForm form) throws AuthenticationException {
         Optional<Account> byEmail = _accountService.findByEmail(form.getEmail());
         if (byEmail.isPresent()) {
@@ -100,10 +80,10 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/auth/new-device", method = RequestMethod.POST)
     @Transactional
-    public ResponseEntity registerNewDevice(
+    public ResponseEntity<?> registerNewDevice(
             @RequestBody RegisterForm form) throws AuthenticationException {
         Optional<Account> byEmail = _accountService.findByEmail(form.getEmail());
-        if (!byEmail.isPresent()) {
+        if (byEmail.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         try {
@@ -142,10 +122,10 @@ public class AuthenticationController {
 
     @Transactional
     @RequestMapping(value = "/auth/confirm", method = RequestMethod.POST)
-    public ResponseEntity confirmOperation(@RequestBody() String token) {
+    public ResponseEntity<?> confirmOperation(@RequestBody() String token) {
         UUID uuid = UUID.fromString(token);
         Optional<AccountEvent> eventOptional = _accountService.findEvent(token);
-        if (!eventOptional.isPresent()) {
+        if (eventOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         AccountEvent event = eventOptional.get();
@@ -205,7 +185,7 @@ public class AuthenticationController {
     public ResponseEntity<?> changePassword(@RequestBody PasswordForm form) {
         UUID uuid = UUID.fromString(form.getToken());
         Optional<AccountEvent> eventOptional = _accountService.findEvent(form.getToken());
-        if (!eventOptional.isPresent()) {
+        if (eventOptional.isEmpty()) {
             return ResponseEntity.status(NOT_FOUND).build();
         }
         AccountEvent event = eventOptional.get();
@@ -213,6 +193,9 @@ public class AuthenticationController {
         if (new DateTime().isAfter(date.plusHours(12))) {
             _accountService.removeEvent(event);
             return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
+        }
+        if (!form.getPassword().equals(form.getConfirmpassword())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("mismatch");
         }
         Account account = event.getAccount();
         account.setPassword(form.getPassword());
