@@ -53,7 +53,7 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}  
     - name: Upload to release
-      if: contains(github.ref, "release")    
+      if: github.event_name == 'release' && github.event.action == 'created'
       uses: JasonEtco/upload-to-release@master
       with:
         args: shopper-app/target/shopper.war application/zip
