@@ -6,4 +6,5 @@
     <string name="account_email_error">Wprowadź poprawny adres email</string>
     <string name="welcome_to_shopper">Witaj w Shopperze</string>
     <string name="remove">Usuń</string>
+    <string name="please_wait">Porszę czekać</string>
 </resources>

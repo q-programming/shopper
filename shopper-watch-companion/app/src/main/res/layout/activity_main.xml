@@ -9,6 +9,16 @@
     android:padding="@dimen/box_inset_layout_padding"
     tools:context=".MainActivity"
     tools:deviceIds="wear">
+    <ProgressBar
+        android:id="@+id/loader"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:progressDrawable="@drawable/progress_bar"
+        android:indeterminateDrawable="@drawable/progress_bar"
+        android:visibility="gone"
+        >
+    </ProgressBar>
 
     <FrameLayout
         android:id="@+id/activity_fragment_layout"

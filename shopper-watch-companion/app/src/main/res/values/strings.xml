@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Shopper Watch Companion</string>
     <string name="register">Register</string>
+    <string name="please_wait">Please wait</string>
     <string name="account_existing_email">Enter email for existing shopper account</string>
     <string name="account_email_error">Enter valid email address</string>
     <string name="welcome_to_shopper">Welcome to Shopper</string>
