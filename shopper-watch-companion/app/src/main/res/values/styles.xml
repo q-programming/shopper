@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="theme">
+    <item name="background_color">#2c5aa0</item>
+  </style>
+  <style name="emailError">
+    <item name="android:textColor">#E53935</item>
+  </style>
+</resources>
