@@ -99,7 +99,7 @@ public class RegisterFragment extends Fragment {
         requireContext().sendBroadcast(new Intent(EventType.LOADING_STARTED.getCode()));
         post(requireContext(), url, device, response -> {
             requireContext().sendBroadcast(new Intent(EventType.LOADING_FINISHED.getCode()));
-            Toast.makeText(requireContext(), "Successfully registered new device ", Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), R.string.account_registered, Toast.LENGTH_LONG).show();
             val newDevice = new Gson().fromJson(response.toString(), Device.class);
             val spEdit = getDefaultSharedPreferences(requireContext()).edit();
             spEdit.putString(Properties.EMAIL, email);
@@ -112,7 +112,7 @@ public class RegisterFragment extends Fragment {
                     .commit();
         }, error -> {
             requireContext().sendBroadcast(new Intent(EventType.LOADING_FINISHED.getCode()));
-            Toast.makeText(requireContext(), getString(R.string.register_error), Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), R.string.register_error, Toast.LENGTH_LONG).show();
             Log.e(TAG, "error while trying to call " + error);
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()

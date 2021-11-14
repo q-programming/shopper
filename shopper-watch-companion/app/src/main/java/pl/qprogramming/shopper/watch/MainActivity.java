@@ -78,7 +78,7 @@ public class MainActivity extends FragmentActivity
                 },
                 error -> {
                     if (error.networkResponse.statusCode != 423) {
-                        Toast.makeText(this, "There were errors while trying to sign in into accout", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, R.string.account_error, Toast.LENGTH_LONG).show();
                     }
                     getSupportFragmentManager()
                             .beginTransaction()
@@ -111,6 +111,9 @@ public class MainActivity extends FragmentActivity
     @Override
     protected void onResume() {
         super.onResume();
+        val filter = new IntentFilter(EventType.LOADING_STARTED.getCode());
+        filter.addAction(EventType.LOADING_FINISHED.getCode());
+        registerReceiver(receiver, filter);
         Log.d(TAG, "Refresh content!");
     }
 
@@ -118,6 +121,7 @@ public class MainActivity extends FragmentActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             val event = EventType.getType(intent.getAction());
+//            Log.d(TAG, "Recived " + event.getCode());
             switch (event) {
                 case LOADING_STARTED:
                     loader.setVisibility(View.VISIBLE);

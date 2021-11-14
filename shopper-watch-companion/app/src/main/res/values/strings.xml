@@ -9,4 +9,9 @@
     <string name="account_confirm">Check your email\n to confirm your new device</string>
     <string name="welcome_to_shopper">Welcome to Shopper</string>
     <string name="remove">Remove</string>
+    <string name="item_toggle_error">There was error while trying to toggle item</string>
+    <string name="account_error">There were errors while trying to sign in into accout</string>
+    <string name="account_registered">Successfully registered new device</string>
+    <string name="list_error">There were errors while trying to fetch lists</string>
+    <string name="items_error">There were errors while trying to items from list</string>
 </resources>

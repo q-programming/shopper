@@ -50,8 +50,14 @@ public class ListLayoutFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getLists();
+    }
+
     private void getLists() {
-        requireContext().sendBroadcast(new Intent(EventType.LOADING_STARTED.getCode()));
+        requireActivity().sendBroadcast(new Intent(EventType.LOADING_STARTED.getCode()));
         String listUrl = getString(R.string.list_mine);
         getArray(requireContext(), listUrl, lists -> {
             Log.d(TAG, lists.toString());
@@ -60,7 +66,7 @@ public class ListLayoutFragment extends Fragment {
             requireContext().sendBroadcast(new Intent(EventType.LOADING_FINISHED.getCode()));
         }, error -> {
             requireContext().sendBroadcast(new Intent(EventType.LOADING_FINISHED.getCode()));
-            Toast.makeText(requireContext(), "There were errors while trying to fetch lists", Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), R.string.list_error, Toast.LENGTH_LONG).show();
         });
     }
 }

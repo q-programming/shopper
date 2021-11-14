@@ -7,7 +7,12 @@
     <string name="account_email_error">Wprowadź poprawny adres email</string>
     <string name="account_retry">Usuń i ponownie zarejestruj</string>
     <string name="account_confirm">Sprawdz swój email i potwierdz nowe urządzenie</string>
+    <string name="account_error">Wystąpił bład podczas próby zalogowania się na konto</string>
     <string name="welcome_to_shopper">Witaj w Shopperze</string>
     <string name="remove">Usuń</string>
     <string name="please_wait">Porszę czekać</string>
+    <string name="item_toggle_error">Wystąpił bład podczas oznaczania pozycji</string>
+    <string name="account_registered">Zarejestrowano nowe urządzenie</string>
+    <string name="list_error">Wystąpił bład podczas próby pobrania list</string>
+    <string name="items_error">Wystąpił bład podczas próby pobrania pozycji z listy</string>
 </resources>

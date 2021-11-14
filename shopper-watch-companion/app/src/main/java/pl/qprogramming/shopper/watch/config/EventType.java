@@ -9,9 +9,9 @@ import lombok.Getter;
 
 @Getter
 public enum EventType {
-    LOADING_STARTED(EventType.class.getPackage() + ".loader.started"),
-    LOADING_FINISHED(EventType.class.getPackage() + ".loader.finished"),
-    UNKNOWN(EventType.class.getPackage() + ".n/a");
+    LOADING_STARTED("pl.qprogramming.shopper.watch.config.loader.started"),
+    LOADING_FINISHED("pl.qprogramming.shopper.watch.config.loader.finished"),
+    UNKNOWN("pl.qprogramming.shopper.watch.config.n/a");
 
     private static final Map<String, EventType> BY_CODE = new HashMap<>();
 
