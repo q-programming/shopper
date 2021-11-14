@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:progressDrawable="@drawable/progress_bar"
         android:indeterminateDrawable="@drawable/progress_bar"
-        android:visibility="gone"
+        android:visibility="visible"
         >
     </ProgressBar>
 
@@ -24,7 +24,6 @@
         android:id="@+id/activity_fragment_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/inner_frame_layout_padding"
         app:boxedEdges="all">
     </FrameLayout>
 </androidx.wear.widget.BoxInsetLayout>

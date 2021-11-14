@@ -2,8 +2,11 @@
 <resources>
     <string name="app_name">Shopper Watch Companion</string>
     <string name="register">Zarejestruj</string>
+    <string name="register_error">Wystąpił bład podczas próby rejestracji, proszę spróbować ponownie</string>
     <string name="account_existing_email">Wprowadz adres email istniejącego konta w aplikacji Shopper</string>
     <string name="account_email_error">Wprowadź poprawny adres email</string>
+    <string name="account_retry">Usuń i ponownie zarejestruj</string>
+    <string name="account_confirm">Sprawdz swój email i potwierdz nowe urządzenie</string>
     <string name="welcome_to_shopper">Witaj w Shopperze</string>
     <string name="remove">Usuń</string>
     <string name="please_wait">Porszę czekać</string>

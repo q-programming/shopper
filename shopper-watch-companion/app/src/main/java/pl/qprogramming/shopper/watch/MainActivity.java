@@ -8,18 +8,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.wear.ambient.AmbientModeSupport;
 import lombok.val;
 import pl.qprogramming.shopper.watch.config.EventType;
 import pl.qprogramming.shopper.watch.config.Properties;
+import pl.qprogramming.shopper.watch.fragments.list.ListLayoutFragment;
 import pl.qprogramming.shopper.watch.fragments.register.RegisterFragment;
+import pl.qprogramming.shopper.watch.fragments.welcome.WaitFragment;
 import pl.qprogramming.shopper.watch.fragments.welcome.WelcomeFragment;
 
 import static android.text.TextUtils.isEmpty;
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
+import static pl.qprogramming.shopper.watch.util.HttpUtil.post;
 
 public class MainActivity extends FragmentActivity
         implements AmbientModeSupport.AmbientCallbackProvider {
@@ -36,19 +39,53 @@ public class MainActivity extends FragmentActivity
         val sp = getDefaultSharedPreferences(this);
         val email = sp.getString(Properties.EMAIL, null);
         val token = sp.getString(Properties.TOKEN, null);
-        Fragment fragment;
+        //if not yet registered, just go to register page
         if (isEmpty(email) || isEmpty(token)) {
-            fragment = new RegisterFragment();
+            loader.setVisibility(View.GONE);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.activity_fragment_layout, new RegisterFragment())
+                    .commit();
         } else {
-            fragment = new WelcomeFragment(email);
+            checkWhoAmI(email);
         }
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.activity_fragment_layout, fragment)
-                .commit();
+
         val filter = new IntentFilter(EventType.LOADING_STARTED.getCode());
         filter.addAction(EventType.LOADING_FINISHED.getCode());
         registerReceiver(receiver, filter);
+    }
+
+    /**
+     * Verifies that email and token combination is valid , of something wrong with auth ,
+     * force user back to welcome page where there is a way to remove device
+     *
+     * @param email account email
+     */
+    private void checkWhoAmI(String email) {
+        sendBroadcast(new Intent(EventType.LOADING_STARTED.getCode()));
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.activity_fragment_layout, new WaitFragment())
+                .commit();
+        String url = getString(R.string.account_whoami);
+        post(this, url, null,
+                response -> {
+                    Log.d(TAG, "Go to lists!");
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.activity_fragment_layout, new ListLayoutFragment())
+                            .commit();
+                },
+                error -> {
+                    if (error.networkResponse.statusCode != 423) {
+                        Toast.makeText(this, "There were errors while trying to sign in into accout", Toast.LENGTH_LONG).show();
+                    }
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.activity_fragment_layout, new WelcomeFragment(email))
+                            .commit();
+                    sendBroadcast(new Intent(EventType.LOADING_FINISHED.getCode()));
+                }, 10000);
     }
 
     @Override

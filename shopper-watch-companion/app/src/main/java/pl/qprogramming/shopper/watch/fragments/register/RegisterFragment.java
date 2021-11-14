@@ -3,20 +3,6 @@ package pl.qprogramming.shopper.watch.fragments.register;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import lombok.SneakyThrows;
-import lombok.val;
-import pl.qprogramming.shopper.watch.R;
-import pl.qprogramming.shopper.watch.config.EventType;
-import pl.qprogramming.shopper.watch.config.Properties;
-import pl.qprogramming.shopper.watch.fragments.welcome.WelcomeFragment;
-import pl.qprogramming.shopper.watch.model.Device;
-import pl.qprogramming.shopper.watch.model.RegisterDevice;
-import pl.qprogramming.shopper.watch.util.HttpUtil;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -29,6 +15,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import lombok.SneakyThrows;
+import lombok.val;
+import pl.qprogramming.shopper.watch.R;
+import pl.qprogramming.shopper.watch.config.EventType;
+import pl.qprogramming.shopper.watch.config.Properties;
+import pl.qprogramming.shopper.watch.fragments.welcome.WelcomeFragment;
+import pl.qprogramming.shopper.watch.model.Device;
+import pl.qprogramming.shopper.watch.model.RegisterDevice;
 
 import static android.text.TextUtils.isEmpty;
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
@@ -114,8 +112,13 @@ public class RegisterFragment extends Fragment {
                     .commit();
         }, error -> {
             requireContext().sendBroadcast(new Intent(EventType.LOADING_FINISHED.getCode()));
-            Toast.makeText(requireContext(), "Errors while trying to register, please try again ", Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), getString(R.string.register_error), Toast.LENGTH_LONG).show();
             Log.e(TAG, "error while trying to call " + error);
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(this)
+                    .replace(R.id.activity_fragment_layout, new RegisterFragment())
+                    .commit();
         }, 10000);
     }
 
