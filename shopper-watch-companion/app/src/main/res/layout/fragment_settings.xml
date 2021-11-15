@@ -9,9 +9,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
+        android:layout_height="match_parent"
+        android:paddingBottom="30dp"
+        >
         <LinearLayout
             android:id="@+id/font_size_layout"
             android:layout_width="match_parent"
@@ -21,10 +21,11 @@
 
             <Button
                 android:id="@+id/font_size"
-                style="?android:attr/button"
+                style="?android:attr/buttonGravity"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/font_size"
+                android:layout_marginBottom="5dp"
                 android:layout_weight="0.6"
                 android:textAlignment="textStart" />
             <TextView
@@ -50,8 +51,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/aod"
+            style="@style/Header"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
+            android:layout_marginBottom="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -61,6 +64,21 @@
             android:layout_height="wrap_content"
             android:text="@string/aod_summary"
             app:layout_constraintTop_toBottomOf="@+id/aod" />
+
+        <TextView
+            android:id="@+id/about"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            android:text="@string/about"
+            app:layout_constraintTop_toBottomOf="@+id/font_size_summary" />
+        <TextView
+            android:id="@+id/version"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/about"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

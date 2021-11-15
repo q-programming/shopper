@@ -19,25 +19,12 @@
         android:visibility="visible"
         >
     </ProgressBar>
-
-<!--    <TextView-->
-<!--        android:id="@+id/header"-->
-<!--        android:text="Shopper"-->
-<!--        android:gravity="center_horizontal"-->
-<!--        style="@style/Header"-->
-<!--        android:background="@color/qprograming_blue"-->
-<!--        android:padding="10dp"-->
-<!--        android:layout_gravity="top"-->
-<!--        android:fitsSystemWindows="true"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:visibility="visible"-->
-<!--        />-->
     <FrameLayout
         android:id="@+id/activity_fragment_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:boxedEdges="none">
+
     </FrameLayout>
     <ImageButton
         android:id="@+id/settings_btn"

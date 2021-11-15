@@ -1,7 +1,9 @@
 package pl.qprogramming.shopper.watch.fragments.list;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,7 +45,6 @@ public class ListLayoutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        requireActivity().findViewById(R.id.settings_btn).setVisibility(View.VISIBLE);
         View view = inflater.inflate(R.layout.fragment_list_layout, container, false);
         Context context = view.getContext();
         recyclerView = (WearableRecyclerView) view;
@@ -56,7 +57,10 @@ public class ListLayoutFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        requireActivity().findViewById(R.id.settings_btn).setVisibility(View.VISIBLE);
         getLists();
+        val filter = new IntentFilter(EventType.WAKE_UP.getCode());
+        requireContext().registerReceiver(receiver, filter);
     }
 
     @Override
@@ -65,6 +69,15 @@ public class ListLayoutFragment extends Fragment {
         super.onDestroyView();
     }
 
+    @Override
+    public void onStop() {
+        try {
+            requireContext().unregisterReceiver(receiver);
+        } catch (IllegalArgumentException e) {
+            Log.d(TAG, "Receiver not registered");
+        }
+        super.onStop();
+    }
 
     private void getLists() {
         requireActivity().sendBroadcast(new Intent(EventType.LOADING_STARTED.getCode()));
@@ -79,4 +92,12 @@ public class ListLayoutFragment extends Fragment {
             Toast.makeText(requireContext(), R.string.list_error, Toast.LENGTH_LONG).show();
         });
     }
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            requireActivity().findViewById(R.id.settings_btn).setVisibility(View.VISIBLE);
+            getLists();
+        }
+    };
 }

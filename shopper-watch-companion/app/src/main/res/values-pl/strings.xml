@@ -22,4 +22,5 @@
     <string name="small">mały</string>
     <string name="medium">średni</string>
     <string name="large">duży</string>
+    <string name="about">Aplikacja pomocnicza do Shopper\'a \n stworzona przez Jakub Romaniszyn\nLicencja GNU GPL</string>
 </resources>

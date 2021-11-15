@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import lombok.val;
+import pl.qprogramming.shopper.watch.BuildConfig;
 import pl.qprogramming.shopper.watch.R;
 import pl.qprogramming.shopper.watch.config.FontSize;
 import pl.qprogramming.shopper.watch.config.Properties;
@@ -69,6 +70,8 @@ public class SettingsFragment extends Fragment {
         approveBtn.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
         sizePreview = view.findViewById(R.id.font_size_preview);
         aodSwitch = view.findViewById(R.id.aod);
+        val versionTxt = (TextView) requireView().findViewById(R.id.version);
+        versionTxt.setText(String.format("v%s", BuildConfig.VERSION_NAME));
         update();
         view.findViewById(R.id.font_size).setOnClickListener(v -> {
             val textSizes = sizes.clone();

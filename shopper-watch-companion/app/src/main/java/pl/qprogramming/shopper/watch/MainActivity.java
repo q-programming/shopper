@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -32,8 +33,9 @@ public class MainActivity extends FragmentActivity
         implements AmbientModeSupport.AmbientCallbackProvider {
     private static final String TAG = MainActivity.class.getSimpleName();
     private ProgressBar loader;
+    private ImageButton settings;
     private BoxInsetLayout mainLayout;
-    AmbientModeSupport.AmbientController controller;
+    private AmbientModeSupport.AmbientController controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,7 @@ public class MainActivity extends FragmentActivity
         val settings = findViewById(R.id.settings_btn);
         settings.setOnClickListener(v ->
                 navigateToFragment(getSupportFragmentManager(), new SettingsFragment(), "settings"));
-        setupLoader();
+        setupViews();
         val email = sp.getString(Properties.EMAIL, null);
         val token = sp.getString(Properties.TOKEN, null);
         //if not yet registered, just go to register page
@@ -106,8 +108,9 @@ public class MainActivity extends FragmentActivity
         super.onStop();
     }
 
-    private void setupLoader() {
+    private void setupViews() {
         loader = findViewById(R.id.loader);
+        settings = findViewById(R.id.settings_btn);
     }
 
     @Override
@@ -117,6 +120,8 @@ public class MainActivity extends FragmentActivity
             public void onEnterAmbient(Bundle ambientDetails) {
                 super.onEnterAmbient(ambientDetails);
                 mainLayout.setBackgroundColor(Color.BLACK);
+                settings.setVisibility(View.GONE);
+                loader.setVisibility(View.GONE);
             }
 
             @Override
@@ -145,7 +150,6 @@ public class MainActivity extends FragmentActivity
         val filter = new IntentFilter(EventType.LOADING_STARTED.getCode());
         filter.addAction(EventType.LOADING_FINISHED.getCode());
         registerReceiver(receiver, filter);
-        Log.d(TAG, "Refresh content!");
     }
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -154,7 +158,7 @@ public class MainActivity extends FragmentActivity
             val event = EventType.getType(intent.getAction());
             switch (event) {
                 case LOADING_STARTED:
-                    if (controller != null && !controller.isAmbient()) {
+                    if (controller == null || (controller != null && !controller.isAmbient())) {
                         loader.setVisibility(View.VISIBLE);
                     }
                     break;
