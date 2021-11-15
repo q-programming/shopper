@@ -14,4 +14,11 @@
     <string name="account_registered">Successfully registered new device</string>
     <string name="list_error">There were errors while trying to fetch lists</string>
     <string name="items_error">There were errors while trying to items from list</string>
+    <string name="aod_summary">Should app stay in Always on display mode (requires restart)</string>
+    <string name="aod">Always on Display</string>
+    <string name="font_size">Font size</string>
+    <string name="font_size_summary">How big font should be on item list</string>
+    <string name="small">small</string>
+    <string name="medium">medium</string>
+    <string name="large">large</string>
 </resources>

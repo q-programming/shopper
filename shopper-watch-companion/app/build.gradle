@@ -37,6 +37,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.wear:wear:1.1.0'
+    implementation "androidx.wear:wear-input:1.1.0"
     compileOnly 'com.google.android.wearable:wearable:2.8.1'
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'

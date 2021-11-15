@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    style="@style/theme"
+    android:id="@+id/main_layout"
     android:background="@color/qprograming_blue"
     android:padding="@dimen/box_inset_layout_padding"
     tools:context=".MainActivity"
@@ -20,10 +20,43 @@
         >
     </ProgressBar>
 
+<!--    <TextView-->
+<!--        android:id="@+id/header"-->
+<!--        android:text="Shopper"-->
+<!--        android:gravity="center_horizontal"-->
+<!--        style="@style/Header"-->
+<!--        android:background="@color/qprograming_blue"-->
+<!--        android:padding="10dp"-->
+<!--        android:layout_gravity="top"-->
+<!--        android:fitsSystemWindows="true"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:visibility="visible"-->
+<!--        />-->
     <FrameLayout
         android:id="@+id/activity_fragment_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:boxedEdges="all">
+        app:boxedEdges="none">
     </FrameLayout>
+    <ImageButton
+        android:id="@+id/settings_btn"
+        android:src="@drawable/ic_menu"
+        android:layout_gravity="bottom"
+        android:fitsSystemWindows="true"
+        android:layout_marginBottom="-10dp"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        />
+    <ImageButton
+        android:id="@+id/approve_btn"
+        android:src="@drawable/ic_check"
+        android:layout_gravity="bottom"
+        android:fitsSystemWindows="true"
+        android:layout_marginBottom="-10dp"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        />
 </androidx.wear.widget.BoxInsetLayout>

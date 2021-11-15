@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--        <string name="base_url" translatable="false">https://q-programming.pl/shopper</string>-->
-    <string name="base_url" translatable="false">http://10.0.2.2:8080/shopper</string>
+        <string name="base_url" translatable="false">https://q-programming.pl/shopper</string>
+<!--    <string name="base_url" translatable="false">http://10.0.2.2:8080/shopper</string>-->
     <string name="new_device" translatable="false">/auth/new-device</string>
     <string name="account_whoami" translatable="false">/api/account/whoami</string>
     <string name="list_mine" translatable="false">/api/list/mine</string>

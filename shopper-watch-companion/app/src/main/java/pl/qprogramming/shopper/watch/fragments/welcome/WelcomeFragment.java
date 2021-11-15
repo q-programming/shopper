@@ -1,6 +1,7 @@
 package pl.qprogramming.shopper.watch.fragments.welcome;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +13,14 @@ import androidx.fragment.app.Fragment;
 import lombok.val;
 import pl.qprogramming.shopper.watch.R;
 import pl.qprogramming.shopper.watch.config.Properties;
+import pl.qprogramming.shopper.watch.fragments.list.ListLayoutFragment;
 import pl.qprogramming.shopper.watch.fragments.register.RegisterFragment;
 
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
+import static pl.qprogramming.shopper.watch.util.HttpUtil.post;
 
 public class WelcomeFragment extends Fragment {
+    private static final String TAG = WelcomeFragment.class.getSimpleName();
     private final String email;
 
     public WelcomeFragment(String email) {
@@ -52,5 +56,21 @@ public class WelcomeFragment extends Fragment {
 
         });
         textView.setText(email);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkWhoAmI();
+    }
+
+    private void checkWhoAmI() {
+        String url = getString(R.string.account_whoami);
+        post(requireContext(), url, null,
+                response -> requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.activity_fragment_layout, new ListLayoutFragment())
+                        .commit(),
+                error -> Log.d(TAG, "not yet confirmed"));
     }
 }

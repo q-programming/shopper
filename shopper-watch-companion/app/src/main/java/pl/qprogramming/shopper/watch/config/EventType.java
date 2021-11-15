@@ -11,6 +11,7 @@ import lombok.Getter;
 public enum EventType {
     LOADING_STARTED("pl.qprogramming.shopper.watch.config.loader.started"),
     LOADING_FINISHED("pl.qprogramming.shopper.watch.config.loader.finished"),
+    WAKE_UP("pl.qprogramming.shopper.watch.wakeup"),
     UNKNOWN("pl.qprogramming.shopper.watch.config.n/a");
 
     private static final Map<String, EventType> BY_CODE = new HashMap<>();

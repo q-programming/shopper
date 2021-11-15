@@ -95,7 +95,7 @@ public class RegisterFragment extends Fragment {
     @SneakyThrows
     private void register(String email) {
         String url = getString(R.string.new_device);
-        val device = RegisterDevice.builder().email(email).name(Build.MODEL).build();
+        val device = RegisterDevice.builder().email(email).name(Build.MANUFACTURER + " " + Build.MODEL).build();
         requireContext().sendBroadcast(new Intent(EventType.LOADING_STARTED.getCode()));
         post(requireContext(), url, device, response -> {
             requireContext().sendBroadcast(new Intent(EventType.LOADING_FINISHED.getCode()));

@@ -1,17 +1,22 @@
 package pl.qprogramming.shopper.watch.util;
 
+import android.content.Context;
+
 import java.util.Collection;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import lombok.val;
 import pl.qprogramming.shopper.watch.R;
+import pl.qprogramming.shopper.watch.config.FontSize;
+import pl.qprogramming.shopper.watch.config.Properties;
+
+import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class Utils {
     private Utils() {
 
     }
-
-
     /**
      * Checks if collection is null or empty
      *
@@ -45,4 +50,23 @@ public class Utils {
                 .addToBackStack(name)
                 .commit();
     }
+
+    /**
+     * Returns dimen value of font size taken from Shared Preferences
+     * {@link android.util.TypedValue.COMPLEX_UNIT_PX}
+     *
+     * @param context required to get preferences and dimen value
+     * @return float value that has to be set as
+     */
+    public static float getFontSize(Context context) {
+        val dimen_sizes = new float[]{
+                context.getResources().getDimension(R.dimen.small),
+                context.getResources().getDimension(R.dimen.medium),
+                context.getResources().getDimension(R.dimen.large),
+        };
+        val sp = getDefaultSharedPreferences(context);
+        val fontSize = FontSize.getType(sp.getString(Properties.FONT, null));
+        return dimen_sizes[fontSize.ordinal()];
+    }
+
 }

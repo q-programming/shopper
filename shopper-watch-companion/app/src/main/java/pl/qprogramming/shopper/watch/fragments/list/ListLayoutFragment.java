@@ -14,12 +14,13 @@ import com.google.gson.Gson;
 import java.util.Arrays;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.wear.widget.WearableLinearLayoutManager;
+import androidx.wear.widget.WearableRecyclerView;
 import lombok.val;
 import pl.qprogramming.shopper.watch.R;
 import pl.qprogramming.shopper.watch.config.EventType;
 import pl.qprogramming.shopper.watch.model.ShoppingList;
+import pl.qprogramming.shopper.watch.util.CustomScrollingLayoutCallback;
 
 import static pl.qprogramming.shopper.watch.util.HttpUtil.getArray;
 
@@ -29,7 +30,7 @@ import static pl.qprogramming.shopper.watch.util.HttpUtil.getArray;
 public class ListLayoutFragment extends Fragment {
 
     private static final String TAG = ListLayoutFragment.class.getSimpleName();
-    private RecyclerView recyclerView;
+    private WearableRecyclerView recyclerView;
 
     public ListLayoutFragment() {
     }
@@ -42,11 +43,13 @@ public class ListLayoutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        requireActivity().findViewById(R.id.settings_btn).setVisibility(View.VISIBLE);
         View view = inflater.inflate(R.layout.fragment_list_layout, container, false);
         Context context = view.getContext();
-        recyclerView = (RecyclerView) view;
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        getLists();
+        recyclerView = (WearableRecyclerView) view;
+        recyclerView.setEdgeItemsCenteringEnabled(true);
+        recyclerView.setLayoutManager(new WearableLinearLayoutManager(context, new CustomScrollingLayoutCallback()));
+        recyclerView.requestFocus();
         return view;
     }
 
@@ -55,6 +58,13 @@ public class ListLayoutFragment extends Fragment {
         super.onResume();
         getLists();
     }
+
+    @Override
+    public void onDestroyView() {
+        requireActivity().findViewById(R.id.settings_btn).setVisibility(View.GONE);
+        super.onDestroyView();
+    }
+
 
     private void getLists() {
         requireActivity().sendBroadcast(new Intent(EventType.LOADING_STARTED.getCode()));
