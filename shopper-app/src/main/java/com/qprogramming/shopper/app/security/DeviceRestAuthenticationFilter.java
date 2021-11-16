@@ -22,7 +22,7 @@ import java.util.StringTokenizer;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class BasicRestAuthenticationFilter extends OncePerRequestFilter {
+public class DeviceRestAuthenticationFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION = "Authorization";
     public static final String AUTHENTICATION_SCHEME = "Basic";

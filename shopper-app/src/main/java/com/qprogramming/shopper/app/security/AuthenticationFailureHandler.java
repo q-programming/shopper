@@ -1,6 +1,6 @@
 package com.qprogramming.shopper.app.security;
 
-import com.qprogramming.shopper.app.exceptions.AccountNotConfirmedException;
+import com.qprogramming.shopper.app.exceptions.NotYetConfirmedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -17,7 +17,7 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
-        if (exception.getCause() instanceof AccountNotConfirmedException) {
+        if (exception.getCause() instanceof NotYetConfirmedException) {
             response.sendError(HttpStatus.LOCKED.value(), "Account was not yet confirmed");
         } else {
             super.onAuthenticationFailure(request, response, exception);

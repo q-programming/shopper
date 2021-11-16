@@ -15,9 +15,9 @@ import com.qprogramming.shopper.app.account.event.AccountEventType;
 import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
-import com.qprogramming.shopper.app.exceptions.AccountNotConfirmedException;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
+import com.qprogramming.shopper.app.exceptions.NotYetConfirmedException;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
@@ -294,7 +294,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     void loadNotConfirmedUserTest() {
         testAccount.setEnabled(false);
         when(accountRepositoryMock.findOneByEmail(testAccount.getEmail())).thenReturn(Optional.of(testAccount));
-        assertThrows(AccountNotConfirmedException.class, () -> accountService.loadUserByUsername(testAccount.getEmail()));
+        assertThrows(NotYetConfirmedException.class, () -> accountService.loadUserByUsername(testAccount.getEmail()));
     }
 
     @Test

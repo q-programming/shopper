@@ -34,8 +34,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Optional;
 
-import static com.qprogramming.shopper.app.security.BasicRestAuthenticationFilter.AUTHENTICATION_SCHEME;
-import static com.qprogramming.shopper.app.security.BasicRestAuthenticationFilter.AUTHORIZATION;
+import static com.qprogramming.shopper.app.security.DeviceRestAuthenticationFilter.AUTHENTICATION_SCHEME;
+import static com.qprogramming.shopper.app.security.DeviceRestAuthenticationFilter.AUTHORIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
@@ -401,6 +401,4 @@ public class AuthenticationControllerTest extends MockedAccountTestBase {
                         .content(TestUtil.convertObjectToJsonBytes(passwordForm)))
                 .andExpect(status().isNotFound());
     }
-
-
 }

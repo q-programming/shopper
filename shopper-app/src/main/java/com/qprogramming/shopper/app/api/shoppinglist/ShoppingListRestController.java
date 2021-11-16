@@ -190,7 +190,7 @@ public class ShoppingListRestController {
     }
 
     /**
-     * Toggles archived property on list with id .If currently logged in user is not an owner , he/she will just remove himself from shares of that list
+     * voids archived property on list with id .If currently logged in user is not an owner , he/she will just remove himself from shares of that list
      *
      * @param id shopping lis id
      * @return true if operation was success

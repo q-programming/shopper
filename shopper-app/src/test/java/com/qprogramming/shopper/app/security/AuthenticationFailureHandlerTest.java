@@ -2,7 +2,7 @@ package com.qprogramming.shopper.app.security;
 
 import com.qprogramming.shopper.app.MockedAccountTestBase;
 import com.qprogramming.shopper.app.TestUtil;
-import com.qprogramming.shopper.app.exceptions.AccountNotConfirmedException;
+import com.qprogramming.shopper.app.exceptions.NotYetConfirmedException;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ public class AuthenticationFailureHandlerTest extends MockedAccountTestBase {
     @Test
     public void onAuthenticationFailureAccountNotConfirmedTest() throws Exception {
         val exceptionMock = mock(AuthenticationException.class);
-        when(exceptionMock.getCause()).thenReturn(new AccountNotConfirmedException("not confirmed"));
+        when(exceptionMock.getCause()).thenReturn(new NotYetConfirmedException("not confirmed"));
         authFailureHandler.onAuthenticationFailure(requestMock, responseMock, exceptionMock);
         verify(responseMock, times(1)).sendError(anyInt(), anyString());
     }
