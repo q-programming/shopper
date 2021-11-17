@@ -132,6 +132,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     @Test
     void loadUserByUsernameTest() {
         when(accountRepositoryMock.findOneByUsername(testAccount.getUsername())).thenReturn(Optional.of(testAccount));
+        when(accountRepositoryMock.save(any())).then(returnsFirstArg());
         Account userDetails = accountService.loadUserByUsername(testAccount.getUsername());
         Assertions.assertEquals(userDetails, testAccount);
     }

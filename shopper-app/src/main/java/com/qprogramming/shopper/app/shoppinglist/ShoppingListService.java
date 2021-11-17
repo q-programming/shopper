@@ -11,10 +11,12 @@ import com.qprogramming.shopper.app.exceptions.ShoppingAccessException;
 import com.qprogramming.shopper.app.exceptions.ShoppingNotFoundException;
 import com.qprogramming.shopper.app.items.ListItem;
 import com.qprogramming.shopper.app.items.category.Category;
+import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.messages.MessagesService;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPreset;
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import com.qprogramming.shopper.app.support.Utils;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +33,9 @@ import java.util.stream.IntStream;
 
 import static com.qprogramming.shopper.app.settings.Settings.APP_CATEGORY_ORDER;
 import static com.qprogramming.shopper.app.settings.Settings.APP_EMAIL_FROM;
+import static com.qprogramming.shopper.app.support.Utils.not;
+import static com.qprogramming.shopper.app.support.Utils.sortByValueAsc;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -209,6 +214,18 @@ public class ShoppingListService {
         list.getItems().sort(listComparator);
     }
 
+    public List<Product> groupProducts(ShoppingList list, List<Product> products) {
+        val categoriesOrdered = sortByValueAsc(getCategoriesOrdered(list));
+        val grouped = products.stream().collect(groupingBy(Product::getTopCategory));
+        return categoriesOrdered
+                .keySet()
+                .stream()
+                .filter(grouped::containsKey)
+                .map(grouped::get)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
     public Map<Category, Integer> getCategoriesOrdered(ShoppingList list) {
         String categories;
         if (list.getPreset() == null) {//no list preset load app defaults
@@ -312,6 +329,30 @@ public class ShoppingListService {
             BeanUtils.copyProperties(listItem, copiedItem, "id");
             copy.getItems().add(copiedItem);
         });
+    }
+
+
+    /**
+     * Return all favorite products for current account which are not yet on list
+     *
+     * @return favorite products
+     */
+    public List<Product> filterFavoriteProducts(ShoppingList list, List<Product> favoriteProductsForAccount) {
+        Set<Product> productsAlreadyOnList = list.getItems().stream().map(ListItem::getProduct).collect(Collectors.toSet());
+        return favoriteProductsForAccount
+                .stream()
+                .filter(not(onList(productsAlreadyOnList)))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Checks if passed Product is already on passed list
+     *
+     * @param list list which items will be searched
+     * @return true if {@link ShoppingList#getItems()} contains passed product
+     */
+    public Predicate<Product> onList(Set<Product> list) {
+        return p -> list.contains(p) || list.stream().anyMatch(pr -> pr.getName().equalsIgnoreCase(p.getName()));
     }
 
     /**

@@ -12,11 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by Jakub Romaniszyn  on 17/0702018
@@ -52,6 +50,15 @@ public class Utils {
             return getDefaultLocale();
         }
         return new Locale(currentAccount.getLanguage());
+    }
+
+    /**
+     * Returns language for currently logged in users
+     *
+     * @return language string
+     */
+    public static String getCurrentLanguage() {
+        return Utils.getCurrentLocale().getLanguage();
     }
 
     /**
@@ -131,4 +138,45 @@ public class Utils {
             return false;
         }
     }
+
+    /**
+     * Sorts whole map based on it's values descending from top comparable value
+     *
+     * @param map Map to be sorted
+     * @param <K> Key class that will be sorted
+     * @param <V> value which is comparable
+     */
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValueDesc
+    (Map<K, V> map) {
+        return map.entrySet()
+                .stream()
+                .sorted(Map.Entry.<K, V>comparingByValue().reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+    }
+
+    /**
+     * Sorts whole map based on its values ascending to top comparable value
+     *
+     * @param map Map to be sorted
+     * @param <K> Key class that will be sorted
+     * @param <V> value which is comparable
+     */
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValueAsc
+    (Map<K, V> map) {
+        return map.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+    }
+
 }

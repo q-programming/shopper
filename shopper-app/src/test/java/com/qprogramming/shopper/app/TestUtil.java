@@ -36,6 +36,7 @@ public class TestUtil {
     public static final String ADMIN_RANDOM_ID = "ADMIN-USER-RANDOM-ID";
     public static final String PASSWORD = "password";
     public static final String IMAGE_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZSURBVBhXY3R1df3PgAMwQWmsYJBJMjAAAG8nAdzMowJBAAAAAElFTkSuQmCC";
+    public static final String EN = "en";
 
     public static byte[] convertObjectToJsonBytes(Object object)
             throws IOException {
@@ -87,7 +88,7 @@ public class TestUtil {
         account.setPassword(PASSWORD);
         account.setName(name);
         account.setSurname(surname);
-        account.setLanguage("en");
+        account.setLanguage(EN);
         account.setUsername(USERNAME);
         account.setEmail(EMAIL);
         account.setId(USER_RANDOM_ID);
@@ -128,6 +129,7 @@ public class TestUtil {
     public static Product createProduct(String name) {
         Product product = new Product();
         product.setName(name);
+        product.setLanguage(EN);
         return product;
     }
 

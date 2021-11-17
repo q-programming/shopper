@@ -88,6 +88,7 @@
   "app.item.add.favorites": "Favorites",
   "app.item.add.favorites.tolist": "Add {{name}} to list",
   "app.item.add.favorites.onlist": "Favorites products not found or are already added to list",
+  "app.item.add.favorites.nothing": "You don't have favorites products yet",
   "app.item.add.favorites.filter": "Filter products",
   "app.item.remove.favorites": "Remove {{name}} from favorites",
   "app.item.remove.favorites.success": "{{name}} removed from favorites",

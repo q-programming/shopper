@@ -96,7 +96,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         ShoppingList list = createList(NAME, 1L);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
-        when(productRepositoryMock.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepositoryMock.findByNameIgnoreCaseAndLanguage(anyString(), anyString())).thenReturn(Optional.empty());
         when(productRepositoryMock.save(any())).then(returnsFirstArg());
         when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
         MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)
@@ -117,7 +117,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         list.getItems().add(listItem);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
-        when(productRepositoryMock.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepositoryMock.findByNameIgnoreCaseAndLanguage(anyString(), anyString())).thenReturn(Optional.empty());
         when(productRepositoryMock.save(any())).then(returnsFirstArg());
         when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
         MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)
@@ -138,7 +138,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         list.getItems().add(listItem);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
-        when(productRepositoryMock.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepositoryMock.findByNameIgnoreCaseAndLanguage(anyString(), anyString())).thenReturn(Optional.empty());
         when(productRepositoryMock.save(any())).then(returnsFirstArg());
         when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
         MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)

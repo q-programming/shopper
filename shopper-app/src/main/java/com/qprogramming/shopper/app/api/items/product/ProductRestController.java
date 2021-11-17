@@ -14,13 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 
+import static com.qprogramming.shopper.app.support.Utils.getCurrentLanguage;
+
 /**
  * Created by Jakub Romaniszyn on 2018-08-20
  */
 @RestController
 @RequestMapping("/api/product")
 public class ProductRestController {
-    private ProductRepository _productRepository;
+    private final ProductRepository _productRepository;
 
     @Autowired
     public ProductRestController(ProductRepository productRepository) {
@@ -32,9 +34,10 @@ public class ProductRestController {
         if (StringUtils.isBlank(term)) {
             return ResponseEntity.ok(_productRepository.findAll());
         } else {
-            return ResponseEntity.ok(_productRepository.findByNameContainingIgnoreCase(term));
+            return ResponseEntity.ok(_productRepository.findByNameContainingIgnoreCaseAndLanguage(term, getCurrentLanguage()));
         }
     }
+
 
     /**
      * Propose best category for passed product name
@@ -47,7 +50,7 @@ public class ProductRestController {
         if (StringUtils.isBlank(term)) {
             return ResponseEntity.ok(Category.OTHER);
         } else {
-            Set<Product> products = _productRepository.findByNameContainingIgnoreCase(term.trim());
+            Set<Product> products = _productRepository.findByNameContainingIgnoreCaseAndLanguage(term.trim(), getCurrentLanguage());
             //TODO get the best match in the future. For now just return first one from list. Vetter the term the better result
             return ResponseEntity.ok(Collections.isEmpty(products) ? Category.OTHER : products.iterator().next().getTopCategory());
         }

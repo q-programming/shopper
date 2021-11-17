@@ -57,6 +57,9 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
     @Column
     private Date created;
 
+    @Column(name = "last_login")
+    private Date lastLogin;
+
     @Transient
     private String apikey;
 
@@ -73,6 +76,9 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
 
     @Column(columnDefinition = "boolean default false")
     private boolean righcheckbox = false;
+
+    @Column(columnDefinition = "boolean default false", name = "sort_favorites")
+    private boolean sortFavorites = false;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

@@ -88,6 +88,7 @@
   "app.item.add.favorites": "Ulubione",
   "app.item.add.favorites.tolist": "Dodaj {{name}} do listy",
   "app.item.add.favorites.onlist": "Ulubione produkty nie znalezione lub wszystkie są juz na liście",
+  "app.item.add.favorites.nothing": "Nie masz jeszcze ulubionych produktów",
   "app.item.add.favorites.filter": "Filtruj produkty",
   "app.item.remove.favorites": "Usuń {{name}} z ulubionych",
   "app.item.remove.favorites.success": "{{name}} został usunięty z ulubionych",

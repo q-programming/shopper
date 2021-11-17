@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -41,12 +43,17 @@ public class AccountRestControllerTest extends MockedAccountTestBase {
     private ShoppingListService shoppingListServiceMock;
     @Mock
     private LogoutHandler logoutHandlerMock;
+    @Mock
+    private CacheManager cacheManager;
+    @Mock
+    private Cache favoritesCacheMock;
 
 
     @BeforeEach
     void setUp() {
         super.setup();
-        AccountRestController controller = new AccountRestController(accountServiceMock, shoppingListServiceMock, logoutHandlerMock);
+        when(cacheManager.getCache(anyString())).thenReturn(favoritesCacheMock);
+        AccountRestController controller = new AccountRestController(accountServiceMock, shoppingListServiceMock, logoutHandlerMock, cacheManager);
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
     }
