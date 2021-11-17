@@ -47,7 +47,7 @@ in your datasource and all tables will be created automatically on first run
 
 First logged in user will be made administrator
 
-Stack: Spring Boot + Angular 8.x
+Stack: Spring Boot + Angular 12.x
 
 ## Android Companion app
 

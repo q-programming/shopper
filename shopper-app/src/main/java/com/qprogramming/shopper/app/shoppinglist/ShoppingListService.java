@@ -214,6 +214,14 @@ public class ShoppingListService {
         list.getItems().sort(listComparator);
     }
 
+    /**
+     * Return list of all products grouped into passed list categories, while maintaining order of that products list
+     * So 1st product in that list will still be 1st in its top category
+     *
+     * @param list     shopping lists which category sorter will be used
+     * @param products list of products to be grouped
+     * @return flat list of all products , still sorted , but now grouped per their top category
+     */
     public List<Product> groupProducts(ShoppingList list, List<Product> products) {
         val categoriesOrdered = sortByValueAsc(getCategoriesOrdered(list));
         val grouped = products.stream().collect(groupingBy(Product::getTopCategory));
@@ -226,7 +234,7 @@ public class ShoppingListService {
                 .collect(Collectors.toList());
     }
 
-    public Map<Category, Integer> getCategoriesOrdered(ShoppingList list) {
+    private Map<Category, Integer> getCategoriesOrdered(ShoppingList list) {
         String categories;
         if (list.getPreset() == null) {//no list preset load app defaults
             categories = _propertyService.getProperty(APP_CATEGORY_ORDER);

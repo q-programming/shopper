@@ -123,6 +123,8 @@
   "app.settings.account.other": "Other settings",
   "app.settings.account.righcheckbox": "Checkboxes on right side",
   "app.settings.account.righcheckbox.hint": "If selected , checkboxes on item list will be shown on right, so that it can be easily reached on mobile devices",
+  "app.settings.account.sortfavorites": "Group favorites by top category",
+  "app.settings.account.sortfavorites.hint": "Should favorites be grouped by their top categories when adding them into shopping list",
   "app.settings.notifications": "Notifications",
   "app.settings.email": "E-mail server settings",
   "app.settings.email.header": "Enter your mailing server detials",

@@ -208,6 +208,19 @@ public class AccountRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
+    void changeFavoritesSortingTest() throws Exception {
+        val sorting = true;
+        this.mvc.perform(post(API_SETTINGS_URL + "/favorites")
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(String.valueOf(sorting)))
+                .andExpect(status().is2xxSuccessful());
+        val captor = ArgumentCaptor.forClass(Account.class);
+        verify(accountServiceMock).update(captor.capture());
+        val result = captor.getValue();
+        assertThat(result.isSortFavorites()).isEqualTo(sorting);
+    }
+
+    @Test
     void changeRightModeTest() throws Exception {
         this.mvc.perform(post(API_SETTINGS_URL + "/rightmode")
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)

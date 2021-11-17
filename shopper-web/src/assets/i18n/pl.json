@@ -123,6 +123,8 @@
   "app.settings.account.other": "Inne ustawienia",
   "app.settings.account.righcheckbox": "Pola wyboru po prawej stronie",
   "app.settings.account.righcheckbox.hint": "Kiedy zaznaczone, wszystkie pola oznaczenia produktu jako gotowe, będą wyświetlane po prawej stronie, aby były łatwiejsze do obsługi na urządzeniach mobilnych",
+  "app.settings.account.sortfavorites": "Grupuj ulubione po ich najpopularniejszej kategorii",
+  "app.settings.account.sortfavorites.hint": "Czy ulubione powinny być grupowane po ich najpopularniejszych kategoriach , kiedy są dodawana do listy zakupów",
   "app.settings.notifications": "Powiadomienia",
   "app.settings.email": "Ustawienia Serwera e-mail",
   "app.settings.email.header": "Wprowadz ustawienia pocztowego serwera SMTP",
