@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Shopper Watch Companion</string>
+    <string name="register">Register</string>
+    <string name="register_error">Errors while trying to register, please try again</string>
+    <string name="please_wait">Please wait</string>
+    <string name="account_existing_email">Enter email for existing shopper account</string>
+    <string name="account_email_error">Enter valid email address</string>
+    <string name="account_retry">Remove and re-register</string>
+    <string name="account_confirm">Check your email\n to confirm your new device</string>
+    <string name="welcome_to_shopper">Welcome to Shopper</string>
+    <string name="remove">Remove</string>
+    <string name="item_toggle_error">There was error while trying to toggle item</string>
+    <string name="account_error">There were errors while trying to sign in into accout</string>
+    <string name="account_registered">Successfully registered new device</string>
+    <string name="list_error">There were errors while trying to fetch lists</string>
+    <string name="items_error">There were errors while trying to items from list</string>
+    <string name="aod_summary">Should app stay in Always on display mode (requires restart)</string>
+    <string name="aod">Always on Display</string>
+    <string name="font_size">Font size</string>
+    <string name="font_size_summary">How big font should be on item list</string>
+    <string name="small">small</string>
+    <string name="medium">medium</string>
+    <string name="large">large</string>
+    <string name="about">Shopper companion application,\n created by Jakub Romaniszyn \n Licence GNU GPL</string>
+</resources>

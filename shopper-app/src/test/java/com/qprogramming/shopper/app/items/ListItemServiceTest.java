@@ -8,6 +8,7 @@ import com.qprogramming.shopper.app.items.favorites.FavoriteProducts;
 import com.qprogramming.shopper.app.items.favorites.FavoriteProductsRepository;
 import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.items.product.ProductRepository;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -15,7 +16,6 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -105,7 +105,7 @@ public class ListItemServiceTest extends MockedAccountTestBase {
         favorites.getFavorites().put(product1, 1L);
         favorites.getFavorites().put(product2, 2L);
         when(favoritesRepositoryMock.findById(testAccount.getId())).thenReturn(Optional.of(favorites));
-        Set<Product> productsForAccount = listItemService.getFavoriteProductsForAccount(testAccount.getId());
+        val productsForAccount = listItemService.getFavoriteProductsForAccount(testAccount.getId());
         assertThat(productsForAccount.iterator().next()).isEqualTo(product2);
     }
 

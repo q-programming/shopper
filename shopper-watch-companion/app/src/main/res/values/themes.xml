@@ -1,0 +1,9 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Shopper" parent="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/qprograming_blue</item>
+        <item name="colorPrimaryDark">@color/qprograming_blue</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>

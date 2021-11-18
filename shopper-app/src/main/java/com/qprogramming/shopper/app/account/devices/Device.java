@@ -1,7 +1,6 @@
 package com.qprogramming.shopper.app.account.devices;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +11,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Device {
 
     @Id

@@ -16,8 +16,7 @@
                 <h3 mat-line matTooltip="{{!device.enabled?('app.settings.devices.disabled'|translate):''}}">
                     <button mat-icon-button class="pull-right"
                             matTooltip="{{'app.settings.devices.remove.text'|translate}}"
-                            (click)="deleteDevice(device.id)"
-                            *ngIf="device.enabled">
+                            (click)="deleteDevice(device.id)">
                         <mat-icon>delete</mat-icon>
                     </button>
                     {{device.name}}

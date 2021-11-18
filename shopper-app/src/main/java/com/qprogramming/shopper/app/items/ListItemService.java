@@ -12,6 +12,7 @@ import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.items.product.ProductRepository;
 import com.qprogramming.shopper.app.shoppinglist.ShoppingList;
 import com.qprogramming.shopper.app.support.Utils;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +23,13 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.qprogramming.shopper.app.support.Utils.not;
+import static com.qprogramming.shopper.app.support.Utils.sortByValueDesc;
 
 /**
  * Created by Jakub Romaniszyn on 2018-08-10
@@ -172,13 +174,14 @@ public class ListItemService {
     }
 
     private Product getProductByNameOrCreate(Product product) {
-        Optional<Product> optionalProduct = _productRepository.findByNameIgnoreCase(product.getName());
-        return optionalProduct.orElseGet(() -> saveProduct(product));
+        val language = Utils.getCurrentLanguage();
+        Optional<Product> optionalProduct = _productRepository.findByNameIgnoreCaseAndLanguage(product.getName(), language);
+        return optionalProduct.orElseGet(() -> saveProduct(product, language));
     }
 
-
-    public Product saveProduct(Product product) {
+    public Product saveProduct(Product product, String language) {
         product.setName(product.getName().trim());
+        product.setLanguage(language);
         return this._productRepository.save(product);
     }
 
@@ -239,15 +242,6 @@ public class ListItemService {
         return i -> i.getProduct().equals(product) || StringUtils.equalsIgnoreCase(product.getName(), i.getProduct().getName());
     }
 
-    /**
-     * Checks if passed Product is already on passed list
-     *
-     * @param list list which items will be searched
-     * @return true if {@link ShoppingList#getItems()} contains passed product
-     */
-    public Predicate<Product> onList(Set<Product> list) {
-        return p -> list.contains(p) || list.stream().anyMatch(pr -> pr.getName().equalsIgnoreCase(p.getName()));
-    }
 
     /**
      * Replace product on shopping list with new one
@@ -307,38 +301,17 @@ public class ListItemService {
      * @return set of favorite products for current account
      */
     @Cacheable(value = "favorites", key = "#currentAccountId")
-    public Set<Product> getFavoriteProductsForAccount(String currentAccountId) {
-        return sortByValue(_favoritesRepository.findById(currentAccountId).orElseGet(() -> {
+    public List<Product> getFavoriteProductsForAccount(String currentAccountId) {
+        return sortByValueDesc(_favoritesRepository.findById(currentAccountId).orElseGet(() -> {
             LOG.debug("No favorites found for {} , returning default", currentAccountId);
             return new FavoriteProducts(currentAccountId);
-        }).getFavorites()).keySet();
-    }
-
-    /**
-     * Return all favorite products for current account which are not yet on list
-     *
-     * @return favorite products
-     */
-    public List<Product> filterFavoriteProducts(ShoppingList list, Set<Product> favoriteProductsForAccount) {
-        Set<Product> productsAlreadyOnList = list.getItems().stream().map(ListItem::getProduct).collect(Collectors.toSet());
-        return favoriteProductsForAccount
+        }).getFavorites())
+                .keySet()
                 .stream()
-                .filter(not(onList(productsAlreadyOnList)))
+                .filter(product -> product.getLanguage().equals(Utils.getCurrentLanguage()))
                 .collect(Collectors.toList());
     }
 
-    private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue
-            (Map<K, V> map) {
-        return map.entrySet()
-                .stream()
-                .sorted(Map.Entry.<K, V>comparingByValue().reversed())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
-    }
 
     /**
      * Removes passed product from favorites for account with given id

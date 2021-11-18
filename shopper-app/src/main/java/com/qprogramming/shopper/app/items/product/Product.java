@@ -2,6 +2,8 @@ package com.qprogramming.shopper.app.items.product;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qprogramming.shopper.app.items.category.Category;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
@@ -14,6 +16,8 @@ import java.util.Objects;
  * Created by Jakub Romaniszyn on 2018-08-10
  */
 @Entity
+@Getter
+@Setter
 public class Product {
 
     @Id
@@ -24,26 +28,18 @@ public class Product {
     @Column
     private String name;
 
+    @Column
+    private String language;
+
+
     @ElementCollection(fetch = FetchType.LAZY)
     @MapKeyEnumerated(EnumType.STRING)
     @Column(name = "score")
     @CollectionTable(name = "category_score", joinColumns = @JoinColumn(name = "product_id"))
     private Map<Category, Long> categoryScore = new HashMap<>();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return StringUtils.isNotBlank(name) ? name.trim() : name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Map<Category, Long> getCategoryScore() {

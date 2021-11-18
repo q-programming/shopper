@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shopper Watch Companion</string>
+    <string name="register">Zarejestruj</string>
+    <string name="register_error">Wystąpił bład podczas próby rejestracji, proszę spróbować ponownie</string>
+    <string name="account_existing_email">Wprowadz adres email istniejącego konta w aplikacji Shopper</string>
+    <string name="account_email_error">Wprowadź poprawny adres email</string>
+    <string name="account_retry">Usuń i ponownie zarejestruj</string>
+    <string name="account_confirm">Sprawdz swój email i potwierdz nowe urządzenie</string>
+    <string name="account_error">Wystąpił bład podczas próby zalogowania się na konto</string>
+    <string name="welcome_to_shopper">Witaj w Shopperze</string>
+    <string name="remove">Usuń</string>
+    <string name="please_wait">Porszę czekać</string>
+    <string name="item_toggle_error">Wystąpił bład podczas oznaczania pozycji</string>
+    <string name="account_registered">Zarejestrowano nowe urządzenie</string>
+    <string name="list_error">Wystąpił bład podczas próby pobrania list</string>
+    <string name="items_error">Wystąpił bład podczas próby pobrania pozycji z listy</string>
+    <string name="aod_summary">Czy uruchomiona aplikacja ma być zawsze widoczna (Wymaga restartu)</string>
+    <string name="aod">Always on Display</string>
+    <string name="font_size">Rozmiar tekstu</string>
+    <string name="font_size_summary">Jak duży powinien być tekst na ekranie pozycji listy</string>
+    <string name="small">mały</string>
+    <string name="medium">średni</string>
+    <string name="large">duży</string>
+    <string name="about">Aplikacja pomocnicza do Shopper\'a \n stworzona przez Jakub Romaniszyn\nLicencja GNU GPL</string>
+</resources>

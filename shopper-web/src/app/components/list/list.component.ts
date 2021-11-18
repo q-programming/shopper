@@ -86,7 +86,6 @@ export class ListComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.innerHeight = window.innerHeight;
         this.limiter = this.initialLimiter();
-        console.log(this.limiter);
         this.menuSub = this.menuSrv.actionEmitted.subscribe(action => {
             if (this.ACTIONS.hasOwnProperty(action)) {
                 this.ACTIONS[action]()
@@ -129,7 +128,7 @@ export class ListComponent implements OnInit, OnDestroy {
         }
     }
 
-    private loadItems() {
+    loadItems() {
         this.listSrv.getListByID(this.listID).subscribe(list => {
             this.listName = list.name;
             this.assignListWithSorting(list as ShoppingList);
@@ -504,7 +503,7 @@ export class ListComponent implements OnInit, OnDestroy {
         }, 300);
     }
 
-    private copyList() {
+    copyList() {
         this.listSrv.copyList(this.list).subscribe(result => {
             if (result) {
                 this.alertSrv.success('app.shopping.copy.success', {name: this.list.name});

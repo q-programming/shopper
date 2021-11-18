@@ -11,7 +11,8 @@ import java.util.Set;
  */
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    Set<Product> findByNameContainingIgnoreCase(String term);
 
-    Optional<Product> findByNameIgnoreCase(String name);
+    Set<Product> findByNameContainingIgnoreCaseAndLanguage(String term, String language);
+
+    Optional<Product> findByNameIgnoreCaseAndLanguage(String name, String language);
 }

@@ -109,6 +109,13 @@ export class AccountSettingsComponent implements OnInit {
             this.authSrv.currentAccount.righcheckbox = val.checked
         })
     }
+
+    toggleFavoritesSorting(val) {
+        this.api.post(`${environment.account_url}${environment.favorites_sorting_url}`, val.checked).subscribe(() => {
+            this.alertSrv.success('app.settings.app.save.success');
+            this.authSrv.currentAccount.sortFavorites = val.checked
+        })
+    }
 }
 
 @Component({

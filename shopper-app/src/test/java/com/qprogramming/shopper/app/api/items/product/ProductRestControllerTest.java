@@ -5,6 +5,7 @@ import com.qprogramming.shopper.app.TestUtil;
 import com.qprogramming.shopper.app.items.category.Category;
 import com.qprogramming.shopper.app.items.product.Product;
 import com.qprogramming.shopper.app.items.product.ProductRepository;
+import com.qprogramming.shopper.app.support.Utils;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,7 @@ public class ProductRestControllerTest extends MockedAccountTestBase {
     @Test
     void getProductsTerm() throws Exception {
         Set<Product> products = createProducts(4);
-        when(productRepositoryMock.findByNameContainingIgnoreCase(NA)).thenReturn(products);
+        when(productRepositoryMock.findByNameContainingIgnoreCaseAndLanguage(NA, Utils.getCurrentLanguage())).thenReturn(products);
         MvcResult mvcResult = this.mvc.perform(get(API_PRODUCT_URL + API_FIND).param("term", NA)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)).andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
@@ -77,7 +78,7 @@ public class ProductRestControllerTest extends MockedAccountTestBase {
         categoryScore.put(Category.ALCOHOL, 1L);
         categoryScore.put(Category.BAKERY, 3L);
         product.setCategoryScore(categoryScore);
-        when(productRepositoryMock.findByNameContainingIgnoreCase(NA)).thenReturn(Collections.singleton(product));
+        when(productRepositoryMock.findByNameContainingIgnoreCaseAndLanguage(NA, Utils.getCurrentLanguage())).thenReturn(Collections.singleton(product));
         val mvcResult = this.mvc.perform(get(API_PRODUCT_URL + API_CATEGORY).param("term", NA)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)).andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
@@ -87,7 +88,7 @@ public class ProductRestControllerTest extends MockedAccountTestBase {
 
     @Test
     void getCategoryBasedOnEmptyTermTest() throws Exception {
-        when(productRepositoryMock.findByNameContainingIgnoreCase(NA)).thenReturn(Collections.emptySet());
+        when(productRepositoryMock.findByNameContainingIgnoreCaseAndLanguage(NA, Utils.getCurrentLanguage())).thenReturn(Collections.emptySet());
         val mvcResult = this.mvc.perform(get(API_PRODUCT_URL + API_CATEGORY).param("term", "")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)).andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
@@ -97,7 +98,7 @@ public class ProductRestControllerTest extends MockedAccountTestBase {
 
     @Test
     void getCategoryBasedOnTermNotFoundTest() throws Exception {
-        when(productRepositoryMock.findByNameContainingIgnoreCase(NA)).thenReturn(Collections.emptySet());
+        when(productRepositoryMock.findByNameContainingIgnoreCaseAndLanguage(NA, Utils.getCurrentLanguage())).thenReturn(Collections.emptySet());
         val mvcResult = this.mvc.perform(get(API_PRODUCT_URL + API_CATEGORY).param("term", NA)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)).andExpect(status().is2xxSuccessful()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();

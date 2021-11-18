@@ -16,9 +16,9 @@ import com.qprogramming.shopper.app.account.event.AccountEventType;
 import com.qprogramming.shopper.app.config.mail.Mail;
 import com.qprogramming.shopper.app.config.mail.MailService;
 import com.qprogramming.shopper.app.config.property.PropertyService;
-import com.qprogramming.shopper.app.exceptions.AccountNotConfirmedException;
 import com.qprogramming.shopper.app.exceptions.AccountNotFoundException;
 import com.qprogramming.shopper.app.exceptions.DeviceNotFoundException;
+import com.qprogramming.shopper.app.exceptions.NotYetConfirmedException;
 import com.qprogramming.shopper.app.support.Utils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -144,9 +144,10 @@ public class AccountService implements UserDetailsService {
             account = accountRepository.save(account);
         }
         if (!account.isEnabled()) {
-            throw new AccountNotConfirmedException("Account was not yet confirmed");
+            throw new NotYetConfirmedException("Account was not yet confirmed");
         }
-        return account;
+        account.setLastLogin(new Date());
+        return accountRepository.save(account);
     }
 
     public Optional<Account> findByUsername(String username) {
@@ -394,9 +395,12 @@ public class AccountService implements UserDetailsService {
     @Transactional
     public boolean deviceAuth(String key, Account account) {
         Set<Device> devices = account.getDevices();
-        Optional<Device> optionalDevice = devices.stream().filter(Device::isEnabled).filter(device -> accountPasswordEncoder.matches(key, device.getDeviceKey())).findFirst();
+        Optional<Device> optionalDevice = devices.stream().filter(device -> accountPasswordEncoder.matches(key, device.getDeviceKey())).findFirst();
         if (optionalDevice.isPresent()) {
             Device device = optionalDevice.get();
+            if (!device.isEnabled()) {
+                throw new NotYetConfirmedException("Device was not yet confirmed");
+            }
             device.setLastUsed(new Date());
             deviceRepository.save(device);
             return true;

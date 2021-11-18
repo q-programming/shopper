@@ -2,6 +2,7 @@ package com.qprogramming.shopper.app.config;
 
 import com.qprogramming.shopper.app.account.AccountPasswordEncoder;
 import com.qprogramming.shopper.app.account.AccountService;
+import com.qprogramming.shopper.app.filters.NotYetConfirmedHandlerFilter;
 import com.qprogramming.shopper.app.security.*;
 import com.qprogramming.shopper.app.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.qprogramming.shopper.app.security.oauth2.OAuth2AuthenticationFailureHandler;
@@ -82,8 +83,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public BasicRestAuthenticationFilter basicRestAuthenticationFilter() {
-        return new BasicRestAuthenticationFilter(accountService, tokenService);
+    public NotYetConfirmedHandlerFilter notYetConfirmedHandlerFilter() {
+        return new NotYetConfirmedHandlerFilter();
+    }
+
+    @Bean
+    public DeviceRestAuthenticationFilter basicRestAuthenticationFilter() {
+        return new DeviceRestAuthenticationFilter(accountService, tokenService);
     }
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
@@ -155,7 +161,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .deleteCookies(TOKEN_COOKIE,USER_COOKIE,XSRF_TOKEN,JSESSIONID);
         //@formatter:on
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(basicRestAuthenticationFilter(), BasicAuthenticationFilter.class).authorizeRequests();
+        http.addFilterBefore(notYetConfirmedHandlerFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(basicRestAuthenticationFilter(), BasicAuthenticationFilter.class)
+                .authorizeRequests();
     }
 
     @Bean
