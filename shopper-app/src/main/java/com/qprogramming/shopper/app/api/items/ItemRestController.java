@@ -9,6 +9,7 @@ import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.support.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 import static com.qprogramming.shopper.app.exceptions.AccountNotFoundException.ACCOUNT_WITH_ID_WAS_NOT_FOUND;
 import static com.qprogramming.shopper.app.exceptions.BadProductNameException.BAD_PRODUCT_NAME;
@@ -197,7 +197,7 @@ public class ItemRestController {
 
     /**
      * Get all favorites for currently logged in account but filtered, not to show products that are already on that list,
-     * and limited to top 50 most used ones
+     * If user have sort favorites selected, also group those favorites products
      *
      * @param id list id
      * @return list of favorite products
@@ -206,9 +206,14 @@ public class ItemRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<List<Product>> getFavorites(@PathVariable Long id) {
         try {
-            ShoppingList list = _listService.findByID(id);
-            Set<Product> favorites = _listItemService.getFavoriteProductsForAccount(Utils.getCurrentAccountId());
-            return ResponseEntity.ok(_listItemService.filterFavoriteProducts(list, favorites));
+            val list = _listService.findByID(id);
+            val favorites = _listItemService.getFavoriteProductsForAccount(Utils.getCurrentAccountId());
+            val filterFavoriteProducts = _listService.filterFavoriteProducts(list, favorites);
+            if (Utils.getCurrentAccount().isSortFavorites()) {
+                val groupedFavorites = _listService.groupProducts(list, filterFavoriteProducts);
+                return ResponseEntity.ok(groupedFavorites);
+            }
+            return ResponseEntity.ok(filterFavoriteProducts);
         } catch (ShoppingAccessException e) {
             log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -225,7 +230,7 @@ public class ItemRestController {
      */
     @RequestMapping(value = "/favorites", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<Set<Product>> getAllFavorites() {
+    public ResponseEntity<List<Product>> getAllFavorites() {
         return ResponseEntity.ok(_listItemService.getFavoriteProductsForAccount(Utils.getCurrentAccountId()));
     }
 
@@ -237,7 +242,7 @@ public class ItemRestController {
      */
     @RequestMapping(value = "/favorites/remove", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<Set<Product>> removeFromFavorites(@RequestBody Product product) {
+    public ResponseEntity<List<Product>> removeFromFavorites(@RequestBody Product product) {
         String currentAccountId = Utils.getCurrentAccountId();
         _listItemService.removeFromFavorites(product, currentAccountId);
         return ResponseEntity.ok(_listItemService.getFavoriteProductsForAccount(currentAccountId));

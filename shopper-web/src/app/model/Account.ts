@@ -10,6 +10,7 @@ export class Account {
     token: string;
     fullname?: string;
     righcheckbox?: boolean;
+    sortFavorites?: boolean;
 }
 
 export class Authority {

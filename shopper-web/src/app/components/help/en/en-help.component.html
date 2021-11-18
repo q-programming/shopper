@@ -9,19 +9,31 @@
         If you quickly need to add something, open webpage or app add it, and it will automatically show on shared user
         lists
     </p>
-    <p class="text-center">
-        You can download companion android app from:
-        <a mat-flat-button href="https://q-programming.pl/apps/shopper-0.7.0.apk">
-            <mat-icon>cloud_download</mat-icon>
-            shopper-0.7.0.apk
-        </a>
-        and install it ( you have to enable installing from unknown sources)
-    </p>
     <p class="text-center mt-2">
         In case of any issues please write to :
         <mat-icon>email</mat-icon>
         <a href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
     </p>
+    <p class="mt-2">
+        There are extra companion apps available
+    </p>
+    <ul>
+        <li>
+            <a href="https://q-programming.pl/apps/shopper-0.7.0.apk" mat-flat-button>
+                <mat-icon>cloud_download</mat-icon>
+                shopper-0.7.0.apk
+            </a>
+            Aplication for Android phones ( you have to enable installing from unknown sources)
+        </li>
+        <li>
+            <a href="https://q-programming.pl/apps/shopper_watch_companion.1.0.0.apk" mat-flat-button>
+                <mat-icon>cloud_download</mat-icon>
+                shopper-watch-companion.1.0.0.apk
+            </a>
+            Application for watches with WearOS 3 system (You have to manually sideload apk)
+        </li>
+    </ul>
+
     <!--LISTS-->
     <div>
         <h3 class="underlined help-title" id="shoppinglist">
@@ -569,6 +581,10 @@
             and default application emails ( like invite )
             <br> Currently english and polish languages are supported
         </p>
+        <p><b>Please note </b> added products contain information about in which language they were added (so currentl
+            account language).
+            If we switch language , proposed categories and favorites list will only show products added in that
+            language </p>
         <p id="settings-account-delete">If you wish to delete your account, you can do this by entering settings page.
             Press te big red
             <button mat-raised-button color="warn">{{'app.settings.account.delete'|translate}}</button>

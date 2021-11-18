@@ -68,5 +68,15 @@ public class Utils {
         val fontSize = FontSize.getType(sp.getString(Properties.FONT, null));
         return dimen_sizes[fontSize.ordinal()];
     }
+    public static float getDescFontSize(Context context) {
+        val dimen_sizes = new float[]{
+                context.getResources().getDimension(R.dimen.desc_small),
+                context.getResources().getDimension(R.dimen.desc_medium),
+                context.getResources().getDimension(R.dimen.desc_large),
+        };
+        val sp = getDefaultSharedPreferences(context);
+        val fontSize = FontSize.getType(sp.getString(Properties.FONT, null));
+        return dimen_sizes[fontSize.ordinal()];
+    }
 
 }

@@ -16,4 +16,7 @@
     <dimen name="small">16sp</dimen>
     <dimen name="medium">20sp</dimen>
     <dimen name="large">24sp</dimen>
+    <dimen name="desc_small">10sp</dimen>
+    <dimen name="desc_medium">12sp</dimen>
+    <dimen name="desc_large">14sp</dimen>
 </resources>

@@ -10,8 +10,10 @@ import com.qprogramming.shopper.app.shoppinglist.ShoppingListService;
 import com.qprogramming.shopper.app.support.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,6 +39,7 @@ public class AccountRestController {
     private final AccountService _accountService;
     private final ShoppingListService _listService;
     private final LogoutHandler _logoutHandler;
+    private final CacheManager cacheManager;
 
     /**
      * Returns currently logged in user as {@link Account}
@@ -132,6 +135,23 @@ public class AccountRestController {
         Account currentAccount = Utils.getCurrentAccount();
         currentAccount.setLanguage(lang);
         _accountService.update(currentAccount);
+        val favoritesCache = cacheManager.getCache("favorites");
+        if (favoritesCache != null) {
+            favoritesCache.evict(currentAccount.getId());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/settings/favorites", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> changeSortFavorites(@RequestBody boolean sortFavorites) {
+        val currentAccount = Utils.getCurrentAccount();
+        currentAccount.setSortFavorites(sortFavorites);
+        _accountService.update(currentAccount);
+        val favoritesCache = cacheManager.getCache("favorites");
+        if (favoritesCache != null) {
+            favoritesCache.evict(currentAccount.getId());
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

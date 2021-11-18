@@ -29,6 +29,7 @@ import static com.qprogramming.shopper.app.TestUtil.PASSWORD;
 import static com.qprogramming.shopper.app.TestUtil.convertJsonToObject;
 import static com.qprogramming.shopper.app.security.DeviceRestAuthenticationFilter.AUTHORIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -72,6 +73,7 @@ class DeviceRestAuthenticationFilterTest {
         testAccount.setDevices(Collections.singleton(device));
         doReturn(true).when(accountPasswordEncoder).matches(any(), any());
         when(accountRepositoryMock.findOneByEmail(testAccount.getEmail())).thenReturn(Optional.of(testAccount));
+        when(accountRepositoryMock.save(any())).then(returnsFirstArg());
         val auth = Base64.encode(testAccount.getEmail() + ":" + device.getDeviceKey());
         this.mvc.perform(get(API_ACCOUNT_WHOAMI).header(AUTHORIZATION, auth))
                 .andExpect(status().is(HttpStatus.LOCKED.value()));
@@ -88,6 +90,7 @@ class DeviceRestAuthenticationFilterTest {
         testAccount.setDevices(Collections.singleton(device));
         doReturn(true).when(accountPasswordEncoder).matches(any(), any());
         when(accountRepositoryMock.findOneByEmail(testAccount.getEmail())).thenReturn(Optional.of(testAccount));
+        when(accountRepositoryMock.save(any())).then(returnsFirstArg());
         val auth = Base64.encode(testAccount.getEmail() + ":" + device.getDeviceKey());
         val mvcStringResponse = this.mvc.perform(get(API_ACCOUNT_WHOAMI).header(AUTHORIZATION, auth))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();

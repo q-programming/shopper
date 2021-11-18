@@ -13,7 +13,13 @@
         </form>
     </div>
     <div *ngIf="filteredProducts && (filteredProducts|async).length==0" class="text-center font-italic">
-        {{'app.item.add.favorites.onlist'|translate}}
+        <ng-container *ngIf="!settings">
+            {{'app.item.add.favorites.onlist'|translate}}
+        </ng-container>
+        <ng-container *ngIf="settings">
+            {{'app.item.add.favorites.nothing'|translate}}
+        </ng-container>
+
     </div>
     <div fxLayout="row wrap" fxLayoutGap="5px" fxLayoutAlign="space-around center" class="mt-1 mb-1 mr-3 ml-3">
         <div *ngFor="let fav of filteredProducts | async; trackBy:trackByFn" class="mt-1" fxFlex="calc(50%-5px)"

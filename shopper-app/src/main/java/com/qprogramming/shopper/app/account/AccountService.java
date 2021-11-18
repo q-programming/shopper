@@ -146,7 +146,8 @@ public class AccountService implements UserDetailsService {
         if (!account.isEnabled()) {
             throw new NotYetConfirmedException("Account was not yet confirmed");
         }
-        return account;
+        account.setLastLogin(new Date());
+        return accountRepository.save(account);
     }
 
     public Optional<Account> findByUsername(String username) {

@@ -24,7 +24,9 @@ import pl.qprogramming.shopper.watch.config.EventType;
 import pl.qprogramming.shopper.watch.model.ListItem;
 import pl.qprogramming.shopper.watch.model.ShoppingList;
 
+import static android.text.TextUtils.isEmpty;
 import static pl.qprogramming.shopper.watch.util.HttpUtil.post;
+import static pl.qprogramming.shopper.watch.util.Utils.getDescFontSize;
 import static pl.qprogramming.shopper.watch.util.Utils.getFontSize;
 
 public class ItemViewAdapter extends WearableRecyclerView.Adapter<ItemViewAdapter.ViewHolder> {
@@ -32,11 +34,13 @@ public class ItemViewAdapter extends WearableRecyclerView.Adapter<ItemViewAdapte
     private final ShoppingList list;
     private final Context context;
     private final float size;
+    private final float desc_size;
 
     public ItemViewAdapter(Context context, ShoppingList list) {
         this.context = context;
         this.list = list;
         size = getFontSize(context);
+        desc_size = getDescFontSize(context);
     }
 
     @Override
@@ -56,6 +60,13 @@ public class ItemViewAdapter extends WearableRecyclerView.Adapter<ItemViewAdapte
         val itemStr = String.format(Locale.ENGLISH, "%s%s %s", quantity, unit, item.getName());
         holder.itemName.setText(itemStr);
         holder.itemName.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+        if (!isEmpty(item.getDescription())) {
+            holder.description.setVisibility(View.VISIBLE);
+            holder.description.setText(item.getDescription());
+            holder.description.setTextSize(TypedValue.COMPLEX_UNIT_PX, desc_size);
+        } else {
+            holder.description.setVisibility(View.GONE);
+        }
         holder.checkBox.setOnClickListener(v -> toggle(item, position, holder.checkBox));
         holder.itemName.setOnClickListener(v -> toggle(item, position, holder.checkBox));
     }
@@ -86,6 +97,7 @@ public class ItemViewAdapter extends WearableRecyclerView.Adapter<ItemViewAdapte
         public final View mView;
         public final CheckBox checkBox;
         public final TextView itemName;
+        public final TextView description;
         public ListItem item;
 
         public ViewHolder(View view) {
@@ -93,6 +105,7 @@ public class ItemViewAdapter extends WearableRecyclerView.Adapter<ItemViewAdapte
             mView = view;
             checkBox = view.findViewById(R.id.item_checkbox);
             itemName = view.findViewById(R.id.item_name);
+            description = view.findViewById(R.id.item_desc);
         }
 
         @Override

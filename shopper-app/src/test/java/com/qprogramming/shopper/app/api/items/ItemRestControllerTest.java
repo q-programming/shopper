@@ -21,6 +21,7 @@ import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetReposito
 import com.qprogramming.shopper.app.shoppinglist.ordering.CategoryPresetService;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.cache.Cache;
@@ -96,7 +97,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         ShoppingList list = createList(NAME, 1L);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
-        when(productRepositoryMock.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepositoryMock.findByNameIgnoreCaseAndLanguage(anyString(), anyString())).thenReturn(Optional.empty());
         when(productRepositoryMock.save(any())).then(returnsFirstArg());
         when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
         MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)
@@ -117,7 +118,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         list.getItems().add(listItem);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
-        when(productRepositoryMock.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepositoryMock.findByNameIgnoreCaseAndLanguage(anyString(), anyString())).thenReturn(Optional.empty());
         when(productRepositoryMock.save(any())).then(returnsFirstArg());
         when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
         MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)
@@ -138,7 +139,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         list.getItems().add(listItem);
         when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
         when(listRepositoryMock.save(any(ShoppingList.class))).then(returnsFirstArg());
-        when(productRepositoryMock.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepositoryMock.findByNameIgnoreCaseAndLanguage(anyString(), anyString())).thenReturn(Optional.empty());
         when(productRepositoryMock.save(any())).then(returnsFirstArg());
         when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
         MvcResult mvcResult = this.mvc.perform(post(API_ITEM_URL + list.getId() + ITEM_ADD)
@@ -382,6 +383,40 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         List<Product> favorites = TestUtil.convertJsonToList(contentAsString, List.class, Product.class);
         assertThat(favorites.size()).isEqualTo(2);
         assertThat(favorites.get(0)).isEqualTo(product3);
+    }
+
+    @Test
+    @DisplayName("get favorites which are sorted by most used and grouped in categories")
+    void favoritesSortedTest() throws Exception {
+        val product1 = TestUtil.createProduct(NAME + 1);
+        product1.getCategoryScore().put(Category.ALCOHOL, 3L);
+        val product2 = TestUtil.createProduct(NAME + 2);
+        product2.getCategoryScore().put(Category.BAKERY, 3L);
+        val product3 = TestUtil.createProduct(NAME + 3);
+        product3.getCategoryScore().put(Category.FRUIT_VEGETABLES, 2L);
+        val product4 = TestUtil.createProduct(NAME + 4);
+        product4.getCategoryScore().put(Category.BAKERY, 2L);
+        FavoriteProducts fav = new FavoriteProducts();
+        fav.getFavorites().put(product1, 1L);
+        fav.getFavorites().put(product2, 2L);
+        fav.getFavorites().put(product3, 3L);
+        fav.getFavorites().put(product4, 5L);
+        ListItem listItem = new ListItem();
+        listItem.setProduct(product1);
+        listItem.setId(1L);
+        ShoppingList list = createList(NAME, 1L);
+        list.getItems().add(listItem);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(favoritesRepositoryMock.findById(testAccount.getId())).thenReturn(Optional.of(fav));
+        testAccount.setSortFavorites(true);
+        MvcResult mvcResult = this.mvc.perform(get(API_ITEM_URL + FAVORITES_LIST + list.getId()))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Product> favorites = TestUtil.convertJsonToList(contentAsString, List.class, Product.class);
+        assertThat(favorites).hasSize(3);
+        assertThat(favorites).first().isEqualTo(product4);
+        assertThat(favorites).last().isEqualTo(product3);
     }
 
 
