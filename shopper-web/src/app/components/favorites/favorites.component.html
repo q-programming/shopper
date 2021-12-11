@@ -3,7 +3,7 @@
         <form>
             <mat-form-field class="mat-form-field-full-width mr-1 ml-1">
                 <input matInput placeholder="{{'app.item.add.favorites.filter'|translate}}" value=""
-                       autocomplete="false" [formControl]="filterControl">
+                       [formControl]="filterControl" autocomplete="false" id="favorites-input">
                 <button mat-button *ngIf="filterControl.value" matSuffix mat-icon-button aria-label="Clear"
                         matTooltip="{{'app.general.clear'|translate}}"
                         (click)="filterControl.setValue('')">

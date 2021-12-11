@@ -3,6 +3,7 @@ import {ListItem} from "@model/ListItem";
 import {CategoryOption} from "@model/CategoryOption";
 import {MenuAction, MenuActionsService} from "@services/menu-actions.service";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {ViewportScroller} from "@angular/common";
 
 @Component({
     templateUrl: './item-dialog.component.html',
@@ -21,6 +22,7 @@ export class ItemDialogComponent implements OnInit {
 
     constructor(private dialogRef: MatDialogRef<ItemDialogComponent>,
                 @Inject(MAT_DIALOG_DATA) public data: any,
+                private viewportScroller: ViewportScroller,
                 private menuSrv: MenuActionsService) {
         //load categories
         this.categories = data.categories;
@@ -55,5 +57,9 @@ export class ItemDialogComponent implements OnInit {
     }
 
     ngOnInit() {
+    }
+
+    backToTop() {
+        this.viewportScroller.scrollToAnchor('favorites-input');
     }
 }
