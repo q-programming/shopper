@@ -19,7 +19,7 @@
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <log4j2.version>2.15.0</log4j2.version>
-        <spring-boot.version>2.6.1</spring-boot.version>
+        <spring-boot.version>2.5.7</spring-boot.version>
         <freemarker.version>2.3.31</freemarker.version>
         <imgscalr-lib.version>4.2</imgscalr-lib.version>
         <commons-io.version>2.11.0</commons-io.version>
