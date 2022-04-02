@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
@@ -29,7 +30,7 @@ public class ShoppingListWebsocketController {
     @MessageMapping("/send/{listID}/refresh")
     public void refreshList(SimpMessageHeaderAccessor accessor, @DestinationVariable Long listID) {
         Authentication auth = (Authentication) accessor.getHeader("simpUser");
-        if (auth instanceof TokenBasedAuthentication) {
+        if (hasTokenAuth(auth)) {
             WebsocketAction response = new WebsocketAction()
                     .action(WebsocketActionType.REFRESH)
                     .withList(listID)
@@ -37,13 +38,14 @@ public class ShoppingListWebsocketController {
             this.template.convertAndSend("/actions/" + listID, response);
         } else {
             LOG.error("Websocket  message was discarded due to wrong or missing authentication");
+            LOG.error("Auth: {}", auth);
         }
     }
 
     @MessageMapping("/send/{listID}/add")
     public void added(SimpMessageHeaderAccessor accessor, @DestinationVariable Long listID) {
         Authentication auth = (Authentication) accessor.getHeader("simpUser");
-        if (auth instanceof TokenBasedAuthentication) {
+        if (hasTokenAuth(auth)) {
             WebsocketAction response = new WebsocketAction()
                     .action(WebsocketActionType.ADD)
                     .withList(listID)
@@ -51,13 +53,18 @@ public class ShoppingListWebsocketController {
             this.template.convertAndSend("/actions/" + listID, response);
         } else {
             LOG.error("Websocket message was discarded due to wrong or missing authentication");
+            LOG.error("Auth: {}", auth);
         }
+    }
+
+    private boolean hasTokenAuth(Authentication auth) {
+        return auth instanceof TokenBasedAuthentication || auth instanceof UsernamePasswordAuthenticationToken;
     }
 
     @MessageMapping("/send/{listID}/remove")
     public void removed(SimpMessageHeaderAccessor accessor, @DestinationVariable Long listID) {
         Authentication auth = (Authentication) accessor.getHeader("simpUser");
-        if (auth instanceof TokenBasedAuthentication) {
+        if (hasTokenAuth(auth)) {
             WebsocketAction response = new WebsocketAction()
                     .action(WebsocketActionType.REMOVE)
                     .withList(listID)
@@ -65,6 +72,7 @@ public class ShoppingListWebsocketController {
             this.template.convertAndSend("/actions/" + listID, response);
         } else {
             LOG.error("Websocket  message was discarded due to wrong or missing authentication");
+            LOG.error("Auth: {}", auth);
         }
     }
 

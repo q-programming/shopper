@@ -1,11 +1,11 @@
 {
   "name": "shopper-app",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "license": "GNU GPL License",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
-    "build": "ng build --prod",
+    "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -39,9 +39,9 @@
     "ngx-progressbar": "^6.1.1",
     "rxjs": "^6.6.7",
     "rxjs-compat": "^6.6.7",
-    "sockjs-client": "^1.5.2",
+    "sockjs-client": "^1.6.0",
     "stompjs": "^2.3.3",
-    "tslib": "^2.2.0",
+    "tslib": "^2.3.1",
     "websocket-extensions": "^0.1.4",
     "zone.js": "~0.11.4",
     "zxcvbn3": "^0.1.1"

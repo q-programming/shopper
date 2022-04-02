@@ -35,9 +35,9 @@
             ],
             "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
-            "sourceMap": true,
-            "optimization": false,
+            "buildOptimizer": true,
+            "sourceMap": false,
+            "optimization": true,
             "namedChunks": true
           },
           "configurations": {
