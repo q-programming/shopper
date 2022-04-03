@@ -6,7 +6,7 @@
     <parent>
         <artifactId>shopper</artifactId>
         <groupId>com.qprogramming.shopper</groupId>
-        <version>1.2.4</version>
+        <version>1.2.5</version>
     </parent>
     <artifactId>shopper-web</artifactId>
     <name>Shopper-Web</name>
@@ -53,6 +53,7 @@
                             <executable>ng</executable>
                             <arguments>
                                 <argument>build</argument>
+                                <argument>--base-href=/${app.final.name}/</argument>
                             </arguments>
                         </configuration>
                         <goals>
