@@ -23,7 +23,7 @@
         <freemarker.version>2.3.31</freemarker.version>
         <imgscalr-lib.version>4.2</imgscalr-lib.version>
         <commons-io.version>2.11.0</commons-io.version>
-        <postgresql.version>42.3.3</postgresql.version>
+        <postgresql.version>42.3.8</postgresql.version>
         <jackson-datatype-hibernate5.version>2.13.0</jackson-datatype-hibernate5.version>
         <javassist.version>3.28.0-GA</javassist.version>
         <java-uuid-generator.version>4.0.1</java-uuid-generator.version>
