@@ -71,7 +71,7 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
     private AccountType type;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Account> friends = new HashSet<>();
 
     @Column(columnDefinition = "boolean default false")
