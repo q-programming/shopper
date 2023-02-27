@@ -75,6 +75,9 @@ export class ApiService {
     post(path: string, body: any, customHeaders?: HttpHeaders, showAlerts: boolean = true): Observable<any> {
         return this.request(path, body, RequestMethod.Post, customHeaders, showAlerts);
     }
+    patch(path: string, body: any, customHeaders?: HttpHeaders, showAlerts: boolean = true): Observable<any> {
+        return this.request(path, body, RequestMethod.Patch, customHeaders, showAlerts);
+    }
 
     put(path: string, body: any): Observable<any> {
         return this.request(path, body, RequestMethod.Put);

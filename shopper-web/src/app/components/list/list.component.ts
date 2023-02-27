@@ -155,7 +155,7 @@ export class ListComponent implements OnInit, OnDestroy {
      */
     toggleItem(item: ListItem) {
         if (!this.list.archived) {
-            this.itemSrv.toggleItem(this.listID, item).subscribe((result) => {
+            this.itemSrv.setItemDone(this.listID, item).subscribe((result) => {
                 if (result) {
                     item.done = result.done;
                     this.shiftToggledItem(item);

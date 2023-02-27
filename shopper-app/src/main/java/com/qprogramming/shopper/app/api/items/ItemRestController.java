@@ -140,12 +140,6 @@ public class ItemRestController {
         }
     }
 
-    /**
-     * delete list item from list with id .
-     *
-     * @param id shopping lis id
-     * @return updated shopping list if operation was successful
-     */
     @RequestMapping(value = "/{id}/toggle", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
@@ -165,6 +159,28 @@ public class ItemRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @RequestMapping(value = "/{listId}/{itemId}/done", method = RequestMethod.PATCH)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
+    public ResponseEntity<ListItem> setItemDone(@PathVariable Long listId, @PathVariable Long itemId, @RequestBody boolean done) {
+        try {
+            ShoppingList list = _listService.findByID(listId);//just verify that list exists and user has access
+            ListItem item = _listItemService.findById(itemId);
+            item.setDone(done);
+            return ResponseEntity.ok(_listItemService.saveItem(item));
+        } catch (ShoppingAccessException e) {
+            log.error(ACCOUNT_WITH_ID_DON_T_HAVE_ACCESS_TO_SHOPPING_LIST_ID, Utils.getCurrentAccountId(), listId);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (ShoppingNotFoundException e) {
+            log.error(SHOPPING_LIST_WITH_ID_WAS_NOT_FOUND, listId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ItemNotFoundException e) {
+            log.error(ITEM_NOT_FOUND, listId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
 
     /**
      * get toggle item

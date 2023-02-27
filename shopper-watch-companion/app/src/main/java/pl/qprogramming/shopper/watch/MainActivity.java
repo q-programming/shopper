@@ -5,12 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Date;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.wear.ambient.AmbientModeSupport;
@@ -27,6 +32,7 @@ import pl.qprogramming.shopper.watch.fragments.welcome.WelcomeFragment;
 import static android.text.TextUtils.isEmpty;
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 import static pl.qprogramming.shopper.watch.util.HttpUtil.post;
+import static pl.qprogramming.shopper.watch.util.Utils.getFontSize;
 import static pl.qprogramming.shopper.watch.util.Utils.navigateToFragment;
 
 public class MainActivity extends FragmentActivity
@@ -35,7 +41,12 @@ public class MainActivity extends FragmentActivity
     private ProgressBar loader;
     private ImageButton settings;
     private BoxInsetLayout mainLayout;
+    private TextView timer;
     private AmbientModeSupport.AmbientController controller;
+    private BroadcastReceiver timeBroadcastReceiver;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +77,7 @@ public class MainActivity extends FragmentActivity
         val filter = new IntentFilter(EventType.LOADING_STARTED.getCode());
         filter.addAction(EventType.LOADING_FINISHED.getCode());
         registerReceiver(receiver, filter);
+
     }
 
     /**
@@ -102,6 +114,9 @@ public class MainActivity extends FragmentActivity
     protected void onStop() {
         try {
             unregisterReceiver(receiver);
+            if (timeBroadcastReceiver != null) {
+                unregisterReceiver(timeBroadcastReceiver);
+            }
         } catch (IllegalArgumentException e) {
             Log.d(TAG, "Receiver not registered");
         }
@@ -111,6 +126,7 @@ public class MainActivity extends FragmentActivity
     private void setupViews() {
         loader = findViewById(R.id.loader);
         settings = findViewById(R.id.settings_btn);
+        timer = findViewById(R.id.time);
     }
 
     @Override
@@ -122,6 +138,7 @@ public class MainActivity extends FragmentActivity
                 mainLayout.setBackgroundColor(Color.BLACK);
                 settings.setVisibility(View.GONE);
                 loader.setVisibility(View.GONE);
+                setTimer();
             }
 
             @Override
@@ -133,6 +150,10 @@ public class MainActivity extends FragmentActivity
             public void onExitAmbient() {
                 super.onExitAmbient();
                 mainLayout.setBackgroundColor(getColor(R.color.qprograming_blue));
+                if (timeBroadcastReceiver != null) {
+                    unregisterReceiver(timeBroadcastReceiver);
+                }
+                timer.setVisibility(View.GONE);
                 sendBroadcast(new Intent(EventType.WAKE_UP.getCode()));
             }
 
@@ -141,6 +162,19 @@ public class MainActivity extends FragmentActivity
                 super.onAmbientOffloadInvalidated();
             }
         };
+    }
+
+    private void setTimer() {
+        timer.setVisibility(View.VISIBLE);
+        timer.setText(sdf.format(new Date()));
+        timeBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0)
+                    timer.setText(sdf.format(new Date()));
+            }
+        };
+        registerReceiver(timeBroadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
     }
 
 
