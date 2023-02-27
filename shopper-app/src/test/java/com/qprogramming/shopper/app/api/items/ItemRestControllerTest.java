@@ -37,8 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -52,6 +51,7 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
     private static final String ITEM_UPDATE = "/update";
     private static final String ITEM_DELETE = "/delete";
     private static final String ITEM_TOGGLE = "/toggle";
+    private static final String ITEM_DONE = "/done";
     private static final String FAVORITES_LIST = "favorites/list/";
 
     @Mock
@@ -341,6 +341,70 @@ public class ItemRestControllerTest extends MockedAccountTestBase {
         assertThat(result.isDone()).isTrue();
         this.mvc.perform(get("/api/item/" + list.getId() + ITEM_TOGGLE + "/" + listItem.getId()))
                 .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @DisplayName("Set item as done")
+    void setItemToDoneTest() throws Exception {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        listItem.setId(1L);
+        ShoppingList list = createList(NAME, 1L);
+        list.getItems().add(listItem);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listItemRepositoryMock.findById(1L)).thenReturn(Optional.of(listItem));
+        when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
+
+        MvcResult mvcResult = this.mvc.perform(patch(API_ITEM_URL + list.getId() + "/" + listItem.getId() + ITEM_DONE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(true))).andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ListItem result = TestUtil.convertJsonToObject(contentAsString, ListItem.class);
+        verify(listItemRepositoryMock, times(1)).save(listItem);
+        assertThat(result.isDone()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Set item as not done")
+    void setItemToNotDoneTest() throws Exception {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        listItem.setId(1L);
+        ShoppingList list = createList(NAME, 1L);
+        list.getItems().add(listItem);
+        when(listRepositoryMock.findById(1L)).thenReturn(Optional.of(list));
+        when(listItemRepositoryMock.findById(1L)).thenReturn(Optional.of(listItem));
+        when(listItemRepositoryMock.save(any())).then(returnsFirstArg());
+
+        MvcResult mvcResult = this.mvc.perform(patch(API_ITEM_URL + list.getId() + "/" + listItem.getId() + ITEM_DONE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(false))).andExpect(status().is2xxSuccessful()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ListItem result = TestUtil.convertJsonToObject(contentAsString, ListItem.class);
+        verify(listItemRepositoryMock, times(1)).save(listItem);
+        assertThat(result.isDone()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Set item as not done, failed to find it")
+    void setItemToDoneNotFoundTest() throws Exception {
+        ListItem listItem = TestUtil.createListItem(NAME);
+        listItem.setId(1L);
+        ShoppingList list = createList(NAME, 1L);
+        list.getItems().add(listItem);
+        when(listRepositoryMock.findById(1L))
+                .thenReturn(Optional.empty())
+                .thenReturn(Optional.of(list));
+        when(listItemRepositoryMock.findById(1L))
+                .thenReturn(Optional.empty());
+
+        this.mvc.perform(patch(API_ITEM_URL + list.getId() + "/" + listItem.getId() + ITEM_DONE)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(false)))
+                .andExpect(status().is4xxClientError());
+        this.mvc.perform(patch(API_ITEM_URL + list.getId() + "/" + listItem.getId() + ITEM_DONE)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(false)))
+                .andExpect(status().is4xxClientError());
+
     }
 
     @Test

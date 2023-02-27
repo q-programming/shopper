@@ -53,6 +53,16 @@ export class ItemService {
     }
 
     /**
+     * set item done status ( bought or to buy )
+     *
+     * @param listID items list id
+     * @param item item to be toggled
+     */
+    setItemDone(listID: number, item: ListItem): Observable<ListItem> {
+        return this.api.patch(environment.item_url + `/${listID}/${item.id}/done`, !item.done)
+    }
+
+    /**
      * Updates item with new data
      *
      * @param listID items list id
@@ -136,7 +146,7 @@ export class ItemService {
         });
     }
 
-    private favorites(): string[]{
+    private favorites(): string[] {
         if (!this.account_favorites || !this.account_favorites.length) {
             this.loadAccountFavorites();
         }
@@ -156,7 +166,6 @@ export class ItemService {
             }
         }
     }
-
 
 
     /**

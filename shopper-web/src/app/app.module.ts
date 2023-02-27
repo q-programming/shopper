@@ -67,7 +67,6 @@ import {ItemComponent} from './components/list/item/item.component';
 import {InnerLoaderComponent} from './components/inner-loader/inner-loader.component';
 import {DevicesComponent} from './components/settings/devices/devices/devices.component';
 import {ScrollTopComponent} from "./components/scroll-top/scroll-top.component";
-import {APP_BASE_HREF} from "@angular/common";
 
 export function initUserFactory(authService: AuthenticationService) {
     return () => authService.initUser();
@@ -163,9 +162,6 @@ export function initUserFactory(authService: AuthenticationService) {
         ListService,
         ItemService,
         FormBuilder,
-        {
-            provide: APP_BASE_HREF, useValue: '/shopper'
-        },
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,
